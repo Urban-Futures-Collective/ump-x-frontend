@@ -1,0 +1,3 @@
+/* Reihenfolge ist zwingend: tailwindcss MUSS vor @nuxt/ui importiert werden. */
+@import "tailwindcss";
+@import "@nuxt/ui";
