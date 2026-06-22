@@ -1,0 +1,21 @@
+# Nuxt
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+
+# Node
+node_modules
+*.log
+
+# Env
+.env
+
+# macOS
+.DS_Store
+
+# editor
+.vscode
+.nova

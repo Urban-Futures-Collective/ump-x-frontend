@@ -1,0 +1,9 @@
+{
+  "app": {
+    "title": "UMP-X",
+    "placeholder": "Fundament steht. Inhalte folgen."
+  },
+  "colorMode": {
+    "toggle": "Hell/Dunkel umschalten"
+  }
+}

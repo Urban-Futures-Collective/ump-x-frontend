@@ -1,0 +1,9 @@
+{
+  "app": {
+    "title": "UMP-X",
+    "placeholder": "Foundation is in place. Content to follow."
+  },
+  "colorMode": {
+    "toggle": "Toggle light/dark"
+  }
+}
