@@ -22,11 +22,12 @@ Build and run with Docker Compose:
 docker compose up -d --build
 ```
 
-The frontend will be available on port `3000` of your VPS.
+By default, the compose file binds the frontend to `127.0.0.1:3000` for use behind
+a reverse proxy on the VPS.
 The compose file uses `restart: unless-stopped` for production-style uptime; change
 that policy if you need different restart behavior.
-If the port is publicly exposed, make sure your VPS firewall rules are configured
-accordingly (or place the service behind a reverse proxy).
+If you need direct public access instead, change the port mapping and ensure firewall
+rules are configured accordingly.
 
 ## Backend integration
 
