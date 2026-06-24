@@ -14,6 +14,16 @@ npm run dev      # http://localhost:3000
 
 Other scripts: `npm run build`, `npm run preview`, `npm run lint`.
 
+## Deploy on VPS with Docker
+
+Build and run with Docker Compose:
+
+```bash
+docker compose up -d --build
+```
+
+The frontend will be available on port `3000` of your VPS.
+
 ## Backend integration
 
 The frontend is fully decoupled from the backend and will communicate solely over
