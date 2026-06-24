@@ -1,0 +1,9 @@
+services:
+  frontend:
+    container_name: ump-x-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "6000:6000"

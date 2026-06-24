@@ -14,6 +14,21 @@ npm run dev      # http://localhost:3000
 
 Other scripts: `npm run build`, `npm run preview`, `npm run lint`.
 
+## Deploy on VPS with Docker
+
+Build and run with Docker Compose:
+
+```bash
+docker compose up -d --build
+```
+
+By default, the compose file binds the frontend to `127.0.0.1:3000` for use behind
+a reverse proxy on the VPS.
+The compose file uses `restart: unless-stopped` for production-style uptime; change
+that policy if you need different restart behavior.
+If you need direct public access instead, change the port mapping and ensure firewall
+rules are configured accordingly.
+
 ## Backend integration
 
 The frontend is fully decoupled from the backend and will communicate solely over
