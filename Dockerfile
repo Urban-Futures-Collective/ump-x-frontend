@@ -16,7 +16,8 @@ ENV NODE_ENV=production
 ENV NITRO_HOST=0.0.0.0
 ENV NITRO_PORT=3000
 
-COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/.output/server ./.output/server
+COPY --from=builder /app/.output/public ./.output/public
 
 EXPOSE 3000
 

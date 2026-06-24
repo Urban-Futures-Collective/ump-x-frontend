@@ -23,6 +23,8 @@ docker compose up -d --build
 ```
 
 The frontend will be available on port `3000` of your VPS.
+The compose file uses `restart: unless-stopped` for production-style uptime; change
+that policy if you need different restart behavior.
 
 ## Backend integration
 
