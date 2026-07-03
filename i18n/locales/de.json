@@ -1,9 +1,20 @@
 {
   "app": {
-    "title": "UMP-X",
-    "placeholder": "Fundament steht. Inhalte folgen."
+    "title": "UMP-X"
   },
   "colorMode": {
     "toggle": "Hell/Dunkel umschalten"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "loggedInAs": "Angemeldet als {name}"
+  },
+  "processes": {
+    "title": "Modell-Prozesse",
+    "refresh": "Aktualisieren",
+    "empty": "Keine Prozesse verfügbar.",
+    "error": "Prozesse konnten nicht geladen werden.",
+    "anonymousHint": "Ohne Anmeldung siehst du nur öffentliche Prozesse. Melde dich an, um rollenbasierte Prozesse (z. B. squareroot) zu sehen."
   }
 }
