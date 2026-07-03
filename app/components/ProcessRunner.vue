@@ -36,9 +36,22 @@ const statusColor = computed(() => {
 async function onSubmit() {
   const inputs: Record<string, unknown> = {}
   for (const inp of proc.value?.inputs ?? []) {
-    const raw = form.value[inp.name] ?? ''
-    if (raw === '' && !inp.required) continue
-    inputs[inp.name] = (inp.type === 'integer' || inp.type === 'number') ? Number(raw) : raw
+    const raw = (form.value[inp.name] ?? '').trim()
+    const def = inp.default != null ? String(inp.default) : ''
+    // Leeres nicht senden; unveränderte Defaults weglassen → das Backend nutzt seine
+    // eigenen Defaults (wichtig für growbike, dessen Integer-Inputs den String "auto"
+    // als Default haben — ein Number("auto") würde NaN senden und den Prozess crashen).
+    if (raw === '') continue
+    if (def !== '' && raw === def) continue
+    if ((inp.type === 'integer' || inp.type === 'number') && Number.isFinite(Number(raw))) {
+      inputs[inp.name] = Number(raw)
+    }
+    else if (inp.type === 'boolean') {
+      inputs[inp.name] = raw === 'true' || raw === '1'
+    }
+    else {
+      inputs[inp.name] = raw
+    }
   }
   await run(props.processId, inputs)
 }
