@@ -31,6 +31,7 @@ export default defineNuxtConfig({
         baseUrl: '',
         clientId: '',
         clientSecret: '',
+        // Dev-Default; Prod via NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI (siehe .env.example).
         redirectUri: 'http://localhost:3000/auth/keycloak/callback',
         scope: ['openid', 'profile', 'email'],
         // Access-Token serverseitig verfügbar machen (für den Proxy). Der Client bekommt ihn
@@ -38,6 +39,7 @@ export default defineNuxtConfig({
         exposeAccessToken: true,
         // Keycloak-Access-Token hat aud=account; die UMP-API validiert selbst → hier aus.
         validateAccessToken: false,
+        // Dev-Default; Prod via NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI (siehe .env.example).
         logoutRedirectUri: 'http://localhost:3000',
       },
     },
