@@ -1,9 +1,20 @@
 {
   "app": {
-    "title": "UMP-X",
-    "placeholder": "Foundation is in place. Content to follow."
+    "title": "UMP-X"
   },
   "colorMode": {
     "toggle": "Toggle light/dark"
+  },
+  "auth": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "loggedInAs": "Signed in as {name}"
+  },
+  "processes": {
+    "title": "Model processes",
+    "refresh": "Refresh",
+    "empty": "No processes available.",
+    "error": "Could not load processes.",
+    "anonymousHint": "Without signing in you only see public processes. Sign in to see role-gated processes (e.g. squareroot)."
   }
 }
