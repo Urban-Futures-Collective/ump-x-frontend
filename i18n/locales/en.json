@@ -16,5 +16,18 @@
     "empty": "No processes available.",
     "error": "Could not load processes.",
     "anonymousHint": "Without signing in you only see public processes. Sign in to see role-gated processes (e.g. squareroot)."
+  },
+  "run": {
+    "selectHint": "Select a process on the left to run it.",
+    "execute": "Run",
+    "error": "Error: {msg}",
+    "status": {
+      "idle": "ready",
+      "accepted": "accepted",
+      "running": "running",
+      "successful": "successful",
+      "failed": "failed",
+      "dismissed": "dismissed"
+    }
   }
 }
