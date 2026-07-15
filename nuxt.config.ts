@@ -17,6 +17,10 @@ export default defineNuxtConfig({
     public: {
       umpBase: '/ump',
       umpApiVersion: '', // vorbereitet für spätere /v1.0-Versionierung
+      // Dev-Override fürs Admin-Gate: erzwingt isAdmin=true, solange die ump_admin-Rolle +
+      // Roles-Mapper in Keycloak noch fehlen (siehe docs/model-access-admin-decision.md).
+      // NUR fürs Vorschau-Bauen der Admin-UI. Prod via NUXT_PUBLIC_DEV_FORCE_ADMIN=true.
+      devForceAdmin: false,
     },
   },
 
@@ -55,8 +59,10 @@ export default defineNuxtConfig({
 
   i18n: {
     defaultLocale: 'de',
-    // Single-View-Shell ohne pages/-Routing → Cookie-basiert (no_prefix). Sobald
-    // echtes File-based Routing dazukommt, auf 'prefix_except_default' umstellbar.
+    // File-based Routing ist da (pages/), aber die Sprache bleibt bewusst Cookie-basiert
+    // (no_prefix): hält die Routen-Pfade sauber für Middleware/Guards und teilbare Links
+    // ohne /de|/en-Präfix. Auf 'prefix_except_default' umstellbar, falls später
+    // pro-Sprache-URLs / SEO gebraucht werden.
     strategy: 'no_prefix',
     langDir: 'locales',
     locales: [
