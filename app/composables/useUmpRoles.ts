@@ -10,9 +10,8 @@
 //   - user.claims   — nur die via `optionalClaims` extrahierten ID-Token-Claims
 //                     (nuxt.config: optionalClaims = ['realm_access','resource_access'])
 // Wir lesen aus BEIDEN und vereinigen — robust, egal welches Ziel der Mapper hat.
-// Voraussetzung fürs echte Admin-Gate: `ump-client` mappt ump_admin in ID-Token/Userinfo
-// (Rico, umgesetzt 2026-07-20). Fällt das aus, greift nur der Dev-Override
-// (runtimeConfig.public.devForceAdmin). Siehe docs/model-access-admin-decision.md (Punkt 3).
+// Voraussetzung fürs Admin-Gate: `ump-client` mappt ump_admin in ID-Token/Userinfo
+// (Rico, umgesetzt 2026-07-20; end-to-end verifiziert). Siehe docs/model-access-admin-decision.md.
 
 const UMP_CLIENT = 'ump-client'
 const ADMIN_ROLE = 'ump_admin'
@@ -34,7 +33,6 @@ function rolesFrom(src: KeycloakRoleClaims | undefined): string[] {
 
 export function useUmpRoles() {
   const { loggedIn, user } = useOidcAuth()
-  const { devForceAdmin } = useRuntimeConfig().public
 
   const roles = computed<string[]>(() => {
     if (!loggedIn.value) return []
@@ -49,8 +47,8 @@ export function useUmpRoles() {
     roles.value.filter(r => r === 'modelserver' || r.startsWith('modelserver_')),
   )
 
-  // Admin-Gate: echte ump_admin-Rolle ODER Dev-Override (bis die Rolle in Keycloak existiert).
-  const isAdmin = computed(() => devForceAdmin === true || roles.value.includes(ADMIN_ROLE))
+  // Admin-Gate: hängt allein an der ump_admin-Rolle aus dem Token.
+  const isAdmin = computed(() => roles.value.includes(ADMIN_ROLE))
 
   return { roles, modelServerRoles, isAdmin }
 }

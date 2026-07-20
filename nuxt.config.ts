@@ -17,10 +17,6 @@ export default defineNuxtConfig({
     public: {
       umpBase: '/ump',
       umpApiVersion: '', // vorbereitet für spätere /v1.0-Versionierung
-      // Dev-Override fürs Admin-Gate: erzwingt isAdmin=true, solange die ump_admin-Rolle +
-      // Roles-Mapper in Keycloak noch fehlen (siehe docs/model-access-admin-decision.md).
-      // NUR fürs Vorschau-Bauen der Admin-UI. Prod via NUXT_PUBLIC_DEV_FORCE_ADMIN=true.
-      devForceAdmin: false,
     },
   },
 
