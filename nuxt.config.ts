@@ -43,6 +43,11 @@ export default defineNuxtConfig({
         exposeAccessToken: true,
         // Keycloak-Access-Token hat aud=account; die UMP-API validiert selbst → hier aus.
         validateAccessToken: false,
+        // Rollen aus dem ID-Token in user.claims übernehmen (Keycloak-Roles-Mapper legt sie
+        // als realm_access / resource_access ab). Ohne das bleibt user.claims leer und
+        // useUmpRoles sieht keine Rollen. Zusätzlich liest useUmpRoles user.userInfo, falls
+        // der Mapper nur auf Userinfo zielt. Siehe app/composables/useUmpRoles.ts.
+        optionalClaims: ['realm_access', 'resource_access'],
         // Dev-Default; Prod via NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI (siehe .env.example).
         logoutRedirectUri: 'http://localhost:3000',
       },

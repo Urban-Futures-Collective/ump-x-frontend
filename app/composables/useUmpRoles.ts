@@ -1,12 +1,18 @@
 // Liest die Rollen des eingeloggten Users zentral aus der OIDC-Session.
 // Einzige Stelle, die weiß, WO im Token die Rollen stehen (realm_access / resource_access)
 // — Komponenten/Guards fragen nur roles/isAdmin/modelServerRoles ab, kein Rollen-Wissen
-// verstreut. Kein neuer Netzwerk-Call: alles aus der bereits vorhandenen Session-Claim.
+// verstreut. Kein neuer Netzwerk-Call: alles aus der bereits vorhandenen Session.
 //
-// Voraussetzung fürs Admin-Gate: `ump-client` muss die Client-Rollen (u. a. das spätere
-// ump_admin) in einen Claim mappen, den die Frontend-Session sieht. Solange das fehlt,
-// ist isAdmin nur über den Dev-Override (runtimeConfig.public.devForceAdmin) erreichbar.
-// Siehe docs/model-access-admin-decision.md (Punkt 3, offener Roles-Mapper).
+// Wichtig (BFF): Access-/ID-Token werden client-seitig gestrippt (oidc-strip-token.ts),
+// die Rollen müssen also in einem Session-Feld liegen, das überlebt. nuxt-oidc-auth füllt
+// zwei solche Felder — je nachdem, wo Keycloaks Roles-Mapper die Rollen ablegt:
+//   - user.userInfo — komplette Antwort des /userinfo-Endpoints (Mapper „Add to userinfo")
+//   - user.claims   — nur die via `optionalClaims` extrahierten ID-Token-Claims
+//                     (nuxt.config: optionalClaims = ['realm_access','resource_access'])
+// Wir lesen aus BEIDEN und vereinigen — robust, egal welches Ziel der Mapper hat.
+// Voraussetzung fürs echte Admin-Gate: `ump-client` mappt ump_admin in ID-Token/Userinfo
+// (Rico, umgesetzt 2026-07-20). Fällt das aus, greift nur der Dev-Override
+// (runtimeConfig.public.devForceAdmin). Siehe docs/model-access-admin-decision.md (Punkt 3).
 
 const UMP_CLIENT = 'ump-client'
 const ADMIN_ROLE = 'ump_admin'
@@ -17,16 +23,24 @@ interface KeycloakRoleClaims {
   resource_access?: Record<string, { roles?: string[] }>
 }
 
+// Zieht realm- + ump-client-Rollen aus einer Claim-Quelle (claims ODER userInfo).
+function rolesFrom(src: KeycloakRoleClaims | undefined): string[] {
+  if (!src) return []
+  return [
+    ...(src.realm_access?.roles ?? []),
+    ...(src.resource_access?.[UMP_CLIENT]?.roles ?? []),
+  ]
+}
+
 export function useUmpRoles() {
   const { loggedIn, user } = useOidcAuth()
   const { devForceAdmin } = useRuntimeConfig().public
 
   const roles = computed<string[]>(() => {
     if (!loggedIn.value) return []
-    const claims = user.value?.claims as KeycloakRoleClaims | undefined
-    const realmRoles = claims?.realm_access?.roles ?? []
-    const clientRoles = claims?.resource_access?.[UMP_CLIENT]?.roles ?? []
-    return [...new Set([...realmRoles, ...clientRoles])]
+    const fromClaims = rolesFrom(user.value?.claims as KeycloakRoleClaims | undefined)
+    const fromUserInfo = rolesFrom(user.value?.userInfo as KeycloakRoleClaims | undefined)
+    return [...new Set([...fromClaims, ...fromUserInfo])]
   })
 
   // Modell-Zugriffsrollen: `modelserver` (alle) + `modelserver_<id>` (je Modellserver).
