@@ -39,6 +39,11 @@ export default defineNuxtConfig({
         exposeAccessToken: true,
         // Keycloak-Access-Token hat aud=account; die UMP-API validiert selbst → hier aus.
         validateAccessToken: false,
+        // Rollen aus dem ID-Token in user.claims übernehmen (Keycloak-Roles-Mapper legt sie
+        // als realm_access / resource_access ab). Ohne das bleibt user.claims leer und
+        // useUmpRoles sieht keine Rollen. Zusätzlich liest useUmpRoles user.userInfo, falls
+        // der Mapper nur auf Userinfo zielt. Siehe app/composables/useUmpRoles.ts.
+        optionalClaims: ['realm_access', 'resource_access'],
         // Dev-Default; Prod via NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI (siehe .env.example).
         logoutRedirectUri: 'http://localhost:3000',
       },
@@ -55,8 +60,10 @@ export default defineNuxtConfig({
 
   i18n: {
     defaultLocale: 'de',
-    // Single-View-Shell ohne pages/-Routing → Cookie-basiert (no_prefix). Sobald
-    // echtes File-based Routing dazukommt, auf 'prefix_except_default' umstellbar.
+    // File-based Routing ist da (pages/), aber die Sprache bleibt bewusst Cookie-basiert
+    // (no_prefix): hält die Routen-Pfade sauber für Middleware/Guards und teilbare Links
+    // ohne /de|/en-Präfix. Auf 'prefix_except_default' umstellbar, falls später
+    // pro-Sprache-URLs / SEO gebraucht werden.
     strategy: 'no_prefix',
     langDir: 'locales',
     locales: [
