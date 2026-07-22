@@ -5,10 +5,31 @@
   "colorMode": {
     "toggle": "Hell/Dunkel umschalten"
   },
+  "common": {
+    "comingSoon": "Diese Ansicht kommt bald."
+  },
+  "nav": {
+    "models": "Modelle",
+    "run": "Neues Szenario",
+    "jobs": "Meine Szenarien",
+    "admin": "Administration"
+  },
+  "landing": {
+    "heading": "Urban Model Platform",
+    "subtitle": "Modelle ansehen, Szenarien rechnen und Ergebnisse auf der Karte erkunden. Melde dich an, um deine Modelle und Szenarien zu sehen.",
+    "browsePublic": "Modelle ansehen",
+    "publicHint": "Ohne Anmeldung siehst du nur öffentliche Modelle."
+  },
   "auth": {
     "login": "Anmelden",
     "logout": "Abmelden",
     "loggedInAs": "Angemeldet als {name}"
+  },
+  "jobs": {
+    "title": "Meine Szenarien"
+  },
+  "admin": {
+    "title": "Administration"
   },
   "processes": {
     "title": "Modell-Prozesse",
@@ -19,6 +40,7 @@
   },
   "run": {
     "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",
+    "allModels": "Alle Modelle",
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
     "status": {
