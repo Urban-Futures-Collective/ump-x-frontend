@@ -1,6 +1,6 @@
 services:
   frontend:
-    container_name: ump-x-frontend
+    container_name: staging-ump-x-frontend
     build:
       context: .
       dockerfile: Dockerfile
