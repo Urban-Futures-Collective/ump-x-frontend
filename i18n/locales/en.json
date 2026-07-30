@@ -18,7 +18,7 @@
     "heading": "Urban Model Platform",
     "subtitle": "Browse models, run scenarios & explore results on the map. Sign in to see your models and scenarios.",
     "browsePublic": "Browse models",
-    "publicHint": "Without signing in you only see public models!"
+    "publicHint": "Without signing in you only see publicly available models!"
   },
   "auth": {
     "login": "Sign in",
