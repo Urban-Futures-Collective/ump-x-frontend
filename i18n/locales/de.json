@@ -16,9 +16,9 @@
   },
   "landing": {
     "heading": "Urban Model Platform",
-    "subtitle": "Modelle ansehen, Szenarien rechnen und Ergebnisse auf der Karte erkunden. Melde dich an, um deine Modelle und Szenarien zu sehen.",
+    "subtitle": "Modelle ansehen, Szenarien berechnen und Ergebnisse auf der Karte erkunden. Melde dich an, um deine Modelle und Szenarien zu sehen.",
     "browsePublic": "Modelle ansehen",
-    "publicHint": "Ohne Anmeldung siehst du nur öffentliche Modelle."
+    "publicHint": "Ohne Anmeldung siehst du nur öffentliche Modelle!"
   },
   "auth": {
     "login": "Anmelden",
