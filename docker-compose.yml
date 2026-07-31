@@ -4,6 +4,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Build-time only — siehe Kommentar im Dockerfile.
+        NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL: ${NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL}
+    # Laufzeit-Config (Client-Secret, Redirect-URIs, Session-Secrets, API-Ziel).
+    # Ohne diese Zeile startet der Container ohne jede OIDC-Config und /auth/keycloak/login
+    # antwortet mit 302 auf "/" statt zu Keycloak weiterzuleiten.
+    env_file:
+      - .env
     restart: unless-stopped
     ports:
       - "6000:6000"
