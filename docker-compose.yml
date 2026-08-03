@@ -4,6 +4,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Build-time only, siehe Kommentar im Dockerfile. Der Default-Fallback ist wichtig:
+        # ohne ihn übergibt Compose bei ungesetzter Variable einen LEEREN Build-Arg, und der
+        # überschreibt den Default im Dockerfile.
+        NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL: ${NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL:-https://auth.urbanfuturescollective.org/realms/UrbanModelPlatform}
+    # Laufzeit-Config (Client-Secret, Redirect-URIs, Session-Secrets, API-Ziel) kommt aus den
+    # Environment Settings des Service in Dokploy. Hier bewusst KEIN env_file: auf dem Server
+    # existiert keine .env-Datei, und Compose bricht dann mit "env file not found" ab, d.h. der
+    # Container startet gar nicht erst. Wer den Container lokal mit Config fahren will, legt
+    # eine (gitignorierte) docker-compose.override.yml mit env_file an.
     restart: unless-stopped
     ports:
       - "6500:6500"
