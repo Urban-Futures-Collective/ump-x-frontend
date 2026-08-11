@@ -1,6 +1,8 @@
 services:
   frontend:
-    container_name: staging-ump-x-frontend
+    # Pro Umgebung in den Dokploy Environment Settings gesetzt. Die Defaults sind die
+    # Prod-Werte, damit ein fehlender Eintrag nicht Produktion trifft.
+    container_name: ${CONTAINER_NAME:-ump-x-frontend}
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,5 +17,10 @@ services:
     # Container startet gar nicht erst. Wer den Container lokal mit Config fahren will, legt
     # eine (gitignorierte) docker-compose.override.yml mit env_file an.
     restart: unless-stopped
+    # APP_PORT steuert beides zugleich: worauf Nitro lauscht und was gemappt wird. Genau
+    # deshalb aus einer Variable, früher standen Lauschport (Dockerfile) und Mapping
+    # (hier) getrennt in zwei Dateien und liefen beim Branch-Merge auseinander.
+    environment:
+      NITRO_PORT: ${APP_PORT:-6000}
     ports:
-      - "6500:6500"
+      - "${APP_PORT:-6000}:${APP_PORT:-6000}"
