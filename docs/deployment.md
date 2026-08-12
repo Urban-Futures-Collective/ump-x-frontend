@@ -28,11 +28,14 @@ feature-branch  →  staging  →  main  →  deploy
 Eine Änderung ist also erst dann in Produktion, wenn sie bis `deploy` durchgereicht
 wurde. Ein Merge nach `main` allein bewirkt nichts.
 
-**Achtung, Stolperstelle:** `staging` hält in `Dockerfile` und `docker-compose.yml`
-bewusst andere Werte als `main` (Container-Name und Port, siehe Tabelle oben). Diese
-Unterschiede wandern bei jedem Merge mit und sind eine dauerhafte Konfliktquelle.
-Sauberer wäre, Port und Container-Name aus Umgebungsvariablen zu ziehen, dann sind
-beide Branches identisch.
+**Alle drei Branches enthalten dieselben Dateien.** Was sich pro Umgebung
+unterscheidet, steht in den Dokploy Environment Settings, nicht im Repo. Das ist
+Absicht und hat einen konkreten Anlass: Vorher trugen `staging` und `main`
+verschiedene Container-Namen und Ports in `Dockerfile` und `docker-compose.yml`.
+Beim Merge `staging` → `main` wanderten die Staging-Werte nach `main`, ohne einen
+Konflikt auszulösen und damit unbemerkt. Wäre das nach `deploy` durchgereicht
+worden, hätte der Prod-Container den Namen des laufenden Staging-Containers
+bekommen (Namenskollision) und auf dem falschen Port gelauscht (502).
 
 ## Die eine Falle: BASE_URL ist Build-Zeit, alles andere Laufzeit
 
@@ -66,9 +69,14 @@ NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET=<aus Keycloak, Credentials-Tab>
 NUXT_UMP_API_TARGET=<interne URL der UMP-API, Port 5003>
 ```
 
+`NUXT_UMP_API_TARGET` gilt nur fürs Frontend. Im Backend-Environment hat sie keine
+Wirkung, alles mit `NUXT_`-Präfix liest ausschließlich Nuxt.
+
 Prod:
 
 ```
+CONTAINER_NAME=ump-x-frontend
+APP_PORT=6000
 NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI=https://ump-x.urbanfuturescollective.org/auth/keycloak/callback
 NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI=https://ump-x.urbanfuturescollective.org
 ```
@@ -76,9 +84,20 @@ NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI=https://ump-x.urbanfuturescolle
 Staging:
 
 ```
+CONTAINER_NAME=staging-ump-x-frontend
+APP_PORT=6500
 NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI=https://ump-x-staging.urbanfuturescollective.org/auth/keycloak/callback
 NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI=https://ump-x-staging.urbanfuturescollective.org
 ```
+
+`APP_PORT` steuert beides zugleich: worauf Nitro lauscht (`NITRO_PORT`) und was
+nach außen gemappt wird. Deshalb können die beiden nicht mehr auseinanderlaufen.
+
+**Wichtig für Staging:** Fehlen `CONTAINER_NAME` und `APP_PORT` dort, greifen die
+Defaults aus `docker-compose.yml`, und das sind die Prod-Werte. Staging liefe dann
+auf Port 6000 statt 6500 und wäre über seinen Proxy nicht erreichbar. Die Defaults
+sind bewusst so gewählt: Ein vergessener Eintrag trifft dann Staging, nicht
+Produktion.
 
 Session- und Token-Verschlüsselung, **pro Environment einmal erzeugen und festhalten**:
 
