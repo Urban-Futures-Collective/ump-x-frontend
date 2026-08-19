@@ -7,6 +7,35 @@ nginx auf `82.165.91.175`.
 |---|---|---|
 | Domain | `ump-x.urbanfuturescollective.org` | `ump-x-staging.urbanfuturescollective.org` |
 | Keycloak-Realm | `UrbanModelPlatform` (geteilt) | `UrbanModelPlatform` (geteilt) |
+| Container | `ump-x-frontend`, Port 6000 | `staging-ump-x-frontend`, Port 6500 |
+
+## Branch-Kette
+
+Eine Änderung läuft immer denselben Weg:
+
+```
+feature-branch  →  staging  →  main  →  deploy
+                  (testen)   (Team-   (live)
+                             stand)
+```
+
+1. **Feature-Branch**, PR gegen `staging`. Nicht gegen `main`.
+2. Ist auf Staging alles in Ordnung: `staging` → `main`. Das ist der Stand, von dem
+   sich alle im Team die aktuelle Version holen.
+3. `main` → `deploy`. Dokploy deployt per Autodeploy aus `deploy`, damit ist die
+   Änderung live.
+
+Eine Änderung ist also erst dann in Produktion, wenn sie bis `deploy` durchgereicht
+wurde. Ein Merge nach `main` allein bewirkt nichts.
+
+**Alle drei Branches enthalten dieselben Dateien.** Was sich pro Umgebung
+unterscheidet, steht in den Dokploy Environment Settings, nicht im Repo. Das ist
+Absicht und hat einen konkreten Anlass: Vorher trugen `staging` und `main`
+verschiedene Container-Namen und Ports in `Dockerfile` und `docker-compose.yml`.
+Beim Merge `staging` → `main` wanderten die Staging-Werte nach `main`, ohne einen
+Konflikt auszulösen und damit unbemerkt. Wäre das nach `deploy` durchgereicht
+worden, hätte der Prod-Container den Namen des laufenden Staging-Containers
+bekommen (Namenskollision) und auf dem falschen Port gelauscht (502).
 
 ## Die eine Falle: BASE_URL ist Build-Zeit, alles andere Laufzeit
 
@@ -17,12 +46,12 @@ nginx auf `82.165.91.175`.
 Folge: Wird `BASE_URL` erst zur Laufzeit gesetzt, existieren diese Keys gar nicht, Nuxts
 Env-Override kann sie nicht anlegen, und es greift der relative Preset-Fallback
 (`protocol/openid-connect/auth`). Der Login-Redirect zeigt dann auf die eigene Domain
-statt auf Keycloak — mit derselben leeren Fehlerseite wie bei fehlender Config.
+statt auf Keycloak, mit derselben leeren Fehlerseite wie bei fehlender Config.
 
 Deshalb: `BASE_URL` als **Build-Arg** (im Dockerfile als `ARG` mit Default hinterlegt),
 alle übrigen Werte als normale Laufzeit-Env.
 
-Die gehostete Keycloak läuft auf 17+ und hat **kein** `/auth`-Pfadpräfix — anders als der
+Die gehostete Keycloak läuft auf 17+ und hat **kein** `/auth`-Pfadpräfix, anders als der
 lokale Dev-Stack auf `:8282`:
 
 ```
@@ -40,9 +69,14 @@ NUXT_OIDC_PROVIDERS_KEYCLOAK_CLIENT_SECRET=<aus Keycloak, Credentials-Tab>
 NUXT_UMP_API_TARGET=<interne URL der UMP-API, Port 5003>
 ```
 
+`NUXT_UMP_API_TARGET` gilt nur fürs Frontend. Im Backend-Environment hat sie keine
+Wirkung, alles mit `NUXT_`-Präfix liest ausschließlich Nuxt.
+
 Prod:
 
 ```
+CONTAINER_NAME=ump-x-frontend
+APP_PORT=6000
 NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI=https://ump-x.urbanfuturescollective.org/auth/keycloak/callback
 NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI=https://ump-x.urbanfuturescollective.org
 ```
@@ -50,11 +84,22 @@ NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI=https://ump-x.urbanfuturescolle
 Staging:
 
 ```
+CONTAINER_NAME=staging-ump-x-frontend
+APP_PORT=6500
 NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI=https://ump-x-staging.urbanfuturescollective.org/auth/keycloak/callback
 NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI=https://ump-x-staging.urbanfuturescollective.org
 ```
 
-Session-/Token-Verschlüsselung — **pro Environment einmal erzeugen und festhalten**:
+`APP_PORT` steuert beides zugleich: worauf Nitro lauscht (`NITRO_PORT`) und was
+nach außen gemappt wird. Deshalb können die beiden nicht mehr auseinanderlaufen.
+
+**Wichtig für Staging:** Fehlen `CONTAINER_NAME` und `APP_PORT` dort, greifen die
+Defaults aus `docker-compose.yml`, und das sind die Prod-Werte. Staging liefe dann
+auf Port 6000 statt 6500 und wäre über seinen Proxy nicht erreichbar. Die Defaults
+sind bewusst so gewählt: Ein vergessener Eintrag trifft dann Staging, nicht
+Produktion.
+
+Session- und Token-Verschlüsselung, **pro Environment einmal erzeugen und festhalten**:
 
 ```
 NUXT_OIDC_SESSION_SECRET=<openssl rand -hex 24>       # min. 48 Zeichen
@@ -64,27 +109,27 @@ NUXT_OIDC_TOKEN_KEY=<openssl rand -base64 32>
 
 Sind diese drei nicht gesetzt, würfelt der Nitro-Plugin `provideDefaults` sie bei **jedem
 Containerstart neu** (mit Warnung im Log). Der Login funktioniert dann zwar, aber jeder
-Redeploy und jeder Neustart wirft alle angemeldeten Nutzer raus — und bei mehr als einer
+Redeploy und jeder Neustart wirft alle angemeldeten Nutzer raus, und bei mehr als einer
 Replica schlägt die Anmeldung sporadisch komplett fehl.
 
 ## Keycloak: `ump-client` (Rico)
 
 Am Client `ump-client` im Realm `UrbanModelPlatform` müssen beide Domains eingetragen sein.
 Stand 2026-07-20 zeigten die Redirect-URIs nur auf die UMP-API (`:5003`), nicht auf das
-Frontend — deshalb scheitert der Login auch nach korrekter App-Config noch bei Keycloak
+Frontend. Deshalb scheitert der Login auch nach korrekter App-Config noch bei Keycloak
 mit `Invalid parameter: redirect_uri`.
 
-Der bestehende Eintrag `/*` (relativ zur Root URL `http://localhost:5003`) bleibt stehen —
+Der bestehende Eintrag `/*` (relativ zur Root URL `http://localhost:5003`) bleibt stehen,
 den braucht die UMP-API. Ergänzt werden:
 
 - **Valid redirect URIs**
   - `https://ump-x.urbanfuturescollective.org/auth/keycloak/callback`
   - `https://ump-x-staging.urbanfuturescollective.org/auth/keycloak/callback`
-- **Valid post logout redirect URIs** — dort steht `+` („dieselben wie die Redirect-URIs").
+- **Valid post logout redirect URIs**: dort steht `+` („dieselben wie die Redirect-URIs").
   Das deckt unser Logout-Ziel nicht ab, weil das die nackte Domain ohne Pfad ist:
   - `https://ump-x.urbanfuturescollective.org/*`
   - `https://ump-x-staging.urbanfuturescollective.org/*`
-- **Web origins**: leer lassen. CORS wird nicht gebraucht — der Token-Austausch läuft
+- **Web origins**: leer lassen. CORS wird nicht gebraucht, der Token-Austausch läuft
   server-seitig (BFF), der Browser spricht nie direkt mit Keycloaks Token-Endpoint.
 
 ## TLS Staging
@@ -97,7 +142,7 @@ $ curl -sSv https://ump-x-staging.urbanfuturescollective.org/ -o /dev/null
 * subjectAltName does not match host name ump-x-staging.urbanfuturescollective.org
 ```
 
-Solange das so ist, blockt jeder Browser die Staging-Domain mit Zertifikatswarnung — und
+Solange das so ist, blockt jeder Browser die Staging-Domain mit Zertifikatswarnung, und
 ein OIDC-Flow über einen nicht vertrauenswürdigen Origin ist ohnehin nicht sinnvoll
 testbar. Zertifikat für die Staging-Domain ausstellen bzw. als SAN ergänzen.
 
