@@ -7,7 +7,8 @@ geändert werden — es listet automatisch, was der `/processes`-Endpunkt zurüc
 Ein Modell ist in UMP ein **eigener OGC-API-Processes-Server** (ein Container, der `/processes`
 exponiert — z. B. via pygeoapi). UMP registriert diesen Server und reicht seine Prozesse durch.
 
-Als durchgearbeitetes Beispiel dient die growbike-Einbindung (siehe Runbook-Verweis unten).
+Als durchgearbeitetes Beispiel dient die growbike-Einbindung, siehe
+[`runbook-growbike-als-modellserver.md`](./runbook-growbike-als-modellserver.md).
 
 ---
 
@@ -128,4 +129,5 @@ Ein neues Modell taucht also automatisch auf. **Zwei Ausnahmen**, bei denen doch
   nicht ein Neuerstellen des Containers. Dauerhaft: den Container mit `networks: [ump_dev]` in ein
   Compose aufnehmen.
 - **Voll durchgearbeitetes Beispiel:** die growbike-Einbindung (Netz, `providers.yaml`, Verifikation,
-  Stolpersteine) ist als Schritt-für-Schritt-Runbook dokumentiert — bei Bedarf dort nachschlagen.
+  Stolpersteine) steht in [`runbook-growbike-als-modellserver.md`](./runbook-growbike-als-modellserver.md).
+  Dort auch der aktuelle Stand auf dem Server: Die Datei fehlt dort und die API läuft deshalb nicht.
