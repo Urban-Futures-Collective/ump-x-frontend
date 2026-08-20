@@ -11,11 +11,19 @@ services:
         # ohne ihn übergibt Compose bei ungesetzter Variable einen LEEREN Build-Arg, und der
         # überschreibt den Default im Dockerfile.
         NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL: ${NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL:-https://auth.urbanfuturescollective.org/realms/UrbanModelPlatform}
-    # Laufzeit-Config (Client-Secret, Redirect-URIs, Session-Secrets, API-Ziel) kommt aus den
-    # Environment Settings des Service in Dokploy. Hier bewusst KEIN env_file: auf dem Server
-    # existiert keine .env-Datei, und Compose bricht dann mit "env file not found" ab, d.h. der
-    # Container startet gar nicht erst. Wer den Container lokal mit Config fahren will, legt
-    # eine (gitignorierte) docker-compose.override.yml mit env_file an.
+    # Laufzeit-Config: Client-Secret, Redirect-URIs, Session-Secrets, API-Ziel.
+    #
+    # Dokploy schreibt die Environment Settings des Service in eine .env im
+    # Projektverzeichnis. Compose zieht daraus aber nur Werte fuer Platzhalter wie
+    # ${APP_PORT} oben; in den Container gelangt davon nichts. Dafuer braucht es genau
+    # diesen env_file-Eintrag.
+    #
+    # required: false, weil die Datei nicht immer existiert (lokal, oder in Dokploy
+    # solange keine Variablen gesetzt sind). Ohne das bricht Compose mit "env file not
+    # found" ab und der Container startet gar nicht erst.
+    env_file:
+      - path: .env
+        required: false
     restart: unless-stopped
     # APP_PORT steuert beides zugleich: worauf Nitro lauscht und was gemappt wird. Genau
     # deshalb aus einer Variable, früher standen Lauschport (Dockerfile) und Mapping
