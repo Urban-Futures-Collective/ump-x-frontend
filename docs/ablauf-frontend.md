@@ -3,6 +3,8 @@
 Welche Wege ein Nutzer durch UMP-X nehmen kann, abhängig von Anmeldung und
 Rechten, und was davon gebaut ist.
 
+Englische Fassung: `frontend-flow.md`.
+
 Farben in allen Diagrammen:
 
 - **grün** gebaut und in Betrieb
