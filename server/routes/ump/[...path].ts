@@ -4,7 +4,19 @@ import { getUserSession } from 'nuxt-oidc-auth/runtime/server/utils/session.js'
 
 // Werden 1:1 vom Original-Request übernommen, außer diesen (host/connection sind
 // hop-by-hop bzw. request-spezifisch; content-length wird von fetch() neu berechnet).
-const SKIP_REQUEST_HEADERS = new Set(['host', 'connection', 'content-length'])
+//
+// cookie und authorization sind bewusst dabei: Das nuxt-oidc-auth-Session-Cookie hat
+// beim UMP-Backend nichts zu suchen, und NUXT_UMP_API_TARGET zeigt auf eine oeffentliche
+// Domain, der Request laeuft also nach aussen. Ein mitgeschicktes authorization wuerde
+// ausserdem nur dann ueberschrieben, wenn zufaellig eine Session existiert; den Bearer
+// setzen wir unten selbst aus der Session.
+const SKIP_REQUEST_HEADERS = new Set([
+  'host',
+  'connection',
+  'content-length',
+  'cookie',
+  'authorization',
+])
 // content-length/transfer-encoding/connection setzen wir über den gepufferten Body neu;
 // content-encoding passt nicht mehr, weil fetch() die Antwort bereits entpackt hat.
 const SKIP_RESPONSE_HEADERS = new Set(['content-length', 'transfer-encoding', 'connection', 'content-encoding'])
@@ -37,8 +49,14 @@ export default defineEventHandler(async (event) => {
 
   // Gepuffert statt gestreamt (statt proxyRequest()): auf ump-x-staging kam die
   // gestreamte/chunked Antwort hinter Traefik nie an — der Request landete stattdessen
-  // bei Nuxts eigenem 404-Fallback. Volles Puffern + expliziter Content-Length umgeht das,
-  // unabhängig von der genauen Ursache auf Traefik-Seite.
+  // bei Nuxts eigenem 404-Fallback. Volles Puffern umgeht das, unabhängig von der
+  // genauen Ursache auf Traefik-Seite. Die Content-Length ergänzt Nitro selbst, sobald
+  // wir einen Buffer zurückgeben; deshalb steht sie in SKIP_RESPONSE_HEADERS.
+  //
+  // Bewusste Abwägung: Die Antwort liegt dabei vollständig im Speicher, bevor sie
+  // rausgeht. Für Prozesslisten unkritisch, bei großen GeoJSON-Ergebnissen relevant —
+  // der Server ist knapp bei RAM. Falls das je zum Problem wird, muss die Ursache auf
+  // Traefik-Seite gesucht werden, statt hier größer zu puffern.
   const upstream = await fetch(target, { method, headers, body })
   const buffer = Buffer.from(await upstream.arrayBuffer())
 
