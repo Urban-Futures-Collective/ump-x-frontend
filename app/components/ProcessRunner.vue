@@ -6,7 +6,7 @@ const emit = defineEmits<{ result: [FeatureCollection | null] }>()
 
 const { t } = useI18n()
 const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
-const { run, status, progress, error, result, running } = useUmpRun()
+const { run, jobId, status, progress, error, result, running } = useUmpRun()
 
 const form = ref<Record<string, string>>({})
 
@@ -21,17 +21,6 @@ watch(proc, (p) => {
 
 // Ergebnis nach außen (an die Karte) reichen.
 watch(result, r => emit('result', r))
-
-const statusColor = computed(() => {
-  switch (status.value) {
-    case 'successful': return 'success'
-    case 'failed':
-    case 'dismissed': return 'error'
-    case 'running':
-    case 'accepted': return 'info'
-    default: return 'neutral'
-  }
-})
 
 async function onSubmit() {
   const inputs: Record<string, unknown> = {}
@@ -87,9 +76,15 @@ async function onSubmit() {
         <UButton type="submit" :loading="running" :disabled="loadingProc" icon="i-lucide-play">
           {{ t('run.execute') }}
         </UButton>
-        <UBadge v-if="status !== 'idle'" :color="statusColor" variant="subtle">
-          {{ t(`run.status.${status}`) }}<span v-if="running && progress"> · {{ progress }}%</span>
-        </UBadge>
+        <JobStatusBadge v-if="status !== 'idle'" :status="status" :progress="progress" />
+        <!-- Anschluss nach dem Start: der Lauf ist auch nach einem Reload wiederzufinden. -->
+        <ULink
+          v-if="jobId"
+          :to="`/jobs/${jobId}`"
+          class="text-sm text-(--ui-text-muted) hover:text-(--ui-text)"
+        >
+          {{ t('run.openJob') }}
+        </ULink>
       </div>
 
       <p v-if="error" class="text-sm text-red-600 dark:text-red-400">
