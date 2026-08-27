@@ -28,7 +28,7 @@ const { data: processes, pending, error, refresh } = useUmpProcesses()
     <p v-if="!loggedIn" class="text-sm text-(--ui-text-muted)">
       {{ t('processes.anonymousHint') }}
     </p>
-    <p v-if="error" class="text-sm text-red-600 dark:text-red-400">
+    <p v-if="error" class="text-sm text-red-600">
       {{ t('processes.error') }}
     </p>
 

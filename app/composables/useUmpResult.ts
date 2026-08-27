@@ -6,9 +6,14 @@ import type { ResultLayer } from '~/types/ump'
 // statt inline-GeoJSON kommen (siehe docs/frontend-backend-architecture.md).
 export function useUmpResult() {
   const { base } = useUmpBase()
+  // useRequestFetch statt $fetch: beim Server-Rendern werden so die Cookies des
+  // eingehenden Requests weitergereicht. Ohne sie sieht der Proxy keine Session,
+  // hängt keinen Bearer an, und die API antwortet mit „nicht gefunden".
+  // Im Browser ist das identisch zu $fetch.
+  const request = useRequestFetch()
 
   async function fetchResult(jobId: string, processId: string): Promise<ResultLayer> {
-    const fc = await $fetch<FeatureCollection>(`${base}/jobs/${jobId}/results`, {
+    const fc = await request<FeatureCollection>(`${base}/jobs/${jobId}/results`, {
       query: { f: 'json' },
     })
     return { jobId, processId, featureCollection: fc }

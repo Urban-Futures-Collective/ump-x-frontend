@@ -1,7 +1,6 @@
 import type { Job, JobStatus } from '~/types/ump'
 
 interface ExecuteResponse { jobID: string, status: JobStatus }
-interface JobResponse { jobID: string, status: JobStatus, processID: string, progress?: number }
 
 // Execution-Pfad: Prozess ausführen (async) + Job-Status abfragen.
 // UMP gibt bei /execution immer { jobID, status } zurück (auch sync); das Ergebnis
@@ -18,9 +17,10 @@ export function useUmpExecute() {
     return res.jobID
   }
 
+  // Mapping bewusst geliehen statt wiederholt: die Feldnamen der API stehen
+  // ausschließlich in useUmpJobs.
   async function getJob(jobId: string): Promise<Job> {
-    const r = await $fetch<JobResponse>(`${base}/jobs/${jobId}`, { query: { f: 'json' } })
-    return { id: r.jobID, processId: r.processID, status: r.status, progress: r.progress ?? 0 }
+    return toJob(await $fetch(`${base}/jobs/${jobId}`, { query: { f: 'json' } }))
   }
 
   return { execute, getJob }

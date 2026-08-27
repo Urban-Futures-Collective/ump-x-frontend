@@ -2,9 +2,6 @@
   "app": {
     "title": "UMP-X"
   },
-  "colorMode": {
-    "toggle": "Hell/Dunkel umschalten"
-  },
   "common": {
     "comingSoon": "Diese Ansicht kommt bald."
   },
@@ -12,13 +9,24 @@
     "models": "Modelle",
     "run": "Neues Szenario",
     "jobs": "Meine Szenarien",
-    "admin": "Administration"
+    "admin": "Administration",
+    "home": "Start",
+    "planned": {
+      "heading": "In Vorbereitung",
+      "projects": "Projekte",
+      "contribute": "Beitragen",
+      "data": "Datenablage",
+      "report": "Bericht",
+      "ask": "Ask MCP",
+      "readme": "Anleitung"
+    }
   },
   "landing": {
     "heading": "Urban Model Platform",
     "subtitle": "Modelle ansehen, Szenarien berechnen und Ergebnisse auf der Karte erkunden. Melde dich an, um deine Modelle und Szenarien zu sehen.",
     "browsePublic": "Modelle ansehen",
-    "publicHint": "Ohne Anmeldung siehst du nur öffentlich verfügbare Modelle!"
+    "publicHint": "Ohne Anmeldung siehst du nur öffentlich verfügbare Modelle!",
+    "or": "oder"
   },
   "auth": {
     "login": "Anmelden",
@@ -26,7 +34,28 @@
     "loggedInAs": "Angemeldet als {name}"
   },
   "jobs": {
-    "title": "Meine Szenarien"
+    "title": "Meine Szenarien",
+    "refresh": "Aktualisieren",
+    "empty": "Noch keine Läufe. Starte ein Szenario, dann findest du es hier wieder.",
+    "error": "Die Läufe konnten nicht geladen werden. Antwortet die UMP-API?",
+    "notFound": "Dieser Lauf existiert nicht oder gehört zu einem anderen Konto.",
+    "created": "Gestartet",
+    "finished": "Beendet",
+    "duration": "Dauer",
+    "runAgain": "Erneut ausführen",
+    "cacheHint": "Ein identisches Szenario liefert denselben Lauf zurück, auch mit altem Ergebnis. Für einen neuen Lauf müssen die Eingaben abweichen.",
+    "resultLoading": "Ergebnis wird geladen …",
+    "resultError": "Das Ergebnis konnte nicht geladen werden.",
+    "noResult": "Für diesen Lauf gibt es kein Ergebnis.",
+    "updated": "Aktualisiert",
+    "status": {
+      "idle": "bereit",
+      "accepted": "angenommen",
+      "running": "läuft",
+      "successful": "erfolgreich",
+      "failed": "fehlgeschlagen",
+      "dismissed": "abgebrochen"
+    }
   },
   "admin": {
     "title": "Administration"
@@ -43,13 +72,6 @@
     "allModels": "Alle Modelle",
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
-    "status": {
-      "idle": "bereit",
-      "accepted": "angenommen",
-      "running": "läuft",
-      "successful": "erfolgreich",
-      "failed": "fehlgeschlagen",
-      "dismissed": "abgebrochen"
-    }
+    "openJob": "Lauf öffnen"
   }
 }
