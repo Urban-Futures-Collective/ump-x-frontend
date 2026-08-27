@@ -7,12 +7,7 @@ const { t, locale } = useI18n()
 const route = useRoute()
 const jobId = computed(() => String(route.params.id))
 
-const { job, pending, error, refresh, result, resultPending, resultError, loadResult }
-  = useUmpJob(jobId)
-
-// Ergebnis erst holen, wenn der Lauf tatsächlich erfolgreich war — bei einem
-// gescheiterten antwortet /results mit 404 („Job failed").
-watch(job, () => loadResult(), { immediate: true })
+const { job, result, resultError, pending, error, refresh } = useUmpJob(jobId)
 
 const duration = computed(() => formatDuration(job.value?.created, job.value?.finished))
 </script>
@@ -100,10 +95,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
         </p>
       </div>
 
-      <p v-if="resultPending" class="text-sm text-(--ui-text-muted)">
-        {{ t('jobs.resultLoading') }}
-      </p>
-      <p v-else-if="resultError" class="text-sm text-red-600 dark:text-red-400">
+      <p v-if="resultError" class="text-sm text-red-600 dark:text-red-400">
         {{ t('jobs.resultError') }}
       </p>
       <p v-else-if="job.status !== 'successful'" class="text-sm text-(--ui-text-muted)">
