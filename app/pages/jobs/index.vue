@@ -28,7 +28,7 @@ const { data: jobs, pending, error, refresh } = useUmpJobs()
 
     <!-- Fehlerzustand vor dem Leerzustand: „API antwortet nicht" darf nie wie
          „keine Läufe" aussehen. -->
-    <p v-if="error" class="text-sm text-red-600 dark:text-red-400">
+    <p v-if="error" class="text-sm text-red-600">
       {{ t('jobs.error') }}
     </p>
 

@@ -87,7 +87,7 @@ async function onSubmit() {
         </ULink>
       </div>
 
-      <p v-if="error" class="text-sm text-red-600 dark:text-red-400">
+      <p v-if="error" class="text-sm text-red-600">
         {{ t('run.error', { msg: error }) }}
       </p>
     </form>

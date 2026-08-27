@@ -2,9 +2,6 @@
   "app": {
     "title": "UMP-X"
   },
-  "colorMode": {
-    "toggle": "Toggle light/dark"
-  },
   "common": {
     "comingSoon": "This view is coming soon."
   },
@@ -12,13 +9,24 @@
     "models": "Models",
     "run": "New scenario",
     "jobs": "My scenarios",
-    "admin": "Administration"
+    "admin": "Administration",
+    "home": "Home",
+    "planned": {
+      "heading": "Planned",
+      "projects": "Projects",
+      "contribute": "Contribute",
+      "data": "Data repository",
+      "report": "Report",
+      "ask": "Ask MCP",
+      "readme": "Read me"
+    }
   },
   "landing": {
     "heading": "Urban Model Platform",
     "subtitle": "Browse models, run scenarios & explore results on the map. Sign in to see your models and scenarios.",
     "browsePublic": "Browse models",
-    "publicHint": "Without signing in you only see publicly available models!"
+    "publicHint": "Without signing in you only see publicly available models!",
+    "or": "or"
   },
   "auth": {
     "login": "Sign in",
