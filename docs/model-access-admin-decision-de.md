@@ -2,7 +2,7 @@
 
 **Status:** Zur Diskussion
 **Datum:** 2026-07-09
-**Kontext:** UMP-X (Nuxt-4-Frontend für die Urban Model Platform). Begleitdokument zu `frontend-backend-architecture.md`. Diese Vorlage behandelt nur die Teile des geplanten Frontends, die über die Frontend-Grenze hinausreichen und deshalb eine gemeinsame Entscheidung brauchen. Die drei User-Views brauchen das nicht — sie laufen gegen den bestehenden OGC-API-Vertrag und lassen sich unabhängig bauen.
+**Kontext:** UMP-X (Nuxt-4-Frontend für die Urban Model Platform). Begleitdokument zu `frontend-backend-architecture-de.md`. Diese Vorlage behandelt nur die Teile des geplanten Frontends, die über die Frontend-Grenze hinausreichen und deshalb eine gemeinsame Entscheidung brauchen. Die drei User-Views brauchen das nicht — sie laufen gegen den bestehenden OGC-API-Vertrag und lassen sich unabhängig bauen.
 
 ---
 

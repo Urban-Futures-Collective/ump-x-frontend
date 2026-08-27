@@ -3,7 +3,7 @@
 Which paths a user can take through UMP-X, depending on sign-in and roles, and
 how much of it is built.
 
-German version: `ablauf-frontend.md`.
+German version: `frontend-flow-de.md`.
 
 Colours throughout:
 
@@ -168,6 +168,6 @@ model catalogue behind it.
 
 ## Related
 
-- `neues-modell-hinzufuegen.md`, which places a new model touches technically
-- `runbook-growbike-als-modellserver.md`, model servers and roles
-- `deployment.md`, branch chain and environments
+- `add-new-model-de.md`, which places a new model touches technically
+- `runbook-growbike-modelserver-de.md`, model servers and roles
+- `deployment-de.md`, branch chain and environments

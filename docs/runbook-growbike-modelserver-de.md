@@ -123,5 +123,5 @@ eben nur bis zum nächsten Deploy. Dauerhaft gehört das in die Compose-Konfigur
 
 ## Verwandtes
 
-- `docs/neues-modell-hinzufuegen.md`, Übersicht welche Stellen ein neues Modell berührt
-- `docs/deployment.md`, Branch-Kette, Environment-Variablen, Smoke-Tests
+- `docs/add-new-model-de.md`, Übersicht welche Stellen ein neues Modell berührt
+- `docs/deployment-de.md`, Branch-Kette, Environment-Variablen, Smoke-Tests

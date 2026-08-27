@@ -3,7 +3,7 @@
 Welche Wege ein Nutzer durch UMP-X nehmen kann, abhängig von Anmeldung und
 Rechten, und was davon gebaut ist.
 
-Englische Fassung: `frontend-flow.md`.
+Englische Fassung: `frontend-flow-en.md`.
 
 Farben in allen Diagrammen:
 
@@ -169,6 +169,6 @@ Modellkatalog dahinter.
 
 ## Verwandtes
 
-- `neues-modell-hinzufuegen.md`, welche Stellen ein neues Modell technisch berührt
-- `runbook-growbike-als-modellserver.md`, Modellserver und Rollen
-- `deployment.md`, Branch-Kette und Umgebungen
+- `add-new-model-de.md`, welche Stellen ein neues Modell technisch berührt
+- `runbook-growbike-modelserver-de.md`, Modellserver und Rollen
+- `deployment-de.md`, Branch-Kette und Umgebungen

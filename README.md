@@ -33,5 +33,5 @@ rules are configured accordingly.
 
 The frontend is fully decoupled from the backend and will communicate solely over
 HTTP (OGC API Processes). The integration layer follows in a dedicated sprint once
-the backend contract is settled — see `docs/frontend-backend-architecture.md` for
+the backend contract is settled — see `docs/frontend-backend-architecture-de.md` for
 background.
