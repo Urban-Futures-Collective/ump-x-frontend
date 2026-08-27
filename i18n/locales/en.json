@@ -26,7 +26,27 @@
     "loggedInAs": "Signed in as {name}"
   },
   "jobs": {
-    "title": "My scenarios"
+    "title": "My scenarios",
+    "refresh": "Refresh",
+    "empty": "No runs yet. Start a scenario and you will find it here.",
+    "error": "The runs could not be loaded. Is the UMP API responding?",
+    "notFound": "This run does not exist or belongs to another account.",
+    "created": "Started",
+    "finished": "Finished",
+    "duration": "Duration",
+    "runAgain": "Run again",
+    "cacheHint": "An identical scenario returns the same run, including its earlier result. A new run needs different inputs.",
+    "resultLoading": "Loading result …",
+    "resultError": "The result could not be loaded.",
+    "noResult": "There is no result for this run.",
+    "status": {
+      "idle": "ready",
+      "accepted": "accepted",
+      "running": "running",
+      "successful": "successful",
+      "failed": "failed",
+      "dismissed": "dismissed"
+    }
   },
   "admin": {
     "title": "Administration"
@@ -43,13 +63,6 @@
     "allModels": "All models",
     "execute": "Run",
     "error": "Error: {msg}",
-    "status": {
-      "idle": "ready",
-      "accepted": "accepted",
-      "running": "running",
-      "successful": "successful",
-      "failed": "failed",
-      "dismissed": "dismissed"
-    }
+    "openJob": "Open run"
   }
 }

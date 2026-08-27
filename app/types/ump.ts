@@ -30,6 +30,13 @@ export interface Job {
   processId: string
   status: JobStatus
   progress: number
+  // Ab hier optional: beim Ausführen liefert UMP nur id/status, die Job-Liste
+  // dagegen den vollen Satz. Siehe useUmpJobs.
+  message?: string
+  // ISO-Zeitstempel. `started` liefert die API zwar mit, es blieb im Test aber
+  // auch bei gelaufenen Jobs null — deshalb hier bewusst nicht übernommen.
+  created?: string
+  finished?: string
 }
 
 // Ergebnis der „Naht 2": Job-Ergebnis → kartenfertiges Layer.
