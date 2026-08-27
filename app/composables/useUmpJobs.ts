@@ -10,6 +10,7 @@ interface OgcJob {
   message?: string
   created?: string
   finished?: string
+  updated?: string
 }
 interface OgcJobList {
   jobs?: OgcJob[]
@@ -27,7 +28,15 @@ export function toJob(r: OgcJob): Job {
     message: r.message,
     created: r.created,
     finished: r.finished,
+    updated: r.updated,
   }
+}
+
+// Der Zeitpunkt, den ein Lauf in Liste und Sortierung bekommt. `created` wäre die
+// richtige Angabe, ist aber nicht überall gefüllt (lokale UMP-Instanz liefert
+// created/started/finished durchgängig null); `updated` ist immer da.
+export function jobTime(job: Job): string | undefined {
+  return job.created ?? job.updated
 }
 
 // Liste der eigenen Läufe. Welche Jobs zurückkommen, entscheidet die API anhand
@@ -41,7 +50,7 @@ export function useUmpJobs() {
     transform: (raw): Job[] =>
       (raw?.jobs ?? [])
         .map(toJob)
-        // Neueste zuerst. `created` ist verlässlich, `started` nicht (bleibt null).
-        .sort((a, b) => (b.created ?? '').localeCompare(a.created ?? '')),
+        // Neueste zuerst, über denselben Zeitpunkt, den die Liste auch anzeigt.
+        .sort((a, b) => (jobTime(b) ?? '').localeCompare(jobTime(a) ?? '')),
   })
 }

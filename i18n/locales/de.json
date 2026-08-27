@@ -39,6 +39,7 @@
     "resultLoading": "Ergebnis wird geladen …",
     "resultError": "Das Ergebnis konnte nicht geladen werden.",
     "noResult": "Für diesen Lauf gibt es kein Ergebnis.",
+    "updated": "Aktualisiert",
     "status": {
       "idle": "bereit",
       "accepted": "angenommen",

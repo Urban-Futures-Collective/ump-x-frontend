@@ -54,21 +54,31 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           <JobStatusBadge :status="job.status" :progress="job.progress" />
         </div>
 
+        <!-- Zeilen nur zeigen, wenn die API den Wert auch liefert: created und
+             finished bleiben je nach Instanz leer, updated ist immer gesetzt. -->
         <dl class="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
-          <dt class="text-(--ui-text-muted)">
-            {{ t('jobs.created') }}
-          </dt>
-          <dd>{{ formatDateTime(job.created, locale) }}</dd>
-          <dt class="text-(--ui-text-muted)">
-            {{ t('jobs.finished') }}
-          </dt>
-          <dd>{{ formatDateTime(job.finished, locale) }}</dd>
+          <template v-if="job.created">
+            <dt class="text-(--ui-text-muted)">
+              {{ t('jobs.created') }}
+            </dt>
+            <dd>{{ formatDateTime(job.created, locale) }}</dd>
+          </template>
+          <template v-if="job.finished">
+            <dt class="text-(--ui-text-muted)">
+              {{ t('jobs.finished') }}
+            </dt>
+            <dd>{{ formatDateTime(job.finished, locale) }}</dd>
+          </template>
           <template v-if="duration">
             <dt class="text-(--ui-text-muted)">
               {{ t('jobs.duration') }}
             </dt>
             <dd>{{ duration }}</dd>
           </template>
+          <dt class="text-(--ui-text-muted)">
+            {{ t('jobs.updated') }}
+          </dt>
+          <dd>{{ formatDateTime(job.updated, locale) }}</dd>
         </dl>
 
         <p v-if="job.message" class="rounded-md bg-(--ui-bg-elevated) px-3 py-2 text-sm text-(--ui-text-muted)">
