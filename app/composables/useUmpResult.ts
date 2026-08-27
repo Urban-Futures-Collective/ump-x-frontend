@@ -3,7 +3,7 @@ import type { ResultLayer } from '~/types/ump'
 
 // NAHT 2 (die wichtige): „Job-Ergebnis → kartenfertiges Layer" in genau einem Modul.
 // Hier landet später die Umstellung, falls Ergebnisse als OGC API Features oder WFS/WMS
-// statt inline-GeoJSON kommen (siehe docs/frontend-backend-architecture.md).
+// statt inline-GeoJSON kommen (siehe docs/frontend-backend-architecture-de.md).
 export function useUmpResult() {
   const { base } = useUmpBase()
   // useRequestFetch statt $fetch: beim Server-Rendern werden so die Cookies des

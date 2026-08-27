@@ -36,7 +36,7 @@ export default defineNuxtConfig({
 
   // Backend-Anbindung: server-seitiger Proxy /ump/** → UMP-API. Base zentral, per Env
   // überschreibbar. Der Proxy (server/routes/ump/[...].ts) hängt den Bearer-Token aus der
-  // OIDC-Session an. Siehe docs/frontend-backend-architecture.md (die zwei Nähte).
+  // OIDC-Session an. Siehe docs/frontend-backend-architecture-de.md (die zwei Nähte).
   runtimeConfig: {
     // Ziel des Proxys (server-only). Prod: per NUXT_UMP_API_TARGET überschreiben.
     umpApiTarget: 'http://localhost:5003',

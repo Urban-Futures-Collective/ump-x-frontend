@@ -5,7 +5,7 @@ import { getUserSession } from 'nuxt-oidc-auth/runtime/server/utils/session.js'
 // Authentifizierter Proxy /ump/** → UMP-API. Injiziert den Access-Token aus der
 // OIDC-Session als Bearer (nur wenn eingeloggt → anonymer Read-Modus bleibt möglich).
 // Dies ist die eine Naht, an der wir später von localhost:5003 auf Ricos Backend
-// umstecken (nur NUXT_UMP_API_TARGET tauschen). Siehe docs/frontend-backend-architecture.md.
+// umstecken (nur NUXT_UMP_API_TARGET tauschen). Siehe docs/frontend-backend-architecture-de.md.
 export default defineEventHandler(async (event) => {
   const { umpApiTarget } = useRuntimeConfig(event)
 

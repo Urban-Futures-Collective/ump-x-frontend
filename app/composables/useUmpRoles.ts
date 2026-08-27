@@ -11,7 +11,7 @@
 //                     (nuxt.config: optionalClaims = ['realm_access','resource_access'])
 // Wir lesen aus BEIDEN und vereinigen — robust, egal welches Ziel der Mapper hat.
 // Voraussetzung fürs Admin-Gate: `ump-client` mappt ump_admin in ID-Token/Userinfo
-// (Rico, umgesetzt 2026-07-20; end-to-end verifiziert). Siehe docs/model-access-admin-decision.md.
+// (Rico, umgesetzt 2026-07-20; end-to-end verifiziert). Siehe docs/model-access-admin-decision-de.md.
 
 const UMP_CLIENT = 'ump-client'
 const ADMIN_ROLE = 'ump_admin'
