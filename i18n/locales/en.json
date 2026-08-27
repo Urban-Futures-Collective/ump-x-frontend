@@ -2,9 +2,6 @@
   "app": {
     "title": "UMP-X"
   },
-  "colorMode": {
-    "toggle": "Toggle light/dark"
-  },
   "common": {
     "comingSoon": "This view is coming soon."
   },

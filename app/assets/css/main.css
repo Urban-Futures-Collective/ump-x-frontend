@@ -1,3 +1,162 @@
 /* Reihenfolge ist zwingend: tailwindcss MUSS vor @nuxt/ui importiert werden. */
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+/* Poppins liegt unter app/assets/fonts/ im Projekt und wird von der eigenen
+   Domain ausgeliefert. Bewusst NICHT über Google Fonts oder @nuxt/fonts: beim
+   Aufruf der Seite soll keine Verbindung zu einem fremden Host entstehen, und
+   ein Bau ohne Netzwerkzugang muss durchlaufen. Poppins steht unter der SIL
+   Open Font License, die Lizenzdatei liegt daneben (app/assets/fonts/OFL.txt).
+
+   Vier Schnitte, je latin und latin-ext, zusammen rund 64 KB. Die
+   unicode-range-Angaben stammen aus Googles eigener Auslieferung: der Browser
+   lädt latin-ext nur, wenn ein Zeichen daraus wirklich vorkommt.
+   font-display: swap, damit Text sofort erscheint und nicht erst nach dem
+   Laden der Schrift. */
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/poppins-400-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/poppins-400-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/poppins-500-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/poppins-500-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/poppins-600-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/poppins-600-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/poppins-700-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/poppins-700-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Tailwind v4 und Nuxt UI führen Schrift und Farben über CSS-Variablen, es gibt
+   keine tailwind.config mehr. --font-sans setzt die Schrift damit überall dort,
+   wo font-sans greift, also im gesamten Grundtext. */
+/* `static` ist hier zwingend: ohne das gibt Tailwind v4 nur die Variablen aus,
+   die im Markup woertlich auftauchen. Nuxt UI loest die Farbrollen aus
+   app.config.ts aber erst zur Laufzeit auf, findet die Skala dann nicht und
+   faellt still auf die Standardfarben zurueck. */
+@theme static {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* ufc-blue: Aktionen, Continue-Knopf. Anker #00649d auf Stufe 600. */
+  --color-ufc-blue-50: oklch(0.945 0.0156 244.05);
+  --color-ufc-blue-100: oklch(0.902 0.0287 244.05);
+  --color-ufc-blue-200: oklch(0.842 0.0539 244.05);
+  --color-ufc-blue-300: oklch(0.777 0.0814 244.05);
+  --color-ufc-blue-400: oklch(0.687 0.1053 244.05);
+  --color-ufc-blue-500: oklch(0.579 0.1173 244.05);
+  --color-ufc-blue-600: oklch(0.485 0.1197 244.05);
+  --color-ufc-blue-700: oklch(0.413 0.1149 244.05);
+  --color-ufc-blue-800: oklch(0.349 0.1053 244.05);
+  --color-ufc-blue-900: oklch(0.301 0.0957 244.05);
+  --color-ufc-blue-950: oklch(0.202 0.0742 244.05);
+
+  /* ufc-teal: Petrol/Gruen. Anker #3b7981 auf Stufe 600. */
+  --color-ufc-teal-50: oklch(0.963 0.0084 206.53);
+  --color-ufc-teal-100: oklch(0.926 0.0156 206.53);
+  --color-ufc-teal-200: oklch(0.873 0.0292 206.53);
+  --color-ufc-teal-300: oklch(0.813 0.0441 206.53);
+  --color-ufc-teal-400: oklch(0.729 0.0571 206.53);
+  --color-ufc-teal-500: oklch(0.627 0.0636 206.53);
+  --color-ufc-teal-600: oklch(0.538 0.0649 206.53);
+  --color-ufc-teal-700: oklch(0.461 0.0623 206.53);
+  --color-ufc-teal-800: oklch(0.391 0.0571 206.53);
+  --color-ufc-teal-900: oklch(0.337 0.0519 206.53);
+  --color-ufc-teal-950: oklch(0.233 0.0402 206.53);
+
+  /* ufc-gold: Gold. Anker #c1952d auf Stufe 600. */
+  --color-ufc-gold-50: oklch(0.985 0.0165 84.42);
+  --color-ufc-gold-100: oklch(0.985 0.0305 84.42);
+  --color-ufc-gold-200: oklch(0.961 0.0572 84.42);
+  --color-ufc-gold-300: oklch(0.918 0.0864 84.42);
+  --color-ufc-gold-400: oklch(0.851 0.1118 84.42);
+  --color-ufc-gold-500: oklch(0.765 0.1245 84.42);
+  --color-ufc-gold-600: oklch(0.694 0.1270 84.42);
+  --color-ufc-gold-700: oklch(0.599 0.1219 84.42);
+  --color-ufc-gold-800: oklch(0.513 0.1118 84.42);
+  --color-ufc-gold-900: oklch(0.442 0.1016 84.42);
+  --color-ufc-gold-950: oklch(0.321 0.0787 84.42);
+
+  /* ufc-plum: Violett/Rose. Anker #7a4b66 auf Stufe 600. */
+  --color-ufc-plum-50: oklch(0.941 0.0096 344.84);
+  --color-ufc-plum-100: oklch(0.897 0.0177 344.84);
+  --color-ufc-plum-200: oklch(0.837 0.0332 344.84);
+  --color-ufc-plum-300: oklch(0.771 0.0502 344.84);
+  --color-ufc-plum-400: oklch(0.680 0.0650 344.84);
+  --color-ufc-plum-500: oklch(0.571 0.0723 344.84);
+  --color-ufc-plum-600: oklch(0.476 0.0738 344.84);
+  --color-ufc-plum-700: oklch(0.405 0.0709 344.84);
+  --color-ufc-plum-800: oklch(0.342 0.0650 344.84);
+  --color-ufc-plum-900: oklch(0.295 0.0591 344.84);
+  --color-ufc-plum-950: oklch(0.197 0.0458 344.84);
+
+  /* ufc-slate: Kopfzeile/Text, entsaettigt als Grundgrau. Anker #242b42 auf Stufe 900. */
+  --color-ufc-slate-50: oklch(0.951 0.0017 270.62);
+  --color-ufc-slate-100: oklch(0.911 0.0031 270.62);
+  --color-ufc-slate-200: oklch(0.856 0.0058 270.62);
+  --color-ufc-slate-300: oklch(0.795 0.0088 270.62);
+  --color-ufc-slate-400: oklch(0.709 0.0114 270.62);
+  --color-ufc-slate-500: oklch(0.605 0.0127 270.62);
+  --color-ufc-slate-600: oklch(0.514 0.0130 270.62);
+  --color-ufc-slate-700: oklch(0.430 0.0125 270.62);
+  --color-ufc-slate-800: oklch(0.354 0.0114 270.62);
+  --color-ufc-slate-900: oklch(0.294 0.0104 270.62);
+  --color-ufc-slate-950: oklch(0.191 0.0080 270.62);
+}

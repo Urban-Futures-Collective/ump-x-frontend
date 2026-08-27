@@ -8,6 +8,20 @@ export default defineNuxtConfig({
   // Tailwind v4 + Nuxt UI imports leben in dieser Datei (Reihenfolge: tailwindcss vor @nuxt/ui).
   css: ['~/assets/css/main.css'],
 
+  // Vorerst nur der helle Modus. Der Umschalter ist raus, bis die Gestaltung
+  // steht; ohne diese Festlegung würde die Seite der Systemeinstellung des
+  // Besuchers folgen und bei manchen dunkel erscheinen.
+  //
+  // Der geänderte storageKey ist Absicht und nicht kosmetisch: Wer den alten
+  // Umschalter je auf dunkel gestellt hat, trägt das im Browser gespeichert mit
+  // sich herum, und eine gespeicherte Einstellung schlägt die Voreinstellung.
+  // Unter neuem Schlüssel gibt es nichts Gespeichertes, also greift 'light'.
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    storageKey: 'ump-x-color-mode',
+  },
+
   // Backend-Anbindung: server-seitiger Proxy /ump/** → UMP-API. Base zentral, per Env
   // überschreibbar. Der Proxy (server/routes/ump/[...].ts) hängt den Bearer-Token aus der
   // OIDC-Session an. Siehe docs/frontend-backend-architecture.md (die zwei Nähte).

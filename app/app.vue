@@ -2,7 +2,6 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const { t, locale, locales, setLocale } = useI18n()
-const colorMode = useColorMode()
 const { loggedIn, user, login, logout } = useOidcAuth()
 const { isAdmin } = useUmpRoles()
 
@@ -25,10 +24,6 @@ const navItems = computed<NavigationMenuItem[]>(() => {
   }
   return items
 })
-
-function toggleColorMode() {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-}
 </script>
 
 <template>
@@ -84,19 +79,6 @@ function toggleColorMode() {
           </UButton>
         </div>
 
-        <!-- Color-Mode-Toggle -->
-        <ClientOnly>
-          <UButton
-            :icon="colorMode.value === 'dark' ? 'i-lucide-moon' : 'i-lucide-sun'"
-            :aria-label="t('colorMode.toggle')"
-            color="neutral"
-            variant="ghost"
-            @click="toggleColorMode"
-          />
-          <template #fallback>
-            <div class="size-8" />
-          </template>
-        </ClientOnly>
       </template>
     </UHeader>
 

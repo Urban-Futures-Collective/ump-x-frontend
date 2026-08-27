@@ -2,9 +2,6 @@
   "app": {
     "title": "UMP-X"
   },
-  "colorMode": {
-    "toggle": "Hell/Dunkel umschalten"
-  },
   "common": {
     "comingSoon": "Diese Ansicht kommt bald."
   },

@@ -31,7 +31,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
       </UButton>
     </div>
 
-    <p v-if="error" class="text-sm text-red-600 dark:text-red-400">
+    <p v-if="error" class="text-sm text-red-600">
       {{ t('jobs.notFound') }}
     </p>
 
@@ -95,7 +95,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
         </p>
       </div>
 
-      <p v-if="resultError" class="text-sm text-red-600 dark:text-red-400">
+      <p v-if="resultError" class="text-sm text-red-600">
         {{ t('jobs.resultError') }}
       </p>
       <p v-else-if="job.status !== 'successful'" class="text-sm text-(--ui-text-muted)">
