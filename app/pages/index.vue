@@ -17,9 +17,13 @@ if (loggedIn.value) {
 <template>
   <div class="space-y-6 text-center">
     <div class="space-y-3">
-      <span class="mx-auto grid size-12 place-items-center rounded-full bg-(--ui-primary) text-lg font-bold text-white">
-        U
-      </span>
+      <img
+        src="~/assets/images/logo.svg"
+        alt=""
+        class="mx-auto size-14"
+        width="56"
+        height="56"
+      >
       <h1 class="text-2xl font-semibold text-(--ui-text-highlighted)">
         {{ t('landing.heading') }}
       </h1>

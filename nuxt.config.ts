@@ -8,6 +8,18 @@ export default defineNuxtConfig({
   // Tailwind v4 + Nuxt UI imports leben in dieser Datei (Reihenfolge: tailwindcss vor @nuxt/ui).
   css: ['~/assets/css/main.css'],
 
+  // Favicon aus derselben Logodatei. SVG zuerst, PNG als Rückfallebene für
+  // Browser ohne SVG-Favicon und als Symbol auf dem iOS-Startbildschirm.
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      ],
+    },
+  },
+
   // Vorerst nur der helle Modus. Der Umschalter ist raus, bis die Gestaltung
   // steht; ohne diese Festlegung würde die Seite der Systemeinstellung des
   // Besuchers folgen und bei manchen dunkel erscheinen.

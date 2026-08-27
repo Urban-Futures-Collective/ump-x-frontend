@@ -63,11 +63,15 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
     >
       <template #header="{ collapsed }">
         <NuxtLink to="/" class="flex min-w-0 items-center gap-2">
-          <!-- Platzhalter, bis die Logodatei vorliegt. Bewusst kein erfundenes
-               Zeichen: lieber die Wortmarke als ein Logo, das später nicht stimmt. -->
-          <span class="grid size-7 shrink-0 place-items-center rounded-full bg-(--ui-primary) text-xs font-bold text-white">
-            U
-          </span>
+          <!-- Eingeklappt bleibt nur das Zeichen stehen, deshalb trägt es den
+               Alternativtext und die Wortmarke daneben ist rein dekorativ. -->
+          <img
+            src="~/assets/images/logo.svg"
+            :alt="t('app.title')"
+            class="size-7 shrink-0"
+            width="28"
+            height="28"
+          >
           <span v-if="!collapsed" class="truncate font-semibold">
             {{ t('app.title') }}
           </span>
