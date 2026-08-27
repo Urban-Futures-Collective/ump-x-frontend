@@ -9,13 +9,24 @@
     "models": "Modelle",
     "run": "Neues Szenario",
     "jobs": "Meine Szenarien",
-    "admin": "Administration"
+    "admin": "Administration",
+    "home": "Start",
+    "planned": {
+      "heading": "In Vorbereitung",
+      "projects": "Projekte",
+      "contribute": "Beitragen",
+      "data": "Datenablage",
+      "report": "Bericht",
+      "ask": "Ask MCP",
+      "readme": "Anleitung"
+    }
   },
   "landing": {
     "heading": "Urban Model Platform",
     "subtitle": "Modelle ansehen, Szenarien berechnen und Ergebnisse auf der Karte erkunden. Melde dich an, um deine Modelle und Szenarien zu sehen.",
     "browsePublic": "Modelle ansehen",
-    "publicHint": "Ohne Anmeldung siehst du nur öffentlich verfügbare Modelle!"
+    "publicHint": "Ohne Anmeldung siehst du nur öffentlich verfügbare Modelle!",
+    "or": "oder"
   },
   "auth": {
     "login": "Anmelden",
