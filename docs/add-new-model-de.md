@@ -56,7 +56,16 @@ deinmodell:
 | Wert | Bedeutung | Frontend-Aufwand |
 |---|---|---|
 | `remote` | Ergebnis wird inline als **GeoJSON** geliefert (FeatureCollection) | keiner — läuft out-of-the-box |
-| `geoserver` | Ergebnis wird über **GeoServer** als WMS/WFS-Layer publiziert | Ergebnis-Rendering im Frontend nötig (s. u.) |
+| `geoserver` | War in 2.x: Ergebnis wird über **GeoServer** als WMS/WFS-Layer publiziert. In UMP 3.0.0 **wirkungslos**, siehe Hinweis unter der Tabelle | derzeit keiner |
+
+> **Zu `result-storage` in UMP 3.0.0.** Der Wert wird aus der `providers.yaml` gelesen und
+> getypt, danach aber nirgends benutzt: `job_manager` nimmt einen `result_storage_port`
+> entgegen, legt ihn auf ein Feld und fasst ihn nie wieder an, und einen GeoServer-Adapter
+> gibt es im `deploy`-Branch nicht. `/v1.0/jobs/{id}/results` reicht stattdessen die
+> Antwort des Modellservers unverändert durch, ausdrücklich ohne den Rumpf zu lesen. Was
+> auf unserer Karte ankommt, hängt also am Modellserver, nicht an diesem Flag. Geprüft am
+> 2026-08-31; nicht gemessen, weil noch kein Lauf gegen einen `geoserver`-Provider
+> vorlag.
 
 **`anonymous-access`:** Das Flag regelt seit UMP 3.0.0 nur noch das **Ausführen**,
 nicht mehr die Sichtbarkeit.
@@ -106,8 +115,10 @@ Zwei Fallstricke:
 - **Aus welchem Claim UMP die Rollen liest, steht in `UMP_JWT_ROLES_CLAIMS`.** Der
   Vorgabewert ist `realm_access.roles`, also **Realm**-Rollen. Client-Rollen auf
   `ump-client` stehen unter `resource_access.ump-client.roles` und werden nur gelesen,
-  wenn dieser Pfad dort eingetragen ist. Was auf Produktion konfiguriert ist, ist hier
-  nicht nachgesehen; vor dem Anlegen einer Rolle prüfen.
+  wenn dieser Pfad dort eingetragen ist. Auf Produktion stehen am 2026-08-31 **beide**
+  drin, dort funktioniert also beides. Eine Client-Rolle `bikebox-modelserver` auf
+  `ump-client` ist an dem Tag angelegt, zugewiesen und mit einem fixbike-Lauf verifiziert
+  worden. Auf einer anderen Instanz vor dem Anlegen erst die Variable prüfen.
 
 Die Prozessliste wird durch diese Rollen nur gefiltert, wenn `UMP_PUBLIC_PROCESSES` aus
 ist. Auf Produktion ist sie an, dort sieht also jeder alle Modelle und scheitert erst
