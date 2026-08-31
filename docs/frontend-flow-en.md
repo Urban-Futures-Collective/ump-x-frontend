@@ -3,9 +3,9 @@
 Which paths a user can take through UMP-X, depending on sign-in and roles, and
 how much of it is built.
 
-**As of 2026-08-28**, checked against the code (`c9a893e`). Anyone changing a
-route, a middleware or a state updates this document with it. See "Keeping this
-current" at the end.
+**As of 2026-08-31**, checked against the code (`ccd723f`) and measured against
+the running backend. Anyone changing a route, a middleware or a state updates
+this document with it. See "Keeping this current" at the end.
 
 Colours throughout:
 
@@ -22,25 +22,23 @@ flowchart TD
 
     Landing --> Q{Signed in?}
 
-    Q -->|no| Anon["Model catalogue<br/><i>open models only</i>"]
+    Q -->|no| Anon["Model catalogue<br/><i>every model is listed</i>"]
     Q -->|sign in| KC[/"Keycloak"/]
 
-    KC --> Roles{Which roles<br/>in the token?}
-
-    Roles -->|none in particular| Basic["Model catalogue<br/><i>open models only</i>"]
-    Roles -->|model role| More["Model catalogue<br/><i>plus permitted models</i>"]
-    Roles -->|ump_admin| Admin["Administration"]
+    KC --> Signed["Model catalogue<br/><i>every model is listed</i>"]
+    KC --> AdminQ{ump_admin<br/>in the token?}
+    AdminQ -->|yes| Admin["Administration"]
 
     Anon --> Run
-    Basic --> Run
-    More --> Run
+    Signed --> Run
 
     Run["Scenario<br/>set parameters, run"]
-    Run --> Wait{{"Computing<br/>minutes to hours"}}
+    Run --> Allowed{"Open model,<br/>or matching role?"}
+    Allowed -->|no| Denied["403<br/><i>the missing role is named</i>"]
+    Allowed -->|yes| Wait{{"Computing<br/>minutes to hours"}}
     Wait --> Map["Result on the map"]
 
-    Basic --> Mine
-    More --> Mine
+    Signed --> Mine
     Map --> Mine
     Mine["My scenarios<br/><i>your own runs, newest first</i>"]
     Mine --> Detail["A run in detail<br/>status, time, result"]
@@ -53,37 +51,47 @@ flowchart TD
     classDef missing fill:#7a1f2a,stroke:#c02a3a,color:#fff
     classDef external fill:#2a3550,stroke:#4a6090,color:#fff
 
-    class Landing,Anon,Basic,More,Run,Map,Mine,Detail built
+    class Landing,Anon,Signed,Run,Allowed,Denied,Map,Mine,Detail built
     class Admin placeholder
     class Matrix missing
     class KC external
 ```
 
-The catalogue is the same screen three times, it just shows different amounts.
-Without signing in you see the models marked `anonymous-access: true`, with a
-matching role the rest appears as well.
+The catalogue used to be drawn three times here, once per role level. Since UMP
+3.0.0 that split is gone: seeing and running came apart, the list is open to
+everyone and the run is not. You find out where you stand when you press the
+button, which is why the denial has to say what is missing rather than only that
+something failed.
 
 ## Who may do what
 
 | | signed out | signed in | with model role | ump_admin |
 |---|---|---|---|---|
 | Landing page | yes | yes | yes | yes |
-| See and run open models | yes | yes | yes | yes |
-| Restricted models | no | no | yes | yes |
+| See every model in the catalogue | yes | yes | yes | yes |
+| Run an open model | yes | yes | yes | yes |
+| Run a restricted model | no | no | yes | yes |
 | My scenarios | no | yes | yes | yes |
 | Administration | no | no | no | yes |
 
 Two different kinds of role govern this:
 
-**Model access** through roles on `ump-client`, named after the model server:
-`<modelserver>` for all its processes, `<modelserver>_<process>` for a single
-one. Which process is open, however, is not decided in Keycloak but in the
-backend's `providers.yaml` via `anonymous-access`.
+**Running a model** through a role named exactly like the process it unlocks:
+`<provider>` for every process of that model server, `<provider>:<process>` for
+a single one. A process marked `anonymous-access: true` in the backend's
+`providers.yaml` needs no role at all. Denied, the API answers 403 and names the
+role it looked for.
 
 **Administration** through the realm role `ump_admin`.
 
-The frontend enforces this per page via `definePageMeta`, not globally. What
-ends up in the catalogue is decided by the backend anyway.
+Whether the catalogue itself is filtered is a server setting,
+`UMP_PUBLIC_PROCESSES`. On production it is on, so the list shows everything to
+everyone and only the run is gated. Measured on 2026-08-31: anonymously
+`/v1.0/processes` returns all four models while `/mcp/v1/tools`, which filters by
+the run rule, returns one.
+
+The frontend enforces sign-in per page via `definePageMeta`, not globally. Who
+may run what is decided by the backend, and the frontend only has to explain it.
 
 ## What is missing today
 
@@ -120,6 +128,13 @@ One quirk belongs here: **the API recognises identical requests** and returns
 the same run, possibly with its earlier failure. Starting the same scenario
 again therefore creates no second run. The detail page says so, otherwise the
 button looks stuck.
+
+A smaller gap opened on 2026-08-31, when seeing and running came apart in the
+backend. A denied run now shows the API's own sentence, "Missing role
+'bikebox-modelserver' or 'bikebox-modelserver:fixbike'.", which is a large
+improvement over the bare status line it printed before, but it is still English
+and phrased for whoever administers Keycloak. What it should say is that this
+model is not released for you, and who releases it.
 
 ## Where this is meant to go
 
@@ -195,6 +210,9 @@ Update it as soon as any of these changes:
 - a page moves between placeholder and built
 - a middleware changes, that is, who may go where (`definePageMeta`)
 - a path between two pages appears or disappears
+- the backend changes who may see or run what. This one is easy to miss because
+  nothing in our repository moves. UMP 3.0.0 pulled seeing and running apart on
+  2026-08-31 and this document claimed the old rule until someone measured.
 
 When updating, check the colours against the code rather than from memory:
 green means built and running, orange means placeholder with "coming soon",
