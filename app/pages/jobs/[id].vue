@@ -40,7 +40,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <h1 class="truncate text-lg font-semibold">
-              {{ job.processId }}
+              {{ job.processId ?? '–' }}
             </h1>
             <p class="truncate text-xs text-(--ui-text-muted)">
               {{ job.id }}
@@ -80,19 +80,23 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           {{ job.message }}
         </p>
 
-        <UButton
-          :to="{ path: '/run', query: { process: job.processId } }"
-          variant="subtle"
-          size="sm"
-          icon="i-lucide-play"
-        >
-          {{ t('jobs.runAgain') }}
-        </UButton>
-        <!-- Die API erkennt identische Anfragen wieder und gibt denselben Lauf
-             zurück; ohne diesen Hinweis wirkt ein erneuter Start wie ein Fehler. -->
-        <p class="text-xs text-(--ui-text-muted)">
-          {{ t('jobs.cacheHint') }}
-        </p>
+        <!-- Ohne processID lässt sich der Lauf nicht wiederholen: /run braucht
+             den Prozess. Dann verschwindet auch der Hinweis, der nur dazu passt. -->
+        <template v-if="job.processId">
+          <UButton
+            :to="{ path: '/run', query: { process: job.processId } }"
+            variant="subtle"
+            size="sm"
+            icon="i-lucide-play"
+          >
+            {{ t('jobs.runAgain') }}
+          </UButton>
+          <!-- Die API erkennt identische Anfragen wieder und gibt denselben Lauf
+               zurück; ohne diesen Hinweis wirkt ein erneuter Start wie ein Fehler. -->
+          <p class="text-xs text-(--ui-text-muted)">
+            {{ t('jobs.cacheHint') }}
+          </p>
+        </template>
       </div>
 
       <p v-if="resultError" class="text-sm text-red-600">

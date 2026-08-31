@@ -1,16 +1,18 @@
 import type { Job, JobStatus } from '~/types/ump'
 
 // Rohe OGC-Job-Antwort (JobStatusInfo). Feldnamen am echten Lauf abgelesen
-// (2026-08-27), gegen das OpenAPI-Schema von UMP 3.x nachgezogen.
+// (2026-08-27), gegen das OpenAPI-Schema von UMP 3.x nachgezogen: Pflicht sind
+// dort ausschließlich jobID und status, alles andere ist ausdrücklich nullable.
+// Deshalb hier durchgängig `| null` statt nur `?`, und toJob normalisiert es.
 interface OgcJob {
   jobID: string
-  processID: string
+  processID?: string | null
   status: JobStatus
-  progress?: number
-  message?: string
-  created?: string
-  finished?: string
-  updated?: string
+  progress?: number | null
+  message?: string | null
+  created?: string | null
+  finished?: string | null
+  updated?: string | null
 }
 // UMP 3.x liefert { jobs, links }; das frühere total_count gibt es nicht mehr.
 interface OgcJobList {
@@ -22,13 +24,13 @@ interface OgcJobList {
 export function toJob(r: OgcJob): Job {
   return {
     id: r.jobID,
-    processId: r.processID,
+    processId: r.processID ?? undefined,
     status: r.status,
     progress: r.progress ?? 0,
-    message: r.message,
-    created: r.created,
-    finished: r.finished,
-    updated: r.updated,
+    message: r.message ?? undefined,
+    created: r.created ?? undefined,
+    finished: r.finished ?? undefined,
+    updated: r.updated ?? undefined,
   }
 }
 

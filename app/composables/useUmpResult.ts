@@ -12,7 +12,7 @@ export function useUmpResult() {
   // Im Browser ist das identisch zu $fetch.
   const request = useRequestFetch()
 
-  async function fetchResult(jobId: string, processId: string): Promise<ResultLayer> {
+  async function fetchResult(jobId: string, processId?: string): Promise<ResultLayer> {
     const fc = await request<FeatureCollection>(`${base}/jobs/${jobId}/results`)
     return { jobId, processId, featureCollection: fc }
   }
