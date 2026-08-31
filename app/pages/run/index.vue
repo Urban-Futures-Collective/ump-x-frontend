@@ -69,17 +69,20 @@ watch(queryProcess, (id) => {
       </p>
     </section>
 
-    <!-- Runner + Karte -->
-    <section class="space-y-4">
-      <ProcessRunner
-        v-if="selectedProcessId"
-        :key="selectedProcessId"
-        :process-id="selectedProcessId"
-        @result="mapData = $event"
-      />
-      <p v-else class="text-sm text-(--ui-text-muted)">
-        {{ t('run.selectHint') }}
-      </p>
+    <!-- Runner + Karte. Ab xl nebeneinander: darunter bleiben zwei Spalten neben der
+         Modell-Liste zu schmal, sowohl für die Eingabefelder als auch für die Karte. -->
+    <section class="grid items-start gap-4 xl:grid-cols-2">
+      <div class="space-y-4">
+        <ProcessRunner
+          v-if="selectedProcessId"
+          :key="selectedProcessId"
+          :process-id="selectedProcessId"
+          @result="mapData = $event"
+        />
+        <p v-else class="text-sm text-(--ui-text-muted)">
+          {{ t('run.selectHint') }}
+        </p>
+      </div>
 
       <UmpMap :data="mapData" />
     </section>
