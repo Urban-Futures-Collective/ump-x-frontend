@@ -99,9 +99,16 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
         </template>
       </div>
 
-      <p v-if="resultError" class="text-sm text-red-600">
-        {{ t('jobs.resultError') }}
-      </p>
+      <!-- Die Meldung der API mit anzeigen: sie nennt den Grund, der Satz darüber
+           nur die Lage. Siehe apiErrorMessage. -->
+      <div v-if="resultError" class="space-y-1">
+        <p class="text-sm text-red-600">
+          {{ t('jobs.resultError') }}
+        </p>
+        <p class="text-xs text-(--ui-text-muted)">
+          {{ resultError }}
+        </p>
+      </div>
       <p v-else-if="job.status !== 'successful'" class="text-sm text-(--ui-text-muted)">
         {{ t('jobs.noResult') }}
       </p>

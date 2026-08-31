@@ -40,7 +40,7 @@ export function useUmpJob(jobId: MaybeRefOrGetter<string>) {
       catch (e) {
         // Ergebnisse älterer Läufe können weg sein, obwohl der Lauf erfolgreich
         // war (Modelserver neu aufgesetzt). Der Lauf selbst bleibt anzeigbar.
-        return { job, result: null, resultError: e instanceof Error ? e.message : String(e) }
+        return { job, result: null, resultError: apiErrorMessage(e) }
       }
     },
     { watch: [id] },
