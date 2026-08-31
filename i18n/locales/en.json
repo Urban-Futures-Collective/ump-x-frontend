@@ -2,9 +2,6 @@
   "app": {
     "title": "UMP-X"
   },
-  "colorMode": {
-    "toggle": "Toggle light/dark"
-  },
   "common": {
     "comingSoon": "This view is coming soon."
   },
@@ -12,13 +9,24 @@
     "models": "Models",
     "run": "New scenario",
     "jobs": "My scenarios",
-    "admin": "Administration"
+    "admin": "Administration",
+    "home": "Home",
+    "planned": {
+      "heading": "Planned",
+      "projects": "Projects",
+      "contribute": "Contribute",
+      "data": "Data repository",
+      "report": "Report",
+      "ask": "Ask MCP",
+      "readme": "Read me"
+    }
   },
   "landing": {
     "heading": "Urban Model Platform",
     "subtitle": "Browse models, run scenarios & explore results on the map. Sign in to see your models and scenarios.",
     "browsePublic": "Browse models",
-    "publicHint": "Without signing in you only see publicly available models!"
+    "publicHint": "Without signing in you only see publicly available models!",
+    "or": "or"
   },
   "auth": {
     "login": "Sign in",
@@ -26,7 +34,28 @@
     "loggedInAs": "Signed in as {name}"
   },
   "jobs": {
-    "title": "My scenarios"
+    "title": "My scenarios",
+    "refresh": "Refresh",
+    "empty": "No runs yet. Start a scenario and you will find it here.",
+    "error": "The runs could not be loaded. Is the UMP API responding?",
+    "notFound": "This run does not exist or belongs to another account.",
+    "created": "Started",
+    "finished": "Finished",
+    "duration": "Duration",
+    "runAgain": "Run again",
+    "cacheHint": "An identical scenario returns the same run, including its earlier result. A new run needs different inputs.",
+    "resultLoading": "Loading result …",
+    "resultError": "The result could not be loaded.",
+    "noResult": "There is no result for this run.",
+    "updated": "Updated",
+    "status": {
+      "idle": "ready",
+      "accepted": "accepted",
+      "running": "running",
+      "successful": "successful",
+      "failed": "failed",
+      "dismissed": "dismissed"
+    }
   },
   "admin": {
     "title": "Administration"
@@ -43,13 +72,6 @@
     "allModels": "All models",
     "execute": "Run",
     "error": "Error: {msg}",
-    "status": {
-      "idle": "ready",
-      "accepted": "accepted",
-      "running": "running",
-      "successful": "successful",
-      "failed": "failed",
-      "dismissed": "dismissed"
-    }
+    "openJob": "Open run"
   }
 }

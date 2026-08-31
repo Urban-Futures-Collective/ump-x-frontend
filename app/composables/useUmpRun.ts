@@ -11,6 +11,8 @@ export function useUmpRun() {
   const { fetchResult } = useUmpResult()
 
   const status = ref<JobStatus | 'idle'>('idle')
+  // Nach außen sichtbar, damit /run nach dem Start auf /jobs/{id} verweisen kann.
+  const jobId = ref<string | null>(null)
   const progress = ref(0)
   const error = ref<string | null>(null)
   const result = ref<FeatureCollection | null>(null)
@@ -19,16 +21,18 @@ export function useUmpRun() {
   async function run(processId: string, inputs: Record<string, unknown>) {
     error.value = null
     result.value = null
+    jobId.value = null
     progress.value = 0
     status.value = 'running'
     try {
-      const jobId = await execute(processId, inputs)
+      const id = await execute(processId, inputs)
+      jobId.value = id
       for (let i = 0; i < POLL_MAX; i++) {
-        const job = await getJob(jobId)
+        const job = await getJob(id)
         status.value = job.status
         progress.value = job.progress
         if (job.status === 'successful') {
-          const layer = await fetchResult(jobId, processId)
+          const layer = await fetchResult(id, processId)
           result.value = layer.featureCollection
           return
         }
@@ -42,9 +46,10 @@ export function useUmpRun() {
     }
     catch (e) {
       status.value = 'failed'
-      error.value = e instanceof Error ? e.message : String(e)
+      // Nicht e.message: die API schickt den Grund in ihrem Rumpf mit, siehe apiErrorMessage.
+      error.value = apiErrorMessage(e)
     }
   }
 
-  return { run, status, progress, error, result, running }
+  return { run, jobId, status, progress, error, result, running }
 }

@@ -6,10 +6,15 @@ import { getUserSession } from 'nuxt-oidc-auth/runtime/server/utils/session.js'
 // hop-by-hop bzw. request-spezifisch; content-length wird von fetch() neu berechnet).
 //
 // cookie und authorization sind bewusst dabei: Das nuxt-oidc-auth-Session-Cookie hat
-// beim UMP-Backend nichts zu suchen, und NUXT_UMP_API_TARGET zeigt auf eine oeffentliche
-// Domain, der Request laeuft also nach aussen. Ein mitgeschicktes authorization wuerde
-// ausserdem nur dann ueberschrieben, wenn zufaellig eine Session existiert; den Bearer
+// beim UMP-Backend nichts zu suchen, und NUXT_UMP_API_TARGET zeigt auf eine öffentliche
+// Domain, der Request läuft also nach außen. Ein mitgeschicktes authorization würde
+// außerdem nur dann überschrieben, wenn zufällig eine Session existiert; den Bearer
 // setzen wir unten selbst aus der Session.
+//
+// Das war kein theoretisches Risiko: h3 lässt cookie in getProxyRequestHeaders stehen
+// (ignoriert werden nur transfer-encoding, accept-encoding, connection, keep-alive,
+// upgrade, expect, host, accept). Am 2026-08-31 gegen einen mitlaufenden Empfänger
+// gemessen, kam das Session-Cookie unverändert beim Ziel an.
 const SKIP_REQUEST_HEADERS = new Set([
   'host',
   'connection',
@@ -24,14 +29,28 @@ const SKIP_RESPONSE_HEADERS = new Set(['content-length', 'transfer-encoding', 'c
 // Authentifizierter Proxy /ump/** → UMP-API. Injiziert den Access-Token aus der
 // OIDC-Session als Bearer (nur wenn eingeloggt → anonymer Read-Modus bleibt möglich).
 // Dies ist die eine Naht, an der wir später von localhost:5003 auf Ricos Backend
-// umstecken (nur NUXT_UMP_API_TARGET tauschen). Siehe docs/frontend-backend-architecture.md.
+// umstecken (nur NUXT_UMP_API_TARGET tauschen). Siehe docs/frontend-backend-architecture-de.md.
 export default defineEventHandler(async (event) => {
   const { umpApiTarget } = useRuntimeConfig(event)
 
-  const path = getRouterParam(event, 'path') ?? ''
-  const search = getRequestURL(event).search // z. B. ?f=json
-  const target = `${umpApiTarget}/${path}${search}`
+  // Pfad bewusst aus der Anfrage-URL statt über getRouterParam: der
+  // Catch-all-Parameter verschluckt einen abschließenden Schrägstrich und
+  // verändert damit den Pfad, den die API zu sehen bekommt. Die API nimmt
+  // Schrägstriche am Ende genau, seit UMP 3.x (FastAPI mit
+  // redirect_slashes=False) sind sie sogar tödlich: /processes/ ist dort eine
+  // 404, nicht mehr wie bis 2.x eine 308 auf /processes. Weitergereicht wird
+  // deshalb, was hereinkam — die Aufrufer (app/composables/useUmp*) schreiben
+  // die Pfade ohne Schrägstrich am Ende.
+  const url = getRequestURL(event)
+  const path = url.pathname.replace(/^\/ump\/?/, '')
+  const target = `${umpApiTarget}/${path}${url.search}`
 
+  // Der Host wird hier bewusst NICHT mehr von Hand gesetzt. Nötig war das, solange
+  // proxyRequest den Host der eingehenden Anfrage weiterreichte: der nginx vor der
+  // UMP-API entscheidet anhand des Hosts, wohin sie geht, und mit unserem Host landete
+  // sie wieder bei uns statt bei der API. Mit fetch() erledigt sich das von selbst, weil
+  // die Bibliothek den Host aus der Ziel-URL bildet; deshalb steht er in
+  // SKIP_REQUEST_HEADERS, damit der eingehende ihn nicht überschreibt.
   const headers: Record<string, string> = {}
   for (const [key, value] of Object.entries(getRequestHeaders(event))) {
     if (value !== undefined && !SKIP_REQUEST_HEADERS.has(key.toLowerCase())) {

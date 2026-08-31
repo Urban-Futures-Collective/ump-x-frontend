@@ -7,7 +7,8 @@ geändert werden — es listet automatisch, was der `/processes`-Endpunkt zurüc
 Ein Modell ist in UMP ein **eigener OGC-API-Processes-Server** (ein Container, der `/processes`
 exponiert — z. B. via pygeoapi). UMP registriert diesen Server und reicht seine Prozesse durch.
 
-Als durchgearbeitetes Beispiel dient die growbike-Einbindung (siehe Runbook-Verweis unten).
+Als durchgearbeitetes Beispiel dient die growbike-Einbindung, siehe
+[`runbook-growbike-modelserver-de.md`](./runbook-growbike-modelserver-de.md).
 
 ---
 
@@ -71,7 +72,7 @@ docker compose -f docker-compose-dev.yaml restart api
 Prüfen, dass das Modell erscheint:
 
 ```bash
-curl -s "http://localhost:5003/processes/?f=json" \
+curl -s "http://localhost:5003/v1.0/processes" \
   | python3 -c 'import sys,json; print(sorted(p["id"] for p in json.load(sys.stdin)["processes"]))'
 # -> sollte "deinmodell:prozess-id" enthalten
 ```
@@ -128,4 +129,5 @@ Ein neues Modell taucht also automatisch auf. **Zwei Ausnahmen**, bei denen doch
   nicht ein Neuerstellen des Containers. Dauerhaft: den Container mit `networks: [ump_dev]` in ein
   Compose aufnehmen.
 - **Voll durchgearbeitetes Beispiel:** die growbike-Einbindung (Netz, `providers.yaml`, Verifikation,
-  Stolpersteine) ist als Schritt-für-Schritt-Runbook dokumentiert — bei Bedarf dort nachschlagen.
+  Stolpersteine) steht in [`runbook-growbike-modelserver-de.md`](./runbook-growbike-modelserver-de.md).
+  Dort auch der aktuelle Stand auf dem Server: Die Datei fehlt dort und die API läuft deshalb nicht.
