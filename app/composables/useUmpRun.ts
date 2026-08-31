@@ -46,7 +46,8 @@ export function useUmpRun() {
     }
     catch (e) {
       status.value = 'failed'
-      error.value = e instanceof Error ? e.message : String(e)
+      // Nicht e.message: die API schickt den Grund in ihrem Rumpf mit, siehe apiErrorMessage.
+      error.value = apiErrorMessage(e)
     }
   }
 
