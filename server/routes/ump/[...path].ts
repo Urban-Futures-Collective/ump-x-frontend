@@ -10,11 +10,13 @@ export default defineEventHandler(async (event) => {
   const { umpApiTarget } = useRuntimeConfig(event)
 
   // Pfad bewusst aus der Anfrage-URL statt über getRouterParam: der
-  // Catch-all-Parameter verschluckt einen abschließenden Schrägstrich, und der
-  // ist bei dieser API Pflicht. Ohne ihn antwortet sie mit 308 auf die Variante
-  // mit Schrägstrich, und diese Umleitung wird gegen unsere eigene Herkunft
-  // aufgelöst statt gegen die der API: /ump/jobs landete so auf unserer Seite
-  // /jobs, /ump/processes auf einer 404 unserer eigenen App.
+  // Catch-all-Parameter verschluckt einen abschließenden Schrägstrich und
+  // verändert damit den Pfad, den die API zu sehen bekommt. Die API nimmt
+  // Schrägstriche am Ende genau, seit UMP 3.x (FastAPI mit
+  // redirect_slashes=False) sind sie sogar tödlich: /processes/ ist dort eine
+  // 404, nicht mehr wie bis 2.x eine 308 auf /processes. Weitergereicht wird
+  // deshalb, was hereinkam — die Aufrufer (app/composables/useUmp*) schreiben
+  // die Pfade ohne Schrägstrich am Ende.
   const url = getRequestURL(event)
   const path = url.pathname.replace(/^\/ump\/?/, '')
   const target = `${umpApiTarget}/${path}${url.search}`

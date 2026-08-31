@@ -1,7 +1,7 @@
 import type { Job, JobStatus } from '~/types/ump'
 
-// Rohe OGC-Job-Antwort. Feldnamen am echten Lauf abgelesen (2026-08-27),
-// siehe sprints/backlog/006-meine-szenarien.md.
+// Rohe OGC-Job-Antwort (JobStatusInfo). Feldnamen am echten Lauf abgelesen
+// (2026-08-27), gegen das OpenAPI-Schema von UMP 3.x nachgezogen.
 interface OgcJob {
   jobID: string
   processID: string
@@ -12,9 +12,9 @@ interface OgcJob {
   finished?: string
   updated?: string
 }
+// UMP 3.x liefert { jobs, links }; das frühere total_count gibt es nicht mehr.
 interface OgcJobList {
   jobs?: OgcJob[]
-  total_count?: number
 }
 
 // Einzige Stelle, die die Feldnamen der API kennt. Auch von useUmpExecute genutzt,
@@ -41,11 +41,10 @@ export function jobTime(job: Job): string | undefined {
 
 // Liste der eigenen Läufe. Welche Jobs zurückkommen, entscheidet die API anhand
 // des Tokens, den der Proxy anhängt — das Frontend filtert bewusst nicht selbst.
-// Trailing-Slash zwingend, sonst antwortet die API mit einem Redirect.
+// Ohne abschließenden Schrägstrich, siehe useUmpProcesses.
 export function useUmpJobs() {
   const { base } = useUmpBase()
-  return useFetch<OgcJobList>(`${base}/jobs/`, {
-    query: { f: 'json' },
+  return useFetch<OgcJobList>(`${base}/jobs`, {
     default: () => [] as Job[],
     transform: (raw): Job[] =>
       (raw?.jobs ?? [])

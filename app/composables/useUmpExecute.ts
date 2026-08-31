@@ -1,26 +1,26 @@
-import type { Job, JobStatus } from '~/types/ump'
-
-interface ExecuteResponse { jobID: string, status: JobStatus }
+import type { Job } from '~/types/ump'
 
 // Execution-Pfad: Prozess ausführen (async) + Job-Status abfragen.
-// UMP gibt bei /execution immer { jobID, status } zurück (auch sync); das Ergebnis
-// holt man separat über /jobs/{id}/results (siehe useUmpResult).
+// UMP 3.x antwortet auf /execution mit 201 und einem vollständigen JobStatusInfo
+// (nicht nur { jobID, status }) — derselben Form wie /jobs/{id}. Deshalb wird die
+// Antwort durch dasselbe toJob geschickt statt eigens typisiert. Das Ergebnis holt
+// man weiterhin separat über /jobs/{id}/results (siehe useUmpResult).
 export function useUmpExecute() {
   const { base } = useUmpBase()
 
   async function execute(processId: string, inputs: Record<string, unknown>): Promise<string> {
-    const res = await $fetch<ExecuteResponse>(`${base}/processes/${processId}/execution`, {
+    const res = await $fetch(`${base}/processes/${processId}/execution`, {
       method: 'POST',
       headers: { Prefer: 'respond-async' },
       body: { inputs },
     })
-    return res.jobID
+    return toJob(res).id
   }
 
   // Mapping bewusst geliehen statt wiederholt: die Feldnamen der API stehen
   // ausschließlich in useUmpJobs.
   async function getJob(jobId: string): Promise<Job> {
-    return toJob(await $fetch(`${base}/jobs/${jobId}`, { query: { f: 'json' } }))
+    return toJob(await $fetch(`${base}/jobs/${jobId}`))
   }
 
   return { execute, getJob }

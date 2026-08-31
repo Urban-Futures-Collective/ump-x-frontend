@@ -51,14 +51,16 @@ docker compose -f docker-compose-dev.yaml restart api
 
 ```bash
 # erscheint als "growbike:growbike"
-curl -s "http://localhost:5003/processes/?f=json" \
+# (UMP 3.x: Routen unter /v1.0, ohne Schrägstrich am Ende — mit Schrägstrich 404)
+curl -s "http://localhost:5003/v1.0/processes" \
   | python3 -c 'import sys,json;print(sorted(p["id"] for p in json.load(sys.stdin)["processes"]))'
 
 # Oelde ausführen (async), Job pollen, Ergebnis holen
-curl -s -X POST "http://localhost:5003/processes/growbike:growbike/execution" \
+curl -s -X POST "http://localhost:5003/v1.0/processes/growbike:growbike/execution" \
   -H "Content-Type: application/json" -H "Prefer: respond-async" \
   -d '{"inputs":{"cityname":"Oelde","ranking":"betweenness_centrality"}}'
-# GET /jobs/{id} bis "successful", dann GET /jobs/{id}/results
+# Antwort: 201 mit JobStatusInfo (jobID, status, …)
+# GET /v1.0/jobs/{jobID} bis "successful", dann GET /v1.0/jobs/{jobID}/results
 ```
 
 Erwartung: `FeatureCollection` mit **92 LineString-Features** (Radnetz Oelde), Properties

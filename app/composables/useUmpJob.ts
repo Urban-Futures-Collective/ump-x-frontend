@@ -27,7 +27,7 @@ export function useUmpJob(jobId: MaybeRefOrGetter<string>) {
   const { data, pending, error, refresh } = useAsyncData<JobView>(
     () => `ump-job-${id.value}`,
     async () => {
-      const job = toJob(await request(`${base}/jobs/${id.value}`, { query: { f: 'json' } }))
+      const job = toJob(await request(`${base}/jobs/${id.value}`))
       // Bei einem gescheiterten Lauf antwortet /results mit 404 „Job failed",
       // deshalb gar nicht erst fragen.
       if (job.status !== 'successful') {
