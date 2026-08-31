@@ -147,12 +147,17 @@
   --color-ufc-plum-900: oklch(0.295 0.0591 344.84);
   --color-ufc-plum-950: oklch(0.197 0.0458 344.84);
 
-  /* ufc-slate: Kopfzeile/Text. Anker ist #242b42 aus dem Wireframe-Dokument, und
-     Stufe 900 trifft ihn jetzt genau. Vorher stand die Leiter zwar auf demselben
-     Farbton, war aber so weit entsaettigt (Chroma 0.0104 statt 0.0433), dass davon
-     ein neutrales Grau uebrig blieb. Das Dunkel der Marke ist ein Navy, kein Grau.
-     Die Saettigung laeuft mit der Helligkeit: hell bleibt fast neutral, damit Raender
-     und Flaechen nicht blaustichig werden, dunkel traegt die volle Markenfarbe. */
+  /* ufc-slate: Kopfzeile/Text. Stufe 900 ist #242b42, die dunkelste Farbe des
+     Logo-Swatches im Wireframe-Dokument. Achtung, das ist eine Entscheidung und
+     keine Vorgabe: das Dokument listet die Farbe nur auf ("all colours and
+     gradients from the logo swatch") und sagt nirgends, wofuer sie gedacht ist.
+     In den Wireframe-Screens selbst kommt sie nicht vor, der Text dort ist
+     nahezu schwarz. Wir nehmen sie als Grundton, weil ein markeneigenes Neutral
+     besser traegt als ein beliebiges Grau.
+     Vorher stand die Leiter auf demselben Farbton, war aber so weit entsaettigt
+     (Chroma 0.0104 statt 0.0433), dass ein neutrales Grau uebrig blieb.
+     Die Saettigung laeuft mit der Helligkeit: hell bleibt fast neutral, damit
+     Raender und Flaechen nicht blaustichig werden, dunkel traegt die Markenfarbe. */
   --color-ufc-slate-50: oklch(0.951 0.0017 270.62);
   --color-ufc-slate-100: oklch(0.911 0.0037 270.62);
   --color-ufc-slate-200: oklch(0.856 0.0085 270.62);
