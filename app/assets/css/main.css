@@ -147,16 +147,26 @@
   --color-ufc-plum-900: oklch(0.295 0.0591 344.84);
   --color-ufc-plum-950: oklch(0.197 0.0458 344.84);
 
-  /* ufc-slate: Kopfzeile/Text, entsaettigt als Grundgrau. Anker #242b42 auf Stufe 900. */
+  /* ufc-slate: Kopfzeile/Text. Stufe 900 ist #242b42, die dunkelste Farbe des
+     Logo-Swatches im Wireframe-Dokument. Achtung, das ist eine Entscheidung und
+     keine Vorgabe: das Dokument listet die Farbe nur auf ("all colours and
+     gradients from the logo swatch") und sagt nirgends, wofuer sie gedacht ist.
+     In den Wireframe-Screens selbst kommt sie nicht vor, der Text dort ist
+     nahezu schwarz. Wir nehmen sie als Grundton, weil ein markeneigenes Neutral
+     besser traegt als ein beliebiges Grau.
+     Vorher stand die Leiter auf demselben Farbton, war aber so weit entsaettigt
+     (Chroma 0.0104 statt 0.0433), dass ein neutrales Grau uebrig blieb.
+     Die Saettigung laeuft mit der Helligkeit: hell bleibt fast neutral, damit
+     Raender und Flaechen nicht blaustichig werden, dunkel traegt die Markenfarbe. */
   --color-ufc-slate-50: oklch(0.951 0.0017 270.62);
-  --color-ufc-slate-100: oklch(0.911 0.0031 270.62);
-  --color-ufc-slate-200: oklch(0.856 0.0058 270.62);
-  --color-ufc-slate-300: oklch(0.795 0.0088 270.62);
-  --color-ufc-slate-400: oklch(0.709 0.0114 270.62);
-  --color-ufc-slate-500: oklch(0.605 0.0127 270.62);
-  --color-ufc-slate-600: oklch(0.514 0.0130 270.62);
-  --color-ufc-slate-700: oklch(0.430 0.0125 270.62);
-  --color-ufc-slate-800: oklch(0.354 0.0114 270.62);
-  --color-ufc-slate-900: oklch(0.294 0.0104 270.62);
-  --color-ufc-slate-950: oklch(0.191 0.0080 270.62);
+  --color-ufc-slate-100: oklch(0.911 0.0037 270.62);
+  --color-ufc-slate-200: oklch(0.856 0.0085 270.62);
+  --color-ufc-slate-300: oklch(0.795 0.0154 270.62);
+  --color-ufc-slate-400: oklch(0.709 0.0247 270.62);
+  --color-ufc-slate-500: oklch(0.605 0.0339 270.62);
+  --color-ufc-slate-600: oklch(0.514 0.0404 270.62);
+  --color-ufc-slate-700: oklch(0.430 0.0439 270.62);
+  --color-ufc-slate-800: oklch(0.354 0.0442 270.62);
+  --color-ufc-slate-900: oklch(0.294 0.0433 270.62);
+  --color-ufc-slate-950: oklch(0.191 0.0333 270.62);
 }
