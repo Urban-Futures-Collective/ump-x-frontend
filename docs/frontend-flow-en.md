@@ -3,7 +3,9 @@
 Which paths a user can take through UMP-X, depending on sign-in and roles, and
 how much of it is built.
 
-German version: `frontend-flow-de.md`.
+**As of 2026-08-28**, checked against the code (`c9a893e`). Anyone changing a
+route, a middleware or a state updates this document with it. See "Keeping this
+current" at the end.
 
 Colours throughout:
 
@@ -16,7 +18,7 @@ Colours throughout:
 ```mermaid
 flowchart TD
     Start([Visitor opens the site])
-    Start --> Landing["Landing page<br/>short description, sign in"]
+    Start --> Landing["Landing page<br/>sign in or browse the catalogue"]
 
     Landing --> Q{Signed in?}
 
@@ -39,7 +41,10 @@ flowchart TD
 
     Basic --> Mine
     More --> Mine
-    Mine["My scenarios"]
+    Map --> Mine
+    Mine["My scenarios<br/><i>your own runs, newest first</i>"]
+    Mine --> Detail["A run in detail<br/>status, time, result"]
+    Detail --> Map
 
     Admin --> Matrix["Access management<br/>who may use which model"]
 
@@ -48,8 +53,8 @@ flowchart TD
     classDef missing fill:#7a1f2a,stroke:#c02a3a,color:#fff
     classDef external fill:#2a3550,stroke:#4a6090,color:#fff
 
-    class Landing,Anon,Basic,More,Run,Map built
-    class Mine,Admin placeholder
+    class Landing,Anon,Basic,More,Run,Map,Mine,Detail built
+    class Admin placeholder
     class Matrix missing
     class KC external
 ```
@@ -86,25 +91,35 @@ ends up in the catalogue is decided by the backend anyway.
 flowchart LR
     Run["Run a scenario"] --> W{{"Computing"}}
     W --> M["Map"]
-    W -.->|leave the page<br/>or reload| Lost>"the run is gone"]
-    M -.-> S["My scenarios"]
-    Lost -.-> S
+    Run --> S["My scenarios"]
+    W -.->|leave the page<br/>or reload| S
+    S --> D["A run in detail"]
+    D --> M
+    W -.->|no progress,<br/>no message| G>"you are not told<br/>when it finishes"]
 
     classDef built fill:#1f6f3f,stroke:#2ea05a,color:#fff
-    classDef placeholder fill:#7a4b1f,stroke:#c07a2a,color:#fff
     classDef gap fill:#7a1f2a,stroke:#c02a3a,color:#fff
-    class Run,M built
-    class S placeholder
-    class Lost gap
+    class Run,M,S,D built
+    class G gap
 ```
 
-The flow ends the moment a run is started. There is no progress, no overview,
-no way back to it. With runtimes of minutes to hours that is the most visible
-hole, and it grows once models are chained.
+**Finding a run again has been built since 2026-08-27.** A run survives a
+reload, appears under "My scenarios" and can be reopened together with its
+result. Starting a scenario now leads straight to the run it created.
+
+What remains is the wait itself. A run shows its status when the page loads and
+nothing more: no progress, no notification, no signal when it is done. With
+runtimes of minutes to hours that is the remaining hole, and it grows once
+models are chained.
 
 What needs deciding is less how a list looks and more what happens during the
 wait: does someone stay on the page, come back later and get notified, and how
 do they recognise a failed run?
+
+One quirk belongs here: **the API recognises identical requests** and returns
+the same run, possibly with its earlier failure. Starting the same scenario
+again therefore creates no second run. The detail page says so, otherwise the
+button looks stuck.
 
 ## Where this is meant to go
 
@@ -164,7 +179,28 @@ flowchart LR
 ```
 
 Today there is exactly one entry point for everyone, the landing page with the
-model catalogue behind it.
+model catalogue behind it. Alongside it the sidebar shows Projects, Contribute,
+Data repository and Report greyed out: visible so the direction is legible,
+disabled so nobody clicks into nothing.
+
+## Keeping this current
+
+This document goes stale faster than anything else in the folder, because it
+describes states rather than procedures. It is only useful if it can be
+believed.
+
+Update it as soon as any of these changes:
+
+- a route appears or disappears (`app/pages/`)
+- a page moves between placeholder and built
+- a middleware changes, that is, who may go where (`definePageMeta`)
+- a path between two pages appears or disappears
+
+When updating, check the colours against the code rather than from memory:
+green means built and running, orange means placeholder with "coming soon",
+red means not there, then set the date at the top. This document is kept in
+English only: a second language version drifted out of sync faster than it
+helped.
 
 ## Related
 
