@@ -39,7 +39,7 @@ const { data: jobs, pending, error, refresh } = useUmpJobs()
           class="flex items-center justify-between gap-3 rounded-md border border-(--ui-border) px-4 py-3 transition-colors hover:bg-(--ui-bg-elevated)"
         >
           <span class="min-w-0">
-            <span class="block truncate font-medium">{{ job.processId }}</span>
+            <span class="block truncate font-medium">{{ job.processId ?? '–' }}</span>
             <span class="block text-sm text-(--ui-text-muted)">
               {{ formatDateTime(jobTime(job), locale) }}
             </span>

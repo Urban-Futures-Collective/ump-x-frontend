@@ -72,7 +72,7 @@ docker compose -f docker-compose-dev.yaml restart api
 Prüfen, dass das Modell erscheint:
 
 ```bash
-curl -s "http://localhost:5003/processes/?f=json" \
+curl -s "http://localhost:5003/v1.0/processes" \
   | python3 -c 'import sys,json; print(sorted(p["id"] for p in json.load(sys.stdin)["processes"]))'
 # -> sollte "deinmodell:prozess-id" enthalten
 ```
