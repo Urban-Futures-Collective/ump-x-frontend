@@ -12,6 +12,8 @@
 // Bis zum 2026-09-01 waren das zwei getrennte Seiten mit denselben zwei Knöpfen.
 // Die Anmeldung selbst läuft über Keycloak, hier steht deshalb kein Formular für
 // Kennung und Passwort: ein eigenes wäre eine Attrappe.
+import beispielGrowbike from '~/assets/images/beispiel-growbike-oelde-blau.svg'
+
 definePageMeta({ layout: false })
 
 const { t, locale, locales, setLocale } = useI18n()
@@ -33,6 +35,13 @@ const { data: prozesse } = useUmpProcesses()
 const { data: offene } = useUmpOpenProcesses()
 
 const schritte = ['choose', 'configure', 'take'] as const
+
+// Vorschaubilder gibt es nur, wo ein echter Lauf dahintersteht. Kein Symbolbild
+// und kein Platzhalter: eine Karte ohne Bild ist ehrlicher als ein erfundenes.
+// Das Netz ist aus dem Ergebnis-GeoJSON gezeichnet, siehe Nachweis im Hero.
+const vorschau: Record<string, string> = {
+  'bikebox-modelserver:growbike': beispielGrowbike,
+}
 </script>
 
 <template>
@@ -155,7 +164,7 @@ const schritte = ['choose', 'configure', 'take'] as const
           <li
             v-for="(schritt, i) in schritte"
             :key="schritt"
-            class="space-y-2 rounded-xl bg-ufc-blue-50/40 p-6"
+            class="space-y-2 rounded-xl bg-ufc-blue-50 p-6"
           >
             <span class="block text-lg font-semibold text-ufc-teal-600">{{ i + 1 }}</span>
             <h3 class="font-medium text-(--ui-text-highlighted)">
@@ -169,7 +178,7 @@ const schritte = ['choose', 'configure', 'take'] as const
       </div>
     </section>
 
-    <section class="bg-ufc-blue-50/40 px-6 py-16 sm:px-16">
+    <section class="bg-ufc-blue-50 px-6 py-16 sm:px-16">
       <div class="mx-auto max-w-7xl space-y-2">
         <h2 class="text-2xl font-semibold text-(--ui-text-highlighted)">
           {{ t('start.models.heading') }}
@@ -181,19 +190,27 @@ const schritte = ['choose', 'configure', 'take'] as const
           <li
             v-for="p in prozesse"
             :key="p.id"
-            class="flex flex-col gap-3 rounded-xl border border-(--ui-border) bg-(--ui-bg) p-5"
+            class="flex flex-col gap-3 overflow-hidden rounded-xl border border-(--ui-border) bg-(--ui-bg)"
           >
-            <h3 class="font-medium text-(--ui-text-highlighted)">
+            <img
+              v-if="vorschau[p.id]"
+              :src="vorschau[p.id]"
+              alt=""
+              class="aspect-4/3 w-full bg-ufc-blue-50 object-contain p-3"
+              width="320"
+              height="240"
+            >
+            <h3 class="px-5 font-medium text-(--ui-text-highlighted)" :class="vorschau[p.id] ? '' : 'pt-5'">
               {{ p.title }}
             </h3>
-            <p class="flex-1 text-sm text-(--ui-text-muted)">
+            <p class="flex-1 px-5 text-sm text-(--ui-text-muted)">
               {{ p.description }}
             </p>
             <UBadge
               :color="offene.includes(p.id) ? 'success' : 'neutral'"
               variant="subtle"
               size="sm"
-              class="self-start"
+              class="mb-5 ml-5 self-start"
             >
               {{ offene.includes(p.id) ? t('start.models.open') : t('start.models.needsLogin') }}
             </UBadge>
