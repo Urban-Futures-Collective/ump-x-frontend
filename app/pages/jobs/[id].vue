@@ -80,10 +80,11 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           {{ job.message }}
         </p>
 
-        <!-- Ohne processID lässt sich der Lauf nicht wiederholen: /run braucht
-             den Prozess. Dann verschwindet auch der Hinweis, der nur dazu passt. -->
-        <template v-if="job.processId">
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Ohne processID lässt sich der Lauf nicht wiederholen: /run braucht
+               den Prozess. -->
           <UButton
+            v-if="job.processId"
             :to="{ path: '/run', query: { process: job.processId } }"
             variant="subtle"
             size="sm"
@@ -91,12 +92,19 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           >
             {{ t('jobs.runAgain') }}
           </UButton>
-          <!-- Die API erkennt identische Anfragen wieder und gibt denselben Lauf
-               zurück; ohne diesen Hinweis wirkt ein erneuter Start wie ein Fehler. -->
-          <p class="text-xs text-(--ui-text-muted)">
-            {{ t('jobs.cacheHint') }}
-          </p>
-        </template>
+          <!-- Herunterladen hängt nicht daran, ob wir das Ergebnis zeichnen konnten,
+               sondern nur daran, dass der Lauf durchgelaufen ist. Siehe ResultDownload. -->
+          <ResultDownload
+            v-if="job.status === 'successful'"
+            :job-id="job.id"
+            :process-id="job.processId"
+          />
+        </div>
+        <!-- Die API erkennt identische Anfragen wieder und gibt denselben Lauf
+             zurück; ohne diesen Hinweis wirkt ein erneuter Start wie ein Fehler. -->
+        <p v-if="job.processId" class="text-xs text-(--ui-text-muted)">
+          {{ t('jobs.cacheHint') }}
+        </p>
       </div>
 
       <!-- Die Meldung der API mit anzeigen: sie nennt den Grund, der Satz darüber
