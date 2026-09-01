@@ -74,5 +74,48 @@
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
     "openJob": "Lauf öffnen"
+  },
+  "footer": {
+    "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",
+    "openSource": "Quelloffen",
+    "privacy": "Datenschutz",
+    "imprint": "Impressum",
+    "accessibility": "Barrierefreiheit"
+  },
+  "start": {
+    "keycloakHint": "Die Anmeldung läuft über Keycloak. Du verlässt dabei kurz diese Seite und kommst danach hierher zurück.",
+    "blocked": {
+      "heading": "Dafür ist eine Anmeldung nötig",
+      "reason": "Diese Seite gehört zu deinem Konto. Nach der Anmeldung landest du wieder dort, wo du hinwolltest.",
+      "orBrowse": "oder Modelle ansehen"
+    },
+    "hero": {
+      "heading": "Stadtmodelle rechnen lassen. Ergebnis auf der Karte, Daten zum Mitnehmen.",
+      "lead": "Die Urban Model Platform bündelt Simulationsmodelle aus Forschung und Verwaltung an einer Stelle. Modell auswählen, Parameter setzen, Ergebnis ansehen und als Datei mitnehmen. Ohne eigene GIS-Installation und ohne eigene Rechenleistung.",
+      "browse": "Modelle ansehen",
+      "accessHint": "Ansehen geht ohne Konto. Für das Ausführen eines Modells ist eine Anmeldung nötig.",
+      "credit": "growbike für Oelde, aus einem echten Lauf erzeugt. Grundlage: OpenStreetMap, ODbL."
+    },
+    "steps": {
+      "heading": "So läuft ein Szenario",
+      "choose": {
+        "title": "Modell wählen",
+        "body": "Der Katalog zeigt, welche Modelle es gibt und was sie rechnen. Ansehen geht ohne Anmeldung."
+      },
+      "configure": {
+        "title": "Parameter setzen",
+        "body": "Das Formular entsteht aus der Beschreibung des Modells. Wer nichts einträgt, bekommt die Voreinstellungen des Modells."
+      },
+      "take": {
+        "title": "Ergebnis mitnehmen",
+        "body": "Das Ergebnis erscheint auf der Karte und lässt sich als Datei herunterladen, etwa für QGIS."
+      }
+    },
+    "models": {
+      "heading": "Modelle, die heute rechnen",
+      "lead": "Der Katalog steht allen offen. Was sich ohne Anmeldung starten lässt, ist am Modell vermerkt.",
+      "open": "Ohne Anmeldung ausführbar",
+      "needsLogin": "Anmeldung nötig"
+    }
   }
 }
