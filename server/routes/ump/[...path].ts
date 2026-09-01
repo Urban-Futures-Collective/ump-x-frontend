@@ -26,6 +26,32 @@ const SKIP_REQUEST_HEADERS = new Set([
 // content-encoding passt nicht mehr, weil fetch() die Antwort bereits entpackt hat.
 const SKIP_RESPONSE_HEADERS = new Set(['content-length', 'transfer-encoding', 'connection', 'content-encoding'])
 
+// Dateiendung aus dem Content-Type der Antwort. Bewusst eine kurze Liste statt einer
+// Ableitung aus dem Subtyp: application/geo+json soll .geojson werden und nicht .json.
+// Was hier fehlt, bekommt gar keine Endung — lieber ein Name ohne als ein falscher.
+const ENDUNGEN: Record<string, string> = {
+  'application/geo+json': 'geojson',
+  'application/json': 'json',
+  'application/gml+xml': 'gml',
+  'application/vnd.flatgeobuf': 'fgb',
+  'application/x-flatgeobuf': 'fgb',
+  'application/zip': 'zip',
+  'application/gzip': 'gz',
+  'application/pdf': 'pdf',
+  'text/csv': 'csv',
+  'text/plain': 'txt',
+  'image/tiff': 'tif',
+  'image/png': 'png',
+}
+
+// Der Wunschname kommt vom Aufrufer und landet in einem Antwort-Kopf. Deshalb hart
+// filtern: nur Buchstaben, Ziffern, Punkt, Strich und Unterstrich, gedeckelt. Ein
+// Zeilenumbruch im Namen wäre eine Header-Injection, ein Anführungszeichen bricht den
+// Kopf auf. Was übrig bleibt, ist im Dateisystem überall gültig.
+function sauberer(name: string): string {
+  return name.replace(/[^A-Za-z0-9._-]/g, '').slice(0, 80)
+}
+
 // Authentifizierter Proxy /ump/** → UMP-API. Injiziert den Access-Token aus der
 // OIDC-Session als Bearer (nur wenn eingeloggt → anonymer Read-Modus bleibt möglich).
 // Dies ist die eine Naht, an der wir später von localhost:5003 auf Ricos Backend
@@ -43,7 +69,15 @@ export default defineEventHandler(async (event) => {
   // die Pfade ohne Schrägstrich am Ende.
   const url = getRequestURL(event)
   const path = url.pathname.replace(/^\/ump\/?/, '')
-  const target = `${umpApiTarget}/${path}${url.search}`
+
+  // `filename` ist unser eigener Parameter und hat beim UMP nichts zu suchen, deshalb
+  // hier heraus und nicht mitschicken. Er trägt den Namen ohne Endung; die Endung
+  // ergibt sich erst unten aus dem Content-Type der Antwort. Siehe ResultDownload.vue.
+  const query = new URLSearchParams(url.search)
+  const wunschname = sauberer(query.get('filename') ?? '')
+  query.delete('filename')
+  const suche = query.toString()
+  const target = `${umpApiTarget}/${path}${suche ? `?${suche}` : ''}`
 
   // Der Host wird hier bewusst NICHT mehr von Hand gesetzt. Nötig war das, solange
   // proxyRequest den Host der eingehenden Anfrage weiterreichte: der nginx vor der
@@ -85,6 +119,21 @@ export default defineEventHandler(async (event) => {
       setResponseHeader(event, key, value)
     }
   })
+
+  // Ergebnis-Abrufe als Download benennen. Der Anker im Frontend kann die Endung nicht
+  // kennen, er wird geklickt bevor jemand die Antwort gesehen hat; hier ist der
+  // Content-Type dagegen da. Rico hat das Durchreichen entschieden, und genau deshalb
+  // hängt der Dateiname am Modell und nicht an einer Annahme von uns.
+  //
+  // Ein vorhandenes Content-Disposition der API gewinnt: sobald UMP selbst eines
+  // mitschickt, kann dieser Block ersatzlos weg.
+  const eigenes = upstream.headers.get('content-disposition')
+  if (!eigenes && upstream.ok && wunschname && path.endsWith('/results')) {
+    const typ = (upstream.headers.get('content-type') ?? '').split(';')[0]!.trim().toLowerCase()
+    const endung = ENDUNGEN[typ]
+    const datei = endung ? `${wunschname}.${endung}` : wunschname
+    setResponseHeader(event, 'content-disposition', `attachment; filename="${datei}"`)
+  }
 
   return buffer
 })

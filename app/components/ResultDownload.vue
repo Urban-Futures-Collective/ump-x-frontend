@@ -14,27 +14,33 @@ const props = defineProps<{ jobId: string, processId?: string }>()
 const { t } = useI18n()
 const { base } = useUmpBase()
 
-const href = computed(() => `${base}/jobs/${props.jobId}/results`)
-
-// Muss im Downloads-Ordner ohne weiteren Kontext zuzuordnen sein. Der Stadtname
-// wäre schöner, steht uns aber nicht zur Verfügung: die Eingaben eines Laufs
-// liefert die Job-Antwort nicht mit, und laut Rico müssen sie auch nicht in die
-// Datei.
-//
-// Die Endung ist eine Annahme. UMP setzt kein Content-Disposition und wir fragen
-// den Content-Type nicht vorab ab, das wäre ein Request nur für den Kopf. Für die
-// vier heutigen Modelle stimmt GeoJSON. Liefert ein Modellserver etwas anderes,
-// fällt es beim Öffnen auf, nicht beim Herunterladen.
-const dateiname = computed(() => {
+// Der Name muss im Downloads-Ordner ohne weiteren Kontext zuzuordnen sein. Der
+// Stadtname wäre schöner, steht uns aber nicht zur Verfügung: die Eingaben eines
+// Laufs liefert die Job-Antwort nicht mit, und laut Rico müssen sie auch nicht in
+// die Datei.
+const basisname = computed(() => {
   const prozess = (props.processId ?? 'ergebnis').split(':').pop() ?? 'ergebnis'
-  return `${prozess}_${props.jobId.slice(0, 8)}.geojson`
+  return `${prozess}_${props.jobId.slice(0, 8)}`
 })
+
+// Ohne Endung an den Proxy: die kennt hier niemand, der Knopf wird geklickt bevor
+// jemand die Antwort gesehen hat. Der Proxy hängt sie an, sobald er den
+// Content-Type kennt, und setzt daraus ein Content-Disposition. Siehe
+// server/routes/ump/[...path].ts.
+const href = computed(() =>
+  `${base}/jobs/${props.jobId}/results?filename=${encodeURIComponent(basisname.value)}`,
+)
+
+// Rückfall für den Fall, dass kein Content-Disposition ankommt: dann gilt dieses
+// Attribut, und .geojson ist für die vier heutigen Modelle richtig. Kommt der Kopf,
+// gewinnt er, und die Endung stimmt auch bei einem Modell, das etwas anderes liefert.
+const rueckfall = computed(() => `${basisname.value}.geojson`)
 </script>
 
 <template>
   <UButton
     :to="href"
-    :download="dateiname"
+    :download="rueckfall"
     external
     variant="subtle"
     size="sm"
