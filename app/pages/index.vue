@@ -72,33 +72,35 @@ const schritte = ['choose', 'configure', 'take'] as const
 
   <!-- Schaufenster -->
   <div v-else class="flex min-h-svh flex-col bg-(--ui-bg)">
-    <header class="flex items-center justify-between px-6 py-5 sm:px-16">
-      <div class="flex items-center gap-3">
-        <img
-          src="~/assets/images/logo.svg"
-          alt=""
-          class="size-8"
-          width="32"
-          height="32"
-        >
-        <span class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('app.title') }}</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-1">
-          <UButton
-            v-for="loc in locales"
-            :key="loc.code"
-            :variant="loc.code === locale ? 'solid' : 'ghost'"
-            :color="loc.code === locale ? 'primary' : 'neutral'"
-            size="xs"
-            @click="setLocale(loc.code)"
+    <header class="px-6 py-5 sm:px-16">
+      <div class="mx-auto flex max-w-7xl items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img
+            src="~/assets/images/logo.svg"
+            alt=""
+            class="size-8"
+            width="32"
+            height="32"
           >
-            {{ loc.code.toUpperCase() }}
-          </UButton>
+          <span class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('app.title') }}</span>
         </div>
-        <ULink class="text-sm font-medium text-(--ui-primary)" @click="login()">
-          {{ t('auth.login') }}
-        </ULink>
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1">
+            <UButton
+              v-for="loc in locales"
+              :key="loc.code"
+              :variant="loc.code === locale ? 'solid' : 'ghost'"
+              :color="loc.code === locale ? 'primary' : 'neutral'"
+              size="xs"
+              @click="setLocale(loc.code)"
+            >
+              {{ loc.code.toUpperCase() }}
+            </UButton>
+          </div>
+          <ULink class="text-sm font-medium text-(--ui-primary)" @click="login()">
+            {{ t('auth.login') }}
+          </ULink>
+        </div>
       </div>
     </header>
 
@@ -153,7 +155,7 @@ const schritte = ['choose', 'configure', 'take'] as const
           <li
             v-for="(schritt, i) in schritte"
             :key="schritt"
-            class="space-y-2 rounded-xl bg-(--ui-bg-elevated) p-6"
+            class="space-y-2 rounded-xl bg-ufc-blue-50/40 p-6"
           >
             <span class="block text-lg font-semibold text-ufc-teal-600">{{ i + 1 }}</span>
             <h3 class="font-medium text-(--ui-text-highlighted)">
@@ -167,7 +169,7 @@ const schritte = ['choose', 'configure', 'take'] as const
       </div>
     </section>
 
-    <section class="bg-(--ui-bg-elevated) px-6 py-16 sm:px-16">
+    <section class="bg-ufc-blue-50/40 px-6 py-16 sm:px-16">
       <div class="mx-auto max-w-7xl space-y-2">
         <h2 class="text-2xl font-semibold text-(--ui-text-highlighted)">
           {{ t('start.models.heading') }}
