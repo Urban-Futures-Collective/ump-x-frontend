@@ -85,6 +85,11 @@ async function onSubmit() {
         >
           {{ t('run.openJob') }}
         </ULink>
+        <ResultDownload
+          v-if="jobId && status === 'successful'"
+          :job-id="jobId"
+          :process-id="processId"
+        />
       </div>
 
       <p v-if="error" class="text-sm text-red-600">

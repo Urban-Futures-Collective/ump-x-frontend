@@ -55,7 +55,8 @@
       "successful": "successful",
       "failed": "failed",
       "dismissed": "dismissed"
-    }
+    },
+    "download": "Download result"
   },
   "admin": {
     "title": "Administration"
