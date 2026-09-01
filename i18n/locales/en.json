@@ -2,9 +2,6 @@
   "app": {
     "title": "UMP-X"
   },
-  "colorMode": {
-    "toggle": "Toggle light/dark"
-  },
   "common": {
     "comingSoon": "This view is coming soon."
   },
@@ -12,13 +9,24 @@
     "models": "Models",
     "run": "New scenario",
     "jobs": "My scenarios",
-    "admin": "Administration"
+    "admin": "Administration",
+    "home": "Home",
+    "planned": {
+      "heading": "Planned",
+      "projects": "Projects",
+      "contribute": "Contribute",
+      "data": "Data repository",
+      "report": "Report",
+      "ask": "Ask MCP",
+      "readme": "Read me"
+    }
   },
   "landing": {
     "heading": "Urban Model Platform",
     "subtitle": "Browse models, run scenarios & explore results on the map. Sign in to see your models and scenarios.",
     "browsePublic": "Browse models",
-    "publicHint": "Without signing in you only see publicly available models!"
+    "publicHint": "Without signing in you only see publicly available models!",
+    "or": "or"
   },
   "auth": {
     "login": "Sign in",
@@ -26,7 +34,29 @@
     "loggedInAs": "Signed in as {name}"
   },
   "jobs": {
-    "title": "My scenarios"
+    "title": "My scenarios",
+    "refresh": "Refresh",
+    "empty": "No runs yet. Start a scenario and you will find it here.",
+    "error": "The runs could not be loaded. Is the UMP API responding?",
+    "notFound": "This run does not exist or belongs to another account.",
+    "created": "Started",
+    "finished": "Finished",
+    "duration": "Duration",
+    "runAgain": "Run again",
+    "cacheHint": "An identical scenario returns the same run, including its earlier result. A new run needs different inputs.",
+    "resultLoading": "Loading result …",
+    "resultError": "The result could not be loaded.",
+    "noResult": "There is no result for this run.",
+    "updated": "Updated",
+    "status": {
+      "idle": "ready",
+      "accepted": "accepted",
+      "running": "running",
+      "successful": "successful",
+      "failed": "failed",
+      "dismissed": "dismissed"
+    },
+    "download": "Download result"
   },
   "admin": {
     "title": "Administration"
@@ -43,13 +73,49 @@
     "allModels": "All models",
     "execute": "Run",
     "error": "Error: {msg}",
-    "status": {
-      "idle": "ready",
-      "accepted": "accepted",
-      "running": "running",
-      "successful": "successful",
-      "failed": "failed",
-      "dismissed": "dismissed"
+    "openJob": "Open run"
+  },
+  "footer": {
+    "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",
+    "openSource": "Open source",
+    "privacy": "Privacy",
+    "imprint": "Imprint",
+    "accessibility": "Accessibility"
+  },
+  "start": {
+    "keycloakHint": "Signing in goes through Keycloak. You leave this page briefly and come back here afterwards.",
+    "blocked": {
+      "heading": "This needs you to be signed in",
+      "reason": "This page belongs to your account. After signing in you land back where you were heading.",
+      "orBrowse": "or browse the models"
+    },
+    "hero": {
+      "heading": "Let city models do the computing. Result on the map, data to take with you.",
+      "lead": "The Urban Model Platform brings simulation models from research and public administration together in one place. Pick a model, set the parameters, look at the result and take it as a file. No GIS installation of your own, no computing power of your own.",
+      "browse": "Browse the models",
+      "accessHint": "Browsing needs no account. Running a model needs you to be signed in.",
+      "credit": "growbike for Oelde, drawn from a real run. Based on OpenStreetMap data, ODbL."
+    },
+    "steps": {
+      "heading": "How a scenario runs",
+      "choose": {
+        "title": "Pick a model",
+        "body": "The catalogue shows which models exist and what they compute. Browsing needs no account."
+      },
+      "configure": {
+        "title": "Set the parameters",
+        "body": "The form comes from the model description. Leave a field empty and the model uses its own default."
+      },
+      "take": {
+        "title": "Take the result",
+        "body": "The result appears on the map and can be downloaded as a file, for QGIS for example."
+      }
+    },
+    "models": {
+      "heading": "Models computing today",
+      "lead": "The catalogue is open to everyone. Whatever can be started without an account is marked on the model.",
+      "open": "Runs without an account",
+      "needsLogin": "Sign-in required"
     }
   }
 }

@@ -26,10 +26,17 @@ Konsequenz: Der Wechsel Flask → FastAPI ist **über die Leitung unsichtbar**, 
 
 Das ist der entscheidende Teil. Genau hier setzen wir saubere Grenzen.
 
-### 1. API-Versionierung
-Der neue Aufbau hat **versionierte Sub-Apps** (`/v1.0/`, `/v1.1/` …) und **OpenAPI-Docs pro Version**. Heute liegen die Routen unter Root (`/processes/`), künftig vermutlich unter `/v1.0/processes/`.
+### 1. API-Versionierung — seit UMP 3.0.0 eingetreten
+Der neue Aufbau hat **versionierte Sub-Apps** und **OpenAPI-Docs pro Version**. Bis 2.x lagen die Routen unter Root (`/processes/`), seit 3.0.0 liegen sie unter `/v1.0/processes`.
 
-→ **Base-URL und API-Version zusammen in einer Config** halten. Dann ist der Pfadwechsel ein Einzeiler. (Wir haben bereits `runtimeConfig.public.umpBase` — die Version wird die zweite Variable.)
+Zwei Dinge haben sich dabei geändert, nicht nur eins:
+
+- **Präfix `/v1.0`** vor allen OGC-Routen.
+- **Kein Schrägstrich am Ende mehr.** FastAPI läuft dort mit `redirect_slashes=False`; `/v1.0/processes/` ist eine **404**, keine 308-Umleitung auf die Variante ohne. Bis 2.x war es genau umgekehrt — der Schrägstrich war Pflicht.
+
+Nebenbei entfallen: `?f=json` (die API spricht nur noch JSON) und `total_count` in der Job-Liste (jetzt `{ jobs, links }`). `/execution` antwortet mit **201** und einem vollständigen `JobStatusInfo` statt nur `{ jobID, status }` — dieselbe Form wie `/jobs/{id}`.
+
+→ Die Naht hat gehalten: **Base-URL und API-Version zusammen in einer Config** (`runtimeConfig.public.umpBase` + `umpApiVersion`, zusammengesetzt in `useUmpBase()`). Der Pfadwechsel war ein Einzeiler; die Schrägstriche standen verstreut in den Composables und mussten einzeln fallen.
 
 ### 2. Ergebnis-Auslieferung (die wichtige!)
 Bei den „Planned Adapters" stehen **GeoServer Result Storage** (WFS/WMS publish) und **Idproxy Result Storage** (OGC API Features) hinter einem neuen `ResultStoragePort`. Heute rendern wir **inline-GeoJSON** aus `/jobs/{id}/results`. Künftig könnten Ergebnisse als **OGC-API-Features-Collection** oder **WFS/WMS-Layer** kommen.
@@ -70,7 +77,7 @@ Die hexagonale Architektur **nicht im Frontend nachbauen** (keine formalen Ports
 
 Diese zwei Antworten entscheiden, wie tief wir jetzt schon bauen können:
 
-1. **Bleibt der OGC-Routen-Vertrag** beim FastAPI-Adapter kompatibel, nur unter `/v1.0` versioniert? (Laut Diagramm fast sicher ja — bitte bestätigen.)
+1. ~~**Bleibt der OGC-Routen-Vertrag** beim FastAPI-Adapter kompatibel, nur unter `/v1.0` versioniert?~~ **Beantwortet mit 3.0.0: ja**, bis auf den Schrägstrich am Ende (siehe Naht 1).
 2. **Wie kommen Ergebnisse nach dem Umbau** — inline-GeoJSON, OGC API Features oder WFS/WMS? Das ist die einzige Antwort, die unseren Karten-/Rendering-Code wirklich prägt. **Vor** dem tiefen Ausbau des Result-Pfads klären.
 
 ---

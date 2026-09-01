@@ -1,13 +1,16 @@
 # Deployment: Staging & Prod
 
-Beide Umgebungen laufen über Dokploy (Autodeploy aus Branch `deploy`), hinter einem
-nginx auf `82.165.91.175`.
+Beide Umgebungen laufen über Dokploy hinter einem nginx auf `82.165.91.175`,
+**jede mit eigenem Branch**: Staging deployt automatisch aus `staging`, Produktion
+aus `deploy`. Ein Merge nach `staging` ist damit sofort auf der Staging-Domain
+sichtbar und muss nicht erst die ganze Kette durchlaufen.
 
 | | Prod | Staging |
 |---|---|---|
 | Domain | `ump-x.urbanfuturescollective.org` | `ump-x-staging.urbanfuturescollective.org` |
 | Keycloak-Realm | `UrbanModelPlatform` (geteilt) | `UrbanModelPlatform` (geteilt) |
 | Container | `ump-x-frontend`, Port 6000 | `staging-ump-x-frontend`, Port 6500 |
+| Autodeploy aus Branch | `deploy` | `staging` |
 
 ## Branch-Kette
 
@@ -134,17 +137,18 @@ den braucht die UMP-API. Ergänzt werden:
 
 ## TLS Staging
 
-Das Zertifikat auf `82.165.91.175` ist auf `CN=ump-x.urbanfuturescollective.org`
-ausgestellt und enthält **keinen** SAN-Eintrag für die Staging-Domain:
+**Erledigt.** Die Staging-Domain hat inzwischen ein eigenes Zertifikat von Let's
+Encrypt, geprüft am 2026-08-27:
 
 ```
 $ curl -sSv https://ump-x-staging.urbanfuturescollective.org/ -o /dev/null
-* subjectAltName does not match host name ump-x-staging.urbanfuturescollective.org
+*  subject: CN=ump-x-staging.urbanfuturescollective.org
+*  SSL certificate verify ok.
 ```
 
-Solange das so ist, blockt jeder Browser die Staging-Domain mit Zertifikatswarnung, und
-ein OIDC-Flow über einen nicht vertrauenswürdigen Origin ist ohnehin nicht sinnvoll
-testbar. Zertifikat für die Staging-Domain ausstellen bzw. als SAN ergänzen.
+Vorher lief die Domain über das Prod-Zertifikat ohne passenden SAN-Eintrag, und
+jeder Browser zeigte eine Warnung. Ein OIDC-Flow war über einen solchen Origin
+nicht sinnvoll testbar. Das ist behoben.
 
 ## Smoke-Test nach dem Deploy
 
