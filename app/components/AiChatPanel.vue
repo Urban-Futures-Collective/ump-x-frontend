@@ -19,6 +19,16 @@ const { nachrichten, status, fehler, laeuft, senden, abbrechen, neu } = useAiCha
 const eingabe = ref('')
 const zugangOffen = ref(false)
 
+// Seit der Verlauf das Schließen und das Neuladen überlebt, kann ein Klick ein
+// langes Gespräch treffen. Deshalb eine Rückfrage, und keine, die man wegklicken
+// und dauerhaft abschalten kann.
+const loeschenOffen = ref(false)
+
+function loeschen() {
+  neu()
+  loeschenOffen.value = false
+}
+
 const zeigtFormular = computed(() => !hatSchluessel.value || zugangOffen.value)
 
 const beispiele = computed(() => [t('ai.examples.what'), t('ai.examples.how')])
@@ -58,7 +68,7 @@ onMounted(() => {
           color="neutral"
           variant="ghost"
           size="xs"
-          @click="neu()"
+          @click="loeschenOffen = true"
         >
           {{ t('ai.clear') }}
         </UButton>
@@ -166,5 +176,19 @@ onMounted(() => {
         </p>
       </div>
     </template>
+    <UModal
+      v-model:open="loeschenOffen"
+      :title="t('ai.clearConfirm.title')"
+      :description="t('ai.clearConfirm.body')"
+    >
+      <template #footer>
+        <UButton color="neutral" variant="ghost" @click="loeschenOffen = false">
+          {{ t('ai.clearConfirm.cancel') }}
+        </UButton>
+        <UButton color="error" @click="loeschen()">
+          {{ t('ai.clearConfirm.confirm') }}
+        </UButton>
+      </template>
+    </UModal>
   </div>
 </template>

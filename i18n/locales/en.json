@@ -179,6 +179,12 @@
     "streaming": "writing …",
     "stop": "Stop",
     "clear": "Clear chat",
+    "clearConfirm": {
+      "title": "Clear the chat?",
+      "body": "The conversation is gone afterwards. It lives in this tab only, we keep no copy.",
+      "cancel": "Cancel",
+      "confirm": "Clear"
+    },
     "settings": "Change access",
     "close": "Close",
     "error": "The provider did not answer: {msg}",

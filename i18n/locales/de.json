@@ -179,6 +179,12 @@
     "streaming": "schreibt …",
     "stop": "Abbrechen",
     "clear": "Verlauf löschen",
+    "clearConfirm": {
+      "title": "Verlauf löschen?",
+      "body": "Die Unterhaltung ist danach weg. Sie liegt nur in diesem Tab, wir haben keine Kopie.",
+      "cancel": "Abbrechen",
+      "confirm": "Löschen"
+    },
     "settings": "Zugang ändern",
     "close": "Schließen",
     "error": "Der Anbieter hat nicht geantwortet: {msg}",
