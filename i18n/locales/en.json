@@ -178,7 +178,7 @@
     "disclaimer": "Answers can be wrong. The page only starts a run after you confirm it.",
     "streaming": "writing …",
     "stop": "Stop",
-    "new": "New chat",
+    "clear": "Clear chat",
     "settings": "Change access",
     "close": "Close",
     "error": "The provider did not answer: {msg}",

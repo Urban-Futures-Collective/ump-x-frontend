@@ -178,7 +178,7 @@
     "disclaimer": "Antworten können falsch sein. Läufe startet die Seite nur nach deiner Bestätigung.",
     "streaming": "schreibt …",
     "stop": "Abbrechen",
-    "new": "Neuer Chat",
+    "clear": "Verlauf löschen",
     "settings": "Zugang ändern",
     "close": "Schließen",
     "error": "Der Anbieter hat nicht geantwortet: {msg}",

@@ -49,15 +49,19 @@ onMounted(() => {
       <UIcon name="i-lucide-sparkles" class="size-4.5 text-(--ui-primary)" />
       <span class="text-sm font-medium text-(--ui-text-highlighted)">{{ t('ai.title') }}</span>
       <div class="ms-auto flex items-center gap-1">
+        <!-- Beschriftet und nicht nur ein Zeichen: ein Plus las sich wie „noch
+             ein Chat daneben", und mehrere Unterhaltungen gibt es hier nicht.
+             Der Knopf wirft den Verlauf weg, also steht das auch dran. -->
         <UButton
           v-if="hatSchluessel && nachrichten.length"
-          icon="i-lucide-plus"
+          icon="i-lucide-trash-2"
           color="neutral"
           variant="ghost"
           size="xs"
-          :aria-label="t('ai.new')"
           @click="neu()"
-        />
+        >
+          {{ t('ai.clear') }}
+        </UButton>
         <UButton
           v-if="hatSchluessel"
           icon="i-lucide-settings"
