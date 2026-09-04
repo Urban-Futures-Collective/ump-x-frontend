@@ -80,15 +80,20 @@ export function useAiChat() {
     fehler.value = null
     nachrichten.value.push({ id: crypto.randomUUID(), role: 'user', parts: [{ type: 'text', text }] })
 
-    // Reihenfolge ist hier Verhalten, nicht Geschmack: UChatMessages scrollt beim
-    // Wechsel auf 'submitted' zur letzten Nachricht, aber nur wenn die vom
-    // Nutzer stammt. Hängt man die leere Antwortblase vorher an, greift die
-    // Regel nie und die Frage bleibt unten am Rand stehen.
-    status.value = 'submitted'
-    await nextTick()
-
+    // Reihenfolge ist hier Verhalten, nicht Geschmack. UChatMessages springt beim
+    // Wechsel auf 'submitted' zur letzten Nachricht und polstert den Verlauf so
+    // auf, dass die Frage immer ganz oben landet — auch wenn die Antwort kurz
+    // ist und unten Platz wäre. Das ist die ChatGPT-Anordnung, gewollt ist hier
+    // aber ein gewöhnlicher Chat: der Verlauf wächst nach unten und rutscht erst
+    // hoch, wenn er nicht mehr passt.
+    //
+    // Abschalten lässt sich der Sprung nicht, er hat keinen Schalter. Er feuert
+    // aber nur, wenn die letzte Nachricht vom Nutzer ist. Die leere Antwortblase
+    // steht deshalb absichtlich VOR dem Statuswechsel. Fürs Mitlaufen während des
+    // Streams sorgt should-auto-scroll am Panel.
     const antwort: Nachricht = { id: crypto.randomUUID(), role: 'assistant', parts: [] }
     nachrichten.value.push(antwort)
+    status.value = 'submitted'
 
     // Text landet im letzten Teil, solange der Text ist. Nach einem Werkzeug
     // beginnt ein neuer, damit die Reihenfolge Text, Werkzeug, Text erhalten
