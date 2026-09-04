@@ -169,4 +169,19 @@
   --color-ufc-slate-800: oklch(0.354 0.0442 270.62);
   --color-ufc-slate-900: oklch(0.294 0.0433 270.62);
   --color-ufc-slate-950: oklch(0.191 0.0333 270.62);
+
+  /* Verlaufspartner aus der Logo-Tafel des Wireframes (Seite 2 der
+     Wireframing-Datei). Dort steht jede Marke als Paar: der dunkle Wert ist
+     unser Anker und liegt exakt auf der 600er-Stufe, der helle ist von Hand
+     gesetzt und liegt auf keiner Stufe — die naechste ist 22 bis 45 daneben.
+     Deshalb eigene Namen statt einer erfundenen Skalenstufe. Ihr einziger
+     Zweck sind die drei Verlaeufe des Entwurfs:
+       Login A    gradient-plum -> gradient-blue
+       Login B    gradient-teal -> gradient-gold   (Hero)
+       Abschluss  gradient-gold -> gradient-plum
+     In Figma liegen sie unter Primitives als gradient/*. */
+  --color-ufc-gradient-plum: #c36878;
+  --color-ufc-gradient-gold: #e5ac23;
+  --color-ufc-gradient-teal: #5ca899;
+  --color-ufc-gradient-blue: #0073b2;
 }
