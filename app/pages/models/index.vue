@@ -5,6 +5,11 @@
 const { t } = useI18n()
 const { loggedIn } = useOidcAuth()
 const { data: processes, pending, error, refresh } = useUmpProcesses()
+
+// Der Katalog zeigt seit 2026-09-04 wieder allen alles. Damit steht hier auch,
+// was man nicht starten darf, und das gehört an die Zeile statt hinter den Klick.
+const { data: ausfuehrbar } = useUmpRunnableProcesses()
+const gesperrt = (id: string) => ausfuehrbar.value.length > 0 && !ausfuehrbar.value.includes(id)
 </script>
 
 <template>
@@ -45,7 +50,12 @@ const { data: processes, pending, error, refresh } = useUmpProcesses()
             </span>
             <span class="block text-xs text-(--ui-text-muted)">{{ p.id }}</span>
           </span>
-          <UIcon name="i-lucide-arrow-right" class="shrink-0 text-(--ui-text-muted)" />
+          <span class="flex shrink-0 items-center gap-2">
+            <UBadge v-if="gesperrt(p.id)" color="neutral" variant="subtle" size="sm">
+              {{ t('processes.locked') }}
+            </UBadge>
+            <UIcon name="i-lucide-arrow-right" class="text-(--ui-text-muted)" />
+          </span>
         </ULink>
       </li>
     </ul>

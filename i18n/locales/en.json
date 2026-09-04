@@ -66,7 +66,8 @@
     "refresh": "Refresh",
     "empty": "No processes available.",
     "error": "The processes could not be loaded: {msg}",
-    "anonymousHint": "Without signing in you only see public processes. Sign in to see role-based ones such as fixbike."
+    "anonymousHint": "Without signing in you only see public processes. Sign in to see role-based ones such as fixbike.",
+    "locked": "Access needed"
   },
   "run": {
     "selectHint": "Select a process on the left to run it.",
@@ -74,7 +75,12 @@
     "execute": "Run",
     "error": "Error: {msg}",
     "openJob": "Open run",
-    "defaultHint": "Leave empty for the default {wert}."
+    "defaultHint": "Leave empty for the default {wert}.",
+    "locked": {
+      "heading": "This model is not released for you",
+      "signedIn": "Running {modell} needs your account to be cleared for {anbieter}. Looking at it and at other runs stays possible.",
+      "anonymous": "Running {modell} requires you to sign in. Looking at it stays possible without an account."
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",

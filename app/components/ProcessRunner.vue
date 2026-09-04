@@ -5,8 +5,23 @@ const props = defineProps<{ processId: string }>()
 const emit = defineEmits<{ result: [FeatureCollection | null] }>()
 
 const { t } = useI18n()
+const { loggedIn } = useOidcAuth()
 const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
+const { data: ausfuehrbar } = useUmpRunnableProcesses()
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
+
+// Seit der Katalog wieder allen alles zeigt, steht hier auch, was man nicht
+// ausführen darf. Rico im Team-Chat: „man klickt auf Szenario ausführen und
+// bekommt dann erst den Fehler". Deshalb vorher: Knopf aus, Grund darunter.
+//
+// Solange die Liste noch lädt, gilt nichts als gesperrt. Ein Knopf, der beim
+// Laden kurz ausgegraut ist, wirkt kaputt.
+const gesperrt = computed(() =>
+  ausfuehrbar.value.length > 0 && !ausfuehrbar.value.includes(props.processId),
+)
+
+// Die Rolle heißt wie der Anbieter, also der Teil vor dem Doppelpunkt.
+const anbieter = computed(() => props.processId.split(':')[0] ?? props.processId)
 
 const form = ref<Record<string, string>>({})
 
@@ -80,7 +95,7 @@ async function onSubmit() {
       </div>
 
       <div class="flex items-center gap-3">
-        <UButton type="submit" :loading="running" :disabled="loadingProc" icon="i-lucide-play">
+        <UButton type="submit" :loading="running" :disabled="loadingProc || gesperrt" icon="i-lucide-play">
           {{ t('run.execute') }}
         </UButton>
         <JobStatusBadge v-if="status !== 'idle'" :status="status" :progress="progress" />
@@ -103,5 +118,22 @@ async function onSubmit() {
         {{ t('run.error', { msg: error }) }}
       </p>
     </form>
+
+    <!-- Gesperrt heißt nicht versteckt: das Formular bleibt sichtbar, damit man
+         sieht, was das Modell könnte. Nur der Start ist zu, mit dem Grund
+         daneben statt als Fehler nach dem Klick. -->
+    <div v-if="gesperrt" class="flex gap-3 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-4">
+      <UIcon name="i-lucide-shield" class="mt-0.5 size-4 shrink-0 text-(--ui-text-muted)" />
+      <div class="space-y-1">
+        <p class="text-sm font-medium text-(--ui-text-highlighted)">
+          {{ t('run.locked.heading') }}
+        </p>
+        <p class="text-sm text-(--ui-text-muted)">
+          {{ loggedIn
+            ? t('run.locked.signedIn', { modell: proc?.title ?? processId, anbieter })
+            : t('run.locked.anonymous', { modell: proc?.title ?? processId }) }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>

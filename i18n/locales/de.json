@@ -66,7 +66,8 @@
     "refresh": "Aktualisieren",
     "empty": "Keine Prozesse verfügbar.",
     "error": "Prozesse konnten nicht geladen werden: {msg}",
-    "anonymousHint": "Ohne Anmeldung siehst du nur öffentliche Prozesse. Melde dich an, um rollenbasierte Prozesse (z. B. fixbike) zu sehen."
+    "anonymousHint": "Ohne Anmeldung siehst du nur öffentliche Prozesse. Melde dich an, um rollenbasierte Prozesse (z. B. fixbike) zu sehen.",
+    "locked": "Zugang nötig"
   },
   "run": {
     "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",
@@ -74,7 +75,12 @@
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
     "openJob": "Lauf öffnen",
-    "defaultHint": "Leer lassen für die Vorgabe {wert}."
+    "defaultHint": "Leer lassen für die Vorgabe {wert}.",
+    "locked": {
+      "heading": "Dieses Modell ist für dich nicht freigegeben",
+      "signedIn": "Zum Ausführen von {modell} braucht dein Konto die Freigabe für {anbieter}. Ansehen und Ergebnisse anderer Läufe bleiben möglich.",
+      "anonymous": "Zum Ausführen von {modell} musst du dich anmelden. Ansehen bleibt ohne Konto möglich."
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",

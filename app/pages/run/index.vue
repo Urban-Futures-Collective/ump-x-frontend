@@ -9,6 +9,8 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const { data: processes, pending, error } = useUmpProcesses()
+const { data: ausfuehrbar } = useUmpRunnableProcesses()
+const gesperrt = (id: string) => ausfuehrbar.value.length > 0 && !ausfuehrbar.value.includes(id)
 
 const queryProcess = computed(() =>
   typeof route.query.process === 'string' ? route.query.process : null,
@@ -59,7 +61,12 @@ watch(queryProcess, (id) => {
               : 'border-(--ui-border) hover:bg-(--ui-bg-elevated)'"
             @click="selectProcess(p.id)"
           >
-            <div class="font-medium">{{ p.title }}</div>
+            <div class="flex items-center gap-2">
+              <span class="font-medium">{{ p.title }}</span>
+              <UBadge v-if="gesperrt(p.id)" color="neutral" variant="subtle" size="sm">
+                {{ t('processes.locked') }}
+              </UBadge>
+            </div>
             <div class="text-xs text-(--ui-text-muted)">{{ p.id }}</div>
           </button>
         </li>
