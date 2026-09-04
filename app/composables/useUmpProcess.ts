@@ -1,12 +1,12 @@
 import type { ProcessDetail } from '~/types/ump'
 
-interface OgcInput {
+export interface OgcInput {
   title?: string
   description?: string
   minOccurs?: number
   schema?: { type?: string, default?: unknown }
 }
-interface OgcProcessDetail {
+export interface OgcProcessDetail {
   id: string
   title?: string | null
   description?: string | null
@@ -42,6 +42,10 @@ export function useUmpProcess(id: MaybeRefOrGetter<string>) {
         // MUSS, verlangt etwas Falsches.
         required: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
         default: v.schema?.default,
+        // Das Original dazu, nicht nur type und default. Das Formular braucht
+        // nur die zwei Felder, ein Werkzeugschema für die KI will aber auch
+        // enum, minimum und maximum kennen, sonst rät das Modell.
+        schema: v.schema as Record<string, unknown> | undefined,
       })),
     }),
   })

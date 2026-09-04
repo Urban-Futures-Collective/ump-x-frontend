@@ -5,6 +5,8 @@
 // Fassung 1 kann nur reden. Werkzeuge (Katalog, Läufe, Ergebnisse) kommen in
 // Schritt 2 dazu, deshalb sind die Beispielfragen bewusst welche, die ein
 // Modell ohne Zugriff auf das Backend beantworten kann.
+import type { Nachricht } from '~/composables/useAiChat'
+
 const emit = defineEmits<{ schliessen: [] }>()
 
 const { t } = useI18n()
@@ -86,13 +88,27 @@ function beispielWaehlen(frage: string) {
           </p>
         </div>
 
+        <!-- Eigener content-Slot, weil eine Nachricht bei uns auch Werkzeug-
+             Teile enthält. UChatMessage rendert von sich aus nur Text und
+             Dateien, alles andere ist unsere Sache. -->
         <UChatMessages
           v-else
           :messages="nachrichten"
           :status="status"
           :assistant="{ side: 'left', variant: 'naked' }"
           :user="{ side: 'right', variant: 'soft' }"
-        />
+        >
+          <template #content="{ message }">
+            <div class="space-y-2">
+              <template v-for="(teil, i) in (message as Nachricht).parts" :key="i">
+                <AiToolCard v-if="teil.type === 'werkzeug'" :teil="teil" />
+                <p v-else-if="teil.text" class="whitespace-pre-wrap">
+                  {{ teil.text }}
+                </p>
+              </template>
+            </div>
+          </template>
+        </UChatMessages>
 
         <p v-if="laeuft && nachrichten.length" class="mt-2 text-xs text-(--ui-text-dimmed)">
           {{ t('ai.streaming') }}

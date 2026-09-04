@@ -147,8 +147,8 @@
       "connected": "Connected to {anbieter} · {modell}"
     },
     "examples": {
-      "what": "What is the Urban Model Platform?",
-      "how": "How does a scenario work?"
+      "what": "Which models are there and what do they compute?",
+      "how": "What inputs does growbike need?"
     },
     "placeholder": "Ask about models, data or parameters …",
     "disclaimer": "Answers can be wrong. The page only starts a run after you confirm it.",
@@ -157,6 +157,15 @@
     "new": "New chat",
     "settings": "Change access",
     "close": "Close",
-    "error": "The provider did not answer: {msg}"
+    "error": "The provider did not answer: {msg}",
+    "tools": {
+      "listProcesses": "List models",
+      "describeProcess": "Describe model",
+      "running": "running …",
+      "failed": "failed",
+      "count": "{n} models",
+      "inputs": "{n} inputs",
+      "sentToProvider": "Sent to the model:"
+    }
   }
 }

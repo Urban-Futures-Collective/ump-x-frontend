@@ -147,8 +147,8 @@
       "connected": "Verbunden mit {anbieter} · {modell}"
     },
     "examples": {
-      "what": "Was ist die Urban Model Platform?",
-      "how": "Wie läuft ein Szenario ab?"
+      "what": "Welche Modelle gibt es und was rechnen sie?",
+      "how": "Was braucht growbike als Eingabe?"
     },
     "placeholder": "Frag nach Modellen, Daten oder Parametern …",
     "disclaimer": "Antworten können falsch sein. Läufe startet die Seite nur nach deiner Bestätigung.",
@@ -157,6 +157,15 @@
     "new": "Neuer Chat",
     "settings": "Zugang ändern",
     "close": "Schließen",
-    "error": "Der Anbieter hat nicht geantwortet: {msg}"
+    "error": "Der Anbieter hat nicht geantwortet: {msg}",
+    "tools": {
+      "listProcesses": "Modelle auflisten",
+      "describeProcess": "Modell beschreiben",
+      "running": "läuft …",
+      "failed": "fehlgeschlagen",
+      "count": "{n} Modelle",
+      "inputs": "{n} Eingaben",
+      "sentToProvider": "An das Modell gegangen:"
+    }
   }
 }
