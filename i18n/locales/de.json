@@ -17,9 +17,9 @@
       "contribute": "Beitragen",
       "data": "Datenablage",
       "report": "Bericht",
-      "ask": "Ask MCP",
       "readme": "Anleitung"
-    }
+    },
+    "chat": "Chat"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -117,5 +117,45 @@
       "open": "Ohne Anmeldung ausführbar",
       "needsLogin": "Anmeldung nötig"
     }
+  },
+  "ai": {
+    "title": "Chat mit deiner KI",
+    "connect": {
+      "heading": "Verbinde deine eigene KI",
+      "lead": "UMP-X stellt kein Sprachmodell. Du verbindest deins, damit die Wahl und die Kosten bei dir bleiben.",
+      "provider": "Anbieter",
+      "model": "Modell",
+      "modelHint": "Modellnamen ändern sich häufig, deshalb Freitext. Der Anbieter listet sie in seiner Übersicht.",
+      "baseUrl": "Basis-URL",
+      "key": "Schlüssel",
+      "submit": "Verbinden",
+      "forget": "Schlüssel löschen",
+      "warnKey": "Der Schlüssel liegt unverschlüsselt im Speicher dieses Browsers. Wer Zugriff darauf hat, kann ihn lesen.",
+      "warnData": "Deine Fragen gehen an den Anbieter, den du wählst. Die Kosten trägst du.",
+      "warnScope": "Nimm am besten einen Schlüssel nur für diesen Zweck, mit Ausgabengrenze.",
+      "mcp": "Oder verbinde den MCP-Server mit deinem eigenen KI-Client."
+    },
+    "providers": {
+      "openrouter": "OpenRouter",
+      "openai": "OpenAI",
+      "anthropic": "Anthropic",
+      "kompatibel": "Anderer, OpenAI-kompatibel"
+    },
+    "empty": {
+      "lead": "Womit fangen wir an?",
+      "connected": "Verbunden mit {anbieter} · {modell}"
+    },
+    "examples": {
+      "what": "Was ist die Urban Model Platform?",
+      "how": "Wie läuft ein Szenario ab?"
+    },
+    "placeholder": "Frag nach Modellen, Daten oder Parametern …",
+    "disclaimer": "Antworten können falsch sein. Läufe startet die Seite nur nach deiner Bestätigung.",
+    "streaming": "schreibt …",
+    "stop": "Abbrechen",
+    "new": "Neuer Chat",
+    "settings": "Zugang ändern",
+    "close": "Schließen",
+    "error": "Der Anbieter hat nicht geantwortet: {msg}"
   }
 }

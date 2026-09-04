@@ -1,0 +1,139 @@
+<script setup lang="ts">
+// Der Chat selbst. Kennt seinen Ort nicht: dieselbe Komponente hängt in der
+// Schublade der Arbeitsumgebung und später im Schaufenster der Startseite.
+//
+// Fassung 1 kann nur reden. Werkzeuge (Katalog, Läufe, Ergebnisse) kommen in
+// Schritt 2 dazu, deshalb sind die Beispielfragen bewusst welche, die ein
+// Modell ohne Zugriff auf das Backend beantworten kann.
+const emit = defineEmits<{ schliessen: [] }>()
+
+const { t } = useI18n()
+const { zugang, hatSchluessel } = useAiProvider()
+const { nachrichten, status, fehler, laeuft, senden, abbrechen, neu } = useAiChat()
+
+const eingabe = ref('')
+const zugangOffen = ref(false)
+
+const zeigtFormular = computed(() => !hatSchluessel.value || zugangOffen.value)
+
+const beispiele = computed(() => [t('ai.examples.what'), t('ai.examples.how')])
+
+async function abschicken() {
+  const text = eingabe.value
+  eingabe.value = ''
+  await senden(text)
+}
+
+function beispielWaehlen(frage: string) {
+  eingabe.value = frage
+  abschicken()
+}
+</script>
+
+<template>
+  <div class="flex h-full flex-col bg-(--ui-bg)">
+    <!-- Kopfzeile nach dem Entwurf: Titel links, Werkzeuge rechts. -->
+    <div class="flex items-center gap-2 border-b border-(--ui-border) px-5 py-3">
+      <UIcon name="i-lucide-sparkles" class="size-4.5 text-(--ui-primary)" />
+      <span class="text-sm font-medium text-(--ui-text-highlighted)">{{ t('ai.title') }}</span>
+      <div class="ms-auto flex items-center gap-1">
+        <UButton
+          v-if="hatSchluessel && nachrichten.length"
+          icon="i-lucide-plus"
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          :aria-label="t('ai.new')"
+          @click="neu()"
+        />
+        <UButton
+          v-if="hatSchluessel"
+          icon="i-lucide-settings"
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          :aria-label="t('ai.settings')"
+          @click="zugangOffen = !zugangOffen"
+        />
+        <UButton
+          icon="i-lucide-x"
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          :aria-label="t('ai.close')"
+          @click="emit('schliessen')"
+        />
+      </div>
+    </div>
+
+    <!-- Ohne Schlüssel gibt es nichts zu chatten, also steht hier das Formular. -->
+    <div v-if="zeigtFormular" class="flex-1 overflow-y-auto p-5">
+      <AiProviderForm @verbunden="zugangOffen = false" />
+    </div>
+
+    <template v-else>
+      <div class="flex flex-1 flex-col overflow-y-auto px-5 py-4">
+        <div v-if="!nachrichten.length" class="flex flex-1 flex-col justify-center gap-2 text-center">
+          <UIcon name="i-lucide-sparkles" class="mx-auto size-8 text-(--ui-primary)" />
+          <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+            {{ t('ai.title') }}
+          </h2>
+          <p class="text-sm text-(--ui-text-muted)">
+            {{ t('ai.empty.lead') }}
+          </p>
+          <p class="text-xs text-(--ui-text-dimmed)">
+            {{ t('ai.empty.connected', { anbieter: t(`ai.providers.${zugang.anbieter}`), modell: zugang.modell }) }}
+          </p>
+        </div>
+
+        <UChatMessages
+          v-else
+          :messages="nachrichten"
+          :status="status"
+          :assistant="{ side: 'left', variant: 'naked' }"
+          :user="{ side: 'right', variant: 'soft' }"
+        />
+
+        <p v-if="laeuft && nachrichten.length" class="mt-2 text-xs text-(--ui-text-dimmed)">
+          {{ t('ai.streaming') }}
+        </p>
+      </div>
+
+      <div class="space-y-3 px-5 pb-4">
+        <!-- Beispielfragen nur im Leerzustand: danach stünden sie im Weg. -->
+        <div v-if="!nachrichten.length" class="flex flex-col items-end gap-2">
+          <UButton
+            v-for="frage in beispiele"
+            :key="frage"
+            variant="outline"
+            color="neutral"
+            size="xs"
+            @click="beispielWaehlen(frage)"
+          >
+            {{ frage }}
+          </UButton>
+        </div>
+
+        <UAlert
+          v-if="fehler"
+          color="error"
+          variant="subtle"
+          icon="i-lucide-triangle-alert"
+          :description="t('ai.error', { msg: fehler })"
+        />
+
+        <UChatPrompt
+          v-model="eingabe"
+          :placeholder="t('ai.placeholder')"
+          @submit="abschicken"
+        >
+          <UChatPromptSubmit :status="status" @stop="abbrechen()" />
+        </UChatPrompt>
+
+        <p class="text-xs text-(--ui-text-dimmed)">
+          {{ t('ai.disclaimer') }}
+        </p>
+      </div>
+    </template>
+  </div>
+</template>

@@ -17,9 +17,9 @@
       "contribute": "Contribute",
       "data": "Data repository",
       "report": "Report",
-      "ask": "Ask MCP",
       "readme": "Read me"
-    }
+    },
+    "chat": "Chat"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -117,5 +117,45 @@
       "open": "Runs without an account",
       "needsLogin": "Sign-in required"
     }
+  },
+  "ai": {
+    "title": "Chat with your own AI",
+    "connect": {
+      "heading": "Connect your own AI",
+      "lead": "UMP-X provides no language model. You connect yours, so the choice and the cost stay with you.",
+      "provider": "Provider",
+      "model": "Model",
+      "modelHint": "Model names change often, so this is free text. Your provider lists them in its overview.",
+      "baseUrl": "Base URL",
+      "key": "Key",
+      "submit": "Connect",
+      "forget": "Delete key",
+      "warnKey": "The key is stored unencrypted in this browser. Anyone with access to it can read it.",
+      "warnData": "Your questions go to the provider you choose. You pay for them.",
+      "warnScope": "Use a key created for this purpose only, with a spending limit.",
+      "mcp": "Or connect the MCP server to your own AI client."
+    },
+    "providers": {
+      "openrouter": "OpenRouter",
+      "openai": "OpenAI",
+      "anthropic": "Anthropic",
+      "kompatibel": "Other, OpenAI-compatible"
+    },
+    "empty": {
+      "lead": "Where shall we start?",
+      "connected": "Connected to {anbieter} · {modell}"
+    },
+    "examples": {
+      "what": "What is the Urban Model Platform?",
+      "how": "How does a scenario work?"
+    },
+    "placeholder": "Ask about models, data or parameters …",
+    "disclaimer": "Answers can be wrong. The page only starts a run after you confirm it.",
+    "streaming": "writing …",
+    "stop": "Stop",
+    "new": "New chat",
+    "settings": "Change access",
+    "close": "Close",
+    "error": "The provider did not answer: {msg}"
   }
 }

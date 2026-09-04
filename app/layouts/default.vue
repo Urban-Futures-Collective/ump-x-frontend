@@ -8,6 +8,9 @@ const route = useRoute()
 const { loggedIn, user, login, logout } = useOidcAuth()
 const { isAdmin } = useUmpRoles()
 
+// Der Chat liegt in einer Schublade, damit er die Arbeitsfläche nicht verdrängt.
+const chatOffen = ref(false)
+
 const userName = computed(
   () => user.value?.userName ?? user.value?.claims?.preferred_username ?? '',
 )
@@ -149,17 +152,18 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           </template>
 
           <template #right>
-            <!-- Geplant, noch ohne Funktion. Sichtbar aus demselben Grund wie
-                 die ausgegrauten Einträge in der Seitenleiste. -->
+            <!-- Der Chat bringt sein Modell nicht mit, der Nutzer tut das.
+                 Deshalb heißt der Knopf „Chat" und nicht nach einem Anbieter,
+                 und deshalb steht hinter ihm zuerst ein Formular. -->
             <UButton
               icon="i-lucide-sparkles"
               color="neutral"
               variant="ghost"
               size="sm"
-              disabled
               class="hidden md:inline-flex"
+              @click="chatOffen = true"
             >
-              {{ t('nav.planned.ask') }}
+              {{ t('nav.chat') }}
             </UButton>
             <UButton
               icon="i-lucide-book-open"
@@ -197,5 +201,16 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
         </div>
       </template>
     </UDashboardPanel>
+
+    <!-- ClientOnly: der Chat zieht das AI SDK nach und läuft ausschließlich im
+         Browser (der Schlüssel des Nutzers darf unseren Server nie sehen).
+         Lazy, damit das SDK nicht im Startbündel jeder Seite landet. -->
+    <ClientOnly>
+      <USlideover v-model:open="chatOffen" :ui="{ content: 'w-full max-w-md' }">
+        <template #content>
+          <LazyAiChatPanel @schliessen="chatOffen = false" />
+        </template>
+      </USlideover>
+    </ClientOnly>
   </UDashboardGroup>
 </template>
