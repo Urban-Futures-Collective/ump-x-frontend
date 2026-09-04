@@ -193,7 +193,14 @@
       "prepareRun": "Run prepared",
       "openForm": "Open the form",
       "startedByYou": "Starting happens in the form, by you.",
-      "recognised": "Recognised inputs:"
+      "recognised": "Recognised inputs:",
+      "listJobs": "List runs",
+      "showJob": "Show run",
+      "runs": "{n} runs",
+      "openJob": "Open run",
+      "features": "{n} features",
+      "extent": "Extent {von} to {bis}",
+      "properties": "Properties: {liste}"
     }
   },
   "help": {

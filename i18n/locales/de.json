@@ -193,7 +193,14 @@
       "prepareRun": "Lauf vorbereitet",
       "openForm": "Formular öffnen",
       "startedByYou": "Gestartet wird erst im Formular, von dir.",
-      "recognised": "Erkannte Eingaben:"
+      "recognised": "Erkannte Eingaben:",
+      "listJobs": "Läufe auflisten",
+      "showJob": "Lauf zeigen",
+      "runs": "{n} Läufe",
+      "openJob": "Lauf öffnen",
+      "features": "{n} Objekte",
+      "extent": "Ausdehnung {von} bis {bis}",
+      "properties": "Eigenschaften: {liste}"
     }
   },
   "help": {

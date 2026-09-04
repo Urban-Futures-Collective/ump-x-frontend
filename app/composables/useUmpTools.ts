@@ -1,4 +1,5 @@
 import { jsonSchema, tool } from 'ai'
+import type { OgcJob, OgcJobList } from '~/composables/useUmpJobs'
 import type { OgcProcessDetail } from '~/composables/useUmpProcess'
 import type { OgcProcessList } from '~/composables/useUmpProcesses'
 
@@ -11,14 +12,21 @@ import type { OgcProcessList } from '~/composables/useUmpProcesses'
 // anhängt. Ein Werkzeugaufruf trägt damit automatisch die Rechte des
 // angemeldeten Nutzers, und abgemeldet eben nur die anonymen.
 //
-// Fassung 1 liest nur. Der Chat kann nichts starten und nichts verändern, auch
+// Alle Werkzeuge lesen. Der Chat kann nichts starten und nichts verändern, auch
 // nicht auf Zuruf: Werkzeuge, die es nicht gibt, kann sich kein Modell herbeireden.
+
+// So viele Läufe gehen an das Modell. Wer mehr sehen will, öffnet die Liste; ein
+// Verlauf über Monate im Kontext kostet nur Geld und beantwortet keine Frage.
+const MAX_LAEUFE = 20
 
 interface McpKatalog { tools?: { tool?: string }[] }
 
 export function useUmpTools() {
   const { base } = useUmpBase()
   const { umpBase } = useRuntimeConfig().public
+  // Ergebnisse laufen über dieselbe Naht wie Karte und Download, nicht über
+  // einen zweiten Abruf daneben.
+  const { fetchResult } = useUmpResult()
 
   // Fehler werden zurückgegeben statt geworfen. Ein 401 ist für den Chat keine
   // Störung, sondern eine Auskunft: „dafür brauchst du eine Rolle" ist eine
@@ -170,5 +178,97 @@ export function useUmpTools() {
     },
   })
 
-  return { werkzeuge: { listProcesses, describeProcess, prepareRun } }
+  // Welche Läufe zurückkommen, entscheidet die API anhand des Tokens, den der
+  // Proxy anhängt. Abgemeldet ist die Liste NICHT leer: am 2026-09-04 gegen
+  // Produktion gemessen antwortet /jobs ohne Sitzung mit den Läufen, die ohne
+  // Anmeldung gestartet wurden (heute ausschließlich growbike). Deshalb steht
+  // hier „zugänglich" und nicht „eigene": das Modell soll einem anonymen
+  // Besucher nicht erzählen, er sehe seine eigenen Läufe.
+  const listJobs = tool({
+    description:
+      'Listet die Läufe (Szenarien), die dem Aufrufer zugänglich sind, neueste zuerst, mit '
+      + 'Modell, Status und Zeitpunkt. Angemeldet sind das die eigenen, abgemeldet die ohne '
+      + 'Anmeldung gestarteten. Ohne Parameter aufrufen.',
+    inputSchema: jsonSchema<Record<string, never>>({
+      type: 'object',
+      properties: {},
+      additionalProperties: false,
+    }),
+    async execute() {
+      try {
+        const roh = await $fetch<OgcJobList>(`${base}/jobs`)
+        const laeufe = neuesteZuerst((roh?.jobs ?? []).map(toJob))
+          .slice(0, MAX_LAEUFE)
+          .map(j => ({
+            id: j.id,
+            prozess: j.processId,
+            status: j.status,
+            fortschritt: j.progress,
+            zeit: jobTime(j),
+          }))
+        return {
+          laeufe,
+          ...(laeufe.length
+            ? {}
+            : { hinweis: 'Keine Läufe vorhanden.' }),
+        }
+      }
+      catch (e) {
+        return alsFehler(e)
+      }
+    },
+  })
+
+  const showJob = tool({
+    description:
+      'Zeigt einen Lauf: Status, Fortschritt, Zeiten und die Meldung der Plattform. Ist er '
+      + 'durchgelaufen, kommt eine Zusammenfassung des Ergebnisses dazu: Anzahl der Objekte, '
+      + 'Geometrietypen, Ausdehnung, Eigenschaften. Die Geodaten selbst gibt es hier nicht, '
+      + 'dafür steht der Link auf die Seite des Laufs.',
+    inputSchema: jsonSchema<{ jobId: string }>({
+      type: 'object',
+      properties: {
+        jobId: {
+          type: 'string',
+          description: 'Die Id des Laufs, wie sie listJobs liefert.',
+        },
+      },
+      required: ['jobId'],
+      additionalProperties: false,
+    }),
+    async execute({ jobId }) {
+      try {
+        const job = toJob(await $fetch<OgcJob>(`${base}/jobs/${jobId}`))
+        const grund = {
+          id: job.id,
+          prozess: job.processId,
+          status: job.status,
+          fortschritt: job.progress,
+          meldung: job.message,
+          erstellt: jobTime(job),
+          beendet: job.finished,
+          dauer: formatDuration(job.created, job.finished) ?? undefined,
+          link: `/jobs/${job.id}`,
+        }
+        // Bei einem gescheiterten Lauf antwortet /results mit 404 „Job failed",
+        // deshalb gar nicht erst fragen. Siehe useUmpJob.
+        if (job.status !== 'successful') return grund
+        try {
+          const layer = await fetchResult(job.id, job.processId)
+          // Das GeoJSON bleibt im Browser. Was hier zurückgeht, sind vier Zahlen.
+          return { ...grund, ergebnis: fasseErgebnisZusammen(layer.featureCollection) }
+        }
+        catch (e) {
+          // Ergebnisse älterer Läufe können weg sein, obwohl der Lauf erfolgreich
+          // war. Der Lauf selbst bleibt eine brauchbare Auskunft.
+          return { ...grund, ergebnisFehler: apiErrorMessage(e) }
+        }
+      }
+      catch (e) {
+        return alsFehler(e)
+      }
+    },
+  })
+
+  return { werkzeuge: { listProcesses, describeProcess, prepareRun, listJobs, showJob } }
 }
