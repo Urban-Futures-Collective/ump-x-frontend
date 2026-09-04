@@ -70,8 +70,7 @@ Aufzählungen höchstens als kurze Zeilen mit einem Bindestrich davor.`
 //
 // Unbedenklich auf Modulebene, weil der Chat ausschließlich im Browser läuft
 // (das Panel steckt in ClientOnly): auf dem Server entstünde sonst Zustand, den
-// sich fremde Anfragen teilen. Ein Neuladen der Seite leert den Verlauf, er wird
-// bewusst nirgends gespeichert.
+// sich fremde Anfragen teilen.
 const nachrichten = ref<Nachricht[]>([])
 const status = ref<ChatStatus>('ready')
 const fehler = ref<string | null>(null)
@@ -80,9 +79,68 @@ const fehler = ref<string | null>(null)
 // Controller als der Strom, der noch läuft, und „Abbrechen" träfe ins Leere.
 let abbruch: AbortController | null = null
 
+// Den Verlauf übers Neuladen retten, und zwar in sessionStorage, nicht in
+// localStorage. Er gehört zu diesem Besuch in diesem Tab: er verschwindet, wenn
+// der Tab zugeht, ein zweiter Tab fängt bei null an, und niemand findet Wochen
+// später seine alten Fragen auf einem geteilten Rechner wieder.
+//
+// Was hier landet, sind Fragen, Antworten und Werkzeug-Ergebnisse. Der Schlüssel
+// des Anbieters ist NICHT dabei, der wohnt in useAiProvider, und der UMP-Bearer
+// erreicht den Browser ohnehin nicht.
+const SPEICHER = 'ump-x-chat'
+
+// Ein Werkzeug-Ergebnis kann ein paar Kilobyte wiegen. Die Grenze verhindert,
+// dass ein langer Verlauf am Speicherlimit des Browsers scheitert; gekürzt wird
+// nur das Gespeicherte, nicht das, was auf dem Schirm steht.
+const MAX_ZEICHEN = 512 * 1024
+
+let geladen = false
+
+function laden() {
+  if (geladen || !import.meta.client) return
+  geladen = true
+  try {
+    const roh = sessionStorage.getItem(SPEICHER)
+    if (roh) nachrichten.value = JSON.parse(roh) as Nachricht[]
+  }
+  catch {
+    // Kaputter oder fremder Inhalt: lieber leer anfangen als beim Laden stehen
+    // bleiben. Der Chat ist nichts, wofür sich eine Wiederherstellung lohnt.
+    nachrichten.value = []
+  }
+}
+
+// Eine Nachricht ohne sichtbaren Inhalt. Das ist die Antwortblase, die vor dem
+// Absenden angelegt wird: bleibt sie leer, weil der Anbieter nicht antwortet,
+// gehört sie weder auf den Schirm noch in den Speicher. Der Anbieterfehler
+// erreicht uns erst nach dem Ende des Stroms, also nach dem Sichern.
+function istLeer(n: Nachricht): boolean {
+  return n.parts.every(p => p.type === 'text' && !p.text)
+}
+
+function sichern() {
+  if (!import.meta.client) return
+  try {
+    let liste = nachrichten.value.filter(n => !istLeer(n))
+    let roh = JSON.stringify(liste)
+    while (roh.length > MAX_ZEICHEN && liste.length > 1) {
+      liste = liste.slice(1)
+      roh = JSON.stringify(liste)
+    }
+    sessionStorage.setItem(SPEICHER, roh)
+  }
+  catch {
+    // Voll oder gesperrt (privates Fenster, blockierte Website-Daten). Der
+    // Verlauf im Arbeitsspeicher bleibt gültig, nur das Neuladen überlebt er
+    // dann nicht. Kein Grund, den Chat abzubrechen.
+  }
+}
+
 export function useAiChat() {
   const { sprachmodell } = useAiProvider()
   const { werkzeuge } = useUmpTools()
+
+  laden()
 
   const laeuft = computed(() => status.value === 'submitted' || status.value === 'streaming')
 
@@ -97,6 +155,7 @@ export function useAiChat() {
     nachrichten.value = []
     fehler.value = null
     status.value = 'ready'
+    sichern()
   }
 
   async function senden(eingabe: string) {
@@ -132,7 +191,7 @@ export function useAiChat() {
       return neuer
     }
 
-    const leer = () => antwort.parts.every(p => p.type === 'text' && !p.text)
+    const leer = () => istLeer(antwort)
     const melde = (e: unknown) => {
       status.value = 'error'
       fehler.value = e instanceof Error ? e.message : String(e)
@@ -199,6 +258,9 @@ export function useAiChat() {
     }
     finally {
       abbruch = null
+      // Einmal am Ende statt bei jedem Zeichen: ein watch auf den Verlauf würde
+      // während des Stroms pro Delta die ganze Unterhaltung serialisieren.
+      sichern()
     }
   }
 
