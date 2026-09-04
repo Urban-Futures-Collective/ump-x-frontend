@@ -7,6 +7,7 @@ const { t, locale, locales, setLocale } = useI18n()
 const route = useRoute()
 const { loggedIn, user, login, logout } = useOidcAuth()
 const { isAdmin } = useUmpRoles()
+const { accountUrl } = useRuntimeConfig().public
 
 // Der Chat liegt in einer Schublade, damit er die Arbeitsfläche nicht verdrängt.
 const chatOffen = ref(false)
@@ -26,6 +27,9 @@ const navItems = computed<NavigationMenuItem[]>(() => {
   if (isAdmin.value) {
     items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
   }
+  // Hilfe steht bewusst am Ende der aktiven Gruppe und nicht bei den
+  // ausgegrauten: sie führt irgendwohin, die anderen dort nicht.
+  items.push({ label: t('nav.help'), icon: 'i-lucide-book-open', to: '/hilfe' })
   return items
 })
 
@@ -40,6 +44,39 @@ const plannedItems = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.planned.data'), icon: 'i-lucide-git-fork', disabled: true },
   { label: t('nav.planned.report'), icon: 'i-lucide-file-text', disabled: true },
 ])
+
+// Zwei Buchstaben aus dem Namen, wie im Entwurf. Ohne Namen lieber nichts als
+// ein erfundenes Kürzel.
+const initialen = computed(() => userName.value.slice(0, 2).toUpperCase())
+
+// „Zugriff beantragen" steht bewusst sichtbar und ausgegraut da, nach derselben
+// Regel wie die Einträge in der Seitenleiste: zeigen, wohin es geht, und nicht
+// so tun, als ginge es schon. Wohin so eine Anfrage geht, ist noch offen.
+const benutzerMenue = computed(() => [[
+  {
+    label: userName.value,
+    description: t('auth.viaKeycloak'),
+    type: 'label' as const,
+  },
+], [
+  {
+    label: t('auth.profile'),
+    icon: 'i-lucide-user',
+    to: accountUrl,
+    target: '_blank',
+  },
+  {
+    label: t('auth.requestAccess'),
+    icon: 'i-lucide-shield',
+    disabled: true,
+  },
+], [
+  {
+    label: t('auth.logout'),
+    icon: 'i-lucide-log-out',
+    onSelect: () => logout(),
+  },
+]])
 
 // Brotkrume: Home plus die aktuelle Stelle. Bewusst flach, solange es keine
 // Projektebene gibt, in die man hineinnavigieren könnte.
@@ -105,24 +142,8 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
       <template #footer="{ collapsed }">
         <ClientOnly>
           <div class="w-full space-y-2">
-            <template v-if="loggedIn">
-              <p v-if="!collapsed" class="truncate px-1 text-xs text-(--ui-text-muted)">
-                {{ t('auth.loggedInAs', { name: userName }) }}
-              </p>
-              <UButton
-                icon="i-lucide-log-out"
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                :square="collapsed"
-                :block="!collapsed"
-                @click="logout()"
-              >
-                <span v-if="!collapsed">{{ t('auth.logout') }}</span>
-              </UButton>
-            </template>
             <UButton
-              v-else
+              v-if="!loggedIn"
               icon="i-lucide-log-in"
               color="primary"
               size="sm"
@@ -165,16 +186,6 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
             >
               {{ t('nav.chat') }}
             </UButton>
-            <UButton
-              icon="i-lucide-book-open"
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              disabled
-              class="hidden md:inline-flex"
-            >
-              {{ t('nav.planned.readme') }}
-            </UButton>
 
             <div class="flex items-center gap-1">
               <UButton
@@ -188,6 +199,18 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
                 {{ loc.code.toUpperCase() }}
               </UButton>
             </div>
+
+            <!-- Nutzermenü nach dem Entwurf. Abmelden wohnt ab jetzt hier und
+                 nicht mehr zusätzlich in der Seitenleiste: zwei Wege zum selben
+                 Ziel sind kein Angebot. Abgemeldet bleibt der Anmelde-Knopf
+                 unten in der Leiste, wie im Entwurf. -->
+            <ClientOnly>
+              <UDropdownMenu v-if="loggedIn" :items="benutzerMenue" :ui="{ content: 'w-64' }">
+                <UButton color="neutral" variant="ghost" size="sm" trailing-icon="i-lucide-chevron-down">
+                  <UAvatar :text="initialen" size="xs" />
+                </UButton>
+              </UDropdownMenu>
+            </ClientOnly>
           </template>
         </UDashboardNavbar>
       </template>

@@ -16,10 +16,10 @@
       "projects": "Projekte",
       "contribute": "Beitragen",
       "data": "Datenablage",
-      "report": "Bericht",
-      "readme": "Anleitung"
+      "report": "Bericht"
     },
-    "chat": "Chat"
+    "chat": "Chat",
+    "help": "Hilfe"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -31,7 +31,10 @@
   "auth": {
     "login": "Anmelden",
     "logout": "Abmelden",
-    "loggedInAs": "Angemeldet als {name}"
+    "loggedInAs": "Angemeldet als {name}",
+    "viaKeycloak": "Angemeldet über Keycloak",
+    "profile": "Mein Profil",
+    "requestAccess": "Zugriff beantragen"
   },
   "jobs": {
     "title": "Meine Szenarien",
@@ -176,6 +179,48 @@
       "openForm": "Formular öffnen",
       "startedByYou": "Gestartet wird erst im Formular, von dir.",
       "recognised": "Erkannte Eingaben:"
+    }
+  },
+  "help": {
+    "title": "Hilfe",
+    "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist.",
+    "chat": {
+      "heading": "Chat auf dieser Seite",
+      "lead": "Du verbindest dein eigenes Modell, dann führt der Chat dich durch den Katalog.",
+      "steps": {
+        "provider": {
+          "title": "Anbieter wählen",
+          "body": "OpenAI, Anthropic oder OpenRouter, dazu jeder Dienst, der die OpenAI-Form spricht. Auch ein Modell, das auf deinem eigenen Rechner läuft."
+        },
+        "key": {
+          "title": "Schlüssel eintragen",
+          "body": "Den Schlüssel bekommst du bei deinem Anbieter. Er bleibt im Speicher deines Browsers und erreicht unseren Server nie. Nimm am besten einen Schlüssel nur für diesen Zweck, mit Ausgabengrenze."
+        },
+        "ask": {
+          "title": "Fragen stellen",
+          "body": "Der Chat kennt den Katalog und die Parameter der Modelle. Einen Lauf bereitet er vor und füllt das Formular; abgeschickt wird er von dir."
+        }
+      }
+    },
+    "mcp": {
+      "heading": "Eigener KI-Client über MCP",
+      "lead": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. Getestet haben wir es mit Claude Desktop.",
+      "steps": {
+        "address": {
+          "title": "Adresse im Client eintragen",
+          "body": "In Claude Desktop unter Einstellungen, Connectors, „Custom Connector hinzufügen“. Andere Clients nennen es Server oder Werkzeugquelle."
+        },
+        "signin": {
+          "title": "Mit deinem Konto anmelden",
+          "body": "Der Client schickt dich einmal zur Anmeldung der Plattform. Er bekommt danach genau deine Rechte, nicht mehr."
+        },
+        "use": {
+          "title": "Modelle als Werkzeuge benutzen",
+          "body": "Die Modelle erscheinen im Client als Werkzeuge. Läufe starten, Status abfragen und Ergebnisse abholen geht von dort aus."
+        }
+      },
+      "copy": "Adresse kopieren",
+      "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
     }
   }
 }

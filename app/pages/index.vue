@@ -113,7 +113,7 @@ const vorschau: Record<string, string> = {
       </div>
     </header>
 
-    <section class="bg-linear-to-br from-ufc-teal-500 to-ufc-gold-400 px-6 py-16 text-white sm:px-16">
+    <section class="bg-linear-to-br from-ufc-logo-teal to-ufc-logo-gold px-6 py-16 text-white sm:px-16">
       <div class="mx-auto flex max-w-7xl flex-col items-center gap-10 lg:flex-row lg:gap-16">
         <div class="flex-1 space-y-6">
           <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">
@@ -164,7 +164,7 @@ const vorschau: Record<string, string> = {
           <li
             v-for="(schritt, i) in schritte"
             :key="schritt"
-            class="space-y-2 rounded-xl bg-ufc-blue-50 p-6"
+            class="space-y-2 rounded-xl bg-ufc-blue-100 p-6"
           >
             <span class="block text-lg font-semibold text-ufc-teal-600">{{ i + 1 }}</span>
             <h3 class="font-medium text-(--ui-text-highlighted)">

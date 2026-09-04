@@ -44,6 +44,8 @@ export default defineNuxtConfig({
       umpBase: '/ump',
       // UMP 3.x mountet die OGC-Routen unter einem Versions-Präfix (/v1.0/processes …).
       // Bis 2.x lagen sie an der Wurzel; ohne dieses Präfix antwortet die API mit 404.
+      mcpUrl: 'https://mcp.urbanfuturescollective.org/mcp',
+      accountUrl: 'https://auth.urbanfuturescollective.org/realms/UrbanModelPlatform/account',
       umpApiVersion: 'v1.0',
     },
   },
