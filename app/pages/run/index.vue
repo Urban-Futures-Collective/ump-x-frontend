@@ -46,7 +46,7 @@ watch(queryProcess, (id) => {
       </div>
 
       <p v-if="error" class="text-sm text-red-600">
-        {{ t('processes.error') }}
+        {{ t('processes.error', { msg: apiErrorMessage(error) }) }}
       </p>
 
       <ul v-if="processes?.length" class="space-y-1">

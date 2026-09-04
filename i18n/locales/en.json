@@ -65,7 +65,7 @@
     "title": "Model processes",
     "refresh": "Refresh",
     "empty": "No processes available.",
-    "error": "Could not load processes.",
+    "error": "The processes could not be loaded: {msg}",
     "anonymousHint": "Without signing in you only see public processes. Sign in to see role-gated processes (e.g. squareroot)."
   },
   "run": {
