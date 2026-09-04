@@ -58,17 +58,31 @@ Karte oder die Datei braucht, öffnet den Lauf über den Link.
 Eine Eingabe ohne Vorgabe muss der Nutzer setzen. Eine mit Vorgabe darf er leer
 lassen; bei growbike ist "auto" genau so gemeint, das Feld bleibt dann leer.
 
-Antworte knapp und in der Sprache der Frage.`
+Antworte knapp und in der Sprache der Frage. Schreib Fließtext ohne Markdown:
+keine Sternchen, keine Rauten, keine Tabellen, keine Klammer-Links. Die Seite
+zeigt deine Antwort als reinen Text an, Auszeichnungen bleiben als Zeichen stehen.
+Aufzählungen höchstens als kurze Zeilen mit einem Bindestrich davor.`
+
+// Der Verlauf steht auf Modulebene und nicht im Composable-Aufruf. Die Schublade
+// hängt das Panel beim Schließen aus, und mit ihm wäre die Unterhaltung weg,
+// obwohl der Nutzer sie nur kurz aus dem Weg geschoben hat. So überlebt sie das
+// Schließen und auch den Wechsel von der Startseite in die Anwendung.
+//
+// Unbedenklich auf Modulebene, weil der Chat ausschließlich im Browser läuft
+// (das Panel steckt in ClientOnly): auf dem Server entstünde sonst Zustand, den
+// sich fremde Anfragen teilen. Ein Neuladen der Seite leert den Verlauf, er wird
+// bewusst nirgends gespeichert.
+const nachrichten = ref<Nachricht[]>([])
+const status = ref<ChatStatus>('ready')
+const fehler = ref<string | null>(null)
+
+// Ebenfalls hier oben: sonst hält ein neu eingehängtes Panel einen anderen
+// Controller als der Strom, der noch läuft, und „Abbrechen" träfe ins Leere.
+let abbruch: AbortController | null = null
 
 export function useAiChat() {
   const { sprachmodell } = useAiProvider()
   const { werkzeuge } = useUmpTools()
-
-  const nachrichten = ref<Nachricht[]>([])
-  const status = ref<ChatStatus>('ready')
-  const fehler = ref<string | null>(null)
-
-  let abbruch: AbortController | null = null
 
   const laeuft = computed(() => status.value === 'submitted' || status.value === 'streaming')
 
