@@ -80,9 +80,15 @@ export function useAiChat() {
     fehler.value = null
     nachrichten.value.push({ id: crypto.randomUUID(), role: 'user', parts: [{ type: 'text', text }] })
 
+    // Reihenfolge ist hier Verhalten, nicht Geschmack: UChatMessages scrollt beim
+    // Wechsel auf 'submitted' zur letzten Nachricht, aber nur wenn die vom
+    // Nutzer stammt. Hängt man die leere Antwortblase vorher an, greift die
+    // Regel nie und die Frage bleibt unten am Rand stehen.
+    status.value = 'submitted'
+    await nextTick()
+
     const antwort: Nachricht = { id: crypto.randomUUID(), role: 'assistant', parts: [] }
     nachrichten.value.push(antwort)
-    status.value = 'submitted'
 
     // Text landet im letzten Teil, solange der Text ist. Nach einem Werkzeug
     // beginnt ein neuer, damit die Reihenfolge Text, Werkzeug, Text erhalten

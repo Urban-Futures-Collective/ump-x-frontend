@@ -95,6 +95,7 @@ function beispielWaehlen(frage: string) {
           v-else
           :messages="nachrichten"
           :status="status"
+          should-auto-scroll
           :assistant="{ side: 'left', variant: 'naked' }"
           :user="{ side: 'right', variant: 'soft' }"
         >
