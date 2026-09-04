@@ -126,6 +126,21 @@
       "lead": "The catalogue is open to everyone. Whatever can be started without an account is marked on the model.",
       "open": "Runs without an account",
       "needsLogin": "Sign-in required"
+    },
+    "ai": {
+      "heading": "Chat with your own AI",
+      "lead": "UMP-X provides no language model and pays for none. You connect yours, then it walks you through the catalogue. The choice and the cost stay with you.",
+      "prompt": "Where shall we start?",
+      "keyHint": "First you enter a provider and a key. The key stays in your browser.",
+      "own": {
+        "heading": "Or bring your own client",
+        "body": "The models are available as tools over MCP too. If you already use an AI client, connect it once and carry on from there."
+      }
+    },
+    "mcp": {
+      "heading": "MCP: the models in your own AI client",
+      "body": "MCP is an open standard that lets AI clients use tools from other providers. UMP-X offers its models through it: connect once, sign in with your account, and the models are there in your client. The same rights apply as here.",
+      "more": "How to connect your client"
     }
   },
   "ai": {

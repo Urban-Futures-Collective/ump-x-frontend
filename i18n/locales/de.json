@@ -126,6 +126,21 @@
       "lead": "Der Katalog steht allen offen. Was sich ohne Anmeldung starten lässt, ist am Modell vermerkt.",
       "open": "Ohne Anmeldung ausführbar",
       "needsLogin": "Anmeldung nötig"
+    },
+    "ai": {
+      "heading": "Chat mit deiner KI",
+      "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Du verbindest deins, dann führt es dich durch den Katalog. Die Wahl und die Kosten bleiben bei dir.",
+      "prompt": "Womit fangen wir an?",
+      "keyHint": "Zuerst trägst du Anbieter und Schlüssel ein. Der Schlüssel bleibt in deinem Browser.",
+      "own": {
+        "heading": "Oder bring deinen Client mit",
+        "body": "Die Modelle stehen auch als Werkzeuge über MCP bereit. Wer schon einen KI-Client benutzt, verbindet ihn einmal und arbeitet von dort aus weiter."
+      }
+    },
+    "mcp": {
+      "heading": "MCP: die Modelle in deinem eigenen KI-Client",
+      "body": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. UMP-X stellt seine Modelle darüber bereit: einmal verbinden, mit dem eigenen Konto anmelden, und die Modelle stehen im Client zur Verfügung. Es gelten dieselben Rechte wie hier.",
+      "more": "So verbindest du deinen Client"
     }
   },
   "ai": {

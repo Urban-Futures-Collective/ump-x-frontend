@@ -7,6 +7,9 @@
 // Modell ohne Zugriff auf das Backend beantworten kann.
 import type { Nachricht } from '~/composables/useAiChat'
 
+// Die Startseite reicht die dort getippte Frage herein. Ohne Schlüssel geht sie
+// nicht verloren, sondern steht im Eingabefeld, sobald der Zugang steht.
+const props = defineProps<{ startfrage?: string }>()
 const emit = defineEmits<{ schliessen: [] }>()
 
 const { t } = useI18n()
@@ -30,6 +33,13 @@ function beispielWaehlen(frage: string) {
   eingabe.value = frage
   abschicken()
 }
+
+onMounted(() => {
+  const frage = props.startfrage?.trim()
+  if (!frage) return
+  if (hatSchluessel.value) beispielWaehlen(frage)
+  else eingabe.value = frage
+})
 </script>
 
 <template>

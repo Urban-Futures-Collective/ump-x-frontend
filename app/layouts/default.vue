@@ -181,10 +181,10 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
               color="neutral"
               variant="ghost"
               size="sm"
-              class="hidden md:inline-flex"
+              :aria-label="t('nav.chat')"
               @click="chatOffen = true"
             >
-              {{ t('nav.chat') }}
+              <span class="hidden md:inline">{{ t('nav.chat') }}</span>
             </UButton>
 
             <div class="flex items-center gap-1">
