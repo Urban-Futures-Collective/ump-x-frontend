@@ -138,27 +138,6 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           class="w-full"
         />
       </template>
-
-      <template #footer="{ collapsed }">
-        <ClientOnly>
-          <div class="w-full space-y-2">
-            <UButton
-              v-if="!loggedIn"
-              icon="i-lucide-log-in"
-              color="primary"
-              size="sm"
-              :square="collapsed"
-              :block="!collapsed"
-              @click="login()"
-            >
-              <span v-if="!collapsed">{{ t('auth.login') }}</span>
-            </UButton>
-          </div>
-          <template #fallback>
-            <div class="h-8" />
-          </template>
-        </ClientOnly>
-      </template>
     </UDashboardSidebar>
 
     <UDashboardPanel>
@@ -200,16 +179,30 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
               </UButton>
             </div>
 
-            <!-- Nutzermenü nach dem Entwurf. Abmelden wohnt ab jetzt hier und
-                 nicht mehr zusätzlich in der Seitenleiste: zwei Wege zum selben
-                 Ziel sind kein Angebot. Abgemeldet bleibt der Anmelde-Knopf
-                 unten in der Leiste, wie im Entwurf. -->
+            <!-- Konto oben rechts, in beiden Zuständen an derselben Stelle.
+                 Abmelden wohnt hier und nicht zusätzlich in der Seitenleiste:
+                 zwei Wege zum selben Ziel sind kein Angebot. Der Anmelde-Knopf
+                 stand bis zum 2026-09-04 unten in der Leiste und war damit das
+                 einzige Bedienelement, das die Ecke gewechselt hat, sobald man
+                 angemeldet war. -->
             <ClientOnly>
               <UDropdownMenu v-if="loggedIn" :items="benutzerMenue" :ui="{ content: 'w-64' }">
                 <UButton color="neutral" variant="ghost" size="sm" trailing-icon="i-lucide-chevron-down">
                   <UAvatar :text="initialen" size="xs" />
                 </UButton>
               </UDropdownMenu>
+              <UButton
+                v-else
+                icon="i-lucide-log-in"
+                color="primary"
+                size="sm"
+                @click="login()"
+              >
+                {{ t('auth.login') }}
+              </UButton>
+              <template #fallback>
+                <div class="h-8 w-20" />
+              </template>
             </ClientOnly>
           </template>
         </UDashboardNavbar>
