@@ -15,6 +15,7 @@ export interface ProcessInput {
   title: string
   description?: string
   type: string
+  /** Muss der Aufrufer liefern: minOccurs >= 1 UND keine Vorgabe im Schema. */
   required: boolean
   default?: unknown
 }

@@ -73,7 +73,8 @@
     "allModels": "Alle Modelle",
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
-    "openJob": "Lauf öffnen"
+    "openJob": "Lauf öffnen",
+    "defaultHint": "Leer lassen für die Vorgabe {wert}."
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",

@@ -35,7 +35,12 @@ export function useUmpProcess(id: MaybeRefOrGetter<string>) {
         title: v.title ?? key,
         description: v.description,
         type: v.schema?.type ?? 'string',
-        required: (v.minOccurs ?? 0) >= 1,
+        // Pflicht ist nur, was der Aufrufer wirklich liefern muss. `minOccurs`
+        // allein reicht dafür nicht: growbike führt jede Eingabe mit
+        // minOccurs 1, gibt aber den meisten eine Vorgabe. Ein Stern an einem
+        // Feld, das man leer lassen darf und für „auto" sogar leer lassen
+        // MUSS, verlangt etwas Falsches.
+        required: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
         default: v.schema?.default,
       })),
     }),

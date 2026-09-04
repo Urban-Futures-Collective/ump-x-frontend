@@ -73,7 +73,8 @@
     "allModels": "All models",
     "execute": "Run",
     "error": "Error: {msg}",
-    "openJob": "Open run"
+    "openJob": "Open run",
+    "defaultHint": "Leave empty for the default {wert}."
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",

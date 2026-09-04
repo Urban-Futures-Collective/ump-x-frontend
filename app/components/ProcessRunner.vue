@@ -22,6 +22,16 @@ watch(proc, (p) => {
 // Ergebnis nach außen (an die Karte) reichen.
 watch(result, r => emit('result', r))
 
+// Zahlenfelder können eine nicht-numerische Vorgabe nicht anzeigen: der Browser
+// wirft "auto" aus einem type=number heraus. Das Feld sieht dann leer aus, und
+// niemand erfährt, dass genau dieses Leerlassen die Vorgabe auslöst. Deshalb der
+// Hinweis darunter — nur dort, wo die Vorgabe wirklich unsichtbar ist.
+function vorgabeUnsichtbar(inp: { type: string, default?: unknown }) {
+  if (inp.default == null) return false
+  const zahlenfeld = inp.type === 'integer' || inp.type === 'number'
+  return zahlenfeld && !Number.isFinite(Number(inp.default))
+}
+
 async function onSubmit() {
   const inputs: Record<string, unknown> = {}
   for (const inp of proc.value?.inputs ?? []) {
@@ -70,6 +80,9 @@ async function onSubmit() {
           :placeholder="inp.description"
           class="w-full"
         />
+        <p v-if="vorgabeUnsichtbar(inp)" class="text-xs text-(--ui-text-dimmed)">
+          {{ t('run.defaultHint', { wert: String(inp.default) }) }}
+        </p>
       </div>
 
       <div class="flex items-center gap-3">
