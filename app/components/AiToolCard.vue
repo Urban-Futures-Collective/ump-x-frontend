@@ -68,11 +68,14 @@ const beschriftung = computed(() => {
   return uebersetzt === schluessel ? props.teil.name : uebersetzt
 })
 
-const symbol = computed(() => ({
-  laeuft: 'i-lucide-wrench',
-  fertig: 'i-lucide-check',
-  fehler: 'i-lucide-triangle-alert',
-}[props.teil.zustand]))
+// „Fertig" heißt nur, dass das Werkzeug geantwortet hat. Werkzeuge geben ihre
+// Fehler als Feld zurück statt zu werfen (siehe useUmpTools), sonst risse der
+// Strom ab. Ein Häkchen über einer Fehlermeldung wäre deshalb genau falsch.
+const symbol = computed(() => {
+  if (props.teil.zustand === 'laeuft') return 'i-lucide-wrench'
+  if (props.teil.zustand === 'fehler' || ausgabe.value?.fehler) return 'i-lucide-triangle-alert'
+  return 'i-lucide-check'
+})
 
 const zusatz = computed(() => {
   if (props.teil.zustand === 'laeuft') return t('ai.tools.running')
