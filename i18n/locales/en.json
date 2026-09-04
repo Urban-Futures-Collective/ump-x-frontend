@@ -165,7 +165,11 @@
       "failed": "failed",
       "count": "{n} models",
       "inputs": "{n} inputs",
-      "sentToProvider": "Sent to the model:"
+      "sentToProvider": "Sent to the model:",
+      "prepareRun": "Run prepared",
+      "openForm": "Open the form",
+      "startedByYou": "Starting happens in the form, by you.",
+      "recognised": "Recognised inputs:"
     }
   }
 }

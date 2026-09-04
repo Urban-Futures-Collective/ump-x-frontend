@@ -11,10 +11,21 @@ const { run, jobId, status, progress, error, result, running } = useUmpRun()
 const form = ref<Record<string, string>>({})
 
 // Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.
+//
+// Werte aus der Adresszeile (`?in.cityname=Oelde`) stechen die Vorgabe. Darüber
+// übergibt der Chat einen vorbereiteten Lauf: er schlägt vor, die Adresszeile
+// trägt den Vorschlag, und abgeschickt wird hier von Hand. Ein Tieflink statt
+// eines geteilten Zustands, damit der Vorschlag ein Neuladen übersteht und
+// sich weitergeben lässt.
+const route = useRoute()
+
 watch(proc, (p) => {
   const next: Record<string, string> = {}
   for (const inp of p?.inputs ?? []) {
-    next[inp.name] = inp.default != null ? String(inp.default) : ''
+    const ausAdresse = route.query[`in.${inp.name}`]
+    next[inp.name] = typeof ausAdresse === 'string' && ausAdresse !== ''
+      ? ausAdresse
+      : inp.default != null ? String(inp.default) : ''
   }
   form.value = next
 }, { immediate: true })
@@ -33,26 +44,9 @@ function vorgabeUnsichtbar(inp: { type: string, default?: unknown }) {
 }
 
 async function onSubmit() {
-  const inputs: Record<string, unknown> = {}
-  for (const inp of proc.value?.inputs ?? []) {
-    const raw = (form.value[inp.name] ?? '').trim()
-    const def = inp.default != null ? String(inp.default) : ''
-    // Leeres nicht senden; unveränderte Defaults weglassen → das Backend nutzt seine
-    // eigenen Defaults (wichtig für growbike, dessen Integer-Inputs den String "auto"
-    // als Default haben — ein Number("auto") würde NaN senden und den Prozess crashen).
-    if (raw === '') continue
-    if (def !== '' && raw === def) continue
-    if ((inp.type === 'integer' || inp.type === 'number') && Number.isFinite(Number(raw))) {
-      inputs[inp.name] = Number(raw)
-    }
-    else if (inp.type === 'boolean') {
-      inputs[inp.name] = raw === 'true' || raw === '1'
-    }
-    else {
-      inputs[inp.name] = raw
-    }
-  }
-  await run(props.processId, inputs)
+  // Die Regel liegt in app/utils/processInputs.ts, weil der Chat sie ebenfalls
+  // anwendet. Zwei Fassungen davon wären zwei Wahrheiten über den "auto"-Default.
+  await run(props.processId, bereinigeEingaben(proc.value?.inputs ?? [], form.value))
 }
 </script>
 

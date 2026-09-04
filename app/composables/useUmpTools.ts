@@ -108,5 +108,67 @@ export function useUmpTools() {
     },
   })
 
-  return { werkzeuge: { listProcesses, describeProcess } }
+  const prepareRun = tool({
+    description:
+      'Bereitet einen Lauf vor, OHNE ihn zu starten. Prüft die Eingaben gegen das Schema '
+      + 'des Modells und liefert einen Link auf das ausgefüllte Formular. Erst describeProcess '
+      + 'aufrufen, damit die Namen stimmen. Lass Eingaben weg, die eine Vorgabe haben.',
+    inputSchema: jsonSchema<{ processId: string, eingaben?: Record<string, unknown> }>({
+      type: 'object',
+      properties: {
+        processId: {
+          type: 'string',
+          description: 'Die vollständige Id mit Anbieter-Präfix.',
+        },
+        eingaben: {
+          type: 'object',
+          description: 'Die Eingaben als Objekt, Schlüssel sind die Parameternamen.',
+          additionalProperties: true,
+        },
+      },
+      required: ['processId'],
+      additionalProperties: false,
+    }),
+    async execute({ processId, eingaben }) {
+      try {
+        const roh = await $fetch<OgcProcessDetail>(`${base}/processes/${processId}`)
+        const felder = Object.entries(roh.inputs ?? {}).map(([name, v]) => ({
+          name,
+          type: v.schema?.type ?? 'string',
+          default: v.schema?.default,
+          pflicht: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
+        }))
+
+        const gegeben = eingaben ?? {}
+        const unbekannt = Object.keys(gegeben).filter(k => !felder.some(f => f.name === k))
+        // Dieselbe Regel wie im Formular, nicht eine zweite daneben.
+        const rumpf = bereinigeEingaben(felder, gegeben)
+        const fehlend = felder
+          .filter(f => f.pflicht && rumpf[f.name] === undefined)
+          .map(f => f.name)
+
+        // Tieflink statt geteiltem Zustand: übersteht ein Neuladen und lässt
+        // sich weitergeben. Abgeschickt wird im Formular, von Hand.
+        const suche = new URLSearchParams({ process: processId })
+        for (const [k, v] of Object.entries(rumpf)) suche.set(`in.${k}`, String(v))
+
+        return {
+          prozess: processId,
+          eingaben: rumpf,
+          weggelassen: felder
+            .filter(f => rumpf[f.name] === undefined && f.default !== undefined)
+            .map(f => f.name),
+          fehlend,
+          unbekannt,
+          link: `/run?${suche.toString()}`,
+          hinweis: 'Nicht gestartet. Der Link öffnet das ausgefüllte Formular, abschicken muss der Nutzer.',
+        }
+      }
+      catch (e) {
+        return alsFehler(e)
+      }
+    },
+  })
+
+  return { werkzeuge: { listProcesses, describeProcess, prepareRun } }
 }

@@ -102,7 +102,7 @@ function beispielWaehlen(frage: string) {
           <template #content="{ message }">
             <div class="space-y-2">
               <template v-for="(teil, i) in (message as Nachricht).parts" :key="i">
-                <AiToolCard v-if="teil.type === 'werkzeug'" :teil="teil" />
+                <AiToolCard v-if="teil.type === 'werkzeug'" :teil="teil" @geoeffnet="emit('schliessen')" />
                 <p v-else-if="teil.text" class="whitespace-pre-wrap">
                   {{ teil.text }}
                 </p>

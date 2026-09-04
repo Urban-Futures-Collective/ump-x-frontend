@@ -165,7 +165,11 @@
       "failed": "fehlgeschlagen",
       "count": "{n} Modelle",
       "inputs": "{n} Eingaben",
-      "sentToProvider": "An das Modell gegangen:"
+      "sentToProvider": "An das Modell gegangen:",
+      "prepareRun": "Lauf vorbereitet",
+      "openForm": "Formular öffnen",
+      "startedByYou": "Gestartet wird erst im Formular, von dir.",
+      "recognised": "Erkannte Eingaben:"
     }
   }
 }
