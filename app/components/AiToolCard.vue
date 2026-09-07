@@ -24,6 +24,8 @@ interface Ausgabe {
   laeufe?: unknown[]
   eingaben?: Record<string, unknown> | unknown[]
   link?: string
+  fehlend?: string[]
+  unbekannt?: string[]
   prozess?: string
   status?: JobStatus
   fortschritt?: number
@@ -93,25 +95,46 @@ const erkannt = computed(() => {
   return Object.entries(e).map(([k, v]) => `${k} = ${String(v)}`)
 })
 
+// Was das Modell nicht geliefert hat. Am 2026-09-07 auf Staging gesehen: ein
+// Modell traf den Parameternamen nicht, prepareRun bekam also gar keine Eingaben,
+// und die Karte sah fuenfmal hintereinander aus wie eine gelungene Vorbereitung.
+// Das Werkzeug meldet den Mangel, die Karte hat ihn nur verschwiegen.
+const fehlend = computed(() => ausgabe.value?.fehlend ?? [])
+const unbekannt = computed(() => ausgabe.value?.unbekannt ?? [])
+const unvollstaendig = computed(() => fehlend.value.length > 0)
+
 const inhalt = computed(() => JSON.stringify(props.teil.ausgabe ?? props.teil.eingabe ?? {}, null, 2))
 </script>
 
 <template>
   <div
     v-if="vorbereitet"
-    class="overflow-hidden rounded-lg border border-(--ui-primary) bg-(--ui-bg-elevated)"
+    class="overflow-hidden rounded-lg border bg-(--ui-bg-elevated)"
+    :class="unvollstaendig ? 'border-(--ui-warning)' : 'border-(--ui-primary)'"
   >
     <div class="flex items-center gap-2 px-2.5 py-2">
-      <UIcon name="i-lucide-play" class="size-3.5 text-(--ui-primary)" />
+      <UIcon
+        :name="unvollstaendig ? 'i-lucide-circle-alert' : 'i-lucide-play'"
+        class="size-3.5"
+        :class="unvollstaendig ? 'text-(--ui-warning)' : 'text-(--ui-primary)'"
+      />
       <span class="flex-1 text-sm font-medium">{{ t('ai.tools.prepareRun') }}</span>
       <span class="text-xs text-(--ui-text-dimmed)">{{ (teil.eingabe as { processId?: string })?.processId?.split(':').pop() }}</span>
     </div>
     <div class="space-y-1.5 border-t border-(--ui-border) px-2.5 py-2.5">
-      <p class="text-xs text-(--ui-text-muted)">
+      <p v-if="erkannt.length" class="text-xs text-(--ui-text-muted)">
         {{ t('ai.tools.recognised') }}
       </p>
       <p v-for="zeile in erkannt" :key="zeile" class="text-xs text-(--ui-text-dimmed)">
         {{ zeile }}
+      </p>
+      <!-- Der Mangel steht vor dem Knopf und nicht darunter: wer hier weiterklickt,
+           soll vorher gelesen haben, was im Formular noch fehlt. -->
+      <p v-if="fehlend.length" class="text-xs font-medium text-(--ui-warning)">
+        {{ t('ai.tools.missing', { liste: fehlend.join(', ') }) }}
+      </p>
+      <p v-if="unbekannt.length" class="text-xs text-(--ui-text-muted)">
+        {{ t('ai.tools.unknown', { liste: unbekannt.join(', ') }) }}
       </p>
       <UButton :to="ausgabe?.link" size="xs" class="mt-1" @click="emit('geoeffnet')">
         {{ t('ai.tools.openForm') }}

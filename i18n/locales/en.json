@@ -200,6 +200,8 @@
       "openForm": "Open the form",
       "startedByYou": "Starting happens in the form, by you.",
       "recognised": "Recognised inputs:",
+      "missing": "Still missing: {liste}",
+      "unknown": "Not recognised, left out: {liste}",
       "listJobs": "List runs",
       "showJob": "Show run",
       "runs": "{n} runs",

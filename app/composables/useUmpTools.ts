@@ -121,23 +121,28 @@ export function useUmpTools() {
       'Bereitet einen Lauf vor, OHNE ihn zu starten. Prüft die Eingaben gegen das Schema '
       + 'des Modells und liefert einen Link auf das ausgefüllte Formular. Erst describeProcess '
       + 'aufrufen, damit die Namen stimmen. Lass Eingaben weg, die eine Vorgabe haben.',
-    inputSchema: jsonSchema<{ processId: string, eingaben?: Record<string, unknown> }>({
+    // Die Schlüssel dieses Schemas liest ein fremdes Sprachmodell, nicht unser
+    // Code. Deshalb heißen sie englisch, anders als die Bezeichner im Repo: am
+    // 2026-09-07 hat ein lokales Modell auf Staging „geben" und „gabenein"
+    // geraten, statt „eingaben" zu treffen, und schickte dreimal einen Aufruf
+    // ohne Eingaben los.
+    inputSchema: jsonSchema<{ processId: string, inputs?: Record<string, unknown> }>({
       type: 'object',
       properties: {
         processId: {
           type: 'string',
           description: 'Die vollständige Id mit Anbieter-Präfix.',
         },
-        eingaben: {
+        inputs: {
           type: 'object',
-          description: 'Die Eingaben als Objekt, Schlüssel sind die Parameternamen.',
+          description: 'Die Eingaben als Objekt, Schlüssel sind die Parameternamen des Modells.',
           additionalProperties: true,
         },
       },
       required: ['processId'],
       additionalProperties: false,
     }),
-    async execute({ processId, eingaben }) {
+    async execute({ processId, inputs }) {
       try {
         const roh = await $fetch<OgcProcessDetail>(`${base}/processes/${processId}`)
         const felder = Object.entries(roh.inputs ?? {}).map(([name, v]) => ({
@@ -147,7 +152,7 @@ export function useUmpTools() {
           pflicht: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
         }))
 
-        const gegeben = eingaben ?? {}
+        const gegeben = inputs ?? {}
         const unbekannt = Object.keys(gegeben).filter(k => !felder.some(f => f.name === k))
         // Dieselbe Regel wie im Formular, nicht eine zweite daneben.
         const rumpf = bereinigeEingaben(felder, gegeben)

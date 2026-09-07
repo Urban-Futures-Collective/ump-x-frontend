@@ -200,6 +200,8 @@
       "openForm": "Formular öffnen",
       "startedByYou": "Gestartet wird erst im Formular, von dir.",
       "recognised": "Erkannte Eingaben:",
+      "missing": "Es fehlen noch: {liste}",
+      "unknown": "Nicht erkannt, weggelassen: {liste}",
       "listJobs": "Läufe auflisten",
       "showJob": "Lauf zeigen",
       "runs": "{n} Läufe",
