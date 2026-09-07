@@ -8,19 +8,22 @@ interface OgcInput {
 }
 interface OgcProcessDetail {
   id: string
-  title?: string
-  description?: string
+  title?: string | null
+  description?: string | null
   version?: string
-  keywords?: string[]
-  inputs?: Record<string, OgcInput>
+  keywords?: string[] | null
+  inputs?: Record<string, OgcInput> | null
 }
 
 // Prozess-Detail inkl. Inputs-Schema (für das dynamische Parameterformular).
 // OGC → ProcessDetail-Domänenmodell.
+//
+// Die id trägt seit jeher das Provider-Präfix (`modelserver-1:abm-test-model`);
+// UMP 3.x weist Ids ohne Doppelpunkt mit 400 ab. Der Doppelpunkt ist in einem
+// Pfadsegment erlaubt und darf deshalb nicht kodiert werden.
 export function useUmpProcess(id: MaybeRefOrGetter<string>) {
   const { base } = useUmpBase()
   return useFetch<OgcProcessDetail>(() => `${base}/processes/${toValue(id)}`, {
-    query: { f: 'json' },
     transform: (raw): ProcessDetail => ({
       id: raw.id,
       title: raw.title ?? raw.id,
