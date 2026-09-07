@@ -2,7 +2,7 @@
 
 **Status:** Zur Diskussion
 **Datum:** 2026-07-09
-**Kontext:** UMP-X (Nuxt-4-Frontend für die Urban Model Platform). Begleitdokument zu `frontend-backend-architecture.md`. Diese Vorlage behandelt nur die Teile des geplanten Frontends, die über die Frontend-Grenze hinausreichen und deshalb eine gemeinsame Entscheidung brauchen. Die drei User-Views brauchen das nicht — sie laufen gegen den bestehenden OGC-API-Vertrag und lassen sich unabhängig bauen.
+**Kontext:** UMP-X (Nuxt-4-Frontend für die Urban Model Platform). Begleitdokument zu `frontend-backend-architecture-de.md`. Diese Vorlage behandelt nur die Teile des geplanten Frontends, die über die Frontend-Grenze hinausreichen und deshalb eine gemeinsame Entscheidung brauchen. Die drei User-Views brauchen das nicht — sie laufen gegen den bestehenden OGC-API-Vertrag und lassen sich unabhängig bauen.
 
 ---
 
@@ -24,7 +24,9 @@ Ausgelesen auf der Live-Instanz (`auth.urbanfuturescollective.org`, Realm `Urban
 - **Keine App-Admin-Rolle** — das gesamte Rollen-Vokabular dreht sich um Modell-Zugriff. Realm-Admin (`ck71`) ist reine Keycloak-`realm-management`-Berechtigung und taugt nicht als Admin-Gate fürs Frontend.
 - **Test-User:** `ump` (alle), `ump-geo`, `ump-sqrt`, `ump-viewer` (keine) — eine Matrix nach Modell-Sichtbarkeit.
 
-Konsequenz fürs Frontend: Die drei User-Views (`/models`, `/jobs`, `/run`) sind für jeden eingeloggten User dieselben Routen; nur der *Inhalt* unterscheidet sich, weil UMP die Prozessliste bereits serverseitig nach den `modelserver*`-Rollen des Users filtert. Der einzige echte Routen-Branch ist **Admin vs. Nicht-Admin**.
+Konsequenz fürs Frontend: Die drei User-Views (`/models`, `/jobs`, `/run`) sind für jeden eingeloggten User dieselben Routen. Der einzige echte Routen-Branch ist **Admin vs. Nicht-Admin**.
+
+> **Nachtrag 2026-08-31.** Der ursprüngliche Satz an dieser Stelle lautete, der Inhalt unterscheide sich, weil UMP die Prozessliste serverseitig nach den Rollen filtert. Das gilt so nicht mehr. Seit UMP 3.0.0 hängt die Filterung der Liste an der Server-Einstellung `UMP_PUBLIC_PROCESSES`, und auf Produktion ist sie an: jeder sieht alle Modelle. Die Rollen entscheiden nur noch über das **Ausführen**, und sie heißen `<provider>` oder `<provider>:<prozess-id>`, nicht mehr `modelserver_<id>`. Siehe `docs/add-new-model-de.md`, Schritt 5.
 
 ---
 

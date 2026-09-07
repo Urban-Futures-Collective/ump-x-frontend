@@ -8,15 +8,43 @@ export default defineNuxtConfig({
   // Tailwind v4 + Nuxt UI imports leben in dieser Datei (Reihenfolge: tailwindcss vor @nuxt/ui).
   css: ['~/assets/css/main.css'],
 
+  // Favicon aus derselben Logodatei. SVG zuerst, PNG als Rückfallebene für
+  // Browser ohne SVG-Favicon und als Symbol auf dem iOS-Startbildschirm.
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      ],
+    },
+  },
+
+  // Vorerst nur der helle Modus. Der Umschalter ist raus, bis die Gestaltung
+  // steht; ohne diese Festlegung würde die Seite der Systemeinstellung des
+  // Besuchers folgen und bei manchen dunkel erscheinen.
+  //
+  // Der geänderte storageKey ist Absicht und nicht kosmetisch: Wer den alten
+  // Umschalter je auf dunkel gestellt hat, trägt das im Browser gespeichert mit
+  // sich herum, und eine gespeicherte Einstellung schlägt die Voreinstellung.
+  // Unter neuem Schlüssel gibt es nichts Gespeichertes, also greift 'light'.
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    storageKey: 'ump-x-color-mode',
+  },
+
   // Backend-Anbindung: server-seitiger Proxy /ump/** → UMP-API. Base zentral, per Env
   // überschreibbar. Der Proxy (server/routes/ump/[...].ts) hängt den Bearer-Token aus der
-  // OIDC-Session an. Siehe docs/frontend-backend-architecture.md (die zwei Nähte).
+  // OIDC-Session an. Siehe docs/frontend-backend-architecture-de.md (die zwei Nähte).
   runtimeConfig: {
     // Ziel des Proxys (server-only). Prod: per NUXT_UMP_API_TARGET überschreiben.
     umpApiTarget: 'http://localhost:5003',
     public: {
       umpBase: '/ump',
-      umpApiVersion: '', // vorbereitet für spätere /v1.0-Versionierung
+      // UMP 3.x mountet die OGC-Routen unter einem Versions-Präfix (/v1.0/processes …).
+      // Bis 2.x lagen sie an der Wurzel; ohne dieses Präfix antwortet die API mit 404.
+      umpApiVersion: 'v1.0',
     },
   },
 

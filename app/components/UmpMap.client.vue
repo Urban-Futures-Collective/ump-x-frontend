@@ -93,7 +93,12 @@ function render(fc?: FeatureCollection | null) {
 </script>
 
 <template>
-  <div class="h-[420px] w-full overflow-hidden rounded-lg border border-(--ui-border)">
+  <!-- Quadratisch statt fester Höhe: Ergebnisse sind Stadtgebiete, und die sind in
+       beide Richtungen ähnlich weit ausgedehnt. Ein breiter, flacher Ausschnitt
+       zwingt fitBounds herauszuzoomen, bis das Netz in der Mitte klein wird.
+       Die Obergrenze hält die Karte trotzdem auf einen Bildschirm, sonst wird sie
+       in einer breiten Spalte höher als das Fenster. -->
+  <div class="mx-auto aspect-square w-full max-w-[calc(100svh_-_9rem)] overflow-hidden rounded-lg border border-(--ui-border)">
     <div ref="mapContainer" class="h-full w-full" />
   </div>
 </template>
