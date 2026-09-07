@@ -16,10 +16,10 @@
       "projects": "Projekte",
       "contribute": "Beitragen",
       "data": "Datenablage",
-      "report": "Bericht",
-      "ask": "Ask MCP",
-      "readme": "Anleitung"
-    }
+      "report": "Bericht"
+    },
+    "chat": "Chat",
+    "help": "Hilfe"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -31,7 +31,10 @@
   "auth": {
     "login": "Anmelden",
     "logout": "Abmelden",
-    "loggedInAs": "Angemeldet als {name}"
+    "loggedInAs": "Angemeldet als {name}",
+    "viaKeycloak": "Angemeldet über Keycloak",
+    "profile": "Mein Profil",
+    "requestAccess": "Zugriff beantragen"
   },
   "jobs": {
     "title": "Meine Szenarien",
@@ -65,15 +68,22 @@
     "title": "Modell-Prozesse",
     "refresh": "Aktualisieren",
     "empty": "Keine Prozesse verfügbar.",
-    "error": "Prozesse konnten nicht geladen werden.",
-    "anonymousHint": "Ohne Anmeldung siehst du nur öffentliche Prozesse. Melde dich an, um rollenbasierte Prozesse (z. B. squareroot) zu sehen."
+    "error": "Prozesse konnten nicht geladen werden: {msg}",
+    "anonymousHint": "Ohne Anmeldung siehst du nur öffentliche Prozesse. Melde dich an, um rollenbasierte Prozesse (z. B. fixbike) zu sehen.",
+    "locked": "Zugang nötig"
   },
   "run": {
     "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",
     "allModels": "Alle Modelle",
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
-    "openJob": "Lauf öffnen"
+    "openJob": "Lauf öffnen",
+    "defaultHint": "Leer lassen für die Vorgabe {wert}.",
+    "locked": {
+      "heading": "Dieses Modell ist für dich nicht freigegeben",
+      "signedIn": "Zum Ausführen von {modell} braucht dein Konto die Freigabe für {anbieter}. Ansehen und Ergebnisse anderer Läufe bleiben möglich.",
+      "anonymous": "Zum Ausführen von {modell} musst du dich anmelden. Ansehen bleibt ohne Konto möglich."
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",
@@ -116,6 +126,129 @@
       "lead": "Der Katalog steht allen offen. Was sich ohne Anmeldung starten lässt, ist am Modell vermerkt.",
       "open": "Ohne Anmeldung ausführbar",
       "needsLogin": "Anmeldung nötig"
+    },
+    "ai": {
+      "heading": "Chat mit deiner KI",
+      "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Du verbindest deins, dann führt es dich durch den Katalog. Die Wahl und die Kosten bleiben bei dir.",
+      "prompt": "Womit fangen wir an?",
+      "keyHint": "Zuerst trägst du Anbieter und Schlüssel ein. Der Schlüssel bleibt in deinem Browser.",
+      "own": {
+        "heading": "Oder bring deinen Client mit",
+        "body": "Die Modelle stehen auch als Werkzeuge über MCP bereit. Wer schon einen KI-Client benutzt, verbindet ihn einmal und arbeitet von dort aus weiter."
+      }
+    },
+    "mcp": {
+      "heading": "MCP: die Modelle in deinem eigenen KI-Client",
+      "body": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. UMP-X stellt seine Modelle darüber bereit: einmal verbinden, mit dem eigenen Konto anmelden, und die Modelle stehen im Client zur Verfügung. Es gelten dieselben Rechte wie hier.",
+      "more": "So verbindest du deinen Client"
+    }
+  },
+  "ai": {
+    "title": "Chat mit deiner KI",
+    "connect": {
+      "heading": "Verbinde deine eigene KI",
+      "lead": "UMP-X stellt kein Sprachmodell. Du verbindest deins, damit die Wahl und die Kosten bei dir bleiben.",
+      "provider": "Anbieter",
+      "model": "Modell",
+      "modelHint": "Modellnamen ändern sich häufig, deshalb Freitext. Der Anbieter listet sie in seiner Übersicht.",
+      "baseUrl": "Basis-URL",
+      "key": "Schlüssel",
+      "submit": "Verbinden",
+      "forget": "Schlüssel löschen",
+      "warnKey": "Der Schlüssel liegt unverschlüsselt im Speicher dieses Browsers. Wer Zugriff darauf hat, kann ihn lesen.",
+      "warnData": "Deine Fragen gehen an den Anbieter, den du wählst. Die Kosten trägst du.",
+      "warnScope": "Nimm am besten einen Schlüssel nur für diesen Zweck, mit Ausgabengrenze.",
+      "mcp": "Oder verbinde den MCP-Server mit deinem eigenen KI-Client."
+    },
+    "providers": {
+      "openrouter": "OpenRouter",
+      "openai": "OpenAI",
+      "anthropic": "Anthropic",
+      "kompatibel": "Anderer, OpenAI-kompatibel"
+    },
+    "empty": {
+      "lead": "Womit fangen wir an?",
+      "connected": "Verbunden mit {anbieter} · {modell}"
+    },
+    "examples": {
+      "what": "Welche Modelle gibt es und was rechnen sie?",
+      "how": "Was braucht growbike als Eingabe?"
+    },
+    "placeholder": "Frag nach Modellen, Daten oder Parametern …",
+    "disclaimer": "Antworten können falsch sein. Läufe startet die Seite nur nach deiner Bestätigung.",
+    "streaming": "schreibt …",
+    "stop": "Abbrechen",
+    "clear": "Verlauf löschen",
+    "clearConfirm": {
+      "title": "Verlauf löschen?",
+      "body": "Die Unterhaltung ist danach weg. Sie liegt nur in diesem Tab, wir haben keine Kopie.",
+      "cancel": "Abbrechen",
+      "confirm": "Löschen"
+    },
+    "settings": "Zugang ändern",
+    "close": "Schließen",
+    "error": "Der Anbieter hat nicht geantwortet: {msg}",
+    "tools": {
+      "listProcesses": "Modelle auflisten",
+      "describeProcess": "Modell beschreiben",
+      "running": "läuft …",
+      "failed": "fehlgeschlagen",
+      "count": "{n} Modelle",
+      "inputs": "{n} Eingaben",
+      "sentToProvider": "An das Modell gegangen:",
+      "prepareRun": "Lauf vorbereitet",
+      "openForm": "Formular öffnen",
+      "startedByYou": "Gestartet wird erst im Formular, von dir.",
+      "recognised": "Erkannte Eingaben:",
+      "listJobs": "Läufe auflisten",
+      "showJob": "Lauf zeigen",
+      "runs": "{n} Läufe",
+      "openJob": "Lauf öffnen",
+      "features": "{n} Objekte",
+      "extent": "Ausdehnung {von} bis {bis}",
+      "properties": "Eigenschaften: {liste}"
+    }
+  },
+  "help": {
+    "title": "Hilfe",
+    "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist.",
+    "chat": {
+      "heading": "Chat auf dieser Seite",
+      "lead": "Du verbindest dein eigenes Modell, dann führt der Chat dich durch den Katalog.",
+      "steps": {
+        "provider": {
+          "title": "Anbieter wählen",
+          "body": "OpenAI, Anthropic oder OpenRouter, dazu jeder Dienst, der die OpenAI-Form spricht. Auch ein Modell, das auf deinem eigenen Rechner läuft."
+        },
+        "key": {
+          "title": "Schlüssel eintragen",
+          "body": "Den Schlüssel bekommst du bei deinem Anbieter. Er bleibt im Speicher deines Browsers und erreicht unseren Server nie. Nimm am besten einen Schlüssel nur für diesen Zweck, mit Ausgabengrenze."
+        },
+        "ask": {
+          "title": "Fragen stellen",
+          "body": "Der Chat kennt den Katalog und die Parameter der Modelle. Einen Lauf bereitet er vor und füllt das Formular; abgeschickt wird er von dir."
+        }
+      }
+    },
+    "mcp": {
+      "heading": "Eigener KI-Client über MCP",
+      "lead": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. Getestet haben wir es mit Claude Desktop.",
+      "steps": {
+        "address": {
+          "title": "Adresse im Client eintragen",
+          "body": "In Claude Desktop unter Einstellungen, Connectors, „Custom Connector hinzufügen“. Andere Clients nennen es Server oder Werkzeugquelle."
+        },
+        "signin": {
+          "title": "Mit deinem Konto anmelden",
+          "body": "Der Client schickt dich einmal zur Anmeldung der Plattform. Er bekommt danach genau deine Rechte, nicht mehr."
+        },
+        "use": {
+          "title": "Modelle als Werkzeuge benutzen",
+          "body": "Die Modelle erscheinen im Client als Werkzeuge. Läufe starten, Status abfragen und Ergebnisse abholen geht von dort aus."
+        }
+      },
+      "copy": "Adresse kopieren",
+      "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
     }
   }
 }

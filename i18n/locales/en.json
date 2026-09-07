@@ -16,10 +16,10 @@
       "projects": "Projects",
       "contribute": "Contribute",
       "data": "Data repository",
-      "report": "Report",
-      "ask": "Ask MCP",
-      "readme": "Read me"
-    }
+      "report": "Report"
+    },
+    "chat": "Chat",
+    "help": "Help"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -31,7 +31,10 @@
   "auth": {
     "login": "Sign in",
     "logout": "Sign out",
-    "loggedInAs": "Signed in as {name}"
+    "loggedInAs": "Signed in as {name}",
+    "viaKeycloak": "Signed in via Keycloak",
+    "profile": "My profile",
+    "requestAccess": "Request access"
   },
   "jobs": {
     "title": "My scenarios",
@@ -65,15 +68,22 @@
     "title": "Model processes",
     "refresh": "Refresh",
     "empty": "No processes available.",
-    "error": "Could not load processes.",
-    "anonymousHint": "Without signing in you only see public processes. Sign in to see role-gated processes (e.g. squareroot)."
+    "error": "The processes could not be loaded: {msg}",
+    "anonymousHint": "Without signing in you only see public processes. Sign in to see role-based ones such as fixbike.",
+    "locked": "Access needed"
   },
   "run": {
     "selectHint": "Select a process on the left to run it.",
     "allModels": "All models",
     "execute": "Run",
     "error": "Error: {msg}",
-    "openJob": "Open run"
+    "openJob": "Open run",
+    "defaultHint": "Leave empty for the default {wert}.",
+    "locked": {
+      "heading": "This model is not released for you",
+      "signedIn": "Running {modell} needs your account to be cleared for {anbieter}. Looking at it and at other runs stays possible.",
+      "anonymous": "Running {modell} requires you to sign in. Looking at it stays possible without an account."
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",
@@ -116,6 +126,129 @@
       "lead": "The catalogue is open to everyone. Whatever can be started without an account is marked on the model.",
       "open": "Runs without an account",
       "needsLogin": "Sign-in required"
+    },
+    "ai": {
+      "heading": "Chat with your own AI",
+      "lead": "UMP-X provides no language model and pays for none. You connect yours, then it walks you through the catalogue. The choice and the cost stay with you.",
+      "prompt": "Where shall we start?",
+      "keyHint": "First you enter a provider and a key. The key stays in your browser.",
+      "own": {
+        "heading": "Or bring your own client",
+        "body": "The models are available as tools over MCP too. If you already use an AI client, connect it once and carry on from there."
+      }
+    },
+    "mcp": {
+      "heading": "MCP: the models in your own AI client",
+      "body": "MCP is an open standard that lets AI clients use tools from other providers. UMP-X offers its models through it: connect once, sign in with your account, and the models are there in your client. The same rights apply as here.",
+      "more": "How to connect your client"
+    }
+  },
+  "ai": {
+    "title": "Chat with your own AI",
+    "connect": {
+      "heading": "Connect your own AI",
+      "lead": "UMP-X provides no language model. You connect yours, so the choice and the cost stay with you.",
+      "provider": "Provider",
+      "model": "Model",
+      "modelHint": "Model names change often, so this is free text. Your provider lists them in its overview.",
+      "baseUrl": "Base URL",
+      "key": "Key",
+      "submit": "Connect",
+      "forget": "Delete key",
+      "warnKey": "The key is stored unencrypted in this browser. Anyone with access to it can read it.",
+      "warnData": "Your questions go to the provider you choose. You pay for them.",
+      "warnScope": "Use a key created for this purpose only, with a spending limit.",
+      "mcp": "Or connect the MCP server to your own AI client."
+    },
+    "providers": {
+      "openrouter": "OpenRouter",
+      "openai": "OpenAI",
+      "anthropic": "Anthropic",
+      "kompatibel": "Other, OpenAI-compatible"
+    },
+    "empty": {
+      "lead": "Where shall we start?",
+      "connected": "Connected to {anbieter} · {modell}"
+    },
+    "examples": {
+      "what": "Which models are there and what do they compute?",
+      "how": "What inputs does growbike need?"
+    },
+    "placeholder": "Ask about models, data or parameters …",
+    "disclaimer": "Answers can be wrong. The page only starts a run after you confirm it.",
+    "streaming": "writing …",
+    "stop": "Stop",
+    "clear": "Clear chat",
+    "clearConfirm": {
+      "title": "Clear the chat?",
+      "body": "The conversation is gone afterwards. It lives in this tab only, we keep no copy.",
+      "cancel": "Cancel",
+      "confirm": "Clear"
+    },
+    "settings": "Change access",
+    "close": "Close",
+    "error": "The provider did not answer: {msg}",
+    "tools": {
+      "listProcesses": "List models",
+      "describeProcess": "Describe model",
+      "running": "running …",
+      "failed": "failed",
+      "count": "{n} models",
+      "inputs": "{n} inputs",
+      "sentToProvider": "Sent to the model:",
+      "prepareRun": "Run prepared",
+      "openForm": "Open the form",
+      "startedByYou": "Starting happens in the form, by you.",
+      "recognised": "Recognised inputs:",
+      "listJobs": "List runs",
+      "showJob": "Show run",
+      "runs": "{n} runs",
+      "openJob": "Open run",
+      "features": "{n} features",
+      "extent": "Extent {von} to {bis}",
+      "properties": "Properties: {liste}"
+    }
+  },
+  "help": {
+    "title": "Help",
+    "lead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
+    "chat": {
+      "heading": "Chat on this site",
+      "lead": "You connect your own model, then the chat walks you through the catalogue.",
+      "steps": {
+        "provider": {
+          "title": "Choose a provider",
+          "body": "OpenAI, Anthropic or OpenRouter, plus any service that speaks the OpenAI shape. A model running on your own machine works too."
+        },
+        "key": {
+          "title": "Enter your key",
+          "body": "You get the key from your provider. It stays in this browser and never reaches our server. Use a key created for this purpose only, with a spending limit."
+        },
+        "ask": {
+          "title": "Ask questions",
+          "body": "The chat knows the catalogue and the models' parameters. It prepares a run and fills the form; you send it off."
+        }
+      }
+    },
+    "mcp": {
+      "heading": "Your own AI client over MCP",
+      "lead": "MCP is an open standard that lets AI clients use tools from other providers. We tested it with Claude Desktop.",
+      "steps": {
+        "address": {
+          "title": "Enter the address in your client",
+          "body": "In Claude Desktop under Settings, Connectors, “Add custom connector”. Other clients call it a server or a tool source."
+        },
+        "signin": {
+          "title": "Sign in with your account",
+          "body": "The client sends you to the platform's sign-in once. After that it holds exactly your rights, nothing more."
+        },
+        "use": {
+          "title": "Use the models as tools",
+          "body": "The models appear in the client as tools. Starting runs, checking status and fetching results all happen from there."
+        }
+      },
+      "copy": "Copy the address",
+      "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
     }
   }
 }

@@ -1,10 +1,15 @@
-// Welche Prozesse darf ein Aufrufer ohne Anmeldung ausführen?
+// Welche Prozesse darf der aktuelle Aufrufer ausführen?
 //
-// Die Prozessliste beantwortet das nicht: Sie ist auf Produktion ungefiltert
-// (`UMP_PUBLIC_PROCESSES`), zeigt also jedem alles. Der MCP-Werkzeugkatalog
-// filtert dagegen nach genau der Regel, die auch beim Ausführen gilt, und liefert
-// damit anonym die Prozesse mit `anonymous-access: true`. Am 2026-08-31 gemessen:
-// /v1.0/processes gibt vier Modelle zurück, /mcp/v1/tools eines.
+// Die Prozessliste beantwortet das nicht: seit `UMP_PUBLIC_PROCESSES` wieder an
+// ist, zeigt sie jedem alles. Der MCP-Werkzeugkatalog filtert dagegen nach genau
+// der Regel, die auch beim Ausführen gilt, und trägt damit die Auskunft, die wir
+// brauchen, um ein gesperrtes Modell vorher zu kennzeichnen statt erst beim Klick
+// auf Ausführen. Am 2026-08-31 gemessen: /v1.0/processes gibt vier Modelle
+// zurück, /mcp/v1/tools eines.
+//
+// Hieß bis 2026-09-04 useUmpOpenProcesses. Der Name stimmte nur, solange die
+// Liste ohnehin gefiltert war; „offen" heißt hier nicht „ohne Anmeldung",
+// sondern „von dir ausführbar" — angemeldet kommen die Rollen dazu.
 //
 // Bewusst außerhalb der versionierten Naht: der Katalog liegt unter /mcp/v1 und
 // nicht unter /v1.0, deshalb baut er hier nicht auf useUmpBase() auf.
@@ -15,11 +20,11 @@
 interface McpTool { tool?: string }
 interface McpKatalog { tools?: McpTool[] }
 
-export function useUmpOpenProcesses() {
+export function useUmpRunnableProcesses() {
   const { umpBase } = useRuntimeConfig().public
 
   return useFetch<McpKatalog>(`${umpBase}/mcp/v1/tools`, {
-    key: 'ump-offene-prozesse',
+    key: 'ump-ausfuehrbare-prozesse',
     default: () => [] as string[],
     transform: (raw): string[] =>
       (raw?.tools ?? []).map(t => t.tool).filter((t): t is string => typeof t === 'string'),

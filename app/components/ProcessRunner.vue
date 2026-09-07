@@ -5,16 +5,42 @@ const props = defineProps<{ processId: string }>()
 const emit = defineEmits<{ result: [FeatureCollection | null] }>()
 
 const { t } = useI18n()
+const { loggedIn } = useOidcAuth()
 const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
+const { data: ausfuehrbar } = useUmpRunnableProcesses()
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
+
+// Seit der Katalog wieder allen alles zeigt, steht hier auch, was man nicht
+// ausführen darf. Rico im Team-Chat: „man klickt auf Szenario ausführen und
+// bekommt dann erst den Fehler". Deshalb vorher: Knopf aus, Grund darunter.
+//
+// Solange die Liste noch lädt, gilt nichts als gesperrt. Ein Knopf, der beim
+// Laden kurz ausgegraut ist, wirkt kaputt.
+const gesperrt = computed(() =>
+  ausfuehrbar.value.length > 0 && !ausfuehrbar.value.includes(props.processId),
+)
+
+// Die Rolle heißt wie der Anbieter, also der Teil vor dem Doppelpunkt.
+const anbieter = computed(() => props.processId.split(':')[0] ?? props.processId)
 
 const form = ref<Record<string, string>>({})
 
 // Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.
+//
+// Werte aus der Adresszeile (`?in.cityname=Oelde`) stechen die Vorgabe. Darüber
+// übergibt der Chat einen vorbereiteten Lauf: er schlägt vor, die Adresszeile
+// trägt den Vorschlag, und abgeschickt wird hier von Hand. Ein Tieflink statt
+// eines geteilten Zustands, damit der Vorschlag ein Neuladen übersteht und
+// sich weitergeben lässt.
+const route = useRoute()
+
 watch(proc, (p) => {
   const next: Record<string, string> = {}
   for (const inp of p?.inputs ?? []) {
-    next[inp.name] = inp.default != null ? String(inp.default) : ''
+    const ausAdresse = route.query[`in.${inp.name}`]
+    next[inp.name] = typeof ausAdresse === 'string' && ausAdresse !== ''
+      ? ausAdresse
+      : inp.default != null ? String(inp.default) : ''
   }
   form.value = next
 }, { immediate: true })
@@ -22,27 +48,20 @@ watch(proc, (p) => {
 // Ergebnis nach außen (an die Karte) reichen.
 watch(result, r => emit('result', r))
 
+// Zahlenfelder können eine nicht-numerische Vorgabe nicht anzeigen: der Browser
+// wirft "auto" aus einem type=number heraus. Das Feld sieht dann leer aus, und
+// niemand erfährt, dass genau dieses Leerlassen die Vorgabe auslöst. Deshalb der
+// Hinweis darunter — nur dort, wo die Vorgabe wirklich unsichtbar ist.
+function vorgabeUnsichtbar(inp: { type: string, default?: unknown }) {
+  if (inp.default == null) return false
+  const zahlenfeld = inp.type === 'integer' || inp.type === 'number'
+  return zahlenfeld && !Number.isFinite(Number(inp.default))
+}
+
 async function onSubmit() {
-  const inputs: Record<string, unknown> = {}
-  for (const inp of proc.value?.inputs ?? []) {
-    const raw = (form.value[inp.name] ?? '').trim()
-    const def = inp.default != null ? String(inp.default) : ''
-    // Leeres nicht senden; unveränderte Defaults weglassen → das Backend nutzt seine
-    // eigenen Defaults (wichtig für growbike, dessen Integer-Inputs den String "auto"
-    // als Default haben — ein Number("auto") würde NaN senden und den Prozess crashen).
-    if (raw === '') continue
-    if (def !== '' && raw === def) continue
-    if ((inp.type === 'integer' || inp.type === 'number') && Number.isFinite(Number(raw))) {
-      inputs[inp.name] = Number(raw)
-    }
-    else if (inp.type === 'boolean') {
-      inputs[inp.name] = raw === 'true' || raw === '1'
-    }
-    else {
-      inputs[inp.name] = raw
-    }
-  }
-  await run(props.processId, inputs)
+  // Die Regel liegt in app/utils/processInputs.ts, weil der Chat sie ebenfalls
+  // anwendet. Zwei Fassungen davon wären zwei Wahrheiten über den "auto"-Default.
+  await run(props.processId, bereinigeEingaben(proc.value?.inputs ?? [], form.value))
 }
 </script>
 
@@ -70,10 +89,13 @@ async function onSubmit() {
           :placeholder="inp.description"
           class="w-full"
         />
+        <p v-if="vorgabeUnsichtbar(inp)" class="text-xs text-(--ui-text-dimmed)">
+          {{ t('run.defaultHint', { wert: String(inp.default) }) }}
+        </p>
       </div>
 
       <div class="flex items-center gap-3">
-        <UButton type="submit" :loading="running" :disabled="loadingProc" icon="i-lucide-play">
+        <UButton type="submit" :loading="running" :disabled="loadingProc || gesperrt" icon="i-lucide-play">
           {{ t('run.execute') }}
         </UButton>
         <JobStatusBadge v-if="status !== 'idle'" :status="status" :progress="progress" />
@@ -96,5 +118,22 @@ async function onSubmit() {
         {{ t('run.error', { msg: error }) }}
       </p>
     </form>
+
+    <!-- Gesperrt heißt nicht versteckt: das Formular bleibt sichtbar, damit man
+         sieht, was das Modell könnte. Nur der Start ist zu, mit dem Grund
+         daneben statt als Fehler nach dem Klick. -->
+    <div v-if="gesperrt" class="flex gap-3 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-4">
+      <UIcon name="i-lucide-shield" class="mt-0.5 size-4 shrink-0 text-(--ui-text-muted)" />
+      <div class="space-y-1">
+        <p class="text-sm font-medium text-(--ui-text-highlighted)">
+          {{ t('run.locked.heading') }}
+        </p>
+        <p class="text-sm text-(--ui-text-muted)">
+          {{ loggedIn
+            ? t('run.locked.signedIn', { modell: proc?.title ?? processId, anbieter })
+            : t('run.locked.anonymous', { modell: proc?.title ?? processId }) }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>

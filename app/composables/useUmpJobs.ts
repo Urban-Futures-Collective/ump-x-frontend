@@ -4,7 +4,7 @@ import type { Job, JobStatus } from '~/types/ump'
 // (2026-08-27), gegen das OpenAPI-Schema von UMP 3.x nachgezogen: Pflicht sind
 // dort ausschließlich jobID und status, alles andere ist ausdrücklich nullable.
 // Deshalb hier durchgängig `| null` statt nur `?`, und toJob normalisiert es.
-interface OgcJob {
+export interface OgcJob {
   jobID: string
   processID?: string | null
   status: JobStatus
@@ -15,7 +15,7 @@ interface OgcJob {
   updated?: string | null
 }
 // UMP 3.x liefert { jobs, links }; das frühere total_count gibt es nicht mehr.
-interface OgcJobList {
+export interface OgcJobList {
   jobs?: OgcJob[]
 }
 
@@ -41,6 +41,13 @@ export function jobTime(job: Job): string | undefined {
   return job.created ?? job.updated
 }
 
+// Neueste zuerst, über denselben Zeitpunkt, den die Liste auch anzeigt. Steht
+// hier und nicht in der Abfrage, weil der Chat dieselbe Reihenfolge braucht und
+// zwei Sortierungen über dieselben Daten früher oder später auseinanderlaufen.
+export function neuesteZuerst(jobs: Job[]): Job[] {
+  return [...jobs].sort((a, b) => (jobTime(b) ?? '').localeCompare(jobTime(a) ?? ''))
+}
+
 // Liste der eigenen Läufe. Welche Jobs zurückkommen, entscheidet die API anhand
 // des Tokens, den der Proxy anhängt — das Frontend filtert bewusst nicht selbst.
 // Ohne abschließenden Schrägstrich, siehe useUmpProcesses.
@@ -48,10 +55,6 @@ export function useUmpJobs() {
   const { base } = useUmpBase()
   return useFetch<OgcJobList>(`${base}/jobs`, {
     default: () => [] as Job[],
-    transform: (raw): Job[] =>
-      (raw?.jobs ?? [])
-        .map(toJob)
-        // Neueste zuerst, über denselben Zeitpunkt, den die Liste auch anzeigt.
-        .sort((a, b) => (jobTime(b) ?? '').localeCompare(jobTime(a) ?? '')),
+    transform: (raw): Job[] => neuesteZuerst((raw?.jobs ?? []).map(toJob)),
   })
 }

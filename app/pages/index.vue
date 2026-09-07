@@ -32,9 +32,22 @@ const aufgehalten = computed(() => typeof route.query.redirect === 'string' && r
 // Composable hinter einer Bedingung bricht die Reihenfolge der Aufrufe, und beide
 // Abfragen sind öffentlich und klein.
 const { data: prozesse } = useUmpProcesses()
-const { data: offene } = useUmpOpenProcesses()
+const { data: ausfuehrbar } = useUmpRunnableProcesses()
 
 const schritte = ['choose', 'configure', 'take'] as const
+
+// Die Promptbox auf der Startseite ist kein Bild: was hier getippt wird, geht in
+// dieselbe Schublade wie in der Anwendung. Abgemeldet stehen dem Chat dieselben
+// Werkzeuge zur Verfügung wie jedem anderen Besucher, also die anonymen.
+const chatOffen = ref(false)
+const frage = ref('')
+const gestellteFrage = ref('')
+
+function chatOeffnen() {
+  gestellteFrage.value = frage.value
+  frage.value = ''
+  chatOffen.value = true
+}
 
 // Vorschaubilder gibt es nur, wo ein echter Lauf dahintersteht. Kein Symbolbild
 // und kein Platzhalter: eine Karte ohne Bild ist ehrlicher als ein erfundenes.
@@ -113,7 +126,7 @@ const vorschau: Record<string, string> = {
       </div>
     </header>
 
-    <section class="bg-linear-to-br from-ufc-teal-500 to-ufc-gold-400 px-6 py-16 text-white sm:px-16">
+    <section class="bg-linear-to-br from-ufc-logo-teal to-ufc-logo-gold px-6 py-16 text-white sm:px-16">
       <div class="mx-auto flex max-w-7xl flex-col items-center gap-10 lg:flex-row lg:gap-16">
         <div class="flex-1 space-y-6">
           <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">
@@ -155,6 +168,70 @@ const vorschau: Record<string, string> = {
       </div>
     </section>
 
+    <!-- Das Aushängeschild: links die Promptbox, rechts der zweite Weg. Einzeln
+         wirkt jede Hälfte wie eine Hürde, zusammen sagen sie, was das Projekt
+         anbietet: wir verkaufen keine KI, du bringst deine eigene mit. -->
+    <section class="bg-ufc-blue-50 px-6 py-16 sm:px-16">
+      <div class="mx-auto max-w-7xl space-y-8">
+        <div class="space-y-2">
+          <h2 class="text-2xl font-semibold text-(--ui-text-highlighted)">
+            {{ t('start.ai.heading') }}
+          </h2>
+          <p class="max-w-3xl text-(--ui-text-muted)">
+            {{ t('start.ai.lead') }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
+          <form
+            class="flex-1 space-y-4 rounded-xl border border-(--ui-border) bg-(--ui-bg) p-6"
+            @submit.prevent="chatOeffnen"
+          >
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-sparkles" class="size-5 text-(--ui-primary)" />
+              <span class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('start.ai.prompt') }}</span>
+            </div>
+            <UInput
+              v-model="frage"
+              :placeholder="t('ai.placeholder')"
+              size="lg"
+              class="w-full"
+              :ui="{ trailing: 'pe-1' }"
+            >
+              <template #trailing>
+                <UButton type="submit" icon="i-lucide-send" size="sm" :aria-label="t('start.ai.prompt')" />
+              </template>
+            </UInput>
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                v-for="beispiel in ['what', 'how'] as const"
+                :key="beispiel"
+                variant="outline"
+                color="neutral"
+                size="xs"
+                @click="frage = t(`ai.examples.${beispiel}`); chatOeffnen()"
+              >
+                {{ t(`ai.examples.${beispiel}`) }}
+              </UButton>
+            </div>
+            <p class="text-xs text-(--ui-text-dimmed)">
+              {{ t('start.ai.keyHint') }}
+            </p>
+          </form>
+
+          <div class="space-y-3 rounded-xl bg-ufc-slate-900 p-6 text-white lg:w-96 lg:shrink-0">
+            <UIcon name="i-lucide-git-fork" class="size-5 text-white/80" />
+            <h3 class="text-lg font-semibold">
+              {{ t('start.ai.own.heading') }}
+            </h3>
+            <p class="text-sm text-white/80">
+              {{ t('start.ai.own.body') }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="px-6 py-16 sm:px-16">
       <div class="mx-auto max-w-7xl space-y-8">
         <h2 class="text-2xl font-semibold text-(--ui-text-highlighted)">
@@ -164,7 +241,7 @@ const vorschau: Record<string, string> = {
           <li
             v-for="(schritt, i) in schritte"
             :key="schritt"
-            class="space-y-2 rounded-xl bg-ufc-blue-50 p-6"
+            class="space-y-2 rounded-xl bg-ufc-blue-100 p-6"
           >
             <span class="block text-lg font-semibold text-ufc-teal-600">{{ i + 1 }}</span>
             <h3 class="font-medium text-(--ui-text-highlighted)">
@@ -207,18 +284,49 @@ const vorschau: Record<string, string> = {
               {{ p.description }}
             </p>
             <UBadge
-              :color="offene.includes(p.id) ? 'success' : 'neutral'"
+              :color="ausfuehrbar.includes(p.id) ? 'success' : 'neutral'"
               variant="subtle"
               size="sm"
               class="mb-5 ml-5 self-start"
             >
-              {{ offene.includes(p.id) ? t('start.models.open') : t('start.models.needsLogin') }}
+              {{ ausfuehrbar.includes(p.id) ? t('start.models.open') : t('start.models.needsLogin') }}
             </UBadge>
           </li>
         </ul>
       </div>
     </section>
 
+    <!-- Der zweite Weg ausführlich, aber ohne die Adresse: die steht auf der
+         Hilfeseite, wo danebensteht, was sie ist. Im Browser geöffnet antwortet
+         sie mit einer Fehlermeldung, und das will niemand ungefragt sehen. -->
+    <section class="px-6 py-12 sm:px-16">
+      <div class="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-git-fork" class="size-4 text-(--ui-text-muted)" />
+            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+              {{ t('start.mcp.heading') }}
+            </h2>
+          </div>
+          <p class="max-w-3xl text-sm text-(--ui-text-muted)">
+            {{ t('start.mcp.body') }}
+          </p>
+        </div>
+        <ULink to="/hilfe" class="flex shrink-0 items-center gap-1.5 text-sm font-medium text-(--ui-primary)">
+          {{ t('start.mcp.more') }}
+          <UIcon name="i-lucide-arrow-right" class="size-4" />
+        </ULink>
+      </div>
+    </section>
+
     <TheFooter class="mt-auto" />
+
+    <ClientOnly>
+      <USlideover v-model:open="chatOffen" :ui="{ content: 'w-full max-w-md' }">
+        <template #content>
+          <LazyAiChatPanel :startfrage="gestellteFrage" @schliessen="chatOffen = false" />
+        </template>
+      </USlideover>
+    </ClientOnly>
   </div>
 </template>

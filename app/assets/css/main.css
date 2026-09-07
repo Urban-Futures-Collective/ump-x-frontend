@@ -169,4 +169,22 @@
   --color-ufc-slate-800: oklch(0.354 0.0442 270.62);
   --color-ufc-slate-900: oklch(0.294 0.0433 270.62);
   --color-ufc-slate-950: oklch(0.191 0.0333 270.62);
+
+  /* Die helle Haelfte der Logo-Tafel (Seite 2 der Wireframing-Datei). Dort
+     steht jede Marke als Paar: der dunkle Wert ist unser Anker und liegt exakt
+     auf der 600er-Stufe, der helle ist von Hand gesetzt und liegt auf keiner
+     Stufe — die naechste ist 22 bis 45 daneben. Deshalb eigene Namen statt
+     einer erfundenen Skalenstufe.
+     Die dunkle Haelfte steht schon oben: plum-600, gold-600, teal-600,
+     blue-600, dazu slate-900 als das neunte Feld (Navy, #242b42).
+     Gebraucht werden die hellen fuer die drei Verlaeufe des Entwurfs:
+       Login A    logo-plum -> logo-blue
+       Login B    logo-teal -> logo-gold   (Hero)
+       Abschluss  logo-gold -> logo-plum
+     In Figma liegt die ganze Tafel unter Primitives als logo/*, die Verlaeufe
+     selbst als vier Farbstile „Verlauf / …". */
+  --color-ufc-logo-plum: #c36878;
+  --color-ufc-logo-gold: #e5ac23;
+  --color-ufc-logo-teal: #5ca899;
+  --color-ufc-logo-blue: #0073b2;
 }
