@@ -70,6 +70,15 @@ function sichern() {
   localStorage.setItem(SPEICHER, JSON.stringify({ ...zugang.value, schluessel }))
 }
 
+// Auf Modulebene, damit das Abmelden sie aufrufen kann, ohne vorher
+// useAiProvider() zu benutzen: das würde laden() auslösen und den Schlüssel
+// erst in den Speicher holen, um ihn dann zu löschen.
+export function vergissZugang() {
+  schluessel = ''
+  schluesselDa.value = false
+  if (import.meta.client) localStorage.removeItem(SPEICHER)
+}
+
 export function useAiProvider() {
   laden()
 
@@ -80,12 +89,6 @@ export function useAiProvider() {
     schluessel = neuerSchluessel
     schluesselDa.value = schluessel.length > 0
     sichern()
-  }
-
-  function vergessen() {
-    schluessel = ''
-    schluesselDa.value = false
-    if (import.meta.client) localStorage.removeItem(SPEICHER)
   }
 
   // Baut das Modellobjekt fürs AI SDK. Einzige Stelle, die die Provider-
@@ -111,5 +114,5 @@ export function useAiProvider() {
     return provider.chat(modell)
   }
 
-  return { zugang: readonly(zugang), hatSchluessel, setzeZugang, vergessen, sprachmodell }
+  return { zugang: readonly(zugang), hatSchluessel, setzeZugang, vergessen: vergissZugang, sprachmodell }
 }

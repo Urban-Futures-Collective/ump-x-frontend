@@ -74,7 +74,13 @@ const benutzerMenue = computed(() => [[
   {
     label: t('auth.logout'),
     icon: 'i-lucide-log-out',
-    onSelect: () => logout(),
+    // Abgemeldet heißt: hier bleibt nichts von mir. Der Anbieter-Schlüssel liegt
+    // unverschlüsselt im Browser, auf einem geteilten Rechner hätte ihn sonst
+    // der Nächste. Still, ohne Rückfrage: wer abmeldet, will genau das.
+    onSelect: () => {
+      vergissZugang()
+      logout()
+    },
   },
 ]])
 
