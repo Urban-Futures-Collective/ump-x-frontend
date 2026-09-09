@@ -156,6 +156,22 @@ function sichern() {
   }
 }
 
+// Auf Modulebene, damit das Abmelden sie aufrufen kann, ohne useAiChat() zu
+// benutzen: das Composable zieht die UMP-Werkzeuge mit hoch und braucht dafür
+// einen Nuxt-Kontext, den die Abmeldung nicht herstellen soll.
+//
+// Der Verlauf enthält die Fragen des Nutzers und die Daten seiner Läufe. Wer
+// sich abmeldet, lässt sonst beides im Browser zurück, auf einem geteilten
+// Rechner für den Nächsten.
+export function vergissVerlauf() {
+  abbruch?.abort()
+  abbruch = null
+  nachrichten.value = []
+  fehler.value = null
+  status.value = 'ready'
+  if (import.meta.client) sessionStorage.removeItem(SPEICHER)
+}
+
 export function useAiChat() {
   const { sprachmodell } = useAiProvider()
   const { werkzeuge } = useUmpTools()
@@ -170,13 +186,8 @@ export function useAiChat() {
     if (laeuft.value) status.value = 'ready'
   }
 
-  function neu() {
-    abbrechen()
-    nachrichten.value = []
-    fehler.value = null
-    status.value = 'ready'
-    sichern()
-  }
+  // „Verlauf löschen" im Kopf der Schublade und das Abmelden tun dasselbe.
+  const neu = vergissVerlauf
 
   async function senden(eingabe: string) {
     const text = eingabe.trim()
