@@ -1,8 +1,19 @@
 # Ein neues Modell zur UMP hinzufügen
 
-**Kurz gesagt:** Ein neues Modell ist fast vollständig eine **Backend-/Plattform-Sache**
-(Repo `urban-model-platform`). Am **Frontend** (`ump-x-frontend`) muss in der Regel **nichts**
-geändert werden — es listet automatisch, was der `/processes`-Endpunkt zurückgibt.
+*Stand 2026-09-18. Aussagen über laufende Systeme sind im Text einzeln datiert.*
+
+**Kurz gesagt:** Ein neues Modell ist fast vollständig eine **Backend-/Plattform-Sache**.
+Am **Frontend** muss in der Regel **nichts** geändert werden — es listet automatisch, was
+der `/processes`-Endpunkt zurückgibt.
+
+**Die beiden Repositories, um die es geht:**
+
+| | Repo | Rolle |
+|---|---|---|
+| Backend | [`citysciencelab/urban-model-platform`](https://github.com/citysciencelab/urban-model-platform) | die UMP selbst: `docker-compose-dev.yaml`, `providers.yaml`, Authorization |
+| Frontend | [`Urban-Futures-Collective/ump-x-frontend`](https://github.com/Urban-Futures-Collective/ump-x-frontend) | diese Datei liegt hier; Katalog, Formular, Karte |
+
+Alle Dateipfade unten ohne weitere Angabe beziehen sich auf das **Backend**-Repo.
 
 Ein Modell ist in UMP ein **eigener OGC-API-Processes-Server** (ein Container, der `/processes`
 exponiert — z. B. via pygeoapi). UMP registriert diesen Server und reicht seine Prozesse durch.
@@ -20,18 +31,52 @@ Der Modell-Container muss einen OGC-API-Processes-Endpunkt anbieten (`GET /proce
 Modell (Python o. Ä.) einbinden will, verpackt es typischerweise in pygeoapi.
 
 ### 2. `docker-compose-dev.yaml` — Container ins UMP-Netz
-Den Modell-Container als Service ins Docker-Netz **`ump_dev`** hängen, damit die UMP-`api` ihn
-per Containernamen erreicht:
+Die Datei liegt im Wurzelverzeichnis des Backend-Repos:
+[`docker-compose-dev.yaml`](https://github.com/citysciencelab/urban-model-platform/blob/dev/docker-compose-dev.yaml)
+(Branch `dev`). Daneben liegen `docker-compose-build.yaml` und `docker-compose-prod.yaml`.
+
+**Das Netz heißt in der Compose-Datei `dev`, nicht `ump_dev`.** Der Unterschied ist
+wichtig, weil man den Schlüssel referenziert und nicht den Docker-Namen:
+
+```yaml
+networks:
+  dev:
+    external: true
+    name: ${DOCKER_NETWORK}
+```
+
+`ump_dev` ist der echte Docker-Name, er kommt aus `DOCKER_NETWORK` in der `.env`. Ein
+Service hängt sich also mit `networks: [dev]` an. `external: true` heißt zudem, dass
+Compose das Netz **nicht** anlegt; fehlt es, einmal `docker network create ump_dev`.
+
+Den Modell-Container als Service ergänzen (Vorlage: der Service `modelserver` in
+derselben Datei):
 
 ```yaml
   dein-modell:
     image: <dein-image>
-    networks: [ump_dev]
+    networks:
+      - dev
     # ports: ... (nur nötig, wenn du ihn auch vom Host testen willst)
 ```
 
-> Läuft das Modell außerhalb von Compose, reicht es, die Netz-Erreichbarkeit sicherzustellen
-> (gleiches Docker-Netz oder erreichbare URL).
+Der **Servicename ist der DNS-Name** im Netz und damit das, was in Schritt 3 unter `url:`
+steht.
+
+> Läuft das Modell außerhalb von Compose, hängt man es zur Laufzeit an:
+> `docker network connect ump_dev <containername>`. Das überlebt einen Restart, aber
+> **nicht** das Neuerstellen des Containers, und genau das macht ein Deploy. Dauerhaft
+> gehört der Modellserver mit `networks:` in die Compose-Datei.
+
+**Erreichbarkeit prüfen, und zwar aus dem API-Container heraus**, nicht vom Host. Nur dort
+zählt die Namensauflösung:
+
+```bash
+docker exec urban-model-platform-api-1 \
+  python -c "import urllib.request,json; print([p['id'] for p in json.loads(urllib.request.urlopen('http://dein-modell:80/processes/?f=json').read())['processes']])"
+```
+
+Erst wenn das die Prozess-Ids ausgibt, lohnt sich Schritt 3.
 
 ### 3. `providers.yaml` — den Modellserver registrieren  *(die zentrale Datei)*
 Einen neuen Top-Level-Block ergänzen:
@@ -78,6 +123,11 @@ Ob ein Prozess im Katalog **erscheint**, entscheidet dagegen die Server-Einstell
 zeigt `GET /processes` nur, was der Aufrufer auch ausführen dürfte. Auf Produktion ist
 sie an: anonym liefert `/v1.0/processes` alle Modelle, während `/mcp/v1/tools`, das nach
 der Ausführungsregel filtert, nur die offenen zeigt (am 2026-08-31 gemessen).
+
+> Nachgemessen am 2026-09-18: anonym antwortet `https://ump.urbanfuturescollective.org/v1.0/processes`
+> mit HTTP 200 und vier Prozessen (`bikebox-modelserver:fixbike`,
+> `bikebox-modelserver:growbike`, `modelserver-1:abm-test-model`,
+> `modelserver-1:seir-infection-model`). `UMP_PUBLIC_PROCESSES` ist dort also weiterhin an.
 
 ### 4. UMP-`api` neu starten
 Die `api` lädt die gemountete `providers.yaml` beim Start:
@@ -150,7 +200,7 @@ Ein neues Modell taucht also automatisch auf. **Zwei Ausnahmen**, bei denen doch
 | Datei / Ort | Änderung | Pflicht? |
 |---|---|---|
 | Modell-Container | OGC-API-Processes-Server bereitstellen | ✅ immer |
-| `docker-compose-dev.yaml` | Container ins `ump_dev`-Netz | ✅ bei neuem lokalen Container |
+| `docker-compose-dev.yaml` | Container an den Netz-Schlüssel `dev` hängen (Docker-Name `ump_dev`) | ✅ bei neuem lokalen Container |
 | `providers.yaml` | Modellserver-Block ergänzen | ✅ immer |
 | UMP-`api` neu starten | `restart api` | ✅ immer |
 | Keycloak | Rolle `<provider>` oder `<provider>:<prozess-id>` | nur bei `anonymous-access: false` |
@@ -164,8 +214,14 @@ Ein neues Modell taucht also automatisch auf. **Zwei Ausnahmen**, bei denen doch
 - **`providers.yaml` ist aktuell lokal / nicht committet.** Reproduzierbar (und teilbar) wäre die
   Aufnahme des Modellserver-Blocks per PR ins UMP-Repo.
 - **Netz-Verbindung per `docker network connect` ist Laufzeit** — überlebt Container-Restarts, aber
-  nicht ein Neuerstellen des Containers. Dauerhaft: den Container mit `networks: [ump_dev]` in ein
+  nicht ein Neuerstellen des Containers. Dauerhaft: den Container mit `networks: [dev]` in ein
   Compose aufnehmen.
 - **Voll durchgearbeitetes Beispiel:** die growbike-Einbindung (Netz, `providers.yaml`, Verifikation,
   Stolpersteine) steht in [`runbook-growbike-modelserver-de.md`](./runbook-growbike-modelserver-de.md).
-  Dort auch der aktuelle Stand auf dem Server: Die Datei fehlt dort und die API läuft deshalb nicht.
+  Der dortige Abschnitt „Stand auf dem Server (2026-08-20)" ist überholt: die fehlende
+  `providers.yaml` ist behoben, die API auf Produktion antwortet am 2026-09-18 und liefert
+  vier Prozesse aus zwei Modellservern.
+- **Lokaler Stand am 2026-09-18:** das Netz `ump_dev` existiert, der UMP-Stack läuft mit
+  sieben Containern daran. `pygeoapi-growbike` ist gestoppt; seine Netz-Zugehörigkeit steht
+  noch in der Docker-Konfiguration, der Name löst aber erst wieder auf, wenn der Container
+  läuft. Die lokale `providers.yaml` verweist weiterhin darauf.
