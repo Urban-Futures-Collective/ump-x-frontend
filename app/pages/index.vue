@@ -12,8 +12,13 @@
 // Bis zum 2026-09-01 waren das zwei getrennte Seiten mit denselben zwei Knöpfen.
 // Die Anmeldung selbst läuft über Keycloak, hier steht deshalb kein Formular für
 // Kennung und Passwort: ein eigenes wäre eine Attrappe.
-import beispielGrowbike from '~/assets/images/beispiel-growbike-oelde-blau.svg'
-
+//
+// Das Schaufenster folgt seit dem 2026-09-18 dem Figma-Entwurf „Startseite,
+// Alternative B". Zwei Dinge daran sind Absicht und keine Nachlässigkeit:
+// Flächen und Knöpfe haben keine abgerundeten Ecken (nur die Badges), und der
+// Verlauf trägt nicht mehr die ganze Kopfzone, sondern nur noch den Kasten mit
+// dem Beispielnetz. Der aufgehaltene Zustand ist vom Entwurf nicht abgedeckt
+// und deshalb unverändert geblieben.
 definePageMeta({ layout: false })
 
 const { t, locale, locales, setLocale } = useI18n()
@@ -36,25 +41,18 @@ const { data: ausfuehrbar } = useUmpRunnableProcesses()
 
 const schritte = ['choose', 'configure', 'take'] as const
 
-// Die Promptbox auf der Startseite ist kein Bild: was hier getippt wird, geht in
-// dieselbe Schublade wie in der Anwendung. Abgemeldet stehen dem Chat dieselben
-// Werkzeuge zur Verfügung wie jedem anderen Besucher, also die anonymen.
-const chatOffen = ref(false)
-const frage = ref('')
-const gestellteFrage = ref('')
-
-function chatOeffnen() {
-  gestellteFrage.value = frage.value
-  frage.value = ''
-  chatOffen.value = true
-}
-
-// Vorschaubilder gibt es nur, wo ein echter Lauf dahintersteht. Kein Symbolbild
-// und kein Platzhalter: eine Karte ohne Bild ist ehrlicher als ein erfundenes.
-// Das Netz ist aus dem Ergebnis-GeoJSON gezeichnet, siehe Nachweis im Hero.
-const vorschau: Record<string, string> = {
-  'bikebox-modelserver:growbike': beispielGrowbike,
-}
+// Schmal zeigt der Entwurf ein Menü statt der ausgeschriebenen Kopf-Aktionen.
+// Es enthält genau dasselbe, damit es keinen zweiten Satz Einstiege gibt, die
+// auseinanderlaufen können.
+const menue = computed(() => [
+  locales.value.map(loc => ({
+    label: loc.code.toUpperCase(),
+    checked: loc.code === locale.value,
+    type: 'checkbox' as const,
+    onSelect: () => setLocale(loc.code),
+  })),
+  [{ label: t('auth.login'), icon: 'i-lucide-log-in', onSelect: () => login() }],
+])
 </script>
 
 <template>
@@ -93,8 +91,8 @@ const vorschau: Record<string, string> = {
   </NuxtLayout>
 
   <!-- Schaufenster -->
-  <div v-else class="flex min-h-svh flex-col bg-(--ui-bg)">
-    <header class="px-6 py-5 sm:px-16">
+  <div v-else class="flex min-h-svh flex-col bg-white">
+    <header class="px-6 py-6 sm:px-16">
       <div class="mx-auto flex max-w-7xl items-center justify-between">
         <div class="flex items-center gap-3">
           <img
@@ -104,147 +102,149 @@ const vorschau: Record<string, string> = {
             width="32"
             height="32"
           >
-          <span class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('app.title') }}</span>
+          <span class="text-lg font-semibold text-(--ui-text)">{{ t('app.title') }}</span>
         </div>
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1">
-            <UButton
-              v-for="loc in locales"
-              :key="loc.code"
-              :variant="loc.code === locale ? 'solid' : 'ghost'"
-              :color="loc.code === locale ? 'primary' : 'neutral'"
-              size="xs"
-              @click="setLocale(loc.code)"
-            >
-              {{ loc.code.toUpperCase() }}
-            </UButton>
+
+        <div class="hidden items-center gap-5 sm:flex">
+          <div class="flex items-center gap-1 text-sm font-medium text-(--ui-text-muted)">
+            <template v-for="(loc, i) in locales" :key="loc.code">
+              <span v-if="i > 0">/</span>
+              <button
+                type="button"
+                class="cursor-pointer"
+                :class="loc.code === locale ? 'text-(--ui-text)' : 'hover:text-(--ui-text)'"
+                @click="setLocale(loc.code)"
+              >
+                {{ loc.code.toUpperCase() }}
+              </button>
+            </template>
           </div>
           <ULink class="text-sm font-medium text-(--ui-primary)" @click="login()">
             {{ t('auth.login') }}
           </ULink>
         </div>
+
+        <UDropdownMenu :items="menue" class="sm:hidden">
+          <UButton
+            icon="i-lucide-menu"
+            color="neutral"
+            variant="ghost"
+            :aria-label="t('app.title')"
+          />
+        </UDropdownMenu>
       </div>
     </header>
 
-    <section class="bg-linear-to-br from-ufc-logo-teal to-ufc-logo-gold px-6 py-16 text-white sm:px-16">
-      <div class="mx-auto flex max-w-7xl flex-col items-center gap-10 lg:flex-row lg:gap-16">
-        <div class="flex-1 space-y-6">
-          <h1 class="text-3xl font-semibold leading-tight sm:text-4xl">
+    <!-- Kopfzone. Links der Text, rechts ein echter growbike-Lauf für Oelde,
+         aus dem Ergebnis-GeoJSON gezeichnet. Deshalb steht der Nachweis
+         darunter, und deshalb gibt es kein Symbolbild. -->
+    <section class="px-6 py-14 sm:px-16 lg:py-22">
+      <div class="mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row lg:justify-between lg:gap-16">
+        <div class="w-full space-y-6 lg:max-w-[480px]">
+          <h1 class="text-4xl/[1.18] font-semibold text-ufc-slate-900 sm:text-[2.75rem]/[1.18]">
             {{ t('start.hero.heading') }}
           </h1>
-          <p class="max-w-xl text-base/relaxed text-white/90">
+          <p class="text-[0.9375rem]/[1.65] text-(--ui-text)">
             {{ t('start.hero.lead') }}
           </p>
           <div class="flex flex-wrap gap-3">
-            <UButton to="/models" color="neutral" size="lg" icon="i-lucide-grid-3x3" class="bg-white text-(--ui-primary) hover:bg-white/90">
+            <UButton
+              to="/models"
+              size="lg"
+              color="neutral"
+              class="rounded-none bg-ufc-slate-900 px-6 py-3.5 font-medium text-white hover:bg-ufc-slate-800"
+            >
               {{ t('start.hero.browse') }}
             </UButton>
-            <UButton color="neutral" variant="ghost" size="lg" icon="i-lucide-log-in" class="bg-transparent text-white ring-1 ring-inset ring-white hover:bg-white/10 hover:text-white" @click="login()">
+            <UButton
+              size="lg"
+              color="neutral"
+              variant="outline"
+              class="rounded-none px-6 py-3.5 font-medium text-ufc-slate-900 ring-ufc-logo-gold hover:bg-ufc-gold-50"
+              @click="login()"
+            >
               {{ t('auth.login') }}
             </UButton>
           </div>
-          <p class="text-xs text-white/80">
-            {{ t('start.keycloakHint') }}
-          </p>
-          <p class="text-xs text-white/80">
-            {{ t('start.hero.accessHint') }}
-          </p>
         </div>
 
-        <!-- Kein Symbolbild: ein echter growbike-Lauf für Oelde, aus dem
-             Ergebnis-GeoJSON gezeichnet. Deshalb steht der Nachweis darunter. -->
-        <figure class="w-full max-w-sm shrink-0 lg:w-96">
-          <img
-            src="~/assets/images/beispiel-growbike-oelde.svg"
-            alt=""
-            class="w-full opacity-90"
-            width="384"
-            height="384"
-          >
-          <figcaption class="mt-2 text-center text-xs text-white/80">
+        <figure class="w-full space-y-3 lg:w-[560px] lg:shrink-0">
+          <!-- Die Datei ist quadratisch (600 × 600) und zeichnet das Netz mit Rand.
+               Der Entwurf zeigt es hochkant, 349 × 464. Deshalb auf breiten
+               Schirmen über die Höhe skaliert statt über die Breite: dann füllt
+               das Netz den Kasten so wie dort, ohne dass die Datei verzerrt wird. -->
+          <div class="flex items-center justify-center border border-ufc-slate-900 bg-[linear-gradient(125deg,var(--color-ufc-logo-teal)_10%,var(--color-ufc-logo-gold)_76.667%)] p-8">
+            <img
+              src="~/assets/images/beispiel-growbike-oelde.svg"
+              alt=""
+              class="w-full max-w-[350px] lg:h-[464px] lg:w-auto lg:max-w-full"
+              width="600"
+              height="600"
+            >
+          </div>
+          <figcaption class="text-center text-xs text-(--ui-text-muted) opacity-80">
             {{ t('start.hero.credit') }}
           </figcaption>
         </figure>
       </div>
     </section>
 
-    <!-- Das Aushängeschild: links die Promptbox, rechts der zweite Weg. Einzeln
-         wirkt jede Hälfte wie eine Hürde, zusammen sagen sie, was das Projekt
-         anbietet: wir verkaufen keine KI, du bringst deine eigene mit. -->
-    <section class="bg-ufc-blue-50 px-6 py-16 sm:px-16">
-      <div class="mx-auto max-w-7xl space-y-8">
-        <div class="space-y-2">
-          <h2 class="text-2xl font-semibold text-(--ui-text-highlighted)">
-            {{ t('start.ai.heading') }}
-          </h2>
-          <p class="max-w-3xl text-(--ui-text-muted)">
-            {{ t('start.ai.lead') }}
+    <section class="px-6 pb-22 sm:px-16">
+      <div class="mx-auto max-w-7xl">
+        <div class="space-y-2.5">
+          <div class="inline-flex flex-col items-start">
+            <h2 class="text-2xl font-semibold text-ufc-slate-900">
+              {{ t('start.models.heading') }}
+            </h2>
+            <div class="h-[3px] w-full bg-ufc-gold-400" />
+          </div>
+          <p class="max-w-[680px] text-[0.9375rem] text-(--ui-text)">
+            {{ t('start.models.lead') }}
           </p>
         </div>
 
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-start">
-          <form
-            class="flex-1 space-y-4 rounded-xl border border-(--ui-border) bg-(--ui-bg) p-6"
-            @submit.prevent="chatOeffnen"
+        <ul class="grid gap-6 pt-6 sm:grid-cols-2 xl:grid-cols-4">
+          <li
+            v-for="p in prozesse"
+            :key="p.id"
+            class="flex flex-col items-start gap-3 bg-ufc-gold-400 p-5"
           >
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-sparkles" class="size-5 text-(--ui-primary)" />
-              <span class="text-lg font-semibold text-(--ui-text-highlighted)">{{ t('start.ai.prompt') }}</span>
-            </div>
-            <UInput
-              v-model="frage"
-              :placeholder="t('ai.placeholder')"
-              size="lg"
-              class="w-full"
-              :ui="{ trailing: 'pe-1' }"
-            >
-              <template #trailing>
-                <UButton type="submit" icon="i-lucide-send" size="sm" :aria-label="t('start.ai.prompt')" />
-              </template>
-            </UInput>
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                v-for="beispiel in ['what', 'how'] as const"
-                :key="beispiel"
-                variant="outline"
-                color="neutral"
-                size="xs"
-                @click="frage = t(`ai.examples.${beispiel}`); chatOeffnen()"
-              >
-                {{ t(`ai.examples.${beispiel}`) }}
-              </UButton>
-            </div>
-            <p class="text-xs text-(--ui-text-dimmed)">
-              {{ t('start.ai.keyHint') }}
-            </p>
-          </form>
-
-          <div class="space-y-3 rounded-xl bg-ufc-slate-900 p-6 text-white lg:w-96 lg:shrink-0">
-            <UIcon name="i-lucide-git-fork" class="size-5 text-white/80" />
-            <h3 class="text-lg font-semibold">
-              {{ t('start.ai.own.heading') }}
+            <h3 class="font-medium text-ufc-slate-900">
+              {{ p.title }}
             </h3>
-            <p class="text-sm text-white/80">
-              {{ t('start.ai.own.body') }}
+            <p class="flex-1 text-sm text-ufc-slate-700">
+              {{ p.description }}
             </p>
-          </div>
-        </div>
+            <span
+              class="rounded-full px-2.5 py-1 text-xs"
+              :class="ausfuehrbar.includes(p.id) ? 'bg-green-50 text-green-700' : 'bg-white text-ufc-slate-700'"
+            >
+              {{ ausfuehrbar.includes(p.id) ? t('start.models.open') : t('start.models.needsLogin') }}
+            </span>
+          </li>
+        </ul>
       </div>
     </section>
 
-    <section class="px-6 py-16 sm:px-16">
-      <div class="mx-auto max-w-7xl space-y-8">
-        <h2 class="text-2xl font-semibold text-(--ui-text-highlighted)">
-          {{ t('start.steps.heading') }}
-        </h2>
-        <ol class="grid gap-6 md:grid-cols-3">
+    <section class="px-6 pb-22 sm:px-16">
+      <div class="mx-auto max-w-7xl">
+        <div class="inline-flex flex-col items-start">
+          <h2 class="text-2xl font-semibold text-ufc-slate-900">
+            {{ t('start.steps.heading') }}
+          </h2>
+          <div class="h-[3px] w-full bg-ufc-teal-700" />
+        </div>
+
+        <ol class="grid gap-6 pt-4 md:grid-cols-3">
           <li
             v-for="(schritt, i) in schritte"
             :key="schritt"
-            class="space-y-2 rounded-xl bg-ufc-blue-100 p-6"
+            class="space-y-2.5 py-6 md:pr-6"
           >
-            <span class="block text-lg font-semibold text-ufc-teal-600">{{ i + 1 }}</span>
-            <h3 class="font-medium text-(--ui-text-highlighted)">
+            <span class="inline-block bg-ufc-teal-700 pl-1 pr-4 text-lg/7 font-semibold text-white">
+              {{ i + 1 }}
+            </span>
+            <h3 class="font-medium text-(--ui-text)">
               {{ t(`start.steps.${schritt}.title`) }}
             </h3>
             <p class="text-sm text-(--ui-text-muted)">
@@ -255,78 +255,64 @@ const vorschau: Record<string, string> = {
       </div>
     </section>
 
-    <section class="bg-ufc-blue-50 px-6 py-16 sm:px-16">
-      <div class="mx-auto max-w-7xl space-y-2">
-        <h2 class="text-2xl font-semibold text-(--ui-text-highlighted)">
-          {{ t('start.models.heading') }}
-        </h2>
-        <p class="text-(--ui-text-muted)">
-          {{ t('start.models.lead') }}
-        </p>
-        <ul class="grid gap-5 pt-6 md:grid-cols-2 xl:grid-cols-4">
-          <li
-            v-for="p in prozesse"
-            :key="p.id"
-            class="flex flex-col gap-3 overflow-hidden rounded-xl border border-(--ui-border) bg-(--ui-bg)"
-          >
-            <img
-              v-if="vorschau[p.id]"
-              :src="vorschau[p.id]"
-              alt=""
-              class="aspect-4/3 w-full bg-ufc-blue-50 object-contain p-3"
-              width="320"
-              height="240"
-            >
-            <h3 class="px-5 font-medium text-(--ui-text-highlighted)" :class="vorschau[p.id] ? '' : 'pt-5'">
-              {{ p.title }}
-            </h3>
-            <p class="flex-1 px-5 text-sm text-(--ui-text-muted)">
-              {{ p.description }}
-            </p>
-            <UBadge
-              :color="ausfuehrbar.includes(p.id) ? 'success' : 'neutral'"
-              variant="subtle"
-              size="sm"
-              class="mb-5 ml-5 self-start"
-            >
-              {{ ausfuehrbar.includes(p.id) ? t('start.models.open') : t('start.models.needsLogin') }}
-            </UBadge>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Der zweite Weg ausführlich, aber ohne die Adresse: die steht auf der
-         Hilfeseite, wo danebensteht, was sie ist. Im Browser geöffnet antwortet
-         sie mit einer Fehlermeldung, und das will niemand ungefragt sehen. -->
-    <section class="px-6 py-12 sm:px-16">
-      <div class="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-2">
-          <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-git-fork" class="size-4 text-(--ui-text-muted)" />
-            <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
-              {{ t('start.mcp.heading') }}
+    <!-- Die zwei Wege nebeneinander. Einzeln wirkt jeder wie eine Hürde,
+         zusammen sagen sie, was das Projekt anbietet: wir verkaufen keine KI,
+         du bringst deine eigene mit.
+         Hier steht bewusst keine Eingabezeile mehr: chatten kann nur, wer
+         angemeldet ist, und ein Feld, das erst zur Anmeldung führt, verspricht
+         mehr als es hält. Die Adresse des MCP-Servers steht ebenfalls nicht da,
+         sondern auf der Hilfeseite, wo danebensteht, was sie ist. -->
+    <section class="px-6 pb-24 sm:px-16">
+      <div class="mx-auto max-w-7xl">
+        <div class="space-y-2.5">
+          <div class="inline-flex flex-col items-start">
+            <h2 class="text-2xl font-semibold text-ufc-slate-900">
+              {{ t('start.ai.heading') }}
             </h2>
+            <div class="h-[3px] w-full bg-ufc-logo-plum" />
           </div>
-          <p class="max-w-3xl text-sm text-(--ui-text-muted)">
-            {{ t('start.mcp.body') }}
+          <p class="max-w-[680px] text-[0.9375rem] text-(--ui-text)">
+            {{ t('start.ai.lead') }}
           </p>
         </div>
-        <ULink to="/hilfe" class="flex shrink-0 items-center gap-1.5 text-sm font-medium text-(--ui-primary)">
-          {{ t('start.mcp.more') }}
-          <UIcon name="i-lucide-arrow-right" class="size-4" />
-        </ULink>
+
+        <div class="grid gap-6 pt-4 md:grid-cols-2">
+          <div class="relative space-y-3 bg-white py-1 pl-8 pr-8">
+            <div class="absolute inset-y-0 left-0 w-[3px] bg-ufc-logo-plum" />
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-sparkles" class="size-5 text-ufc-logo-plum" />
+              <h3 class="text-lg font-medium text-ufc-slate-900">
+                {{ t('start.ai.chat.heading') }}
+              </h3>
+            </div>
+            <p class="text-[0.9375rem]/[1.6] text-(--ui-text)">
+              {{ t('start.ai.chat.body') }}
+            </p>
+            <p class="text-[0.8125rem] text-(--ui-text-muted)">
+              {{ t('start.ai.chat.hint') }}
+            </p>
+          </div>
+
+          <div class="relative space-y-3 bg-white py-1 pl-8 pr-8">
+            <div class="absolute inset-y-0 left-0 w-[3px] bg-ufc-logo-plum" />
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-git-fork" class="size-5 text-ufc-logo-plum" />
+              <h3 class="text-lg font-medium text-ufc-slate-900">
+                {{ t('start.ai.mcp.heading') }}
+              </h3>
+            </div>
+            <p class="text-[0.9375rem]/[1.6] text-(--ui-text)">
+              {{ t('start.ai.mcp.body') }}
+            </p>
+            <ULink to="/hilfe" class="flex items-center gap-1.5 text-[0.8125rem] text-ufc-logo-blue">
+              {{ t('start.ai.mcp.more') }}
+              <UIcon name="i-lucide-arrow-right" class="size-4" />
+            </ULink>
+          </div>
+        </div>
       </div>
     </section>
 
     <TheFooter class="mt-auto" />
-
-    <ClientOnly>
-      <USlideover v-model:open="chatOffen" :ui="{ content: 'w-full max-w-md' }">
-        <template #content>
-          <LazyAiChatPanel :startfrage="gestellteFrage" @schliessen="chatOffen = false" />
-        </template>
-      </USlideover>
-    </ClientOnly>
   </div>
 </template>
