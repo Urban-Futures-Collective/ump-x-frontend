@@ -13,6 +13,7 @@ const props = defineProps<{ startfrage?: string }>()
 const emit = defineEmits<{ schliessen: [] }>()
 
 const { t } = useI18n()
+const { loggedIn, login } = useOidcAuth()
 const { zugang, hatSchluessel } = useAiProvider()
 const { nachrichten, status, fehler, laeuft, senden, abbrechen, neu } = useAiChat()
 
@@ -29,7 +30,9 @@ function loeschen() {
   loeschenOffen.value = false
 }
 
-const zeigtFormular = computed(() => !hatSchluessel.value || zugangOffen.value)
+// Abgemeldet wird hier nichts eingetragen. Der Schlüssel gehört zu einem Konto
+// und kostet den Nutzer Geld, also fragen wir vorher, wer da ist.
+const zeigtFormular = computed(() => loggedIn.value && (!hatSchluessel.value || zugangOffen.value))
 
 const beispiele = computed(() => [t('ai.examples.what'), t('ai.examples.how')])
 
@@ -63,7 +66,7 @@ onMounted(() => {
              ein Chat daneben", und mehrere Unterhaltungen gibt es hier nicht.
              Der Knopf wirft den Verlauf weg, also steht das auch dran. -->
         <UButton
-          v-if="hatSchluessel && nachrichten.length"
+          v-if="loggedIn && hatSchluessel && nachrichten.length"
           icon="i-lucide-trash-2"
           color="neutral"
           variant="ghost"
@@ -73,7 +76,7 @@ onMounted(() => {
           {{ t('ai.clear') }}
         </UButton>
         <UButton
-          v-if="hatSchluessel"
+          v-if="loggedIn && hatSchluessel"
           icon="i-lucide-settings"
           color="neutral"
           variant="ghost"
@@ -92,8 +95,22 @@ onMounted(() => {
       </div>
     </div>
 
+    <!-- Abgemeldet endet es hier. -->
+    <div v-if="!loggedIn" class="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
+      <UIcon name="i-lucide-log-in" class="size-8 text-(--ui-text-muted)" />
+      <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+        {{ t('ai.signIn.title') }}
+      </h2>
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('ai.signIn.body') }}
+      </p>
+      <UButton icon="i-lucide-log-in" color="primary" @click="login()">
+        {{ t('auth.login') }}
+      </UButton>
+    </div>
+
     <!-- Ohne Schlüssel gibt es nichts zu chatten, also steht hier das Formular. -->
-    <div v-if="zeigtFormular" class="flex-1 overflow-y-auto p-5">
+    <div v-else-if="zeigtFormular" class="flex-1 overflow-y-auto p-5">
       <AiProviderForm @verbunden="zugangOffen = false" />
     </div>
 

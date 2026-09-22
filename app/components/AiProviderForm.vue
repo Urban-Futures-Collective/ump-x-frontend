@@ -61,6 +61,17 @@ function absenden() {
       <p class="text-sm text-(--ui-text-muted)">
         {{ t('ai.connect.lead') }}
       </p>
+
+      <!-- Der Verbrauch entsteht beim Anbieter des Nutzers, nicht bei uns, und wir
+           können ihn weder vorhersagen noch begrenzen. Das gehört vor das Eingabefeld
+           und nicht hinterher. -->
+      <UAlert
+        icon="i-lucide-flask-conical"
+        color="warning"
+        variant="subtle"
+        :title="t('ai.experimental.title')"
+        :description="t('ai.experimental.body')"
+      />
     </div>
 
     <div class="space-y-4">
