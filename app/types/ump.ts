@@ -24,6 +24,25 @@ export interface ProcessInput {
 
 export interface ProcessDetail extends Process {
   inputs: ProcessInput[]
+  /** Leer, wenn der Prozess nichts deklariert. Am 2026-09-22 tun das alle vier. */
+  outputs: ProcessOutput[]
+}
+
+export interface ProcessOutput {
+  name: string
+  title: string
+  description?: string
+  /**
+   * Der deklarierte Typ, so wie er dasteht. UMP führt ihn uneinheitlich: die
+   * bikebox-Modelle setzen `format: geojson-feature-collection`, die Modelle auf
+   * modelserver-1 nur `contentMediaType: application/json`, obwohl einer ihrer
+   * Outputs wörtlich `GeoJSON` heißt. Deshalb stehen beide Felder hier, und
+   * deshalb entscheidet die Deklaration allein nicht.
+   */
+  format?: string
+  mediaType?: string
+  /** Das unveraenderte JSON-Schema des Outputs. */
+  schema?: Record<string, unknown>
 }
 
 export type JobStatus = 'accepted' | 'running' | 'successful' | 'failed' | 'dismissed'
@@ -47,6 +66,17 @@ export interface Job {
   updated?: string
 }
 
+/** Was die Karte aus einem Ergebnis machen soll. */
+export interface ResultLayerSpec {
+  /** Name des Outputs, aus dem der Layer entsteht. */
+  name: string
+  kind: 'geojson'
+  /** Bestimmt das Styling. `mixed`, wenn mehrere Geometriearten vorkommen. */
+  geometry: 'line' | 'point' | 'polygon' | 'mixed'
+  /** Woher der Typ kam. Für die Anzeige, wenn nichts darstellbar ist. */
+  quelle: 'deklariert' | 'erkannt'
+}
+
 // Ergebnis der „Naht 2": Job-Ergebnis → kartenfertiges Layer.
 export interface ResultLayer {
   jobId: string
@@ -54,4 +84,6 @@ export interface ResultLayer {
   // Darf deshalb fehlen, wenn der Job selbst keine processID trägt.
   processId?: string
   featureCollection: FeatureCollection
+  /** Leer heißt: nichts an diesem Ergebnis lässt sich auf einer Karte zeigen. */
+  layers: ResultLayerSpec[]
 }

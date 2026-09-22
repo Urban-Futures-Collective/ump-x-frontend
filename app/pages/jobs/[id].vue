@@ -121,7 +121,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
         {{ t('jobs.noResult') }}
       </p>
 
-      <UmpMap v-if="result" :data="result" />
+      <UmpMap v-if="result" :layer="result" />
     </template>
   </section>
 </template>

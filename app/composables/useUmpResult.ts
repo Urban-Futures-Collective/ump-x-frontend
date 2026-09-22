@@ -1,5 +1,6 @@
 import type { FeatureCollection } from 'geojson'
-import type { ResultLayer } from '~/types/ump'
+import type { ProcessOutput, ResultLayer } from '~/types/ump'
+import { resultLayers } from '~/utils/resultLayers'
 
 // NAHT 2 (die wichtige): „Job-Ergebnis → kartenfertiges Layer" in genau einem Modul.
 // Hier landet später die Umstellung, falls Ergebnisse als OGC API Features oder WFS/WMS
@@ -12,9 +13,16 @@ export function useUmpResult() {
   // Im Browser ist das identisch zu $fetch.
   const request = useRequestFetch()
 
-  async function fetchResult(jobId: string, processId?: string): Promise<ResultLayer> {
+  // Die Outputs kommen aus der Prozessbeschreibung und sind optional: wer sie
+  // nicht hat, bekommt trotzdem einen Layer, sofern die Antwort erkennbar
+  // Geodaten sind. Siehe `resultLayers`.
+  async function fetchResult(
+    jobId: string,
+    processId?: string,
+    outputs: ProcessOutput[] = [],
+  ): Promise<ResultLayer> {
     const fc = await request<FeatureCollection>(`${base}/jobs/${jobId}/results`)
-    return { jobId, processId, featureCollection: fc }
+    return { jobId, processId, featureCollection: fc, layers: resultLayers(outputs, fc) }
   }
 
   return { fetchResult }

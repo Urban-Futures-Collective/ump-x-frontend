@@ -35,7 +35,7 @@ export function useUmpJob(jobId: MaybeRefOrGetter<string>) {
       }
       try {
         const layer = await fetchResult(id.value, job.processId)
-        return { job, result: layer.featureCollection, resultError: null }
+        return { job, result: layer, resultError: null }
       }
       catch (e) {
         // Ergebnisse älterer Läufe können weg sein, obwohl der Lauf erfolgreich
