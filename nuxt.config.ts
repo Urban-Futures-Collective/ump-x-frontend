@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   // Das Paket deklariert `"type": "commonjs"`, liefert aber ESM-Quelltext und
   // zeigt mit `main` direkt auf `src/`. Ohne transpile hält Vite es für CJS und
-  // findet den Default-Export nicht.
+  // findet den Default-Export nicht; dayjs scheitert sonst am selben Punkt.
   build: { transpile: ['@masterportal/masterportalapi'] },
   vite: { optimizeDeps: { include: ['dayjs'] } },
   compatibilityDate: '2025-06-01',

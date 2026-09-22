@@ -18,7 +18,6 @@
     "@masterportal/masterportalapi": "^2.63.0",
     "@nuxt/ui": "^4.9.0",
     "ai": "7.0.92",
-    "maplibre-gl": "^5.24.0",
     "nuxt": "^4.4.5",
     "nuxt-oidc-auth": "^1.0.0-beta.11",
     "vue": "^3.5.38",
