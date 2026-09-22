@@ -2,13 +2,8 @@
 // Ein Werkzeugaufruf im Chat.
 //
 // Lesende Werkzeuge zeigen aufgeklappt, was tatsächlich an den Anbieter
-// gegangen ist. Das ist kein Schmuck: unter dem Zugangsformular steht, dass
-// Fragen und Werkzeug-Ergebnisse beim gewählten Anbieter landen. Ohne diese
-// Ansicht wäre das eine Behauptung, die niemand nachprüfen kann.
-//
-// Ein vorbereiteter Lauf sieht bewusst anders aus. Er trägt einen Knopf, weil
-// hier der Vorschlag endet und der Mensch übernimmt: die KI schlägt vor, sie
-// startet nichts.
+// gegangen ist. Unter dem Zugangsformular steht, dass
+// Fragen und Werkzeug-Ergebnisse beim gewählten Anbieter landen.
 import type { JobStatus } from '~/types/ump'
 import type { Teil } from '~/composables/useAiChat'
 import type { ErgebnisZusammenfassung } from '~/utils/resultSummary'
@@ -95,10 +90,7 @@ const erkannt = computed(() => {
   return Object.entries(e).map(([k, v]) => `${k} = ${String(v)}`)
 })
 
-// Was das Modell nicht geliefert hat. Am 2026-09-07 auf Staging gesehen: ein
-// Modell traf den Parameternamen nicht, prepareRun bekam also gar keine Eingaben,
-// und die Karte sah fuenfmal hintereinander aus wie eine gelungene Vorbereitung.
-// Das Werkzeug meldet den Mangel, die Karte hat ihn nur verschwiegen.
+// Was das Modell nicht geliefert hat.
 const fehlend = computed(() => ausgabe.value?.fehlend ?? [])
 const unbekannt = computed(() => ausgabe.value?.unbekannt ?? [])
 const unvollstaendig = computed(() => fehlend.value.length > 0)

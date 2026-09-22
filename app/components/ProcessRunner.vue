@@ -9,13 +9,6 @@ const { loggedIn } = useOidcAuth()
 const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
 const { data: ausfuehrbar } = useUmpRunnableProcesses()
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
-
-// Seit der Katalog wieder allen alles zeigt, steht hier auch, was man nicht
-// ausführen darf. Rico im Team-Chat: „man klickt auf Szenario ausführen und
-// bekommt dann erst den Fehler". Deshalb vorher: Knopf aus, Grund darunter.
-//
-// Solange die Liste noch lädt, gilt nichts als gesperrt. Ein Knopf, der beim
-// Laden kurz ausgegraut ist, wirkt kaputt.
 const gesperrt = computed(() =>
   ausfuehrbar.value.length > 0 && !ausfuehrbar.value.includes(props.processId),
 )
@@ -27,7 +20,7 @@ const form = ref<Record<string, string>>({})
 
 // Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.
 //
-// Werte aus der Adresszeile (`?in.cityname=Oelde`) stechen die Vorgabe. Darüber
+// Werte aus der Adresszeile stechen die Vorgabe. Darüber
 // übergibt der Chat einen vorbereiteten Lauf: er schlägt vor, die Adresszeile
 // trägt den Vorschlag, und abgeschickt wird hier von Hand. Ein Tieflink statt
 // eines geteilten Zustands, damit der Vorschlag ein Neuladen übersteht und

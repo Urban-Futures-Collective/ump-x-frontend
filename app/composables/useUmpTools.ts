@@ -122,10 +122,7 @@ export function useUmpTools() {
       + 'des Modells und liefert einen Link auf das ausgefüllte Formular. Erst describeProcess '
       + 'aufrufen, damit die Namen stimmen. Lass Eingaben weg, die eine Vorgabe haben.',
     // Die Schlüssel dieses Schemas liest ein fremdes Sprachmodell, nicht unser
-    // Code. Deshalb heißen sie englisch, anders als die Bezeichner im Repo: am
-    // 2026-09-07 hat ein lokales Modell auf Staging „geben" und „gabenein"
-    // geraten, statt „eingaben" zu treffen, und schickte dreimal einen Aufruf
-    // ohne Eingaben los.
+    // Code. Deshalb heißen sie englisch, anders als die Bezeichner im Repo.
     inputSchema: jsonSchema<{ processId: string, inputs?: Record<string, unknown> }>({
       type: 'object',
       properties: {
@@ -184,11 +181,7 @@ export function useUmpTools() {
   })
 
   // Welche Läufe zurückkommen, entscheidet die API anhand des Tokens, den der
-  // Proxy anhängt. Abgemeldet ist die Liste NICHT leer: am 2026-09-04 gegen
-  // Produktion gemessen antwortet /jobs ohne Sitzung mit den Läufen, die ohne
-  // Anmeldung gestartet wurden (heute ausschließlich growbike). Deshalb steht
-  // hier „zugänglich" und nicht „eigene": das Modell soll einem anonymen
-  // Besucher nicht erzählen, er sehe seine eigenen Läufe.
+  // Proxy anhängt.
   const listJobs = tool({
     description:
       'Listet die Läufe (Szenarien), die dem Aufrufer zugänglich sind, neueste zuerst, mit '
