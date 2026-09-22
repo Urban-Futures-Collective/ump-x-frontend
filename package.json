@@ -15,6 +15,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "4.0.49",
     "@ai-sdk/openai": "4.0.58",
+    "@masterportal/masterportalapi": "^2.63.0",
     "@nuxt/ui": "^4.9.0",
     "ai": "7.0.92",
     "maplibre-gl": "^5.24.0",
