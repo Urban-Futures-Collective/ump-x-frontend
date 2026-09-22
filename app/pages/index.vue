@@ -34,10 +34,9 @@ const aufgehalten = computed(() => typeof route.query.redirect === 'string' && r
 
 // Die echten Modelle statt einer gepflegten Liste: was im Katalog steht, steht
 // auch hier. Bewusst unbedingt aufgerufen, auch im aufgehaltenen Zustand: ein
-// Composable hinter einer Bedingung bricht die Reihenfolge der Aufrufe, und beide
-// Abfragen sind öffentlich und klein.
+// Composable hinter einer Bedingung bricht die Reihenfolge der Aufrufe, und die
+// Abfrage ist öffentlich und klein.
 const { data: prozesse } = useUmpProcesses()
-const { data: ausfuehrbar } = useUmpRunnableProcesses()
 
 const schritte = ['choose', 'configure', 'take'] as const
 
@@ -215,12 +214,6 @@ const menue = computed(() => [
             <p class="flex-1 text-sm text-ufc-slate-700">
               {{ p.description }}
             </p>
-            <span
-              class="rounded-full px-2.5 py-1 text-xs"
-              :class="ausfuehrbar.includes(p.id) ? 'bg-green-50 text-green-700' : 'bg-white text-ufc-slate-700'"
-            >
-              {{ ausfuehrbar.includes(p.id) ? t('start.models.open') : t('start.models.needsLogin') }}
-            </span>
           </li>
         </ul>
       </div>
