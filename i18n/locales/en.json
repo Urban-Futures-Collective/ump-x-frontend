@@ -100,7 +100,7 @@
       "orBrowse": "or browse the models"
     },
     "hero": {
-      "heading": "Let city models do the computing. Result on the map, data to take with you.",
+      "heading": "Let city models do the computing.",
       "lead": "The Urban Model Platform brings simulation models from research and public administration together in one place. Pick a model, set the parameters, look at the result and take it as a file. No GIS installation of your own, no computing power of your own.",
       "browse": "Browse the models",
       "accessHint": "Browsing needs no account. Running a model needs you to be signed in.",
@@ -128,19 +128,18 @@
       "needsLogin": "Sign-in required"
     },
     "ai": {
-      "heading": "Chat with your own AI",
-      "lead": "UMP-X provides no language model and pays for none. You connect yours, then it walks you through the catalogue. The choice and the cost stay with you.",
-      "prompt": "Where shall we start?",
-      "keyHint": "First you enter a provider and a key. The key stays in your browser.",
-      "own": {
-        "heading": "Or bring your own client",
-        "body": "The models are available as tools over MCP too. If you already use an AI client, connect it once and carry on from there."
+      "heading": "Two ways to work with an AI",
+      "lead": "UMP-X provides no language model and pays for none. You bring your own, in the chat on this site or in your own client.",
+      "chat": {
+        "heading": "Chat on this site",
+        "body": "The chat knows the catalogue and the models' parameters. It picks out a model, explains the inputs and fills the form in. You are the one who submits.",
+        "hint": "You enter the provider and the key yourself, and the key stays in your browser. Chatting needs you to be signed in."
+      },
+      "mcp": {
+        "heading": "Your own AI client over MCP",
+        "body": "MCP is an open standard that lets AI clients use tools from other providers. If you already have a client, connect it once, sign in with your account, and the models are there as tools.",
+        "more": "How to connect your client"
       }
-    },
-    "mcp": {
-      "heading": "MCP: the models in your own AI client",
-      "body": "MCP is an open standard that lets AI clients use tools from other providers. UMP-X offers its models through it: connect once, sign in with your account, and the models are there in your client. The same rights apply as here.",
-      "more": "How to connect your client"
     }
   },
   "ai": {
