@@ -1,5 +1,4 @@
-import type { FeatureCollection } from 'geojson'
-import type { JobStatus } from '~/types/ump'
+import type { ResultLayer, JobStatus  } from '~/types/ump'
 
 const POLL_INTERVAL_MS = 1000
 const POLL_MAX = 180
@@ -15,7 +14,7 @@ export function useUmpRun() {
   const jobId = ref<string | null>(null)
   const progress = ref(0)
   const error = ref<string | null>(null)
-  const result = ref<FeatureCollection | null>(null)
+  const result = ref<ResultLayer | null>(null)
   const running = computed(() => status.value === 'accepted' || status.value === 'running')
 
   async function run(processId: string, inputs: Record<string, unknown>) {
@@ -33,7 +32,7 @@ export function useUmpRun() {
         progress.value = job.progress
         if (job.status === 'successful') {
           const layer = await fetchResult(id, processId)
-          result.value = layer.featureCollection
+          result.value = layer
           return
         }
         if (job.status === 'failed' || job.status === 'dismissed') {

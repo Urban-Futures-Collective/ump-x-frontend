@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FeatureCollection } from 'geojson'
+import type { ResultLayer } from '~/types/ump'
 
 // Neues Szenario ausführen: übernimmt ProcessRunner + UmpMap + Ergebnis-Pfad aus der
 // bisherigen app.vue. Das Modell kommt via Query-Param (/run?process=<id>, gesetzt vom
@@ -14,7 +14,7 @@ const queryProcess = computed(() =>
   typeof route.query.process === 'string' ? route.query.process : null,
 )
 const selectedProcessId = ref<string | null>(queryProcess.value)
-const mapData = ref<FeatureCollection | null>(null)
+const mapData = ref<ResultLayer | null>(null)
 
 function selectProcess(id: string) {
   selectedProcessId.value = id
@@ -86,7 +86,7 @@ watch(queryProcess, (id) => {
         </p>
       </div>
 
-      <UmpMap :data="mapData" />
+      <UmpMap :layer="mapData" />
     </section>
   </div>
 </template>

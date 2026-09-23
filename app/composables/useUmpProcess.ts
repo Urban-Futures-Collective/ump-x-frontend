@@ -6,6 +6,11 @@ export interface OgcInput {
   minOccurs?: number
   schema?: { type?: string, default?: unknown }
 }
+export interface OgcOutput {
+  title?: string
+  description?: string
+  schema?: { type?: string, format?: string, contentMediaType?: string }
+}
 export interface OgcProcessDetail {
   id: string
   title?: string | null
@@ -13,6 +18,7 @@ export interface OgcProcessDetail {
   version?: string
   keywords?: string[] | null
   inputs?: Record<string, OgcInput> | null
+  outputs?: Record<string, OgcOutput> | null
 }
 
 // Prozess-Detail inkl. Inputs-Schema (für das dynamische Parameterformular).
@@ -30,6 +36,16 @@ export function useUmpProcess(id: MaybeRefOrGetter<string>) {
       description: raw.description ?? '',
       version: raw.version ?? '',
       keywords: raw.keywords ?? [],
+      // Der Typ steht bei UMP mal unter `format`, mal unter `contentMediaType`.
+      // Beides wird durchgereicht, entschieden wird in `resultLayers`.
+      outputs: Object.entries(raw.outputs ?? {}).map(([key, v]) => ({
+        name: key,
+        title: v.title ?? key,
+        description: v.description,
+        format: v.schema?.format,
+        mediaType: v.schema?.contentMediaType,
+        schema: v.schema as Record<string, unknown> | undefined,
+      })),
       inputs: Object.entries(raw.inputs ?? {}).map(([key, v]) => ({
         name: key,
         title: v.title ?? key,

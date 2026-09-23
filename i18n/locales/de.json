@@ -260,5 +260,8 @@
       "copy": "Adresse kopieren",
       "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
     }
+  },
+  "map": {
+    "notMappable": "Dieses Ergebnis lässt sich nicht auf einer Karte zeigen. Herunterladen geht trotzdem."
   }
 }

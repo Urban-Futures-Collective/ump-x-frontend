@@ -260,5 +260,8 @@
       "copy": "Copy the address",
       "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
     }
+  },
+  "map": {
+    "notMappable": "This result cannot be shown on a map. You can still download it."
   }
 }

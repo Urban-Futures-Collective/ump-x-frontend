@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { FeatureCollection } from 'geojson'
+import type { ResultLayer } from '~/types/ump'
 
 const props = defineProps<{ processId: string }>()
-const emit = defineEmits<{ result: [FeatureCollection | null] }>()
+const emit = defineEmits<{ result: [ResultLayer | null] }>()
 
 const { t } = useI18n()
 const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
