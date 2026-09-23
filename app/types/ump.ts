@@ -15,8 +15,11 @@ export interface ProcessInput {
   title: string
   description?: string
   type: string
+  /** Muss der Aufrufer liefern: minOccurs >= 1 UND keine Vorgabe im Schema. */
   required: boolean
   default?: unknown
+  /** Das unveraenderte JSON-Schema der Eingabe, inklusive enum/minimum/maximum. */
+  schema?: Record<string, unknown>
 }
 
 export interface ProcessDetail extends Process {

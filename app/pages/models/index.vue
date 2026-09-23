@@ -5,6 +5,9 @@
 const { t } = useI18n()
 const { loggedIn } = useOidcAuth()
 const { data: processes, pending, error, refresh } = useUmpProcesses()
+
+// Der Katalog zeigt seit 2026-09-04 wieder allen alles. Damit steht hier auch,
+// was man nicht starten darf, und das gehört an die Zeile statt hinter den Klick.
 </script>
 
 <template>
@@ -29,7 +32,7 @@ const { data: processes, pending, error, refresh } = useUmpProcesses()
       {{ t('processes.anonymousHint') }}
     </p>
     <p v-if="error" class="text-sm text-red-600">
-      {{ t('processes.error') }}
+      {{ t('processes.error', { msg: apiErrorMessage(error) }) }}
     </p>
 
     <ul v-if="processes?.length" class="space-y-2">
@@ -45,7 +48,9 @@ const { data: processes, pending, error, refresh } = useUmpProcesses()
             </span>
             <span class="block text-xs text-(--ui-text-muted)">{{ p.id }}</span>
           </span>
-          <UIcon name="i-lucide-arrow-right" class="shrink-0 text-(--ui-text-muted)" />
+          <span class="flex shrink-0 items-center gap-2">
+            <UIcon name="i-lucide-arrow-right" class="text-(--ui-text-muted)" />
+          </span>
         </ULink>
       </li>
     </ul>

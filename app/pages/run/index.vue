@@ -46,7 +46,7 @@ watch(queryProcess, (id) => {
       </div>
 
       <p v-if="error" class="text-sm text-red-600">
-        {{ t('processes.error') }}
+        {{ t('processes.error', { msg: apiErrorMessage(error) }) }}
       </p>
 
       <ul v-if="processes?.length" class="space-y-1">
@@ -59,7 +59,9 @@ watch(queryProcess, (id) => {
               : 'border-(--ui-border) hover:bg-(--ui-bg-elevated)'"
             @click="selectProcess(p.id)"
           >
-            <div class="font-medium">{{ p.title }}</div>
+            <div class="flex items-center gap-2">
+              <span class="font-medium">{{ p.title }}</span>
+            </div>
             <div class="text-xs text-(--ui-text-muted)">{{ p.id }}</div>
           </button>
         </li>

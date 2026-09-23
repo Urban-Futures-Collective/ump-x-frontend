@@ -7,14 +7,24 @@ const emit = defineEmits<{ result: [FeatureCollection | null] }>()
 const { t } = useI18n()
 const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
-
 const form = ref<Record<string, string>>({})
 
 // Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.
+//
+// Werte aus der Adresszeile stechen die Vorgabe. Darüber
+// übergibt der Chat einen vorbereiteten Lauf: er schlägt vor, die Adresszeile
+// trägt den Vorschlag, und abgeschickt wird hier von Hand. Ein Tieflink statt
+// eines geteilten Zustands, damit der Vorschlag ein Neuladen übersteht und
+// sich weitergeben lässt.
+const route = useRoute()
+
 watch(proc, (p) => {
   const next: Record<string, string> = {}
   for (const inp of p?.inputs ?? []) {
-    next[inp.name] = inp.default != null ? String(inp.default) : ''
+    const ausAdresse = route.query[`in.${inp.name}`]
+    next[inp.name] = typeof ausAdresse === 'string' && ausAdresse !== ''
+      ? ausAdresse
+      : inp.default != null ? String(inp.default) : ''
   }
   form.value = next
 }, { immediate: true })
@@ -22,27 +32,20 @@ watch(proc, (p) => {
 // Ergebnis nach außen (an die Karte) reichen.
 watch(result, r => emit('result', r))
 
+// Zahlenfelder können eine nicht-numerische Vorgabe nicht anzeigen: der Browser
+// wirft "auto" aus einem type=number heraus. Das Feld sieht dann leer aus, und
+// niemand erfährt, dass genau dieses Leerlassen die Vorgabe auslöst. Deshalb der
+// Hinweis darunter — nur dort, wo die Vorgabe wirklich unsichtbar ist.
+function vorgabeUnsichtbar(inp: { type: string, default?: unknown }) {
+  if (inp.default == null) return false
+  const zahlenfeld = inp.type === 'integer' || inp.type === 'number'
+  return zahlenfeld && !Number.isFinite(Number(inp.default))
+}
+
 async function onSubmit() {
-  const inputs: Record<string, unknown> = {}
-  for (const inp of proc.value?.inputs ?? []) {
-    const raw = (form.value[inp.name] ?? '').trim()
-    const def = inp.default != null ? String(inp.default) : ''
-    // Leeres nicht senden; unveränderte Defaults weglassen → das Backend nutzt seine
-    // eigenen Defaults (wichtig für growbike, dessen Integer-Inputs den String "auto"
-    // als Default haben — ein Number("auto") würde NaN senden und den Prozess crashen).
-    if (raw === '') continue
-    if (def !== '' && raw === def) continue
-    if ((inp.type === 'integer' || inp.type === 'number') && Number.isFinite(Number(raw))) {
-      inputs[inp.name] = Number(raw)
-    }
-    else if (inp.type === 'boolean') {
-      inputs[inp.name] = raw === 'true' || raw === '1'
-    }
-    else {
-      inputs[inp.name] = raw
-    }
-  }
-  await run(props.processId, inputs)
+  // Die Regel liegt in app/utils/processInputs.ts, weil der Chat sie ebenfalls
+  // anwendet. Zwei Fassungen davon wären zwei Wahrheiten über den "auto"-Default.
+  await run(props.processId, bereinigeEingaben(proc.value?.inputs ?? [], form.value))
 }
 </script>
 
@@ -70,6 +73,9 @@ async function onSubmit() {
           :placeholder="inp.description"
           class="w-full"
         />
+        <p v-if="vorgabeUnsichtbar(inp)" class="text-xs text-(--ui-text-dimmed)">
+          {{ t('run.defaultHint', { wert: String(inp.default) }) }}
+        </p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -96,5 +102,6 @@ async function onSubmit() {
         {{ t('run.error', { msg: error }) }}
       </p>
     </form>
+
   </div>
 </template>

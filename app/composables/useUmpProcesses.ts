@@ -2,14 +2,14 @@ import type { Process } from '~/types/ump'
 
 // Rohe OGC-API-Processes-Antwort (nur was wir mappen). Ab UMP 3.x sind title und
 // description ausdrücklich nullable, id und version sind Pflicht.
-interface OgcProcessSummary {
+export interface OgcProcessSummary {
   id: string
   title?: string | null
   description?: string | null
   version?: string
   keywords?: string[] | null
 }
-interface OgcProcessList {
+export interface OgcProcessList {
   processes?: OgcProcessSummary[]
 }
 
