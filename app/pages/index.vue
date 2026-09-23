@@ -32,7 +32,6 @@ const aufgehalten = computed(() => typeof route.query.redirect === 'string' && r
 // Composable hinter einer Bedingung bricht die Reihenfolge der Aufrufe, und beide
 // Abfragen sind öffentlich und klein.
 const { data: prozesse } = useUmpProcesses()
-const { data: ausfuehrbar } = useUmpRunnableProcesses()
 
 const schritte = ['choose', 'configure', 'take'] as const
 
@@ -283,14 +282,6 @@ const vorschau: Record<string, string> = {
             <p class="flex-1 px-5 text-sm text-(--ui-text-muted)">
               {{ p.description }}
             </p>
-            <UBadge
-              :color="ausfuehrbar.includes(p.id) ? 'success' : 'neutral'"
-              variant="subtle"
-              size="sm"
-              class="mb-5 ml-5 self-start"
-            >
-              {{ ausfuehrbar.includes(p.id) ? t('start.models.open') : t('start.models.needsLogin') }}
-            </UBadge>
           </li>
         </ul>
       </div>
