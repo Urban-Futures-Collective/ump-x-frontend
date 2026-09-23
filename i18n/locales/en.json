@@ -208,6 +208,14 @@
       "features": "{n} features",
       "extent": "Extent {von} to {bis}",
       "properties": "Properties: {liste}"
+    },
+    "signIn": {
+      "title": "Sign in to chat",
+      "body": "The chat works with your account and your own AI access. Both need you to be signed in."
+    },
+    "experimental": {
+      "title": "Experimental feature",
+      "body": "Requests go to your provider and are billed there. We can neither predict nor limit how many tokens a conversation uses."
     }
   },
   "help": {

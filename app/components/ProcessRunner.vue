@@ -7,13 +7,11 @@ const emit = defineEmits<{ result: [FeatureCollection | null] }>()
 const { t } = useI18n()
 const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
-
-
 const form = ref<Record<string, string>>({})
 
 // Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.
 //
-// Werte aus der Adresszeile (`?in.cityname=Oelde`) stechen die Vorgabe. Darüber
+// Werte aus der Adresszeile stechen die Vorgabe. Darüber
 // übergibt der Chat einen vorbereiteten Lauf: er schlägt vor, die Adresszeile
 // trägt den Vorschlag, und abgeschickt wird hier von Hand. Ein Tieflink statt
 // eines geteilten Zustands, damit der Vorschlag ein Neuladen übersteht und

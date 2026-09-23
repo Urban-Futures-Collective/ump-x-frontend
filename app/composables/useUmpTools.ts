@@ -19,11 +19,8 @@ import type { OgcProcessList } from '~/composables/useUmpProcesses'
 // Verlauf über Monate im Kontext kostet nur Geld und beantwortet keine Frage.
 const MAX_LAEUFE = 20
 
-interface McpKatalog { tools?: { tool?: string }[] }
-
 export function useUmpTools() {
   const { base } = useUmpBase()
-  const { umpBase } = useRuntimeConfig().public
   // Ergebnisse laufen über dieselbe Naht wie Karte und Download, nicht über
   // einen zweiten Abruf daneben.
   const { fetchResult } = useUmpResult()
@@ -45,27 +42,12 @@ export function useUmpTools() {
     async execute() {
       try {
         const liste = await $fetch<OgcProcessList>(`${base}/processes`)
-        // Der MCP-Werkzeugkatalog filtert nach derselben Regel, die auch beim
-        // Ausführen gilt. Er ist damit die ehrlichste Auskunft darüber, was der
-        // Aufrufer wirklich starten dürfte. Fällt er aus, lassen wir die Angabe
-        // weg statt sie zu raten.
-        let ausfuehrbar: string[] | null = null
-        try {
-          const katalog = await $fetch<McpKatalog>(`${umpBase}/mcp/v1/tools`)
-          ausfuehrbar = (katalog?.tools ?? [])
-            .map(t => t.tool)
-            .filter((t): t is string => typeof t === 'string')
-        }
-        catch {
-          ausfuehrbar = null
-        }
 
         return {
           modelle: (liste.processes ?? []).map(p => ({
             id: p.id,
             titel: p.title ?? p.id,
             beschreibung: p.description ?? '',
-            ...(ausfuehrbar ? { ausfuehrbar: ausfuehrbar.includes(p.id) } : {}),
           })),
         }
       }
@@ -122,10 +104,7 @@ export function useUmpTools() {
       + 'des Modells und liefert einen Link auf das ausgefüllte Formular. Erst describeProcess '
       + 'aufrufen, damit die Namen stimmen. Lass Eingaben weg, die eine Vorgabe haben.',
     // Die Schlüssel dieses Schemas liest ein fremdes Sprachmodell, nicht unser
-    // Code. Deshalb heißen sie englisch, anders als die Bezeichner im Repo: am
-    // 2026-09-07 hat ein lokales Modell auf Staging „geben" und „gabenein"
-    // geraten, statt „eingaben" zu treffen, und schickte dreimal einen Aufruf
-    // ohne Eingaben los.
+    // Code. Deshalb heißen sie englisch, anders als die Bezeichner im Repo.
     inputSchema: jsonSchema<{ processId: string, inputs?: Record<string, unknown> }>({
       type: 'object',
       properties: {
@@ -184,11 +163,7 @@ export function useUmpTools() {
   })
 
   // Welche Läufe zurückkommen, entscheidet die API anhand des Tokens, den der
-  // Proxy anhängt. Abgemeldet ist die Liste NICHT leer: am 2026-09-04 gegen
-  // Produktion gemessen antwortet /jobs ohne Sitzung mit den Läufen, die ohne
-  // Anmeldung gestartet wurden (heute ausschließlich growbike). Deshalb steht
-  // hier „zugänglich" und nicht „eigene": das Modell soll einem anonymen
-  // Besucher nicht erzählen, er sehe seine eigenen Läufe.
+  // Proxy anhängt.
   const listJobs = tool({
     description:
       'Listet die Läufe (Szenarien), die dem Aufrufer zugänglich sind, neueste zuerst, mit '

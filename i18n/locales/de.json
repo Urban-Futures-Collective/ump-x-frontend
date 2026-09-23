@@ -208,6 +208,14 @@
       "features": "{n} Objekte",
       "extent": "Ausdehnung {von} bis {bis}",
       "properties": "Eigenschaften: {liste}"
+    },
+    "signIn": {
+      "title": "Zum Chatten anmelden",
+      "body": "Der Chat arbeitet mit deinem Konto und deinem eigenen KI-Zugang. Beides setzt eine Anmeldung voraus."
+    },
+    "experimental": {
+      "title": "Experimentelle Funktion",
+      "body": "Die Anfragen gehen an deinen Anbieter und werden dort abgerechnet. Wie viele Token ein Gespräch verbraucht, können wir weder vorhersagen noch begrenzen."
     }
   },
   "help": {
