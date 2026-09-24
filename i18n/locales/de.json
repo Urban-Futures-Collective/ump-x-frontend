@@ -79,6 +79,11 @@
     "error": "Fehler: {msg}",
     "openJob": "Lauf öffnen",
     "defaultHint": "Leer lassen für die Vorgabe {wert}.",
+    "job": {
+      "failed": "der Lauf ist fehlgeschlagen, ohne Angabe von Gründen",
+      "dismissed": "der Lauf wurde abgebrochen",
+      "timeout": "der Lauf ist nicht rechtzeitig fertig geworden"
+    },
     "locked": {
       "heading": "Dieses Modell ist für dich nicht freigegeben",
       "signedIn": "Zum Ausführen von {modell} braucht dein Konto die Freigabe für {anbieter}. Ansehen und Ergebnisse anderer Läufe bleiben möglich.",

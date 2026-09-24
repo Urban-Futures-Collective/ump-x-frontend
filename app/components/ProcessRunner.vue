@@ -9,6 +9,14 @@ const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
 const form = ref<Record<string, string>>({})
 
+// Ein Job, der ohne Meldung scheitert, liefert nur seinen Status als Schlüssel.
+// Den übersetzen, alles andere ist schon Text von UMP oder dem Modell.
+const fehlertext = computed(() => {
+  const e = error.value
+  if (!e) return null
+  return e.startsWith('job.') ? t(`run.${e}`) : e
+})
+
 // Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.
 //
 // Werte aus der Adresszeile stechen die Vorgabe. Darüber
@@ -98,8 +106,8 @@ async function onSubmit() {
         />
       </div>
 
-      <p v-if="error" class="text-sm text-red-600">
-        {{ t('run.error', { msg: error }) }}
+      <p v-if="fehlertext" class="text-sm text-red-600">
+        {{ t('run.error', { msg: fehlertext }) }}
       </p>
     </form>
 

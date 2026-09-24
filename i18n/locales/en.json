@@ -79,6 +79,11 @@
     "error": "Error: {msg}",
     "openJob": "Open run",
     "defaultHint": "Leave empty for the default {wert}.",
+    "job": {
+      "failed": "the run failed without giving a reason",
+      "dismissed": "the run was dismissed",
+      "timeout": "the run did not finish in time"
+    },
     "locked": {
       "heading": "This model is not released for you",
       "signedIn": "Running {modell} needs your account to be cleared for {anbieter}. Looking at it and at other runs stays possible.",
