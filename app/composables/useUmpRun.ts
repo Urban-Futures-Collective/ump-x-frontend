@@ -36,7 +36,9 @@ export function useUmpRun() {
           return
         }
         if (job.status === 'failed' || job.status === 'dismissed') {
-          error.value = `job.${job.status}`
+          // Der Grund steht in der Meldung des Jobs, etwa „Upstream Timeout“ oder
+          // die Fehlermeldung des Modells. Nur ohne Meldung bleibt der Status.
+          error.value = job.message?.trim() || `job.${job.status}`
           return
         }
         await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS))
