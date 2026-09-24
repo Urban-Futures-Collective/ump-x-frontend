@@ -65,11 +65,20 @@ const stile: Record<NonNullable<ResultLayer['layers'][number]>['geometry'], Styl
 // zeigt die Seite den Hinweis und nicht eine leere Karte.
 const darstellbar = computed(() => (props.layer?.layers.length ?? 0) > 0)
 
-onMounted(async () => {
-  await nextTick()
-  const el = mapContainer.value
-  if (!el) return
+// Die Karte entsteht, wenn ihr Kasten erscheint, und nicht beim Einhängen der
+// Komponente. Der Kasten steht unter `v-if="darstellbar"`: Auf „Neues Szenario“
+// ist die Komponente schon da, bevor es ein Ergebnis gibt, der Kasten aber erst
+// danach. Ein einmaliges onMounted fand dort keinen Kasten und baute nie eine
+// Karte. Verschwindet der Kasten wieder (neuer Lauf), wird die Karte abgebaut,
+// damit der nächste Kasten eine frische bekommt.
+watch(mapContainer, (el) => {
+  if (el && !map) baueKarte(el)
+  else if (!el && map) baueKarteAb()
+}, { flush: 'post', immediate: true })
 
+onBeforeUnmount(baueKarteAb)
+
+function baueKarte(el: HTMLDivElement) {
   map = createMap({ ...useMapConfig(), target: el }) as Map
   // Kein Eintrag im Dienste-Register: die Bibliothek kennt keinen XYZ-Typ, und
   // einen Service-Eintrag zu erfinden wäre unehrlich. Fertige OL-Layer nimmt ihr
@@ -87,15 +96,15 @@ onMounted(async () => {
   // hoch. Der äußere Rahmen hat seine Größe dagegen aus dem Layout.
   beobachter = new ResizeObserver(() => map?.updateSize())
   beobachter.observe(el.parentElement ?? el)
-})
+}
 
-onBeforeUnmount(() => {
+function baueKarteAb() {
   beobachter?.disconnect()
   beobachter = undefined
   map?.setTarget(undefined)
   map = undefined
   ergebnis = undefined
-})
+}
 
 watch(() => props.layer, l => render(l))
 
