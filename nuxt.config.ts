@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   build: { transpile: ['@masterportal/masterportalapi'] },
   vite: { optimizeDeps: { include: ['dayjs'] } },
   compatibilityDate: '2025-06-01',
+  // Der Katalog heißt seit 2026-09-25 Commons. Alte Lesezeichen und geteilte
+  // Links auf /models landen dort, statt ins Leere zu laufen.
+  routeRules: { '/models': { redirect: { to: '/commons', statusCode: 301 } } },
   devtools: { enabled: true },
 
   modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxtjs/i18n', 'nuxt-oidc-auth'],

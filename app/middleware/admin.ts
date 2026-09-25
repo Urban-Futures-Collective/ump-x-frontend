@@ -4,5 +4,5 @@
 export default defineNuxtRouteMiddleware(() => {
   const { isAdmin } = useUmpRoles()
   if (isAdmin.value) return
-  return navigateTo('/models')
+  return navigateTo('/commons')
 })

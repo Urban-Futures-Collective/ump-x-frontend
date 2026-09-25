@@ -22,7 +22,7 @@ const userName = computed(
 // „Read Me“ in die Kopfleiste gewandert.
 const navItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = [
-    { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/models' },
+    { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/commons' },
     { label: t('nav.jobs'), icon: 'i-lucide-history', to: '/jobs' },
   ]
   if (isAdmin.value) {
@@ -91,7 +91,7 @@ const benutzerMenue = computed(() => [[
 const breadcrumb = computed<BreadcrumbItem[]>(() => {
   const items: BreadcrumbItem[] = [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
   if (route.path.startsWith('/run')) {
-    items.push({ label: t('nav.models'), to: '/models' }, { label: t('nav.run') })
+    items.push({ label: t('nav.models'), to: '/commons' }, { label: t('nav.run') })
     return items
   }
   if (route.path.startsWith('/hilfe')) {

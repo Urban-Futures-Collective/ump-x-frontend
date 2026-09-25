@@ -27,7 +27,7 @@ const { loggedIn, login } = useOidcAuth()
 
 // Angemeldet gehört niemand auf die Startseite, der Katalog ist der Arbeitsplatz.
 if (loggedIn.value) {
-  await navigateTo('/models')
+  await navigateTo('/commons')
 }
 
 const aufgehalten = computed(() => typeof route.query.redirect === 'string' && route.query.redirect !== '')
@@ -83,7 +83,7 @@ const menue = computed(() => [
 
       <!-- Nur ein Textlink, kein zweiter gleichwertiger Knopf: wer aufgehalten
            wurde, wollte woanders hin als in den Katalog. -->
-      <ULink to="/models" class="block text-sm font-medium text-(--ui-primary)">
+      <ULink to="/commons" class="block text-sm font-medium text-(--ui-primary)">
         {{ t('start.blocked.orBrowse') }}
       </ULink>
     </div>
@@ -148,7 +148,7 @@ const menue = computed(() => [
           </p>
           <div class="flex flex-wrap gap-3">
             <UButton
-              to="/models"
+              to="/commons"
               size="lg"
               color="neutral"
               class="rounded-none bg-ufc-slate-900 px-6 py-3.5 font-medium text-white hover:bg-ufc-slate-800"
