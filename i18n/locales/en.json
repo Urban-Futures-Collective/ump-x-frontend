@@ -6,11 +6,11 @@
     "comingSoon": "This view is coming soon."
   },
   "nav": {
-    "models": "Models",
+    "models": "Commons",
     "run": "New scenario",
-    "jobs": "My scenarios",
+    "jobs": "My Scenarios",
     "admin": "Administration",
-    "home": "Home",
+    "home": "Start",
     "planned": {
       "heading": "Planned",
       "projects": "Projects",
@@ -19,7 +19,7 @@
       "report": "Report"
     },
     "chat": "Chat",
-    "help": "Help"
+    "help": "Read Me"
   },
   "landing": {
     "heading": "Urban Model Platform",

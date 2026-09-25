@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // „Administration" — Placeholder. Echter Admin-View (Mock-Adapter useUmpAccess,
-// Zugriffs-Matrix) = Folge-Sprint. auth + admin-Middleware: nur mit ump_admin (bzw.
-// Dev-Override) erreichbar; Reihenfolge zählt (erst Session, dann Rolle).
+// Zugriffs-Matrix) = Folge-Sprint. auth + admin-Middleware: nur mit einer Admin-Rolle
+// (siehe useUmpRoles) erreichbar; Reihenfolge zählt (erst Session, dann Rolle).
 definePageMeta({ middleware: ['auth', 'admin'] })
 const { t } = useI18n()
 </script>
