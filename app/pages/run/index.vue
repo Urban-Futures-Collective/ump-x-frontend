@@ -4,7 +4,7 @@ import type { ResultLayer } from '~/types/ump'
 // Neues Szenario ausführen: übernimmt ProcessRunner + UmpMap + Ergebnis-Pfad aus der
 // bisherigen app.vue. Das Modell kommt via Query-Param (/run?process=<id>, gesetzt vom
 // Katalog); links steht eine kompakte Liste zum Wechseln, damit /run selbstständig nutzbar
-// ist. Route-Form (Query-Param vs. /models/[id]/run) ist bewusst offen — Umstieg billig.
+// ist. Route-Form (Query-Param vs. /commons/[id]/run) ist bewusst offen — Umstieg billig.
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
@@ -40,7 +40,7 @@ watch(queryProcess, (id) => {
         <h2 class="text-lg font-semibold">
           {{ t('nav.models') }}
         </h2>
-        <ULink to="/models" class="text-sm text-(--ui-text-muted) hover:text-(--ui-text)">
+        <ULink to="/commons" class="text-sm text-(--ui-text-muted) hover:text-(--ui-text)">
           {{ t('run.allModels') }}
         </ULink>
       </div>

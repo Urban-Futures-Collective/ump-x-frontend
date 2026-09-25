@@ -16,20 +16,18 @@ const userName = computed(
   () => user.value?.userName ?? user.value?.claims?.preferred_username ?? '',
 )
 
-// Was es wirklich gibt. Die Reihenfolge folgt den Wireframes: erst der Katalog
-// („Commons"), dann das Erstellen, dann die eigenen Läufe.
+// Was es wirklich gibt, nach dem Entwurf „Landing Screen“: der Katalog heißt
+// Commons, daneben die eigenen Läufe. „Neues Szenario“ steht nicht mehr in der
+// Leiste, man kommt über ein Modell in Commons dorthin. Die Hilfe ist als
+// „Read Me“ in die Kopfleiste gewandert.
 const navItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = [
-    { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/models' },
-    { label: t('nav.run'), icon: 'i-lucide-pencil-line', to: '/run' },
+    { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/commons' },
     { label: t('nav.jobs'), icon: 'i-lucide-history', to: '/jobs' },
   ]
   if (isAdmin.value) {
     items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
   }
-  // Hilfe steht bewusst am Ende der aktiven Gruppe und nicht bei den
-  // ausgegrauten: sie führt irgendwohin, die anderen dort nicht.
-  items.push({ label: t('nav.help'), icon: 'i-lucide-book-open', to: '/hilfe' })
   return items
 })
 
@@ -87,12 +85,22 @@ const benutzerMenue = computed(() => [[
 ]])
 
 // Brotkrume: Home plus die aktuelle Stelle. Bewusst flach, solange es keine
-// Projektebene gibt, in die man hineinnavigieren könnte.
+// Projektebene gibt, in die man hineinnavigieren könnte. Seiten ohne eigenen
+// Eintrag in der Leiste hängen an ihrem Weg: ein neues Szenario entsteht aus
+// Commons heraus.
 const breadcrumb = computed<BreadcrumbItem[]>(() => {
+  const items: BreadcrumbItem[] = [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
+  if (route.path.startsWith('/run')) {
+    items.push({ label: t('nav.models'), to: '/commons' }, { label: t('nav.run') })
+    return items
+  }
+  if (route.path.startsWith('/hilfe')) {
+    items.push({ label: t('nav.help') })
+    return items
+  }
   const here = [...navItems.value, ...plannedItems.value].find(
     i => i.to && route.path.startsWith(String(i.to)),
   )
-  const items: BreadcrumbItem[] = [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
   if (here) {
     items.push({ label: String(here.label) })
   }
@@ -172,6 +180,17 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
               @click="chatOffen = true"
             >
               <span class="hidden md:inline">{{ t('nav.chat') }}</span>
+            </UButton>
+
+            <UButton
+              icon="i-lucide-book-open"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              to="/hilfe"
+              :aria-label="t('nav.help')"
+            >
+              <span class="hidden md:inline">{{ t('nav.help') }}</span>
             </UButton>
 
             <div class="flex items-center gap-1">

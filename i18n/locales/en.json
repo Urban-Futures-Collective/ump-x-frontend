@@ -6,11 +6,11 @@
     "comingSoon": "This view is coming soon."
   },
   "nav": {
-    "models": "Models",
+    "models": "Commons",
     "run": "New scenario",
-    "jobs": "My scenarios",
+    "jobs": "My Scenarios",
     "admin": "Administration",
-    "home": "Home",
+    "home": "Start",
     "planned": {
       "heading": "Planned",
       "projects": "Projects",
@@ -19,7 +19,7 @@
       "report": "Report"
     },
     "chat": "Chat",
-    "help": "Help"
+    "help": "Read Me"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -71,6 +71,13 @@
     "error": "The processes could not be loaded: {msg}",
     "anonymousHint": "Without signing in you only see public processes. Sign in to see role-based ones such as fixbike.",
     "locked": "Access needed"
+  },
+  "commons": {
+    "title": "Commons",
+    "anonymousHint": "Without logging in, you can view the models. Log in to build your own commons.",
+    "new": "New Commons",
+    "lead": "The catalog is open to everyone. Explore the UFC Commons.",
+    "scenarios": "Scenarios"
   },
   "run": {
     "selectHint": "Select a process on the left to run it.",

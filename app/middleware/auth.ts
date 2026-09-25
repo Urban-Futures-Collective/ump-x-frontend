@@ -1,5 +1,5 @@
 // Named Route-Middleware: schützt Routen, die einen eingeloggten User brauchen (/jobs, /admin).
-// Bewusst NICHT global — /, /models, /run bleiben öffentlich (anonymer Katalog/Ausführung).
+// Bewusst NICHT global — /, /commons, /run bleiben öffentlich (anonymer Katalog/Ausführung).
 // Aktiviert per definePageMeta({ middleware: ['auth'] }) in der jeweiligen Page.
 export default defineNuxtRouteMiddleware((to) => {
   const { loggedIn } = useOidcAuth()
