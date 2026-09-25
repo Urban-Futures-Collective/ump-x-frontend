@@ -16,10 +16,9 @@
 const UMP_CLIENT = 'ump-client'
 // Seit 2026-09 das Rollenmodell aus dem Weekly (viewer, user, provider, verifier,
 // access admin, platform admin) als Realm-Rollen. `ump_admin` gibt es nicht mehr.
-// Welche der beiden Admin-Rollen das Admin-Portal öffnet, ist mit Rico noch offen,
-// bis dahin reicht eine von beiden. Die Schreibweise mit Bindestrich ist die aus
-// Keycloak, nicht ein Tippfehler hier.
-const ADMIN_ROLES = ['user_role_access_admin', 'user_role_platform-admin']
+// Beide Admin-Rollen öffnen das Admin-Portal (Rico, 2026-09-25). Was darin zu
+// sehen ist, hängt später davon ab, welche der beiden jemand hat.
+const ADMIN_ROLES = ['user_role_access_admin', 'user_role_platform_admin']
 
 // Nur die Claim-Teile, die wir für Rollen brauchen (Keycloak-Standardform).
 interface KeycloakRoleClaims {
