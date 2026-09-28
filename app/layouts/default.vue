@@ -45,7 +45,15 @@ const plannedItems = computed<NavigationMenuItem[]>(() => [
 
 // Zwei Buchstaben aus dem Namen, wie im Entwurf. Ohne Namen lieber nichts als
 // ein erfundenes Kürzel.
-const initialen = computed(() => userName.value.slice(0, 2).toUpperCase())
+// Aus Vor- und Nachname, sonst die ersten zwei Buchstaben des Nutzernamens.
+// Nur der Nutzername hieß bei allen Test-Usern „TE“.
+const initialen = computed(() => {
+  const info = user.value?.userInfo as { given_name?: string, family_name?: string } | undefined
+  const vorname = info?.given_name?.trim() ?? ''
+  const nachname = info?.family_name?.trim() ?? ''
+  if (vorname && nachname) return (vorname[0]! + nachname[0]!).toUpperCase()
+  return userName.value.slice(0, 2).toUpperCase()
+})
 
 // „Zugriff beantragen" steht bewusst sichtbar und ausgegraut da, nach derselben
 // Regel wie die Einträge in der Seitenleiste: zeigen, wohin es geht, und nicht

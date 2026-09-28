@@ -4,7 +4,16 @@
 // passiert serverseitig in UMP, das Frontend braucht die Rollen dafür nicht.
 const { t } = useI18n()
 const { loggedIn } = useOidcAuth()
-const { data: processes, pending, error } = useUmpProcesses()
+const { data: processes, pending, error, refresh } = useUmpProcesses()
+
+// Kacheln („Landing Screen“) oder Liste („Models list“). Gemerkt in einem Cookie
+// statt im localStorage: so rendert schon der Server die gewählte Ansicht, und
+// beim Laden springt nichts um.
+const ansicht = useCookie<'tile' | 'row'>('ump-x-commons-ansicht', {
+  default: () => 'tile',
+  maxAge: 60 * 60 * 24 * 365,
+  sameSite: 'lax',
+})
 
 // Dieselben drei Schritte wie auf der Startseite.
 const schritte = ['choose', 'configure', 'take'] as const
@@ -14,9 +23,41 @@ const schritte = ['choose', 'configure', 'take'] as const
   <div class="space-y-16">
     <section class="space-y-8">
       <div class="space-y-2">
-        <h1 class="text-2xl font-semibold text-ufc-slate-900">
-          {{ t('commons.title') }}
-        </h1>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <h1 class="text-2xl font-semibold text-ufc-slate-900">
+            {{ t('commons.title') }}
+          </h1>
+          <div class="flex items-center gap-2">
+            <UButton
+              icon="i-lucide-layout-grid"
+              :color="ansicht === 'tile' ? 'primary' : 'neutral'"
+              variant="ghost"
+              size="sm"
+              :aria-label="t('commons.view.tiles')"
+              :aria-pressed="ansicht === 'tile'"
+              @click="ansicht = 'tile'"
+            />
+            <UButton
+              icon="i-lucide-list"
+              :color="ansicht === 'row' ? 'primary' : 'neutral'"
+              variant="ghost"
+              size="sm"
+              :aria-label="t('commons.view.list')"
+              :aria-pressed="ansicht === 'row'"
+              @click="ansicht = 'row'"
+            />
+            <UButton
+              icon="i-lucide-refresh-cw"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :loading="pending"
+              @click="refresh()"
+            >
+              {{ t('processes.refresh') }}
+            </UButton>
+          </div>
+        </div>
         <p v-if="!loggedIn" class="text-[0.9375rem] text-(--ui-text-muted)">
           {{ t('commons.anonymousHint') }}
         </p>
@@ -42,11 +83,16 @@ const schritte = ['choose', 'configure', 'take'] as const
           {{ t('processes.error', { msg: apiErrorMessage(error) }) }}
         </p>
 
-        <ul v-if="processes?.length" class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <ul
+          v-if="processes?.length"
+          :class="ansicht === 'row' ? 'max-w-3xl space-y-3' : 'grid gap-6 sm:grid-cols-2 xl:grid-cols-4'"
+        >
           <li v-for="p in processes" :key="p.id">
             <ModelCard
               :title="p.title"
               :description="p.description"
+              :process-id="p.id"
+              :layout="ansicht"
               :to="{ path: '/run', query: { process: p.id } }"
             />
           </li>

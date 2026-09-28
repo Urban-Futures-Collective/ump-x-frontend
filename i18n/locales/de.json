@@ -77,7 +77,11 @@
     "anonymousHint": "Ohne Anmeldung kannst du die Modelle ansehen. Melde dich an, um dein eigenes Commons aufzubauen.",
     "new": "Neues Commons",
     "lead": "Der Katalog steht allen offen. Entdecke das UFC Commons.",
-    "scenarios": "Szenarien"
+    "scenarios": "Szenarien",
+    "view": {
+      "tiles": "Kachelansicht",
+      "list": "Listenansicht"
+    }
   },
   "run": {
     "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",
@@ -135,7 +139,7 @@
     },
     "models": {
       "heading": "Modelle, die heute rechnen",
-      "lead": "Der Katalog steht allen offen. Was sich ohne Anmeldung starten lässt, ist am Modell vermerkt.",
+      "lead": "Der Katalog steht allen offen.",
       "open": "Ohne Anmeldung ausführbar",
       "needsLogin": "Anmeldung nötig"
     },

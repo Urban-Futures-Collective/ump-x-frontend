@@ -77,7 +77,11 @@
     "anonymousHint": "Without logging in, you can view the models. Log in to build your own commons.",
     "new": "New Commons",
     "lead": "The catalog is open to everyone. Explore the UFC Commons.",
-    "scenarios": "Scenarios"
+    "scenarios": "Scenarios",
+    "view": {
+      "tiles": "Tile view",
+      "list": "List view"
+    }
   },
   "run": {
     "selectHint": "Select a process on the left to run it.",
@@ -135,7 +139,7 @@
     },
     "models": {
       "heading": "Models computing today",
-      "lead": "The catalogue is open to everyone. Whatever can be started without an account is marked on the model.",
+      "lead": "The catalogue is open to everyone.",
       "open": "Runs without an account",
       "needsLogin": "Sign-in required"
     },
