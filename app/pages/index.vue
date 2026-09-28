@@ -203,17 +203,13 @@ const menue = computed(() => [
         </div>
 
         <ul class="grid gap-6 pt-6 sm:grid-cols-2 xl:grid-cols-4">
-          <li
-            v-for="p in prozesse"
-            :key="p.id"
-            class="flex flex-col items-start gap-3 bg-ufc-gold-400 p-5"
-          >
-            <h3 class="font-medium text-ufc-slate-900">
-              {{ p.title }}
-            </h3>
-            <p class="flex-1 text-sm text-ufc-slate-700">
-              {{ p.description }}
-            </p>
+          <li v-for="p in prozesse" :key="p.id">
+            <ModelCard
+              :title="p.title"
+              :description="p.description"
+              tone="gold"
+              :to="{ path: '/run', query: { process: p.id } }"
+            />
           </li>
         </ul>
       </div>
