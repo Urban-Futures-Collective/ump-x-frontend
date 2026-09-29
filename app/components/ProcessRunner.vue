@@ -5,9 +5,12 @@ const props = defineProps<{ processId: string }>()
 const emit = defineEmits<{ result: [ResultLayer | null] }>()
 
 const { t } = useI18n()
-const { data: proc, pending: loadingProc } = useUmpProcess(() => props.processId)
+// Mit await: das Formular soll schon beim Server-Rendern seine Werte tragen.
+// Ohne await lief der watch unten auf dem Server einmal, bevor das Detail da
+// war, der Server lieferte leere Felder und der Browser gefüllte, und jedes Feld
+// meldete einen Hydration-Mismatch.
+const { data: proc, pending: loadingProc } = await useUmpProcess(() => props.processId)
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
-const form = ref<Record<string, string>>({})
 
 // Ein Job, der ohne Meldung scheitert, liefert nur seinen Status als Schlüssel.
 // Den übersetzen, alles andere ist schon Text von UMP oder dem Modell.
@@ -26,7 +29,7 @@ const fehlertext = computed(() => {
 // sich weitergeben lässt.
 const route = useRoute()
 
-watch(proc, (p) => {
+function anfangswerte(p: typeof proc.value): Record<string, string> {
   const next: Record<string, string> = {}
   for (const inp of p?.inputs ?? []) {
     const ausAdresse = route.query[`in.${inp.name}`]
@@ -34,8 +37,11 @@ watch(proc, (p) => {
       ? ausAdresse
       : inp.default != null ? String(inp.default) : ''
   }
-  form.value = next
-}, { immediate: true })
+  return next
+}
+
+const form = ref<Record<string, string>>(anfangswerte(proc.value))
+watch(proc, p => (form.value = anfangswerte(p)))
 
 // Ergebnis nach außen (an die Karte) reichen.
 watch(result, r => emit('result', r))
