@@ -47,8 +47,12 @@ export function useUmpRun() {
     }
     catch (e) {
       status.value = 'failed'
-      // Nicht e.message: die API schickt den Grund in ihrem Rumpf mit, siehe apiErrorMessage.
-      error.value = apiErrorMessage(e)
+      // Der Grund aus dem Rumpf der Antwort, wenn einer mitkam (siehe
+      // apiError.ts). Sonst nur der Status als Schlüssel, den das Formular in
+      // einen Satz übersetzt: die rohe ofetch-Zeile „[POST] "…": 500" sagt
+      // niemandem etwas. Ohne Status (Netzfehler) bleibt die Meldung selbst.
+      const httpStatus = apiErrorStatus(e)
+      error.value = apiErrorExplanation(e) ?? (httpStatus ? `http.${httpStatus}` : apiErrorMessage(e))
     }
   }
 

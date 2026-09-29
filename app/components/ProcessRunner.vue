@@ -12,12 +12,19 @@ const { t } = useI18n()
 const { data: proc, pending: loadingProc } = await useUmpProcess(() => props.processId)
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
 
-// Ein Job, der ohne Meldung scheitert, liefert nur seinen Status als Schlüssel.
-// Den übersetzen, alles andere ist schon Text von UMP oder dem Modell.
+// Ein Job, der ohne Meldung scheitert, liefert nur seinen Status als Schlüssel,
+// eine Antwort ohne Erklärung nur ihren HTTP-Status. Beides übersetzen, alles
+// andere ist schon Text von UMP oder dem Modell.
 const fehlertext = computed(() => {
   const e = error.value
   if (!e) return null
-  return e.startsWith('job.') ? t(`run.${e}`) : e
+  if (e.startsWith('job.')) return t(`run.${e}`)
+  const http = /^http\.(\d+)$/.exec(e)
+  if (http) {
+    const status = Number(http[1])
+    return t(status >= 500 ? 'run.http.server' : 'run.http.rejected', { status })
+  }
+  return e
 })
 
 // Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.

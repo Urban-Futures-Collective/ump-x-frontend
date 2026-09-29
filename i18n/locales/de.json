@@ -99,6 +99,10 @@
       "heading": "Dieses Modell ist für dich nicht freigegeben",
       "signedIn": "Zum Ausführen von {modell} braucht dein Konto die Freigabe für {anbieter}. Ansehen und Ergebnisse anderer Läufe bleiben möglich.",
       "anonymous": "Zum Ausführen von {modell} musst du dich anmelden. Ansehen bleibt ohne Konto möglich."
+    },
+    "http": {
+      "server": "der Server hat den Lauf mit einem internen Fehler abgebrochen und keinen Grund genannt (HTTP {status}).",
+      "rejected": "die Anfrage wurde ohne Begründung abgelehnt (HTTP {status})."
     }
   },
   "footer": {
