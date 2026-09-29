@@ -14,12 +14,35 @@ interface OgcErrorBody {
   title?: unknown
 }
 
-export function apiErrorMessage(e: unknown): string {
-  const body = (e as { data?: OgcErrorBody } | null)?.data
+// Nur die Erklärung aus der Antwort, oder null, wenn keine mitkam. Ein reiner
+// Text-Rumpf zählt auch (so antwortet der Server bei manchen 500ern), eine
+// HTML-Fehlerseite nicht.
+export function apiErrorExplanation(e: unknown): string | null {
+  const data = (e as { data?: unknown } | null)?.data
+  if (typeof data === 'string') {
+    const text = data.trim()
+    return text && !text.startsWith('<') ? text : null
+  }
+  const body = data as OgcErrorBody | undefined
   for (const candidate of [body?.detail, body?.title]) {
     if (typeof candidate === 'string' && candidate.trim()) {
       return candidate.trim()
     }
+  }
+  return null
+}
+
+// Der HTTP-Status, falls es eine Antwort gab. Bei einem Netzfehler gibt es keinen.
+export function apiErrorStatus(e: unknown): number | null {
+  const err = e as { statusCode?: unknown, status?: unknown } | null
+  const status = err?.statusCode ?? err?.status
+  return typeof status === 'number' ? status : null
+}
+
+export function apiErrorMessage(e: unknown): string {
+  const erklaerung = apiErrorExplanation(e)
+  if (erklaerung) {
+    return erklaerung
   }
   if (e instanceof Error && e.message) {
     return e.message

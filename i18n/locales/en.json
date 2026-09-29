@@ -99,6 +99,10 @@
       "heading": "This model is not released for you",
       "signedIn": "Running {modell} needs your account to be cleared for {anbieter}. Looking at it and at other runs stays possible.",
       "anonymous": "Running {modell} requires you to sign in. Looking at it stays possible without an account."
+    },
+    "http": {
+      "server": "the server stopped the run with an internal error and gave no reason (HTTP {status}).",
+      "rejected": "the request was rejected without a reason (HTTP {status})."
     }
   },
   "footer": {
