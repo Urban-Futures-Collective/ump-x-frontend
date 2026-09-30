@@ -12,7 +12,7 @@ import { defineConfig } from 'vitest/config'
 // tests/-Verzeichnis: wer eine Funktion ändert, sieht ihren Test im selben Ordner.
 export default defineConfig({
   test: {
-    include: ['app/**/*.test.ts', 'server/**/*.test.ts'],
+    include: ['app/**/*.test.ts', 'server/**/*.test.ts', 'shared/**/*.test.ts'],
     environment: 'node',
   },
   resolve: {

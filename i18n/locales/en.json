@@ -62,7 +62,20 @@
     "download": "Download result"
   },
   "admin": {
-    "title": "Administration"
+    "title": "Administration",
+    "users": {
+      "heading": "User accounts",
+      "search": "Name or email",
+      "searchButton": "Search",
+      "username": "Username",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "enabled": "active",
+      "disabled": "disabled",
+      "empty": "No accounts found.",
+      "error": "The accounts could not be loaded: {msg}"
+    }
   },
   "processes": {
     "title": "Model processes",
