@@ -1,7 +1,32 @@
 # Modell-Zugriff verwalten: Entscheidungsvorlage (Frontend ↔ Keycloak/Backend)
 
-**Status:** Zur Diskussion
+**Status:** Abgelöst (2026-09-30), siehe unten
 **Datum:** 2026-07-09
+
+> **Abgelöst am 2026-09-30.** Die Empfehlung dieses Dokuments, **Option B** (das Backend
+> stellt einen Verwaltungs-Endpunkt bereit und spricht intern mit Keycloak), gilt nicht mehr.
+> UMP 3 hat den Schreibweg zu Keycloak bewusst entfernt: es prüft Tokens offline gegen JWKS
+> und hält kein Admin-Secret. Die Verwaltung liegt deshalb im **Frontend**, dessen Server
+> sich als eigenes Dienstkonto `ump-x-admin` bei der Keycloak-Admin-API anmeldet.
+> Festgehalten in Ricos Konzept F11 (`urban-model-platform`, Branch
+> `v3.0.0alpha/user-management-db`, `reports/REF-F11-role-administration.md`).
+>
+> Was sich außerdem geändert hat:
+> - **Keine App-Admin-Rolle `ump_admin`**, sondern das Rollenmodell aus dem Weekly als
+>   Realm-Rollen: `user_role_viewer`, `_user`, `_provider`, `_verifier`, `_access_admin`,
+>   `_platform_admin`. Das Admin-Portal öffnen die beiden Admin-Rollen, jede mit eigenem
+>   Bereich (`shared/utils/roles.ts`).
+> - **Umgesetzt** (Stand 2026-09-30, auf Staging): Konten auflisten, Plattformrollen
+>   vergeben und entziehen, Konten deaktivieren und aktivieren
+>   (`server/api/admin/platform/`, `server/utils/keycloakAdmin.ts`). Schutz auf dem
+>   Server: Rolle des Aufrufers plus Allowlist der Rollennamen in jeder Route.
+> - **Offen:** Konten anlegen (wartet auf Mailversand in Keycloak) und Modellzugriff
+>   vergeben (Realm- oder Client-Rollen ist noch nicht entschieden).
+> - **Gruppen** sind weiter die empfohlene Form für die Freigabe (auch in F11), aber noch
+>   nicht angelegt.
+>
+> Einrichtung des Dienstkontos: `docs/deployment-de.md`. Der Rest dieses Dokuments bleibt als
+> Hintergrund stehen, wie die Frage im Juli aussah.
 **Kontext:** UMP-X (Nuxt-4-Frontend für die Urban Model Platform). Begleitdokument zu `frontend-backend-architecture-de.md`. Diese Vorlage behandelt nur die Teile des geplanten Frontends, die über die Frontend-Grenze hinausreichen und deshalb eine gemeinsame Entscheidung brauchen. Die drei User-Views brauchen das nicht — sie laufen gegen den bestehenden OGC-API-Vertrag und lassen sich unabhängig bauen.
 
 ---
