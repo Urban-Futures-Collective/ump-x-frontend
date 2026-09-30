@@ -47,7 +47,7 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
       </div>
 
       <p v-if="error" class="text-sm text-red-600">
-        {{ t('admin.users.error', { msg: error.statusMessage || error.message }) }}
+        {{ t('admin.users.error', { msg: error.data?.statusMessage || error.statusMessage || error.message }) }}
       </p>
 
       <table v-else class="w-full border border-(--ui-border) bg-white text-sm">

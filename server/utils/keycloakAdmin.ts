@@ -33,10 +33,20 @@ function einstellungen() {
   const clientSecret = config.keycloakAdminClientSecret
   const realmUrl = (config.oidc as { providers?: { keycloak?: { baseUrl?: string } } } | undefined)
     ?.providers?.keycloak?.baseUrl
-  if (!clientId || !clientSecret || !realmUrl) {
-    // 503 statt 500: nichts ist kaputt, es ist nur nicht eingerichtet (Secret fehlt in
-    // den Environment Settings dieses Deployments).
-    throw createError({ statusCode: 503, statusMessage: 'Keycloak-Admin-Zugang ist nicht eingerichtet.' })
+  // 503 statt 500: nichts ist kaputt, es ist nur nicht eingerichtet. Genannt werden
+  // die NAMEN der fehlenden Einstellungen, nie ihre Werte: so sieht man im Browser,
+  // was in den Environment Settings fehlt, ohne dass ein Secret irgendwo erscheint.
+  const fehlend = [
+    !clientId && 'NUXT_KEYCLOAK_ADMIN_CLIENT_ID',
+    !clientSecret && 'NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET',
+    !realmUrl && 'NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL',
+  ].filter(Boolean)
+  if (fehlend.length) {
+    console.warn(`[admin] Keycloak-Admin-Zugang nicht eingerichtet, es fehlt: ${fehlend.join(', ')}`)
+    throw createError({
+      statusCode: 503,
+      statusMessage: `Keycloak-Admin-Zugang ist nicht eingerichtet, es fehlt: ${fehlend.join(', ')}`,
+    })
   }
   return { clientId, clientSecret, ...keycloakAdminUrls(realmUrl) }
 }
