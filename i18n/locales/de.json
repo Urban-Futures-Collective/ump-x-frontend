@@ -75,7 +75,13 @@
       "disabled": "deaktiviert",
       "empty": "Keine Konten gefunden.",
       "error": "Die Konten konnten nicht geladen werden: {msg}",
-      "roles": "Rollen"
+      "roles": "Rollen",
+      "disable": "Deaktivieren",
+      "enable": "Aktivieren",
+      "cancel": "Abbrechen",
+      "ownAccount": "Das eigene Konto lässt sich hier nicht deaktivieren.",
+      "disableTitle": "{name} deaktivieren?",
+      "disableText": "{name} kann sich danach nicht mehr anmelden und wird sofort überall abgemeldet. Rollen und Läufe bleiben erhalten, das Konto lässt sich jederzeit wieder aktivieren."
     },
     "roles": {
       "title": "Plattformrollen: {name}",

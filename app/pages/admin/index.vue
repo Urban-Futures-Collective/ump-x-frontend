@@ -3,8 +3,9 @@
 // Reihenfolge zählt (erst Session, dann Rolle). Die Middleware blendet nur aus,
 // geschützt sind die Daten serverseitig in jeder Route unter server/api/admin/.
 //
-// Bisher nur der Bereich des platform admins und darin nur die Nutzerliste, lesend.
-// Er prüft die Kette bis zu Keycloak, bevor etwas gebaut wird, das Rollen vergibt.
+// Bisher nur der Bereich des platform admins: Konten auflisten, aktivieren und
+// deaktivieren, Plattformrollen vergeben. Konten anlegen kommt, sobald Keycloak Mails
+// verschicken kann (Einladung zum Passwort-Setzen).
 definePageMeta({ middleware: ['auth', 'admin'] })
 const { t } = useI18n()
 const { isPlatformAdmin } = useUmpRoles()
@@ -17,6 +18,32 @@ const dialogOffen = computed({
   get: () => rollenFuer.value !== null,
   set: (offen) => { if (!offen) rollenFuer.value = null },
 })
+
+// Das Konto, das gerade deaktiviert werden soll. Deaktivieren fragt nach, weil es
+// die Person sofort abmeldet; Aktivieren nicht.
+const deaktivieren = ref<{ id: string, username: string } | null>(null)
+const nachfrageOffen = computed({
+  get: () => deaktivieren.value !== null,
+  set: (offen) => { if (!offen) deaktivieren.value = null },
+})
+const statusSpeichert = ref<string | null>(null)
+const statusFehler = ref<string | null>(null)
+
+async function setzeAktiv(id: string, aktiv: boolean) {
+  statusFehler.value = null
+  statusSpeichert.value = id
+  try {
+    await $fetch(`/api/admin/platform/users/${id}`, { method: 'PATCH', body: { enabled: aktiv } })
+    deaktivieren.value = null
+    await refresh()
+  }
+  catch (e) {
+    statusFehler.value = (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? String(e)
+  }
+  finally {
+    statusSpeichert.value = null
+  }
+}
 
 interface Konto {
   id: string
@@ -55,6 +82,9 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
         </form>
       </div>
 
+      <p v-if="statusFehler" class="text-sm text-red-600">
+        {{ statusFehler }}
+      </p>
       <p v-if="error" class="text-sm text-red-600">
         {{ t('admin.users.error', { msg: error.data?.statusMessage || error.statusMessage || error.message }) }}
       </p>
@@ -79,9 +109,32 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
                 {{ k.enabled ? t('admin.users.enabled') : t('admin.users.disabled') }}
               </UBadge>
             </td>
-            <td class="px-3 py-2 text-right">
+            <td class="px-3 py-2 text-right whitespace-nowrap">
               <UButton size="xs" variant="ghost" icon="i-lucide-shield-check" @click="rollenFuer = { id: k.id, username: k.username }">
                 {{ t('admin.users.roles') }}
+              </UButton>
+              <UButton
+                v-if="k.enabled"
+                size="xs"
+                variant="ghost"
+                color="neutral"
+                icon="i-lucide-user-x"
+                :disabled="k.id === eigeneId || statusSpeichert !== null"
+                :title="k.id === eigeneId ? t('admin.users.ownAccount') : undefined"
+                @click="deaktivieren = { id: k.id, username: k.username }"
+              >
+                {{ t('admin.users.disable') }}
+              </UButton>
+              <UButton
+                v-else
+                size="xs"
+                variant="ghost"
+                icon="i-lucide-user-check"
+                :loading="statusSpeichert === k.id"
+                :disabled="statusSpeichert !== null"
+                @click="setzeAktiv(k.id, true)"
+              >
+                {{ t('admin.users.enable') }}
               </UButton>
             </td>
           </tr>
@@ -90,6 +143,29 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
           </tr>
         </tbody>
       </table>
+
+      <UModal v-model:open="nachfrageOffen" :title="t('admin.users.disableTitle', { name: deaktivieren?.username ?? '' })">
+        <template #body>
+          <p class="text-sm">
+            {{ t('admin.users.disableText', { name: deaktivieren?.username ?? '' }) }}
+          </p>
+        </template>
+        <template #footer>
+          <div class="flex w-full justify-end gap-2">
+            <UButton variant="ghost" color="neutral" @click="deaktivieren = null">
+              {{ t('admin.users.cancel') }}
+            </UButton>
+            <UButton
+              color="error"
+              icon="i-lucide-user-x"
+              :loading="statusSpeichert !== null"
+              @click="deaktivieren && setzeAktiv(deaktivieren.id, false)"
+            >
+              {{ t('admin.users.disable') }}
+            </UButton>
+          </div>
+        </template>
+      </UModal>
 
       <UModal v-model:open="dialogOffen" :title="t('admin.roles.title', { name: rollenFuer?.username ?? '' })">
         <template #body>

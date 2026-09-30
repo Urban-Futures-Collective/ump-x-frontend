@@ -75,7 +75,13 @@
       "disabled": "disabled",
       "empty": "No accounts found.",
       "error": "The accounts could not be loaded: {msg}",
-      "roles": "Roles"
+      "roles": "Roles",
+      "disable": "Disable",
+      "enable": "Enable",
+      "cancel": "Cancel",
+      "ownAccount": "Your own account cannot be disabled here.",
+      "disableTitle": "Disable {name}?",
+      "disableText": "{name} can no longer sign in and is signed out everywhere right away. Roles and runs are kept, and the account can be enabled again at any time."
     },
     "roles": {
       "title": "Platform roles: {name}",
