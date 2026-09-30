@@ -43,7 +43,7 @@ export function jobTime(job: Job): string | undefined {
 // Newest first, using the same timestamp the list shows. Lives here rather than
 // in the query because the chat needs the same order, and two sorts over the
 // same data drift apart.
-export function neuesteZuerst(jobs: Job[]): Job[] {
+export function newestFirst(jobs: Job[]): Job[] {
   return [...jobs].sort((a, b) => (jobTime(b) ?? '').localeCompare(jobTime(a) ?? ''))
 }
 
@@ -54,6 +54,6 @@ export function useUmpJobs() {
   const { base } = useUmpBase()
   return useFetch<OgcJobList>(`${base}/jobs`, {
     default: () => [] as Job[],
-    transform: (raw): Job[] => neuesteZuerst((raw?.jobs ?? []).map(toJob)),
+    transform: (raw): Job[] => newestFirst((raw?.jobs ?? []).map(toJob)),
   })
 }

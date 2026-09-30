@@ -27,18 +27,18 @@ if (loggedIn.value) {
   await navigateTo('/commons')
 }
 
-const aufgehalten = computed(() => typeof route.query.redirect === 'string' && route.query.redirect !== '')
+const blocked = computed(() => typeof route.query.redirect === 'string' && route.query.redirect !== '')
 
 // The real models rather than a curated list: what is in the catalog is shown
 // here too. Called unconditionally, also in the blocked state: a composable
 // behind a condition breaks call order, and the query is public and small.
-const { data: prozesse } = useUmpProcesses()
+const { data: processes } = useUmpProcesses()
 
-const schritte = ['choose', 'configure', 'take'] as const
+const steps = ['choose', 'configure', 'take'] as const
 
 // On narrow screens the design shows a menu instead of the header actions. It
 // contains exactly the same entries, so there is no second set that can drift.
-const menue = computed(() => [
+const menu = computed(() => [
   locales.value.map(loc => ({
     label: loc.code.toUpperCase(),
     checked: loc.code === locale.value,
@@ -51,7 +51,7 @@ const menue = computed(() => [
 
 <template>
   <!-- Blocked: narrow card on the gradient, one main action. -->
-  <NuxtLayout v-if="aufgehalten" name="auth">
+  <NuxtLayout v-if="blocked" name="auth">
     <div class="space-y-5 text-center">
       <img
         src="~/assets/images/logo.svg"
@@ -118,7 +118,7 @@ const menue = computed(() => [
           </ULink>
         </div>
 
-        <UDropdownMenu :items="menue" class="sm:hidden">
+        <UDropdownMenu :items="menu" class="sm:hidden">
           <UButton
             icon="i-lucide-menu"
             color="neutral"
@@ -197,7 +197,7 @@ const menue = computed(() => [
         </div>
 
         <ul class="grid gap-6 pt-6 sm:grid-cols-2 xl:grid-cols-4">
-          <li v-for="p in prozesse" :key="p.id">
+          <li v-for="p in processes" :key="p.id">
             <ModelCard
               :title="p.title"
               :description="p.description"
@@ -220,18 +220,18 @@ const menue = computed(() => [
 
         <ol class="grid gap-6 pt-4 md:grid-cols-3">
           <li
-            v-for="(schritt, i) in schritte"
-            :key="schritt"
+            v-for="(step, i) in steps"
+            :key="step"
             class="space-y-2.5 py-6 md:pr-6"
           >
             <span class="inline-block bg-ufc-teal-700 pl-1 pr-4 text-lg/7 font-semibold text-white">
               {{ i + 1 }}
             </span>
             <h3 class="font-medium text-(--ui-text)">
-              {{ t(`start.steps.${schritt}.title`) }}
+              {{ t(`start.steps.${step}.title`) }}
             </h3>
             <p class="text-sm text-(--ui-text-muted)">
-              {{ t(`start.steps.${schritt}.body`) }}
+              {{ t(`start.steps.${step}.body`) }}
             </p>
           </li>
         </ol>

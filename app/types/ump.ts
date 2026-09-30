@@ -72,7 +72,7 @@ export interface ResultLayerSpec {
   /** Drives styling. `mixed` if several geometry kinds occur. */
   geometry: 'line' | 'point' | 'polygon' | 'mixed'
   /** Whether the type was declared or detected from the response. */
-  quelle: 'deklariert' | 'erkannt'
+  source: 'declared' | 'detected'
 }
 
 // Output of seam 2: job result -> map-ready layer.

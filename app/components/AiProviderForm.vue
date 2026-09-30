@@ -7,44 +7,44 @@
 // The three notices are always visible, not collapsible: our server not holding
 // the key does not mean the key is safe in the browser, and users must know that
 // before entering it.
-import type { Anbieter, Zugang } from '~/composables/useAiProvider'
+import type { Access, Provider } from '~/composables/useAiProvider'
 
-const emit = defineEmits<{ verbunden: [] }>()
+const emit = defineEmits<{ connected: [] }>()
 
 const { t } = useI18n()
-const { zugang, hatSchluessel, setzeZugang, vergessen } = useAiProvider()
+const { access, hasKey, setAccess, forget } = useAiProvider()
 
-const anbieter = ref<Anbieter>(zugang.value.anbieter)
-const modell = ref(zugang.value.modell)
-const basisUrl = ref(zugang.value.basisUrl)
-const schluessel = ref('')
+const provider = ref<Provider>(access.value.provider)
+const model = ref(access.value.model)
+const baseUrl = ref(access.value.baseUrl)
+const apiKey = ref('')
 
-const auswahl = (['openrouter', 'openai', 'anthropic', 'kompatibel'] as const).map(wert => ({
-  label: t(`ai.providers.${wert}`),
-  value: wert,
+const options = (['openrouter', 'openai', 'anthropic', 'kompatibel'] as const).map(value => ({
+  label: t(`ai.providers.${value}`),
+  value,
 }))
 
 // Only the generic compatible option needs a base URL; the known providers have fixed ones.
-const eigeneAdresse = computed(() => anbieter.value === 'kompatibel')
+const customAddress = computed(() => provider.value === 'kompatibel')
 
-watch(anbieter, (neu) => {
-  const vorgabe = ANBIETER_VORGABEN[neu]
-  basisUrl.value = vorgabe.basisUrl
-  if (!modell.value || Object.values(ANBIETER_VORGABEN).some(v => v.modell === modell.value)) {
-    modell.value = vorgabe.modell
+watch(provider, (next) => {
+  const preset = PROVIDER_DEFAULTS[next]
+  baseUrl.value = preset.baseUrl
+  if (!model.value || Object.values(PROVIDER_DEFAULTS).some(v => v.model === model.value)) {
+    model.value = preset.model
   }
 })
 
-const bereit = computed(() => schluessel.value.trim().length > 0 && modell.value.trim().length > 0)
+const ready = computed(() => apiKey.value.trim().length > 0 && model.value.trim().length > 0)
 
-function absenden() {
-  if (!bereit.value) return
-  setzeZugang(
-    { anbieter: anbieter.value, modell: modell.value.trim(), basisUrl: basisUrl.value.trim() } as Zugang,
-    schluessel.value.trim(),
+function submit() {
+  if (!ready.value) return
+  setAccess(
+    { provider: provider.value, model: model.value.trim(), baseUrl: baseUrl.value.trim() } as Access,
+    apiKey.value.trim(),
   )
-  schluessel.value = ''
-  emit('verbunden')
+  apiKey.value = ''
+  emit('connected')
 }
 </script>
 
@@ -72,26 +72,26 @@ function absenden() {
 
     <div class="space-y-4">
       <UFormField :label="t('ai.connect.provider')">
-        <USelect v-model="anbieter" :items="auswahl" value-key="value" class="w-full" />
+        <USelect v-model="provider" :items="options" value-key="value" class="w-full" />
       </UFormField>
 
-      <UFormField v-if="eigeneAdresse" :label="t('ai.connect.baseUrl')">
-        <UInput v-model="basisUrl" class="w-full" placeholder="http://localhost:8000/v1" />
+      <UFormField v-if="customAddress" :label="t('ai.connect.baseUrl')">
+        <UInput v-model="baseUrl" class="w-full" placeholder="http://localhost:8000/v1" />
       </UFormField>
 
       <UFormField :label="t('ai.connect.model')" :description="t('ai.connect.modelHint')">
-        <UInput v-model="modell" class="w-full" />
+        <UInput v-model="model" class="w-full" />
       </UFormField>
 
       <UFormField :label="t('ai.connect.key')">
-        <UInput v-model="schluessel" type="password" class="w-full" placeholder="sk-..." @keyup.enter="absenden" />
+        <UInput v-model="apiKey" type="password" class="w-full" placeholder="sk-..." @keyup.enter="submit" />
       </UFormField>
 
-      <UButton block :disabled="!bereit" @click="absenden">
+      <UButton block :disabled="!ready" @click="submit">
         {{ t('ai.connect.submit') }}
       </UButton>
 
-      <UButton v-if="hatSchluessel" block variant="ghost" color="neutral" icon="i-lucide-trash-2" @click="vergessen()">
+      <UButton v-if="hasKey" block variant="ghost" color="neutral" icon="i-lucide-trash-2" @click="forget()">
         {{ t('ai.connect.forget') }}
       </UButton>
     </div>

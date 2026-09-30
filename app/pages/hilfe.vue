@@ -10,13 +10,13 @@
 const { t } = useI18n()
 const { mcpUrl } = useRuntimeConfig().public
 
-const kopiert = ref(false)
+const copied = ref(false)
 
-async function kopieren() {
+async function copy() {
   try {
     await navigator.clipboard.writeText(mcpUrl)
-    kopiert.value = true
-    setTimeout(() => { kopiert.value = false }, 2000)
+    copied.value = true
+    setTimeout(() => { copied.value = false }, 2000)
   }
   catch {
     // Without clipboard permission the address stays readable and selectable,
@@ -24,8 +24,8 @@ async function kopieren() {
   }
 }
 
-const chatSchritte = ['provider', 'key', 'ask'] as const
-const mcpSchritte = ['address', 'signin', 'use'] as const
+const chatSteps = ['provider', 'key', 'ask'] as const
+const mcpSteps = ['address', 'signin', 'use'] as const
 </script>
 
 <template>
@@ -47,13 +47,13 @@ const mcpSchritte = ['address', 'signin', 'use'] as const
         {{ t('help.chat.lead') }}
       </p>
       <ol class="space-y-4">
-        <li v-for="(schritt, i) in chatSchritte" :key="schritt" class="flex gap-4">
+        <li v-for="(step, i) in chatSteps" :key="step" class="flex gap-4">
           <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
             {{ i + 1 }}
           </span>
           <span class="space-y-1">
-            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.chat.steps.${schritt}.title`) }}</span>
-            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.chat.steps.${schritt}.body`) }}</span>
+            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.chat.steps.${step}.title`) }}</span>
+            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.chat.steps.${step}.body`) }}</span>
           </span>
         </li>
       </ol>
@@ -67,25 +67,25 @@ const mcpSchritte = ['address', 'signin', 'use'] as const
         {{ t('help.mcp.lead') }}
       </p>
       <ol class="space-y-4">
-        <li v-for="(schritt, i) in mcpSchritte" :key="schritt" class="flex gap-4">
+        <li v-for="(step, i) in mcpSteps" :key="step" class="flex gap-4">
           <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
             {{ i + 1 }}
           </span>
           <span class="space-y-2">
-            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.mcp.steps.${schritt}.title`) }}</span>
-            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.mcp.steps.${schritt}.body`) }}</span>
+            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.mcp.steps.${step}.title`) }}</span>
+            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.mcp.steps.${step}.body`) }}</span>
 
             <!-- Copy field instead of a link: the address belongs in another
                  program, not in the browser's address bar. -->
-            <span v-if="schritt === 'address'" class="flex w-full max-w-md items-center gap-2 rounded-lg border border-(--ui-border) bg-(--ui-bg) py-2 pe-2 ps-3">
+            <span v-if="step === 'address'" class="flex w-full max-w-md items-center gap-2 rounded-lg border border-(--ui-border) bg-(--ui-bg) py-2 pe-2 ps-3">
               <code class="flex-1 truncate text-sm">{{ mcpUrl }}</code>
               <UButton
-                :icon="kopiert ? 'i-lucide-check' : 'i-lucide-copy'"
+                :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'"
                 color="neutral"
                 variant="ghost"
                 size="xs"
                 :aria-label="t('help.mcp.copy')"
-                @click="kopieren"
+                @click="copy"
               />
             </span>
           </span>

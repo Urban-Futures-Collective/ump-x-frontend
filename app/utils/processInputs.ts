@@ -4,39 +4,39 @@
 // The core is omission. Some models declare integer inputs with the string
 // "auto" as default; Number("auto") would be NaN and crash the process. Empty
 // input therefore gets the backend default, by design.
-export interface EingabeFeld {
+export interface InputField {
   name: string
   type: string
   default?: unknown
 }
 
-export function bereinigeEingaben(
-  felder: EingabeFeld[],
-  werte: Record<string, unknown>,
+export function cleanInputs(
+  fields: InputField[],
+  values: Record<string, unknown>,
 ): Record<string, unknown> {
-  const rumpf: Record<string, unknown> = {}
+  const body: Record<string, unknown> = {}
 
-  for (const feld of felder) {
-    const roh = werte[feld.name]
-    const text = roh == null ? '' : String(roh).trim()
-    const vorgabe = feld.default != null ? String(feld.default) : ''
+  for (const field of fields) {
+    const raw = values[field.name]
+    const text = raw == null ? '' : String(raw).trim()
+    const defaultText = field.default != null ? String(field.default) : ''
 
     // Do not send empty values: the backend default applies.
     if (text === '') continue
     // Nor an unchanged default: resending it changes nothing and breaks for
     // "auto" in a number field.
-    if (vorgabe !== '' && text === vorgabe) continue
+    if (defaultText !== '' && text === defaultText) continue
 
-    if (feld.type === 'integer' || feld.type === 'number') {
-      if (Number.isFinite(Number(text))) rumpf[feld.name] = Number(text)
+    if (field.type === 'integer' || field.type === 'number') {
+      if (Number.isFinite(Number(text))) body[field.name] = Number(text)
       continue
     }
-    if (feld.type === 'boolean') {
-      rumpf[feld.name] = text === 'true' || text === '1'
+    if (field.type === 'boolean') {
+      body[field.name] = text === 'true' || text === '1'
       continue
     }
-    rumpf[feld.name] = text
+    body[field.name] = text
   }
 
-  return rumpf
+  return body
 }

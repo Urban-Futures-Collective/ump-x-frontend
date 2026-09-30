@@ -3,21 +3,21 @@ import { stepCountIs, streamText } from 'ai'
 // The chat loop. Deliberately not useChat from @ai-sdk/vue: that requires a
 // server route streaming the UI message protocol, which is exactly the server we
 // avoid. streamText runs in the browser and we maintain the message list ourselves.
-export type Teil =
+export type Part =
   | { type: 'text', text: string }
   | {
-    type: 'werkzeug'
+    type: 'tool'
     toolCallId: string
     name: string
-    eingabe?: unknown
-    ausgabe?: unknown
-    zustand: 'laeuft' | 'fertig' | 'fehler'
+    input?: unknown
+    output?: unknown
+    state: 'running' | 'done' | 'error'
   }
 
-export interface Nachricht {
+export interface Message {
   id: string
   role: 'user' | 'assistant'
-  parts: Teil[]
+  parts: Part[]
 }
 
 export type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
@@ -25,7 +25,7 @@ export type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 // Extra steps cost the user money, too few cut the answer short. Two chained
 // tool calls plus the answer are three steps; six leave room for a follow-up
 // without letting a loop run away.
-const MAX_SCHRITTE = 6
+const MAX_STEPS = 6
 
 const SYSTEM = `Du hilfst Menschen bei der Urban Model Platform (UMP), einer offenen Plattform,
 die städtische Simulationsmodelle verschiedener Anbieter hinter einer gemeinsamen
@@ -40,7 +40,7 @@ Du hast fünf Werkzeuge:
   Zusammenfassung des Ergebnisses.
 
 Benutze sie, statt zu raten. Nenne nie ein Modell, einen Parameter oder einen Wert,
-den du nicht aus einem Werkzeug hast. Liefert ein Werkzeug ein Feld "fehler", gib
+den du nicht aus einem Werkzeug hast. Liefert ein Werkzeug ein Feld "error", gib
 den Grund wieder, statt ihn zu umschreiben.
 
 Will jemand einen Lauf, rufe erst describeProcess und dann prepareRun auf. Setze nur
@@ -87,13 +87,13 @@ Aufzählungen höchstens als kurze Zeilen mit einem Bindestrich davor.`
 //
 // Module-level state is safe here only because the chat runs client-side (the
 // panel is wrapped in ClientOnly); on the server it would be shared across requests.
-const nachrichten = ref<Nachricht[]>([])
+const messages = ref<Message[]>([])
 const status = ref<ChatStatus>('ready')
-const fehler = ref<string | null>(null)
+const error = ref<string | null>(null)
 
 // Also module-level: otherwise a remounted panel would hold a different controller
 // than the running stream, and "cancel" would do nothing.
-let abbruch: AbortController | null = null
+let abortController: AbortController | null = null
 
 // History survives a reload via sessionStorage, not localStorage: it belongs to
 // this tab's visit, disappears when the tab closes, and does not linger on a
@@ -101,44 +101,52 @@ let abbruch: AbortController | null = null
 //
 // Stored: questions, answers and tool results. Not stored: the provider key
 // (kept in useAiProvider) or the UMP bearer token (never reaches the browser).
-const SPEICHER = 'ump-x-chat'
+const STORAGE_KEY = 'ump-x-chat'
 
 // Tool results can be several kilobytes. This cap keeps a long history within the
 // browser's storage quota; only the stored copy is trimmed, not what is on screen.
-const MAX_ZEICHEN = 512 * 1024
+const MAX_CHARS = 512 * 1024
 
-let geladen = false
+let loaded = false
 
-function laden() {
-  if (geladen || !import.meta.client) return
-  geladen = true
+function load() {
+  if (loaded || !import.meta.client) return
+  loaded = true
   try {
-    const roh = sessionStorage.getItem(SPEICHER)
-    if (roh) nachrichten.value = JSON.parse(roh) as Nachricht[]
+    const raw = sessionStorage.getItem(STORAGE_KEY)
+    if (raw) {
+      // Histories stored before the English rename have tool parts of type
+      // 'werkzeug' with German fields. Keep only parts in the current shape so
+      // such an entry cannot break rendering; the text of old turns survives.
+      messages.value = (JSON.parse(raw) as Message[]).map(m => ({
+        ...m,
+        parts: (Array.isArray(m.parts) ? m.parts : []).filter(p => p?.type === 'text' || p?.type === 'tool'),
+      }))
+    }
   }
   catch {
     // Corrupt or foreign content: start empty rather than fail on load.
-    nachrichten.value = []
+    messages.value = []
   }
 }
 
 // A message without visible content, i.e. the placeholder answer bubble created
 // before sending. If the provider never answers, it belongs neither on screen nor
 // in storage (the provider error only arrives after the stream ends and is saved).
-function istLeer(n: Nachricht): boolean {
+function isEmpty(n: Message): boolean {
   return n.parts.every(p => p.type === 'text' && !p.text)
 }
 
-function sichern() {
+function save() {
   if (!import.meta.client) return
   try {
-    let liste = nachrichten.value.filter(n => !istLeer(n))
-    let roh = JSON.stringify(liste)
-    while (roh.length > MAX_ZEICHEN && liste.length > 1) {
-      liste = liste.slice(1)
-      roh = JSON.stringify(liste)
+    let list = messages.value.filter(n => !isEmpty(n))
+    let raw = JSON.stringify(list)
+    while (raw.length > MAX_CHARS && list.length > 1) {
+      list = list.slice(1)
+      raw = JSON.stringify(list)
     }
-    sessionStorage.setItem(SPEICHER, roh)
+    sessionStorage.setItem(STORAGE_KEY, raw)
   }
   catch {
     // Quota full or storage blocked (private window, blocked site data). The
@@ -149,38 +157,38 @@ function sichern() {
 // Module-level so logout can call it without useAiChat(), which pulls in the UMP
 // tools and needs a Nuxt context. Clearing on logout keeps the user's questions
 // and job data from staying behind on a shared computer.
-export function vergissVerlauf() {
-  abbruch?.abort()
-  abbruch = null
-  nachrichten.value = []
-  fehler.value = null
+export function forgetHistory() {
+  abortController?.abort()
+  abortController = null
+  messages.value = []
+  error.value = null
   status.value = 'ready'
-  if (import.meta.client) sessionStorage.removeItem(SPEICHER)
+  if (import.meta.client) sessionStorage.removeItem(STORAGE_KEY)
 }
 
 export function useAiChat() {
-  const { sprachmodell } = useAiProvider()
-  const { werkzeuge } = useUmpTools()
+  const { languageModel } = useAiProvider()
+  const { tools } = useUmpTools()
 
-  laden()
+  load()
 
-  const laeuft = computed(() => status.value === 'submitted' || status.value === 'streaming')
+  const running = computed(() => status.value === 'submitted' || status.value === 'streaming')
 
-  function abbrechen() {
-    abbruch?.abort()
-    abbruch = null
-    if (laeuft.value) status.value = 'ready'
+  function cancel() {
+    abortController?.abort()
+    abortController = null
+    if (running.value) status.value = 'ready'
   }
 
   // "Clear history" in the drawer header does the same as logout.
-  const neu = vergissVerlauf
+  const clear = forgetHistory
 
-  async function senden(eingabe: string) {
-    const text = eingabe.trim()
-    if (!text || laeuft.value) return
+  async function send(input: string) {
+    const text = input.trim()
+    if (!text || running.value) return
 
-    fehler.value = null
-    nachrichten.value.push({ id: crypto.randomUUID(), role: 'user', parts: [{ type: 'text', text }] })
+    error.value = null
+    messages.value.push({ id: crypto.randomUUID(), role: 'user', parts: [{ type: 'text', text }] })
 
     // Order matters here. On switching to 'submitted', UChatMessages jumps to the
     // last message and pads the list so the question sits at the top, even for a
@@ -189,68 +197,68 @@ export function useAiChat() {
     // The jump has no option to disable it, but it only fires when the last
     // message is from the user, so the empty answer bubble is pushed BEFORE the
     // status change. should-auto-scroll on the panel follows the stream.
-    const antwort: Nachricht = { id: crypto.randomUUID(), role: 'assistant', parts: [] }
-    nachrichten.value.push(antwort)
+    const answer: Message = { id: crypto.randomUUID(), role: 'assistant', parts: [] }
+    messages.value.push(answer)
     status.value = 'submitted'
 
     // Append text to the last part while it is text. After a tool call a new text
     // part starts, so each tool card stays where it was called in the answer.
-    const textZiel = () => {
-      const letzter = antwort.parts[antwort.parts.length - 1]
-      if (letzter?.type === 'text') return letzter
-      const neuer = { type: 'text' as const, text: '' }
-      antwort.parts.push(neuer)
-      return neuer
+    const textTarget = () => {
+      const last = answer.parts[answer.parts.length - 1]
+      if (last?.type === 'text') return last
+      const fresh = { type: 'text' as const, text: '' }
+      answer.parts.push(fresh)
+      return fresh
     }
 
-    const leer = () => istLeer(antwort)
-    const melde = (e: unknown) => {
+    const answerEmpty = () => isEmpty(answer)
+    const report = (e: unknown) => {
       status.value = 'error'
-      fehler.value = e instanceof Error ? e.message : String(e)
-      if (leer()) nachrichten.value = nachrichten.value.filter(n => n !== antwort)
+      error.value = e instanceof Error ? e.message : String(e)
+      if (answerEmpty()) messages.value = messages.value.filter(n => n !== answer)
     }
 
-    abbruch = new AbortController()
+    abortController = new AbortController()
     try {
-      const ergebnis = streamText({
-        model: sprachmodell(),
+      const result = streamText({
+        model: languageModel(),
         system: SYSTEM,
         // Only the text of earlier turns; resending past tool calls just bloats the request.
-        messages: nachrichten.value
-          .filter(n => n !== antwort)
+        messages: messages.value
+          .filter(n => n !== answer)
           .map(n => ({
             role: n.role,
             content: n.parts.filter(p => p.type === 'text').map(p => p.text).join(''),
           })),
-        tools: werkzeuge,
-        stopWhen: stepCountIs(MAX_SCHRITTE),
-        abortSignal: abbruch.signal,
+        tools,
+        stopWhen: stepCountIs(MAX_STEPS),
+        abortSignal: abortController.signal,
         // streamText does not throw: a provider error ends the stream silently
         // and is only reported here.
-        onError: ({ error }) => melde(error),
+        onError: ({ error }) => report(error),
       })
 
-      for await (const teil of ergebnis.fullStream) {
+      for await (const chunk of result.fullStream) {
         status.value = 'streaming'
-        if (teil.type === 'text-delta') {
-          textZiel().text += teil.text
+        if (chunk.type === 'text-delta') {
+          textTarget().text += chunk.text
         }
-        else if (teil.type === 'tool-call') {
-          antwort.parts.push({
-            type: 'werkzeug',
-            toolCallId: teil.toolCallId,
-            name: teil.toolName,
-            eingabe: teil.input,
-            zustand: 'laeuft',
+        else if (chunk.type === 'tool-call') {
+          answer.parts.push({
+            type: 'tool',
+            toolCallId: chunk.toolCallId,
+            name: chunk.toolName,
+            input: chunk.input,
+            state: 'running',
           })
         }
-        else if (teil.type === 'tool-result' || teil.type === 'tool-error') {
-          const karte = antwort.parts.find(
-            p => p.type === 'werkzeug' && p.toolCallId === teil.toolCallId,
+        else if (chunk.type === 'tool-result' || chunk.type === 'tool-error') {
+          const card = answer.parts.find(
+            p => p.type === 'tool' && p.toolCallId === chunk.toolCallId,
           )
-          if (karte?.type === 'werkzeug') {
-            karte.zustand = teil.type === 'tool-result' ? 'fertig' : 'fehler'
-            karte.ausgabe = teil.type === 'tool-result' ? teil.output : teil.error
+          if (card?.type === 'tool') {
+            card.state = chunk.type === 'tool-result' ? 'done' : 'error'
+            card.output = chunk.type === 'tool-result' ? chunk.output : chunk.error
           }
         }
       }
@@ -260,18 +268,18 @@ export function useAiChat() {
       // A user abort is not an error.
       if (e instanceof Error && e.name === 'AbortError') {
         status.value = 'ready'
-        if (leer()) nachrichten.value = nachrichten.value.filter(n => n !== antwort)
+        if (answerEmpty()) messages.value = messages.value.filter(n => n !== answer)
       }
       else {
-        melde(e)
+        report(e)
       }
     }
     finally {
-      abbruch = null
+      abortController = null
       // Save once at the end: a watcher would serialize the whole history on every delta.
-      sichern()
+      save()
     }
   }
 
-  return { nachrichten, status, fehler, laeuft, senden, abbrechen, neu }
+  return { messages, status, error, running, send, cancel, clear }
 }

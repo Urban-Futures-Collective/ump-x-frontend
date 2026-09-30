@@ -13,29 +13,29 @@ const { data: status, pending, error, refresh } = await useFetch<PlatformRoleSta
   { default: () => [] },
 )
 
-const speichert = ref<string | null>(null)
-const fehler = ref<string | null>(null)
+const saving = ref<string | null>(null)
+const saveError = ref<string | null>(null)
 
-function gesperrt(s: PlatformRoleStatus) {
-  if (s.wirksam && !s.direkt) return true
+function isLocked(s: PlatformRoleStatus) {
+  if (s.effective && !s.direct) return true
   return props.isSelf && s.role === ROLE_PLATFORM_ADMIN
 }
 
-async function umschalten(s: PlatformRoleStatus, an: boolean) {
-  fehler.value = null
-  speichert.value = s.role
+async function toggle(s: PlatformRoleStatus, on: boolean) {
+  saveError.value = null
+  saving.value = s.role
   try {
     await $fetch(`/api/admin/platform/users/${props.userId}/roles`, {
-      method: an ? 'POST' : 'DELETE',
+      method: on ? 'POST' : 'DELETE',
       body: { role: s.role },
     })
     await refresh()
   }
   catch (e) {
-    fehler.value = (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? String(e)
+    saveError.value = (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? String(e)
   }
   finally {
-    speichert.value = null
+    saving.value = null
   }
 }
 </script>
@@ -54,7 +54,7 @@ async function umschalten(s: PlatformRoleStatus, an: boolean) {
           </p>
           <p class="text-xs text-(--ui-text-muted)">
             <code>{{ s.role }}</code>
-            <template v-if="s.wirksam && !s.direkt">
+            <template v-if="s.effective && !s.direct">
               · {{ t('admin.roles.viaDefault') }}
             </template>
             <template v-else-if="isSelf && s.role === ROLE_PLATFORM_ADMIN">
@@ -63,17 +63,17 @@ async function umschalten(s: PlatformRoleStatus, an: boolean) {
           </p>
         </div>
         <USwitch
-          :model-value="s.wirksam"
-          :disabled="pending || gesperrt(s) || speichert !== null"
-          :loading="speichert === s.role"
+          :model-value="s.effective"
+          :disabled="pending || isLocked(s) || saving !== null"
+          :loading="saving === s.role"
           :aria-label="t(`admin.roles.names.${s.role}`)"
-          @update:model-value="an => umschalten(s, an)"
+          @update:model-value="on => toggle(s, on)"
         />
       </li>
     </ul>
 
-    <p v-if="fehler" class="text-sm text-red-600">
-      {{ fehler }}
+    <p v-if="saveError" class="text-sm text-red-600">
+      {{ saveError }}
     </p>
     <p class="text-xs text-(--ui-text-muted)">
       {{ t('admin.roles.tokenHint', { name: username }) }}

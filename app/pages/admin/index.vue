@@ -10,42 +10,42 @@ definePageMeta({ middleware: ['auth', 'admin'] })
 const { t } = useI18n()
 const { isPlatformAdmin } = useUmpRoles()
 const { user } = useOidcAuth()
-const eigeneId = computed(() => (user.value?.userInfo as { sub?: string } | undefined)?.sub ?? null)
+const ownId = computed(() => (user.value?.userInfo as { sub?: string } | undefined)?.sub ?? null)
 
 // The account whose roles are open in the dialog.
-const rollenFuer = ref<{ id: string, username: string } | null>(null)
-const dialogOffen = computed({
-  get: () => rollenFuer.value !== null,
-  set: (offen) => { if (!offen) rollenFuer.value = null },
+const rolesFor = ref<{ id: string, username: string } | null>(null)
+const dialogOpen = computed({
+  get: () => rolesFor.value !== null,
+  set: (open) => { if (!open) rolesFor.value = null },
 })
 
 // The account about to be disabled. Disabling asks for confirmation because it signs the
 // user out immediately; enabling does not.
-const deaktivieren = ref<{ id: string, username: string } | null>(null)
-const nachfrageOffen = computed({
-  get: () => deaktivieren.value !== null,
-  set: (offen) => { if (!offen) deaktivieren.value = null },
+const toDisable = ref<{ id: string, username: string } | null>(null)
+const confirmOpen = computed({
+  get: () => toDisable.value !== null,
+  set: (open) => { if (!open) toDisable.value = null },
 })
-const statusSpeichert = ref<string | null>(null)
-const statusFehler = ref<string | null>(null)
+const statusSaving = ref<string | null>(null)
+const statusError = ref<string | null>(null)
 
-async function setzeAktiv(id: string, aktiv: boolean) {
-  statusFehler.value = null
-  statusSpeichert.value = id
+async function setEnabled(id: string, enable: boolean) {
+  statusError.value = null
+  statusSaving.value = id
   try {
-    await $fetch(`/api/admin/platform/users/${id}`, { method: 'PATCH', body: { enabled: aktiv } })
-    deaktivieren.value = null
+    await $fetch(`/api/admin/platform/users/${id}`, { method: 'PATCH', body: { enabled: enable } })
+    toDisable.value = null
     await refresh()
   }
   catch (e) {
-    statusFehler.value = (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? String(e)
+    statusError.value = (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? String(e)
   }
   finally {
-    statusSpeichert.value = null
+    statusSaving.value = null
   }
 }
 
-interface Konto {
+interface Account {
   id: string
   username: string
   email: string | null
@@ -54,9 +54,9 @@ interface Konto {
   enabled: boolean
 }
 
-const suche = ref('')
-const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/admin/platform/users', {
-  query: { search: suche },
+const searchTerm = ref('')
+const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/api/admin/platform/users', {
+  query: { search: searchTerm },
   immediate: isPlatformAdmin.value,
   watch: false,
   default: () => [],
@@ -75,15 +75,15 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
           {{ t('admin.users.heading') }}
         </h2>
         <form class="flex items-center gap-2" @submit.prevent="refresh()">
-          <UInput v-model="suche" icon="i-lucide-search" :placeholder="t('admin.users.search')" size="sm" />
+          <UInput v-model="searchTerm" icon="i-lucide-search" :placeholder="t('admin.users.search')" size="sm" />
           <UButton type="submit" size="sm" variant="subtle" :loading="pending">
             {{ t('admin.users.searchButton') }}
           </UButton>
         </form>
       </div>
 
-      <p v-if="statusFehler" class="text-sm text-red-600">
-        {{ statusFehler }}
+      <p v-if="statusError" class="text-sm text-red-600">
+        {{ statusError }}
       </p>
       <p v-if="error" class="text-sm text-red-600">
         {{ t('admin.users.error', { msg: error.data?.statusMessage || error.statusMessage || error.message }) }}
@@ -100,7 +100,7 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
           </tr>
         </thead>
         <tbody>
-          <tr v-for="k in konten" :key="k.id" class="border-t border-(--ui-border)">
+          <tr v-for="k in accounts" :key="k.id" class="border-t border-(--ui-border)">
             <td class="px-3 py-2">{{ k.username }}</td>
             <td class="px-3 py-2">{{ [k.firstName, k.lastName].filter(Boolean).join(' ') }}</td>
             <td class="px-3 py-2">{{ k.email }}</td>
@@ -110,7 +110,7 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
               </UBadge>
             </td>
             <td class="px-3 py-2 text-right whitespace-nowrap">
-              <UButton size="xs" variant="ghost" icon="i-lucide-shield-check" @click="rollenFuer = { id: k.id, username: k.username }">
+              <UButton size="xs" variant="ghost" icon="i-lucide-shield-check" @click="rolesFor = { id: k.id, username: k.username }">
                 {{ t('admin.users.roles') }}
               </UButton>
               <UButton
@@ -119,9 +119,9 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
                 variant="ghost"
                 color="neutral"
                 icon="i-lucide-user-x"
-                :disabled="k.id === eigeneId || statusSpeichert !== null"
-                :title="k.id === eigeneId ? t('admin.users.ownAccount') : undefined"
-                @click="deaktivieren = { id: k.id, username: k.username }"
+                :disabled="k.id === ownId || statusSaving !== null"
+                :title="k.id === ownId ? t('admin.users.ownAccount') : undefined"
+                @click="toDisable = { id: k.id, username: k.username }"
               >
                 {{ t('admin.users.disable') }}
               </UButton>
@@ -130,36 +130,36 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
                 size="xs"
                 variant="ghost"
                 icon="i-lucide-user-check"
-                :loading="statusSpeichert === k.id"
-                :disabled="statusSpeichert !== null"
-                @click="setzeAktiv(k.id, true)"
+                :loading="statusSaving === k.id"
+                :disabled="statusSaving !== null"
+                @click="setEnabled(k.id, true)"
               >
                 {{ t('admin.users.enable') }}
               </UButton>
             </td>
           </tr>
-          <tr v-if="!pending && !konten.length">
+          <tr v-if="!pending && !accounts.length">
             <td colspan="5" class="px-3 py-4 text-(--ui-text-muted)">{{ t('admin.users.empty') }}</td>
           </tr>
         </tbody>
       </table>
 
-      <UModal v-model:open="nachfrageOffen" :title="t('admin.users.disableTitle', { name: deaktivieren?.username ?? '' })">
+      <UModal v-model:open="confirmOpen" :title="t('admin.users.disableTitle', { name: toDisable?.username ?? '' })">
         <template #body>
           <p class="text-sm">
-            {{ t('admin.users.disableText', { name: deaktivieren?.username ?? '' }) }}
+            {{ t('admin.users.disableText', { name: toDisable?.username ?? '' }) }}
           </p>
         </template>
         <template #footer>
           <div class="flex w-full justify-end gap-2">
-            <UButton variant="ghost" color="neutral" @click="deaktivieren = null">
+            <UButton variant="ghost" color="neutral" @click="toDisable = null">
               {{ t('admin.users.cancel') }}
             </UButton>
             <UButton
               color="error"
               icon="i-lucide-user-x"
-              :loading="statusSpeichert !== null"
-              @click="deaktivieren && setzeAktiv(deaktivieren.id, false)"
+              :loading="statusSaving !== null"
+              @click="toDisable && setEnabled(toDisable.id, false)"
             >
               {{ t('admin.users.disable') }}
             </UButton>
@@ -167,14 +167,14 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
         </template>
       </UModal>
 
-      <UModal v-model:open="dialogOffen" :title="t('admin.roles.title', { name: rollenFuer?.username ?? '' })">
+      <UModal v-model:open="dialogOpen" :title="t('admin.roles.title', { name: rolesFor?.username ?? '' })">
         <template #body>
           <AdminPlatformRoles
-            v-if="rollenFuer"
-            :key="rollenFuer.id"
-            :user-id="rollenFuer.id"
-            :username="rollenFuer.username"
-            :is-self="rollenFuer.id === eigeneId"
+            v-if="rolesFor"
+            :key="rolesFor.id"
+            :user-id="rolesFor.id"
+            :username="rolesFor.username"
+            :is-self="rolesFor.id === ownId"
           />
         </template>
       </UModal>

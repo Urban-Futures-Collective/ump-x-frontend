@@ -15,7 +15,7 @@ import type { OgcProcessList } from '~/composables/useUmpProcesses'
 // such tool exists for a model to call.
 
 // Max jobs passed to the model. Months of history in the context only cost money.
-const MAX_LAEUFE = 20
+const MAX_RUNS = 20
 
 export function useUmpTools() {
   const { base } = useUmpBase()
@@ -24,7 +24,7 @@ export function useUmpTools() {
 
   // Errors are returned, not thrown. A 401 is useful information for the chat
   // ("you need a role for that"), whereas a thrown error would abort the stream.
-  const alsFehler = (e: unknown) => ({ fehler: apiErrorMessage(e) })
+  const asError = (e: unknown) => ({ error: apiErrorMessage(e) })
 
   const listProcesses = tool({
     description:
@@ -37,18 +37,18 @@ export function useUmpTools() {
     }),
     async execute() {
       try {
-        const liste = await $fetch<OgcProcessList>(`${base}/processes`)
+        const list = await $fetch<OgcProcessList>(`${base}/processes`)
 
         return {
-          modelle: (liste.processes ?? []).map(p => ({
+          models: (list.processes ?? []).map(p => ({
             id: p.id,
-            titel: p.title ?? p.id,
-            beschreibung: p.description ?? '',
+            title: p.title ?? p.id,
+            description: p.description ?? '',
           })),
         }
       }
       catch (e) {
-        return alsFehler(e)
+        return asError(e)
       }
     },
   })
@@ -73,23 +73,23 @@ export function useUmpTools() {
       try {
         // Do not encode the colon in the prefix: UMP 3.x rejects ids without it
         // with 400. See useUmpProcess.
-        const roh = await $fetch<OgcProcessDetail>(`${base}/processes/${processId}`)
+        const raw = await $fetch<OgcProcessDetail>(`${base}/processes/${processId}`)
         return {
-          id: roh.id,
-          titel: roh.title ?? roh.id,
-          beschreibung: roh.description ?? '',
-          eingaben: Object.entries(roh.inputs ?? {}).map(([name, v]) => ({
+          id: raw.id,
+          title: raw.title ?? raw.id,
+          description: raw.description ?? '',
+          inputs: Object.entries(raw.inputs ?? {}).map(([name, v]) => ({
             name,
-            titel: v.title ?? name,
-            beschreibung: v.description ?? '',
-            pflicht: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
-            vorgabe: v.schema?.default,
+            title: v.title ?? name,
+            description: v.description ?? '',
+            required: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
+            default: v.schema?.default,
             schema: v.schema,
           })),
         }
       }
       catch (e) {
-        return alsFehler(e)
+        return asError(e)
       }
     },
   })
@@ -99,8 +99,7 @@ export function useUmpTools() {
       'Bereitet einen Lauf vor, OHNE ihn zu starten. Prüft die Eingaben gegen das Schema '
       + 'des Modells und liefert einen Link auf das ausgefüllte Formular. Erst describeProcess '
       + 'aufrufen, damit die Namen stimmen. Lass Eingaben weg, die eine Vorgabe haben.',
-    // These schema keys are read by an external language model, not our code,
-    // hence English names unlike the German identifiers elsewhere.
+    // These schema keys are read by an external language model, not our code.
     inputSchema: jsonSchema<{ processId: string, inputs?: Record<string, unknown> }>({
       type: 'object',
       properties: {
@@ -119,41 +118,41 @@ export function useUmpTools() {
     }),
     async execute({ processId, inputs }) {
       try {
-        const roh = await $fetch<OgcProcessDetail>(`${base}/processes/${processId}`)
-        const felder = Object.entries(roh.inputs ?? {}).map(([name, v]) => ({
+        const raw = await $fetch<OgcProcessDetail>(`${base}/processes/${processId}`)
+        const fields = Object.entries(raw.inputs ?? {}).map(([name, v]) => ({
           name,
           type: v.schema?.type ?? 'string',
           default: v.schema?.default,
-          pflicht: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
+          required: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
         }))
 
-        const gegeben = inputs ?? {}
-        const unbekannt = Object.keys(gegeben).filter(k => !felder.some(f => f.name === k))
+        const given = inputs ?? {}
+        const unknownKeys = Object.keys(given).filter(k => !fields.some(f => f.name === k))
         // Same rule as the run form, not a second copy.
-        const rumpf = bereinigeEingaben(felder, gegeben)
-        const fehlend = felder
-          .filter(f => f.pflicht && rumpf[f.name] === undefined)
+        const body = cleanInputs(fields, given)
+        const missing = fields
+          .filter(f => f.required && body[f.name] === undefined)
           .map(f => f.name)
 
         // A deep link instead of shared state: survives a reload and can be shared.
         // The user submits the form manually.
-        const suche = new URLSearchParams({ process: processId })
-        for (const [k, v] of Object.entries(rumpf)) suche.set(`in.${k}`, String(v))
+        const search = new URLSearchParams({ process: processId })
+        for (const [k, v] of Object.entries(body)) search.set(`in.${k}`, String(v))
 
         return {
-          prozess: processId,
-          eingaben: rumpf,
-          weggelassen: felder
-            .filter(f => rumpf[f.name] === undefined && f.default !== undefined)
+          process: processId,
+          inputs: body,
+          omitted: fields
+            .filter(f => body[f.name] === undefined && f.default !== undefined)
             .map(f => f.name),
-          fehlend,
-          unbekannt,
-          link: `/run?${suche.toString()}`,
-          hinweis: 'Nicht gestartet. Der Link öffnet das ausgefüllte Formular, abschicken muss der Nutzer.',
+          missing,
+          unknown: unknownKeys,
+          link: `/run?${search.toString()}`,
+          note: 'Nicht gestartet. Der Link öffnet das ausgefüllte Formular, abschicken muss der Nutzer.',
         }
       }
       catch (e) {
-        return alsFehler(e)
+        return asError(e)
       }
     },
   })
@@ -171,25 +170,25 @@ export function useUmpTools() {
     }),
     async execute() {
       try {
-        const roh = await $fetch<OgcJobList>(`${base}/jobs`)
-        const laeufe = neuesteZuerst((roh?.jobs ?? []).map(toJob))
-          .slice(0, MAX_LAEUFE)
+        const raw = await $fetch<OgcJobList>(`${base}/jobs`)
+        const runs = newestFirst((raw?.jobs ?? []).map(toJob))
+          .slice(0, MAX_RUNS)
           .map(j => ({
             id: j.id,
-            prozess: j.processId,
+            process: j.processId,
             status: j.status,
-            fortschritt: j.progress,
-            zeit: jobTime(j),
+            progress: j.progress,
+            time: jobTime(j),
           }))
         return {
-          laeufe,
-          ...(laeufe.length
+          runs,
+          ...(runs.length
             ? {}
-            : { hinweis: 'Keine Läufe vorhanden.' }),
+            : { note: 'Keine Läufe vorhanden.' }),
         }
       }
       catch (e) {
-        return alsFehler(e)
+        return asError(e)
       }
     },
   })
@@ -214,35 +213,35 @@ export function useUmpTools() {
     async execute({ jobId }) {
       try {
         const job = toJob(await $fetch<OgcJob>(`${base}/jobs/${jobId}`))
-        const grund = {
+        const jobInfo = {
           id: job.id,
-          prozess: job.processId,
+          process: job.processId,
           status: job.status,
-          fortschritt: job.progress,
-          meldung: job.message,
-          erstellt: jobTime(job),
-          beendet: job.finished,
-          dauer: formatDuration(job.created, job.finished) ?? undefined,
+          progress: job.progress,
+          message: job.message,
+          created: jobTime(job),
+          finished: job.finished,
+          duration: formatDuration(job.created, job.finished) ?? undefined,
           link: `/jobs/${job.id}`,
         }
         // For a failed job /results returns 404 "Job failed", so skip it. See useUmpJob.
-        if (job.status !== 'successful') return grund
+        if (job.status !== 'successful') return jobInfo
         try {
           const layer = await fetchResult(job.id, job.processId)
           // The GeoJSON stays in the browser; only a small summary goes to the model.
-          return { ...grund, ergebnis: fasseErgebnisZusammen(layer.featureCollection) }
+          return { ...jobInfo, result: summarizeResult(layer.featureCollection) }
         }
         catch (e) {
           // Results of older jobs may be gone even though the job succeeded;
           // the job info alone is still useful.
-          return { ...grund, ergebnisFehler: apiErrorMessage(e) }
+          return { ...jobInfo, resultError: apiErrorMessage(e) }
         }
       }
       catch (e) {
-        return alsFehler(e)
+        return asError(e)
       }
     },
   })
 
-  return { werkzeuge: { listProcesses, describeProcess, prepareRun, listJobs, showJob } }
+  return { tools: { listProcesses, describeProcess, prepareRun, listJobs, showJob } }
 }

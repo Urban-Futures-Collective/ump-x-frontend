@@ -9,14 +9,14 @@ const { data: processes, pending, error, refresh } = useUmpProcesses()
 // Tiles ("Landing Screen") or list ("Models list"). Stored in a cookie rather
 // than localStorage so the server already renders the chosen view and nothing
 // jumps on load.
-const ansicht = useCookie<'tile' | 'row'>('ump-x-commons-ansicht', {
+const view = useCookie<'tile' | 'row'>('ump-x-commons-ansicht', {
   default: () => 'tile',
   maxAge: 60 * 60 * 24 * 365,
   sameSite: 'lax',
 })
 
 // Same three steps as on the landing page.
-const schritte = ['choose', 'configure', 'take'] as const
+const steps = ['choose', 'configure', 'take'] as const
 </script>
 
 <template>
@@ -30,21 +30,21 @@ const schritte = ['choose', 'configure', 'take'] as const
           <div class="flex items-center gap-2">
             <UButton
               icon="i-lucide-layout-grid"
-              :color="ansicht === 'tile' ? 'primary' : 'neutral'"
+              :color="view === 'tile' ? 'primary' : 'neutral'"
               variant="ghost"
               size="sm"
               :aria-label="t('commons.view.tiles')"
-              :aria-pressed="ansicht === 'tile'"
-              @click="ansicht = 'tile'"
+              :aria-pressed="view === 'tile'"
+              @click="view = 'tile'"
             />
             <UButton
               icon="i-lucide-list"
-              :color="ansicht === 'row' ? 'primary' : 'neutral'"
+              :color="view === 'row' ? 'primary' : 'neutral'"
               variant="ghost"
               size="sm"
               :aria-label="t('commons.view.list')"
-              :aria-pressed="ansicht === 'row'"
-              @click="ansicht = 'row'"
+              :aria-pressed="view === 'row'"
+              @click="view = 'row'"
             />
             <UButton
               icon="i-lucide-refresh-cw"
@@ -85,14 +85,14 @@ const schritte = ['choose', 'configure', 'take'] as const
 
         <ul
           v-if="processes?.length"
-          :class="ansicht === 'row' ? 'max-w-3xl space-y-3' : 'grid gap-6 sm:grid-cols-2 xl:grid-cols-4'"
+          :class="view === 'row' ? 'max-w-3xl space-y-3' : 'grid gap-6 sm:grid-cols-2 xl:grid-cols-4'"
         >
           <li v-for="p in processes" :key="p.id">
             <ModelCard
               :title="p.title"
               :description="p.description"
               :process-id="p.id"
-              :layout="ansicht"
+              :layout="view"
               :to="{ path: '/run', query: { process: p.id } }"
             />
           </li>
@@ -109,18 +109,18 @@ const schritte = ['choose', 'configure', 'take'] as const
       </h2>
       <ol class="grid gap-6 md:grid-cols-3">
         <li
-          v-for="(schritt, i) in schritte"
-          :key="schritt"
+          v-for="(step, i) in steps"
+          :key="step"
           class="space-y-2.5 py-4 md:pr-6"
         >
           <span class="inline-block bg-ufc-teal-700 pl-1 pr-4 text-lg/7 font-semibold text-white">
             {{ i + 1 }}
           </span>
           <h3 class="font-medium text-(--ui-text)">
-            {{ t(`start.steps.${schritt}.title`) }}
+            {{ t(`start.steps.${step}.title`) }}
           </h3>
           <p class="text-sm text-(--ui-text-muted)">
-            {{ t(`start.steps.${schritt}.body`) }}
+            {{ t(`start.steps.${step}.body`) }}
           </p>
         </li>
       </ol>

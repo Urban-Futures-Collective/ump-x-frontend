@@ -5,11 +5,11 @@
 // for from the start. The targets are placeholders; the pages do not exist yet.
 const { t } = useI18n()
 
-const rechtliches = [
-  { key: 'openSource', to: 'https://github.com/Urban-Futures-Collective/ump-x-frontend', extern: true },
-  { key: 'privacy', to: '/datenschutz', extern: false },
-  { key: 'imprint', to: '/impressum', extern: false },
-  { key: 'accessibility', to: '/barrierefreiheit', extern: false },
+const legalLinks = [
+  { key: 'openSource', to: 'https://github.com/Urban-Futures-Collective/ump-x-frontend', external: true },
+  { key: 'privacy', to: '/datenschutz', external: false },
+  { key: 'imprint', to: '/impressum', external: false },
+  { key: 'accessibility', to: '/barrierefreiheit', external: false },
 ] as const
 </script>
 
@@ -18,14 +18,14 @@ const rechtliches = [
     <div class="mx-auto flex max-w-7xl flex-col gap-3 text-xs text-(--ui-text-muted) sm:flex-row sm:items-center sm:justify-between">
       <p>{{ t('footer.carriers') }}</p>
       <ul class="flex flex-wrap items-center gap-4">
-        <li v-for="eintrag in rechtliches" :key="eintrag.key">
+        <li v-for="entry in legalLinks" :key="entry.key">
           <ULink
-            :to="eintrag.to"
-            :external="eintrag.extern"
-            :target="eintrag.extern ? '_blank' : undefined"
+            :to="entry.to"
+            :external="entry.external"
+            :target="entry.external ? '_blank' : undefined"
             class="hover:text-(--ui-text)"
           >
-            {{ t(`footer.${eintrag.key}`) }}
+            {{ t(`footer.${entry.key}`) }}
           </ULink>
         </li>
       </ul>

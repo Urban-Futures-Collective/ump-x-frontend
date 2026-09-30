@@ -124,7 +124,7 @@
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
     "openJob": "Lauf öffnen",
-    "defaultHint": "Leer lassen für die Vorgabe {wert}.",
+    "defaultHint": "Leer lassen für die Vorgabe {value}.",
     "job": {
       "failed": "der Lauf ist fehlgeschlagen, ohne Angabe von Gründen",
       "dismissed": "der Lauf wurde abgebrochen",
@@ -222,7 +222,7 @@
     },
     "empty": {
       "lead": "Womit fangen wir an?",
-      "connected": "Verbunden mit {anbieter} · {modell}"
+      "connected": "Verbunden mit {provider} · {model}"
     },
     "examples": {
       "what": "Welche Modelle gibt es und was rechnen sie?",
@@ -254,15 +254,15 @@
       "openForm": "Formular öffnen",
       "startedByYou": "Gestartet wird erst im Formular, von dir.",
       "recognised": "Erkannte Eingaben:",
-      "missing": "Es fehlen noch: {liste}",
-      "unknown": "Nicht erkannt, weggelassen: {liste}",
+      "missing": "Es fehlen noch: {list}",
+      "unknown": "Nicht erkannt, weggelassen: {list}",
       "listJobs": "Läufe auflisten",
       "showJob": "Lauf zeigen",
       "runs": "{n} Läufe",
       "openJob": "Lauf öffnen",
       "features": "{n} Objekte",
-      "extent": "Ausdehnung {von} bis {bis}",
-      "properties": "Eigenschaften: {liste}"
+      "extent": "Ausdehnung {from} bis {to}",
+      "properties": "Eigenschaften: {list}"
     },
     "signIn": {
       "title": "Zum Chatten anmelden",

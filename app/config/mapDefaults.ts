@@ -21,14 +21,14 @@ export interface MapConfig {
 }
 
 // The whole world in Web Mercator.
-const WELT: [number, number, number, number] = [
+const WORLD: [number, number, number, number] = [
   -20037508.34, -20037508.34, 20037508.34, 20037508.34,
 ]
 
 // OpenStreetMap tile levels, so each step matches one tile level exactly and
 // nothing is upscaled. resolution = 156543.034 / 2^zoom; scale assumes the OGC
 // standard pixel size of 0.28 mm.
-const STUFEN = [
+const ZOOM_LEVELS = [
   { resolution: 156543.0339280410, scale: 559082264, zoomLevel: 0 },
   { resolution: 78271.5169640205, scale: 279541132, zoomLevel: 1 },
   { resolution: 39135.7584820102, scale: 139770566, zoomLevel: 2 },
@@ -53,13 +53,13 @@ const STUFEN = [
 
 export const mapDefaults: MapConfig = {
   epsg: 'EPSG:3857',
-  extent: WELT,
+  extent: WORLD,
   // Center of Germany (10.45° E, 51.16° N). Only a placeholder: the map zooms
   // to the result once there is one.
   startCenter: [1163289, 6649645],
   // Zoom level 6, the whole country in view.
   startResolution: 2445.9849051256,
-  options: STUFEN,
+  options: ZOOM_LEVELS,
   layerConf: [],
   layers: [],
 }

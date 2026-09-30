@@ -124,7 +124,7 @@
     "execute": "Run",
     "error": "Error: {msg}",
     "openJob": "Open run",
-    "defaultHint": "Leave empty for the default {wert}.",
+    "defaultHint": "Leave empty for the default {value}.",
     "job": {
       "failed": "the run failed without giving a reason",
       "dismissed": "the run was dismissed",
@@ -222,7 +222,7 @@
     },
     "empty": {
       "lead": "Where shall we start?",
-      "connected": "Connected to {anbieter} · {modell}"
+      "connected": "Connected to {provider} · {model}"
     },
     "examples": {
       "what": "Which models are there and what do they compute?",
@@ -254,15 +254,15 @@
       "openForm": "Open the form",
       "startedByYou": "Starting happens in the form, by you.",
       "recognised": "Recognised inputs:",
-      "missing": "Still missing: {liste}",
-      "unknown": "Not recognised, left out: {liste}",
+      "missing": "Still missing: {list}",
+      "unknown": "Not recognised, left out: {list}",
       "listJobs": "List runs",
       "showJob": "Show run",
       "runs": "{n} runs",
       "openJob": "Open run",
       "features": "{n} features",
-      "extent": "Extent {von} to {bis}",
-      "properties": "Properties: {liste}"
+      "extent": "Extent {from} to {to}",
+      "properties": "Properties: {list}"
     },
     "signIn": {
       "title": "Sign in to chat",
