@@ -10,7 +10,7 @@ const { isAdmin } = useUmpRoles()
 const { accountUrl } = useRuntimeConfig().public
 
 // The chat lives in a slide-over so it does not push the workspace aside.
-const chatOffen = ref(false)
+const chatOpen = ref(false)
 
 const userName = computed(
   () => user.value?.userName ?? user.value?.claims?.preferred_username ?? '',
@@ -43,17 +43,17 @@ const plannedItems = computed<NavigationMenuItem[]>(() => [
 // Two-letter initials: from given and family name if available, otherwise the
 // first two letters of the username (often not distinctive). No name, no
 // initials rather than made-up ones.
-const initialen = computed(() => {
+const initials = computed(() => {
   const info = user.value?.userInfo as { given_name?: string, family_name?: string } | undefined
-  const vorname = info?.given_name?.trim() ?? ''
-  const nachname = info?.family_name?.trim() ?? ''
-  if (vorname && nachname) return (vorname[0]! + nachname[0]!).toUpperCase()
+  const firstName = info?.given_name?.trim() ?? ''
+  const lastName = info?.family_name?.trim() ?? ''
+  if (firstName && lastName) return (firstName[0]! + lastName[0]!).toUpperCase()
   return userName.value.slice(0, 2).toUpperCase()
 })
 
 // "Request access" is visible but disabled, following the same rule as the
 // planned sidebar items. Where such a request would go is not decided yet.
-const benutzerMenue = computed(() => [[
+const userMenu = computed(() => [[
   {
     label: userName.value,
     description: t('auth.viaKeycloak'),
@@ -80,8 +80,8 @@ const benutzerMenue = computed(() => [[
     // runs, which the next person on a shared machine would otherwise see.
     // Silent, without confirmation: signing out means exactly that.
     onSelect: () => {
-      vergissZugang()
-      vergissVerlauf()
+      forgetAccess()
+      forgetHistory()
       logout()
     },
   },
@@ -179,7 +179,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
               variant="ghost"
               size="sm"
               :aria-label="t('nav.chat')"
-              @click="chatOffen = true"
+              @click="chatOpen = true"
             >
               <span class="hidden md:inline">{{ t('nav.chat') }}</span>
             </UButton>
@@ -212,9 +212,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
                  not. Sign-out lives only here: two routes to the same action
                  add nothing. -->
             <ClientOnly>
-              <UDropdownMenu v-if="loggedIn" :items="benutzerMenue" :ui="{ content: 'w-64' }">
+              <UDropdownMenu v-if="loggedIn" :items="userMenu" :ui="{ content: 'w-64' }">
                 <UButton color="neutral" variant="ghost" size="sm" trailing-icon="i-lucide-chevron-down">
-                  <UAvatar :text="initialen" size="xs" />
+                  <UAvatar :text="initials" size="xs" />
                 </UButton>
               </UDropdownMenu>
               <UButton
@@ -247,9 +247,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
          (the user's API key must never reach our server). Lazy so the SDK is
          not in every page's initial bundle. -->
     <ClientOnly>
-      <USlideover v-model:open="chatOffen" :ui="{ content: 'w-full max-w-md' }">
+      <USlideover v-model:open="chatOpen" :ui="{ content: 'w-full max-w-md' }">
         <template #content>
-          <LazyAiChatPanel @schliessen="chatOffen = false" />
+          <LazyAiChatPanel @close="chatOpen = false" />
         </template>
       </USlideover>
     </ClientOnly>

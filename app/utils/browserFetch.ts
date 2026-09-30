@@ -9,8 +9,8 @@
 //
 // Only the (url, init) form is handled, which is how the SDK calls fetch. A
 // Request object would pass through unchanged and fail visibly on Anthropic.
-export const browserFetch: typeof globalThis.fetch = (eingabe, optionen) => {
-  const koepfe = new Headers(optionen?.headers)
-  koepfe.delete('user-agent')
-  return globalThis.fetch(eingabe, { ...optionen, headers: koepfe })
+export const browserFetch: typeof globalThis.fetch = (input, init) => {
+  const headers = new Headers(init?.headers)
+  headers.delete('user-agent')
+  return globalThis.fetch(input, { ...init, headers })
 }

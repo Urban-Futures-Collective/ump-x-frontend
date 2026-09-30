@@ -15,28 +15,28 @@ const { base } = useUmpBase()
 // File name must be recognisable in a downloads folder without context:
 // process name plus short job id. Run inputs are not available here, since the
 // job response does not include them.
-const basisname = computed(() => {
-  const prozess = (props.processId ?? 'ergebnis').split(':').pop() ?? 'ergebnis'
-  return `${prozess}_${props.jobId.slice(0, 8)}`
+const baseName = computed(() => {
+  const processName = (props.processId ?? 'ergebnis').split(':').pop() ?? 'ergebnis'
+  return `${processName}_${props.jobId.slice(0, 8)}`
 })
 
 // Sent without an extension, which is unknown before the response arrives. The
 // proxy appends it from the Content-Type and sets Content-Disposition
 // (see server/routes/ump/[...path].ts).
 const href = computed(() =>
-  `${base}/jobs/${props.jobId}/results?filename=${encodeURIComponent(basisname.value)}`,
+  `${base}/jobs/${props.jobId}/results?filename=${encodeURIComponent(baseName.value)}`,
 )
 
 // Fallback if no Content-Disposition arrives; .geojson fits the current
 // models. When the header is present it wins, so other formats still get the
 // right extension.
-const rueckfall = computed(() => `${basisname.value}.geojson`)
+const fallbackName = computed(() => `${baseName.value}.geojson`)
 </script>
 
 <template>
   <UButton
     :to="href"
-    :download="rueckfall"
+    :download="fallbackName"
     external
     variant="subtle"
     size="sm"

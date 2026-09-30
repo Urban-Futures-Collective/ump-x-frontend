@@ -10,22 +10,22 @@ interface KeycloakUser {
 }
 
 export default defineEventHandler(async (event) => {
-  const aufrufer = await requireRole(event, ROLE_PLATFORM_ADMIN)
+  const caller = await requireRole(event, ROLE_PLATFORM_ADMIN)
 
   const q = getQuery(event)
-  const suche = typeof q.search === 'string' ? q.search.slice(0, 100) : ''
-  const erster = Math.max(0, Number(q.first) || 0)
-  const anzahl = Math.min(100, Math.max(1, Number(q.max) || 50))
+  const searchTerm = typeof q.search === 'string' ? q.search.slice(0, 100) : ''
+  const firstIndex = Math.max(0, Number(q.first) || 0)
+  const pageSize = Math.min(100, Math.max(1, Number(q.max) || 50))
 
-  const nutzer = await keycloakAdmin<KeycloakUser[]>('/users', {
-    query: { search: suche, first: erster, max: anzahl, briefRepresentation: true },
+  const users = await keycloakAdmin<KeycloakUser[]>('/users', {
+    query: { search: searchTerm, first: firstIndex, max: pageSize, briefRepresentation: true },
   })
 
   // Keycloak records admin events under the service account, so this log line is the
   // only record of which person made the request.
-  console.info(`[admin] ${aufrufer.sub} listet Nutzer (search="${suche}", first=${erster}, max=${anzahl})`)
+  console.info(`[admin] ${caller.sub} listet Nutzer (search="${searchTerm}", first=${firstIndex}, max=${pageSize})`)
 
-  return nutzer
+  return users
     // Service accounts are technical accounts, not people.
     .filter(u => !u.username.startsWith('service-account-'))
     .map(u => ({

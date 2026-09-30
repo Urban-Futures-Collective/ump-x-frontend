@@ -24,7 +24,7 @@ const SKIP_RESPONSE_HEADERS = new Set(['content-length', 'transfer-encoding', 'c
 // File extension from the response Content-Type. An explicit short list rather than
 // deriving it from the subtype, so application/geo+json becomes .geojson, not .json.
 // Unknown types get no extension: better none than a wrong one.
-const ENDUNGEN: Record<string, string> = {
+const EXTENSIONS: Record<string, string> = {
   'application/geo+json': 'geojson',
   'application/json': 'json',
   'application/gml+xml': 'gml',
@@ -43,7 +43,7 @@ const ENDUNGEN: Record<string, string> = {
 // strictly: letters, digits, dot, dash and underscore, length-capped. A newline would
 // allow header injection, a quote would break the header. The result is a valid file
 // name on any file system.
-function sauberer(name: string): string {
+function sanitize(name: string): string {
   return name.replace(/[^A-Za-z0-9._-]/g, '').slice(0, 80)
 }
 
@@ -66,10 +66,10 @@ export default defineEventHandler(async (event) => {
   // without extension; the extension is derived below from the response Content-Type.
   // See ResultDownload.vue.
   const query = new URLSearchParams(url.search)
-  const wunschname = sauberer(query.get('filename') ?? '')
+  const requestedName = sanitize(query.get('filename') ?? '')
   query.delete('filename')
-  const suche = query.toString()
-  const target = `${umpApiTarget}/${path}${suche ? `?${suche}` : ''}`
+  const queryString = query.toString()
+  const target = `${umpApiTarget}/${path}${queryString ? `?${queryString}` : ''}`
 
   // Host is not set by hand: fetch() derives it from the target URL. It is listed in
   // SKIP_REQUEST_HEADERS so the incoming Host cannot override it; the reverse proxy in
@@ -113,12 +113,12 @@ export default defineEventHandler(async (event) => {
   // follows what the model actually returns instead of an assumption.
   //
   // A Content-Disposition sent by the API wins; once UMP sends one, this block can go.
-  const eigenes = upstream.headers.get('content-disposition')
-  if (!eigenes && upstream.ok && wunschname && path.endsWith('/results')) {
-    const typ = (upstream.headers.get('content-type') ?? '').split(';')[0]!.trim().toLowerCase()
-    const endung = ENDUNGEN[typ]
-    const datei = endung ? `${wunschname}.${endung}` : wunschname
-    setResponseHeader(event, 'content-disposition', `attachment; filename="${datei}"`)
+  const existingDisposition = upstream.headers.get('content-disposition')
+  if (!existingDisposition && upstream.ok && requestedName && path.endsWith('/results')) {
+    const contentType = (upstream.headers.get('content-type') ?? '').split(';')[0]!.trim().toLowerCase()
+    const extension = EXTENSIONS[contentType]
+    const fileName = extension ? `${requestedName}.${extension}` : requestedName
+    setResponseHeader(event, 'content-disposition', `attachment; filename="${fileName}"`)
   }
 
   return buffer

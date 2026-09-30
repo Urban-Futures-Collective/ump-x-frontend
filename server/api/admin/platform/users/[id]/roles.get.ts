@@ -4,11 +4,11 @@ interface RoleRep { id: string, name: string }
 
 export default defineEventHandler(async (event) => {
   await requireRole(event, ROLE_PLATFORM_ADMIN)
-  const id = nutzerIdAus(event)
+  const id = userIdFrom(event)
 
-  const [direkt, wirksam] = await Promise.all([
+  const [direct, effective] = await Promise.all([
     keycloakAdmin<RoleRep[]>(`/users/${id}/role-mappings/realm`),
     keycloakAdmin<RoleRep[]>(`/users/${id}/role-mappings/realm/composite`),
   ])
-  return platformRoleStatus(direkt.map(r => r.name), wirksam.map(r => r.name))
+  return platformRoleStatus(direct.map(r => r.name), effective.map(r => r.name))
 })

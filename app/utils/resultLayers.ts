@@ -11,38 +11,38 @@ import type { ProcessOutput, ResultLayerSpec } from '~/types/ump'
 // response is not a FeatureCollection gets no layer.
 
 /** Declared values that unambiguously mean a FeatureCollection. */
-const GEO_FORMATE = ['geojson-feature-collection', 'geojson']
-const GEO_MEDIENTYPEN = ['application/geo+json', 'application/vnd.geo+json']
+const GEO_FORMATS = ['geojson-feature-collection', 'geojson']
+const GEO_MEDIA_TYPES = ['application/geo+json', 'application/vnd.geo+json']
 
-export function istGeoDeklariert(output: ProcessOutput): boolean {
+export function isGeoDeclared(output: ProcessOutput): boolean {
   const format = output.format?.toLowerCase()
-  const medientyp = output.mediaType?.toLowerCase()
-  return (format !== undefined && GEO_FORMATE.includes(format))
-    || (medientyp !== undefined && GEO_MEDIENTYPEN.includes(medientyp))
+  const mediaType = output.mediaType?.toLowerCase()
+  return (format !== undefined && GEO_FORMATS.includes(format))
+    || (mediaType !== undefined && GEO_MEDIA_TYPES.includes(mediaType))
 }
 
-export function istFeatureCollection(daten: unknown): daten is FeatureCollection {
-  if (typeof daten !== 'object' || daten === null) return false
-  const k = daten as { type?: unknown, features?: unknown }
-  return k.type === 'FeatureCollection' && Array.isArray(k.features)
+export function isFeatureCollection(data: unknown): data is FeatureCollection {
+  if (typeof data !== 'object' || data === null) return false
+  const obj = data as { type?: unknown, features?: unknown }
+  return obj.type === 'FeatureCollection' && Array.isArray(obj.features)
 }
 
 /**
  * Geometry kind of the collection, used for styling. Several kinds, or none
  * recognised, yield `mixed`.
  */
-export function geometrieArt(fc: FeatureCollection): ResultLayerSpec['geometry'] {
-  const arten = new Set<ResultLayerSpec['geometry']>()
+export function geometryKind(fc: FeatureCollection): ResultLayerSpec['geometry'] {
+  const kinds = new Set<ResultLayerSpec['geometry']>()
   for (const f of fc.features) {
-    const art = einordnen(f.geometry)
-    if (art) arten.add(art)
+    const kind = classify(f.geometry)
+    if (kind) kinds.add(kind)
   }
-  if (arten.size === 0) return 'mixed'
-  if (arten.size === 1) return [...arten][0]!
+  if (kinds.size === 0) return 'mixed'
+  if (kinds.size === 1) return [...kinds][0]!
   return 'mixed'
 }
 
-function einordnen(geom: Geometry | null): ResultLayerSpec['geometry'] | null {
+function classify(geom: Geometry | null): ResultLayerSpec['geometry'] | null {
   if (!geom) return null
   switch (geom.type) {
     case 'LineString':
@@ -65,13 +65,13 @@ function einordnen(geom: Geometry | null): ResultLayerSpec['geometry'] | null {
  * Layers a result provides. An empty list means nothing is mappable, and the
  * page shows a notice instead of an empty map.
  */
-export function resultLayers(outputs: ProcessOutput[], daten: unknown): ResultLayerSpec[] {
-  if (!istFeatureCollection(daten) || daten.features.length === 0) return []
+export function resultLayers(outputs: ProcessOutput[], data: unknown): ResultLayerSpec[] {
+  if (!isFeatureCollection(data) || data.features.length === 0) return []
 
-  const geometry = geometrieArt(daten)
-  const deklariert = outputs.find(istGeoDeklariert)
-  if (deklariert) {
-    return [{ name: deklariert.name, kind: 'geojson', geometry, quelle: 'deklariert' }]
+  const geometry = geometryKind(data)
+  const declared = outputs.find(isGeoDeclared)
+  if (declared) {
+    return [{ name: declared.name, kind: 'geojson', geometry, source: 'declared' }]
   }
 
   // Geodata without a matching declaration: name it after the first output,
@@ -80,6 +80,6 @@ export function resultLayers(outputs: ProcessOutput[], daten: unknown): ResultLa
     name: outputs[0]?.name ?? 'result',
     kind: 'geojson',
     geometry,
-    quelle: 'erkannt',
+    source: 'detected',
   }]
 }

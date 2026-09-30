@@ -11,103 +11,112 @@ import type { LanguageModel } from 'ai'
 // Three providers are preset, plus "kompatibel" for anything speaking the OpenAI
 // API (Groq, Mistral, LM Studio, Ollama, ...). All three allow direct browser
 // calls; Anthropic only with the anthropic-dangerous-direct-browser-access header.
-export type Anbieter = 'openrouter' | 'openai' | 'anthropic' | 'kompatibel'
+export type Provider = 'openrouter' | 'openai' | 'anthropic' | 'kompatibel'
 
-export interface Zugang {
-  anbieter: Anbieter
-  modell: string
-  basisUrl: string
+export interface Access {
+  provider: Provider
+  model: string
+  baseUrl: string
 }
 
-const SPEICHER = 'ump-x-ki'
+const STORAGE_KEY = 'ump-x-ki'
 
-export const ANBIETER_VORGABEN: Record<Anbieter, { basisUrl: string, modell: string }> = {
-  openrouter: { basisUrl: 'https://openrouter.ai/api/v1', modell: 'anthropic/claude-sonnet-4' },
-  openai: { basisUrl: 'https://api.openai.com/v1', modell: 'gpt-4.1-mini' },
-  anthropic: { basisUrl: 'https://api.anthropic.com/v1', modell: 'claude-sonnet-4-20250514' },
-  kompatibel: { basisUrl: 'http://localhost:8000/v1', modell: '' },
+export const PROVIDER_DEFAULTS: Record<Provider, { baseUrl: string, model: string }> = {
+  openrouter: { baseUrl: 'https://openrouter.ai/api/v1', model: 'anthropic/claude-sonnet-4' },
+  openai: { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4.1-mini' },
+  anthropic: { baseUrl: 'https://api.anthropic.com/v1', model: 'claude-sonnet-4-20250514' },
+  kompatibel: { baseUrl: 'http://localhost:8000/v1', model: '' },
 }
 
 // The key is deliberately not a ref and never returned, so it cannot end up in a
 // template or error message by accident. It only leaves this module to the provider.
-let schluessel = ''
+let apiKey = ''
 
 // The UI still needs to know whether a key exists: a separate reactive flag
 // carries only yes/no, never the value.
-const schluesselDa = ref(false)
+const hasKeyFlag = ref(false)
 
-const zugang = ref<Zugang>({ anbieter: 'openrouter', ...ANBIETER_VORGABEN.openrouter })
-const geladen = ref(false)
+const access = ref<Access>({ provider: 'openrouter', ...PROVIDER_DEFAULTS.openrouter })
+const loaded = ref(false)
 
-function laden() {
-  if (geladen.value || !import.meta.client) return
-  geladen.value = true
+function load() {
+  if (loaded.value || !import.meta.client) return
+  loaded.value = true
   try {
-    const roh = localStorage.getItem(SPEICHER)
-    if (!roh) return
-    const gespeichert = JSON.parse(roh) as Partial<Zugang> & { schluessel?: string }
-    if (gespeichert.anbieter && gespeichert.anbieter in ANBIETER_VORGABEN) {
-      zugang.value = {
-        anbieter: gespeichert.anbieter,
-        modell: gespeichert.modell ?? ANBIETER_VORGABEN[gespeichert.anbieter].modell,
-        basisUrl: gespeichert.basisUrl ?? ANBIETER_VORGABEN[gespeichert.anbieter].basisUrl,
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return
+    // Entries written before the English rename use German property names
+    // (anbieter, modell, basisUrl, schluessel); read both, write only the new ones.
+    const stored = JSON.parse(raw) as Partial<Access> & {
+      apiKey?: string
+      anbieter?: Provider
+      modell?: string
+      basisUrl?: string
+      schluessel?: string
+    }
+    const storedProvider = stored.provider ?? stored.anbieter
+    if (storedProvider && storedProvider in PROVIDER_DEFAULTS) {
+      access.value = {
+        provider: storedProvider,
+        model: stored.model ?? stored.modell ?? PROVIDER_DEFAULTS[storedProvider].model,
+        baseUrl: stored.baseUrl ?? stored.basisUrl ?? PROVIDER_DEFAULTS[storedProvider].baseUrl,
       }
     }
-    schluessel = gespeichert.schluessel ?? ''
-    schluesselDa.value = schluessel.length > 0
+    apiKey = stored.apiKey ?? stored.schluessel ?? ''
+    hasKeyFlag.value = apiKey.length > 0
   }
   catch {
     // A corrupt entry must not break the page; continue without it.
   }
 }
 
-function sichern() {
+function save() {
   if (!import.meta.client) return
-  localStorage.setItem(SPEICHER, JSON.stringify({ ...zugang.value, schluessel }))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...access.value, apiKey }))
 }
 
 // Module-level so logout can call it without useAiProvider(), which would run
-// laden() and load the key into memory only to delete it.
-export function vergissZugang() {
-  schluessel = ''
-  schluesselDa.value = false
-  if (import.meta.client) localStorage.removeItem(SPEICHER)
+// load() and load the key into memory only to delete it.
+export function forgetAccess() {
+  apiKey = ''
+  hasKeyFlag.value = false
+  if (import.meta.client) localStorage.removeItem(STORAGE_KEY)
 }
 
 export function useAiProvider() {
-  laden()
+  load()
 
-  const hatSchluessel = readonly(schluesselDa)
+  const hasKey = readonly(hasKeyFlag)
 
-  function setzeZugang(neu: Zugang, neuerSchluessel: string) {
-    zugang.value = { ...neu }
-    schluessel = neuerSchluessel
-    schluesselDa.value = schluessel.length > 0
-    sichern()
+  function setAccess(next: Access, nextKey: string) {
+    access.value = { ...next }
+    apiKey = nextKey
+    hasKeyFlag.value = apiKey.length > 0
+    save()
   }
 
   // Builds the AI SDK model object. The only place that knows the provider
   // factories and the only one that sees the key.
-  function sprachmodell(): LanguageModel {
-    const { anbieter, modell, basisUrl } = zugang.value
-    if (!schluessel) throw new Error('Kein Schlüssel hinterlegt.')
-    if (!modell) throw new Error('Kein Modell angegeben.')
+  function languageModel(): LanguageModel {
+    const { provider: providerName, model, baseUrl } = access.value
+    if (!apiKey) throw new Error('Kein Schlüssel hinterlegt.')
+    if (!model) throw new Error('Kein Modell angegeben.')
 
-    if (anbieter === 'anthropic') {
+    if (providerName === 'anthropic') {
       const provider = createAnthropic({
-        apiKey: schluessel,
+        apiKey,
         // Without this header Anthropic rejects the CORS preflight with 400.
         headers: { 'anthropic-dangerous-direct-browser-access': 'true' },
         fetch: browserFetch,
       })
-      return provider(modell)
+      return provider(model)
     }
 
     // Everything else speaks the OpenAI API. .chat() instead of the default,
     // because OpenRouter and local servers do not support the Responses API.
-    const provider = createOpenAI({ apiKey: schluessel, baseURL: basisUrl, fetch: browserFetch })
-    return provider.chat(modell)
+    const provider = createOpenAI({ apiKey, baseURL: baseUrl, fetch: browserFetch })
+    return provider.chat(model)
   }
 
-  return { zugang: readonly(zugang), hatSchluessel, setzeZugang, vergessen: vergissZugang, sprachmodell }
+  return { access: readonly(access), hasKey, setAccess, forget: forgetAccess, languageModel }
 }

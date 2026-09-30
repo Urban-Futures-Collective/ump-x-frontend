@@ -36,9 +36,9 @@ export function apiErrorStatus(e: unknown): number | null {
 }
 
 export function apiErrorMessage(e: unknown): string {
-  const erklaerung = apiErrorExplanation(e)
-  if (erklaerung) {
-    return erklaerung
+  const explanation = apiErrorExplanation(e)
+  if (explanation) {
+    return explanation
   }
   if (e instanceof Error && e.message) {
     return e.message

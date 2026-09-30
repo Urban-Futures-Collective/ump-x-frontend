@@ -14,7 +14,7 @@ const { run, jobId, status, progress, error, result, running } = useUmpRun()
 // A job that fails without a message only yields its status as a key, a
 // response without a body only its HTTP status. Translate those two; anything
 // else is already text from UMP or the model.
-const fehlertext = computed(() => {
+const errorText = computed(() => {
   const e = error.value
   if (!e) return null
   if (e.startsWith('job.')) return t(`run.${e}`)
@@ -34,19 +34,19 @@ const fehlertext = computed(() => {
 // proposal survives a reload and can be shared.
 const route = useRoute()
 
-function anfangswerte(p: typeof proc.value): Record<string, string> {
+function initialValues(p: typeof proc.value): Record<string, string> {
   const next: Record<string, string> = {}
   for (const inp of p?.inputs ?? []) {
-    const ausAdresse = route.query[`in.${inp.name}`]
-    next[inp.name] = typeof ausAdresse === 'string' && ausAdresse !== ''
-      ? ausAdresse
+    const fromQuery = route.query[`in.${inp.name}`]
+    next[inp.name] = typeof fromQuery === 'string' && fromQuery !== ''
+      ? fromQuery
       : inp.default != null ? String(inp.default) : ''
   }
   return next
 }
 
-const form = ref<Record<string, string>>(anfangswerte(proc.value))
-watch(proc, p => (form.value = anfangswerte(p)))
+const form = ref<Record<string, string>>(initialValues(proc.value))
+watch(proc, p => (form.value = initialValues(p)))
 
 // Pass the result up to the map.
 watch(result, r => emit('result', r))
@@ -55,16 +55,16 @@ watch(result, r => emit('result', r))
 // from a type=number field. The field looks empty and nobody learns that
 // leaving it empty is what applies the default, so show a hint below it, but
 // only where the default is actually invisible.
-function vorgabeUnsichtbar(inp: { type: string, default?: unknown }) {
+function defaultInvisible(inp: { type: string, default?: unknown }) {
   if (inp.default == null) return false
-  const zahlenfeld = inp.type === 'integer' || inp.type === 'number'
-  return zahlenfeld && !Number.isFinite(Number(inp.default))
+  const isNumberField = inp.type === 'integer' || inp.type === 'number'
+  return isNumberField && !Number.isFinite(Number(inp.default))
 }
 
 async function onSubmit() {
   // The rule lives in app/utils/processInputs.ts because the chat applies it
   // too; two copies would disagree about the "auto" default.
-  await run(props.processId, bereinigeEingaben(proc.value?.inputs ?? [], form.value))
+  await run(props.processId, cleanInputs(proc.value?.inputs ?? [], form.value))
 }
 </script>
 
@@ -92,8 +92,8 @@ async function onSubmit() {
           :placeholder="inp.description"
           class="w-full"
         />
-        <p v-if="vorgabeUnsichtbar(inp)" class="text-xs text-(--ui-text-dimmed)">
-          {{ t('run.defaultHint', { wert: String(inp.default) }) }}
+        <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
+          {{ t('run.defaultHint', { value: String(inp.default) }) }}
         </p>
       </div>
 
@@ -117,8 +117,8 @@ async function onSubmit() {
         />
       </div>
 
-      <p v-if="fehlertext" class="text-sm text-red-600">
-        {{ t('run.error', { msg: fehlertext }) }}
+      <p v-if="errorText" class="text-sm text-red-600">
+        {{ t('run.error', { msg: errorText }) }}
       </p>
     </form>
 

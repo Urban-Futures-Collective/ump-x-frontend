@@ -1,52 +1,52 @@
 <script setup lang="ts">
 // The chat itself. Placement-agnostic, so it can be mounted in the app drawer or
 // on the landing page.
-import type { Nachricht } from '~/composables/useAiChat'
+import type { Message } from '~/composables/useAiChat'
 
 // A question typed on the landing page. Without a key it is not lost but kept in
 // the input field until the provider is set up.
-const props = defineProps<{ startfrage?: string }>()
-const emit = defineEmits<{ schliessen: [] }>()
+const props = defineProps<{ initialQuestion?: string }>()
+const emit = defineEmits<{ close: [] }>()
 
 const { t } = useI18n()
 const { loggedIn, login } = useOidcAuth()
-const { zugang, hatSchluessel } = useAiProvider()
-const { nachrichten, status, fehler, laeuft, senden, abbrechen, neu } = useAiChat()
+const { access, hasKey } = useAiProvider()
+const { messages, status, error, running, send, cancel, clear } = useAiChat()
 
-const eingabe = ref('')
-const zugangOffen = ref(false)
+const input = ref('')
+const accessOpen = ref(false)
 
 // History survives closing and reloading, so one click could wipe a long
 // conversation. Hence a confirmation that cannot be permanently dismissed.
-const loeschenOffen = ref(false)
+const clearOpen = ref(false)
 
-function loeschen() {
-  neu()
-  loeschenOffen.value = false
+function clearHistory() {
+  clear()
+  clearOpen.value = false
 }
 
 // No key entry while signed out: the key costs the user money, so we require a
 // known account first.
-const zeigtFormular = computed(() => loggedIn.value && (!hatSchluessel.value || zugangOffen.value))
+const showsForm = computed(() => loggedIn.value && (!hasKey.value || accessOpen.value))
 
-const beispiele = computed(() => [t('ai.examples.what'), t('ai.examples.how')])
+const examples = computed(() => [t('ai.examples.what'), t('ai.examples.how')])
 
-async function abschicken() {
-  const text = eingabe.value
-  eingabe.value = ''
-  await senden(text)
+async function submit() {
+  const text = input.value
+  input.value = ''
+  await send(text)
 }
 
-function beispielWaehlen(frage: string) {
-  eingabe.value = frage
-  abschicken()
+function pickExample(question: string) {
+  input.value = question
+  submit()
 }
 
 onMounted(() => {
-  const frage = props.startfrage?.trim()
-  if (!frage) return
-  if (hatSchluessel.value) beispielWaehlen(frage)
-  else eingabe.value = frage
+  const question = props.initialQuestion?.trim()
+  if (!question) return
+  if (hasKey.value) pickExample(question)
+  else input.value = question
 })
 </script>
 
@@ -60,23 +60,23 @@ onMounted(() => {
         <!-- Labelled, not icon-only: a plus icon would suggest "new parallel
              chat", but there is only one conversation and this discards it. -->
         <UButton
-          v-if="loggedIn && hatSchluessel && nachrichten.length"
+          v-if="loggedIn && hasKey && messages.length"
           icon="i-lucide-trash-2"
           color="neutral"
           variant="ghost"
           size="xs"
-          @click="loeschenOffen = true"
+          @click="clearOpen = true"
         >
           {{ t('ai.clear') }}
         </UButton>
         <UButton
-          v-if="loggedIn && hatSchluessel"
+          v-if="loggedIn && hasKey"
           icon="i-lucide-settings"
           color="neutral"
           variant="ghost"
           size="xs"
           :aria-label="t('ai.settings')"
-          @click="zugangOffen = !zugangOffen"
+          @click="accessOpen = !accessOpen"
         />
         <UButton
           icon="i-lucide-x"
@@ -84,7 +84,7 @@ onMounted(() => {
           variant="ghost"
           size="xs"
           :aria-label="t('ai.close')"
-          @click="emit('schliessen')"
+          @click="emit('close')"
         />
       </div>
     </div>
@@ -104,13 +104,13 @@ onMounted(() => {
     </div>
 
     <!-- No key yet (or settings opened): show the provider form. -->
-    <div v-else-if="zeigtFormular" class="flex-1 overflow-y-auto p-5">
-      <AiProviderForm @verbunden="zugangOffen = false" />
+    <div v-else-if="showsForm" class="flex-1 overflow-y-auto p-5">
+      <AiProviderForm @connected="accessOpen = false" />
     </div>
 
     <template v-else>
       <div class="flex flex-1 flex-col overflow-y-auto px-5 py-4">
-        <div v-if="!nachrichten.length" class="flex flex-1 flex-col justify-center gap-2 text-center">
+        <div v-if="!messages.length" class="flex flex-1 flex-col justify-center gap-2 text-center">
           <UIcon name="i-lucide-sparkles" class="mx-auto size-8 text-(--ui-primary)" />
           <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
             {{ t('ai.title') }}
@@ -119,7 +119,7 @@ onMounted(() => {
             {{ t('ai.empty.lead') }}
           </p>
           <p class="text-xs text-(--ui-text-dimmed)">
-            {{ t('ai.empty.connected', { anbieter: t(`ai.providers.${zugang.anbieter}`), modell: zugang.modell }) }}
+            {{ t('ai.empty.connected', { provider: t(`ai.providers.${access.provider}`), model: access.model }) }}
           </p>
         </div>
 
@@ -127,7 +127,7 @@ onMounted(() => {
              UChatMessage only renders text and files by itself. -->
         <UChatMessages
           v-else
-          :messages="nachrichten"
+          :messages="messages"
           :status="status"
           should-auto-scroll
           :assistant="{ side: 'left', variant: 'naked' }"
@@ -135,50 +135,50 @@ onMounted(() => {
         >
           <template #content="{ message }">
             <div class="space-y-2">
-              <template v-for="(teil, i) in (message as Nachricht).parts" :key="i">
-                <AiToolCard v-if="teil.type === 'werkzeug'" :teil="teil" @geoeffnet="emit('schliessen')" />
-                <p v-else-if="teil.text" class="whitespace-pre-wrap">
-                  {{ teil.text }}
+              <template v-for="(part, i) in (message as Message).parts" :key="i">
+                <AiToolCard v-if="part.type === 'tool'" :part="part" @opened="emit('close')" />
+                <p v-else-if="part.text" class="whitespace-pre-wrap">
+                  {{ part.text }}
                 </p>
               </template>
             </div>
           </template>
         </UChatMessages>
 
-        <p v-if="laeuft && nachrichten.length" class="mt-2 text-xs text-(--ui-text-dimmed)">
+        <p v-if="running && messages.length" class="mt-2 text-xs text-(--ui-text-dimmed)">
           {{ t('ai.streaming') }}
         </p>
       </div>
 
       <div class="space-y-3 px-5 pb-4">
         <!-- Example questions only in the empty state. -->
-        <div v-if="!nachrichten.length" class="flex flex-col items-end gap-2">
+        <div v-if="!messages.length" class="flex flex-col items-end gap-2">
           <UButton
-            v-for="frage in beispiele"
-            :key="frage"
+            v-for="question in examples"
+            :key="question"
             variant="outline"
             color="neutral"
             size="xs"
-            @click="beispielWaehlen(frage)"
+            @click="pickExample(question)"
           >
-            {{ frage }}
+            {{ question }}
           </UButton>
         </div>
 
         <UAlert
-          v-if="fehler"
+          v-if="error"
           color="error"
           variant="subtle"
           icon="i-lucide-triangle-alert"
-          :description="t('ai.error', { msg: fehler })"
+          :description="t('ai.error', { msg: error })"
         />
 
         <UChatPrompt
-          v-model="eingabe"
+          v-model="input"
           :placeholder="t('ai.placeholder')"
-          @submit="abschicken"
+          @submit="submit"
         >
-          <UChatPromptSubmit :status="status" @stop="abbrechen()" />
+          <UChatPromptSubmit :status="status" @stop="cancel()" />
         </UChatPrompt>
 
         <p class="text-xs text-(--ui-text-dimmed)">
@@ -187,15 +187,15 @@ onMounted(() => {
       </div>
     </template>
     <UModal
-      v-model:open="loeschenOffen"
+      v-model:open="clearOpen"
       :title="t('ai.clearConfirm.title')"
       :description="t('ai.clearConfirm.body')"
     >
       <template #footer>
-        <UButton color="neutral" variant="ghost" @click="loeschenOffen = false">
+        <UButton color="neutral" variant="ghost" @click="clearOpen = false">
           {{ t('ai.clearConfirm.cancel') }}
         </UButton>
-        <UButton color="error" @click="loeschen()">
+        <UButton color="error" @click="clearHistory()">
           {{ t('ai.clearConfirm.confirm') }}
         </UButton>
       </template>

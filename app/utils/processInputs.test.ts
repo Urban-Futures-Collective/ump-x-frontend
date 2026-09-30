@@ -1,74 +1,74 @@
 import { describe, expect, it } from 'vitest'
-import { bereinigeEingaben, type EingabeFeld } from './processInputs'
+import { cleanInputs, type InputField } from './processInputs'
 
 // Form and chat share this rule; two copies would mean the chat builds a call
 // that fails while the same call from the form succeeds. Hence the tests.
 //
 // The function knows no models, only field types. The fields here are not real
 // ones but a set of shapes covering every edge case seen so far.
-const felder: EingabeFeld[] = [
-  { name: 'pflichtfeld', type: 'string' },
-  { name: 'text_mit_vorgabe', type: 'string', default: '3857' },
-  { name: 'zahl_mit_wort_als_vorgabe', type: 'integer', default: 'auto' },
-  { name: 'zahl_ohne_vorgabe', type: 'integer' },
-  { name: 'schalter', type: 'boolean', default: 'false' },
+const fields: InputField[] = [
+  { name: 'required_field', type: 'string' },
+  { name: 'text_with_default', type: 'string', default: '3857' },
+  { name: 'number_with_word_default', type: 'integer', default: 'auto' },
+  { name: 'number_without_default', type: 'integer' },
+  { name: 'toggle', type: 'boolean', default: 'false' },
 ]
 
-describe('bereinigeEingaben', () => {
-  it('lässt leere Eingaben weg, damit die Vorgabe des Backends greift', () => {
-    expect(bereinigeEingaben(felder, { pflichtfeld: '', text_mit_vorgabe: '   ' })).toEqual({})
+describe('cleanInputs', () => {
+  it('omits empty inputs so the backend default applies', () => {
+    expect(cleanInputs(fields, { required_field: '', text_with_default: '   ' })).toEqual({})
   })
 
-  it('lässt fehlende Schlüssel weg', () => {
-    expect(bereinigeEingaben(felder, {})).toEqual({})
+  it('omits missing keys', () => {
+    expect(cleanInputs(fields, {})).toEqual({})
   })
 
-  it('schickt eine unveränderte Vorgabe nicht mit', () => {
-    expect(bereinigeEingaben(felder, { text_mit_vorgabe: '3857' })).toEqual({})
+  it('does not send an unchanged default', () => {
+    expect(cleanInputs(fields, { text_with_default: '3857' })).toEqual({})
   })
 
-  it('schickt eine geänderte Vorgabe mit', () => {
-    expect(bereinigeEingaben(felder, { text_mit_vorgabe: '3035' })).toEqual({ text_mit_vorgabe: '3035' })
+  it('sends a changed default', () => {
+    expect(cleanInputs(fields, { text_with_default: '3035' })).toEqual({ text_with_default: '3035' })
   })
 
   // Number("auto") is NaN, so this default must not be sent as a number.
-  it('schickt die Vorgabe "auto" eines Zahlenfelds nicht als Zahl mit', () => {
-    expect(bereinigeEingaben(felder, { zahl_mit_wort_als_vorgabe: 'auto' })).toEqual({})
+  it('does not send the "auto" default of a number field as a number', () => {
+    expect(cleanInputs(fields, { number_with_word_default: 'auto' })).toEqual({})
   })
 
-  it('lässt einen unbrauchbaren Wert in einem Zahlenfeld ganz weg', () => {
-    expect(bereinigeEingaben(felder, { zahl_mit_wort_als_vorgabe: 'ungefähr 1000' })).toEqual({})
+  it('drops an unusable value in a number field entirely', () => {
+    expect(cleanInputs(fields, { number_with_word_default: 'ungefähr 1000' })).toEqual({})
   })
 
-  it('wandelt Zahlenfelder in Zahlen, nicht in Zeichenketten', () => {
-    const rumpf = bereinigeEingaben(felder, { zahl_ohne_vorgabe: '200' })
-    expect(rumpf).toEqual({ zahl_ohne_vorgabe: 200 })
-    expect(typeof rumpf.zahl_ohne_vorgabe).toBe('number')
+  it('converts number fields to numbers, not strings', () => {
+    const body = cleanInputs(fields, { number_without_default: '200' })
+    expect(body).toEqual({ number_without_default: 200 })
+    expect(typeof body.number_without_default).toBe('number')
   })
 
-  it('schneidet Leerraum ab, bevor es urteilt', () => {
-    expect(bereinigeEingaben(felder, { pflichtfeld: '  Musterstadt  ' })).toEqual({ pflichtfeld: 'Musterstadt' })
-    expect(bereinigeEingaben(felder, { text_mit_vorgabe: ' 3857 ' })).toEqual({})
+  it('trims whitespace before deciding', () => {
+    expect(cleanInputs(fields, { required_field: '  Musterstadt  ' })).toEqual({ required_field: 'Musterstadt' })
+    expect(cleanInputs(fields, { text_with_default: ' 3857 ' })).toEqual({})
   })
 
-  it('versteht die üblichen Wahrheitswerte', () => {
-    expect(bereinigeEingaben(felder, { schalter: 'true' })).toEqual({ schalter: true })
-    expect(bereinigeEingaben(felder, { schalter: '1' })).toEqual({ schalter: true })
-    expect(bereinigeEingaben(felder, { schalter: 'nein' })).toEqual({ schalter: false })
+  it('understands the usual boolean values', () => {
+    expect(cleanInputs(fields, { toggle: 'true' })).toEqual({ toggle: true })
+    expect(cleanInputs(fields, { toggle: '1' })).toEqual({ toggle: true })
+    expect(cleanInputs(fields, { toggle: 'nein' })).toEqual({ toggle: false })
   })
 
-  it('nimmt nur Felder, die das Modell kennt', () => {
-    expect(bereinigeEingaben(felder, { pflichtfeld: 'Musterstadt', erfunden: 'x' })).toEqual({ pflichtfeld: 'Musterstadt' })
+  it('keeps only fields the model knows', () => {
+    expect(cleanInputs(fields, { required_field: 'Musterstadt', made_up: 'x' })).toEqual({ required_field: 'Musterstadt' })
   })
 
-  it('baut aus einem vollständig ausgefüllten Formular den richtigen Rumpf', () => {
-    const rumpf = bereinigeEingaben(felder, {
-      pflichtfeld: 'Musterstadt',
-      text_mit_vorgabe: '3857',
-      zahl_mit_wort_als_vorgabe: 'auto',
-      zahl_ohne_vorgabe: '200',
-      schalter: 'false',
+  it('builds the right body from a fully filled form', () => {
+    const body = cleanInputs(fields, {
+      required_field: 'Musterstadt',
+      text_with_default: '3857',
+      number_with_word_default: 'auto',
+      number_without_default: '200',
+      toggle: 'false',
     })
-    expect(rumpf).toEqual({ pflichtfeld: 'Musterstadt', zahl_ohne_vorgabe: 200 })
+    expect(body).toEqual({ required_field: 'Musterstadt', number_without_default: 200 })
   })
 })

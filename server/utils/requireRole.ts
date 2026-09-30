@@ -6,18 +6,18 @@
 import { getUserSession } from 'nuxt-oidc-auth/runtime/server/utils/session.js'
 import type { H3Event } from 'h3'
 
-export interface Aufrufer { sub: string, rollen: string[] }
+export interface Caller { sub: string, roles: string[] }
 
-export async function requireRole(event: H3Event, ...erlaubt: string[]): Promise<Aufrufer> {
+export async function requireRole(event: H3Event, ...allowed: string[]): Promise<Caller> {
   const session = await getUserSession(event).catch(() => null)
   const info = session?.userInfo as { sub?: string } | undefined
   const sub = info?.sub ?? (session?.claims as { sub?: string } | undefined)?.sub
   if (!session || !sub) {
     throw createError({ statusCode: 401, statusMessage: 'Anmeldung nötig.' })
   }
-  const rollen = rolesOfSession(session)
-  if (!erlaubt.some(r => rollen.includes(r))) {
+  const roles = rolesOfSession(session)
+  if (!allowed.some(r => roles.includes(r))) {
     throw createError({ statusCode: 403, statusMessage: 'Dafür fehlt die Rolle.' })
   }
-  return { sub, rollen }
+  return { sub, roles }
 }

@@ -62,15 +62,15 @@ export function isPlatformRole(r: unknown): r is PlatformRole {
   return typeof r === 'string' && (PLATFORM_ROLES as readonly string[]).includes(r)
 }
 
-// How a platform role applies to an account. `direkt`: assigned on the account itself,
+// How a platform role applies to an account. `direct`: assigned on the account itself,
 // so it can be removed here. Effective but not direct means it comes from a composite
 // role, usually the realm's default roles, and cannot be revoked on the account.
-export interface PlatformRoleStatus { role: PlatformRole, wirksam: boolean, direkt: boolean }
+export interface PlatformRoleStatus { role: PlatformRole, effective: boolean, direct: boolean }
 
-export function platformRoleStatus(direkt: string[], wirksam: string[]): PlatformRoleStatus[] {
+export function platformRoleStatus(direct: string[], effective: string[]): PlatformRoleStatus[] {
   return PLATFORM_ROLES.map(role => ({
     role,
-    wirksam: wirksam.includes(role) || direkt.includes(role),
-    direkt: direkt.includes(role),
+    effective: effective.includes(role) || direct.includes(role),
+    direct: direct.includes(role),
   }))
 }
