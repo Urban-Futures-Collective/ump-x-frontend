@@ -67,8 +67,6 @@
       "heading": "User accounts",
       "search": "Name or email",
       "searchButton": "Search",
-      "username": "Username",
-      "name": "Name",
       "email": "Email",
       "status": "Status",
       "enabled": "active",
@@ -81,7 +79,9 @@
       "cancel": "Cancel",
       "ownAccount": "Your own account cannot be disabled here.",
       "disableTitle": "Disable {name}?",
-      "disableText": "{name} can no longer sign in and is signed out everywhere right away. Roles and runs are kept, and the account can be enabled again at any time."
+      "disableText": "{name} can no longer sign in and is signed out everywhere right away. Roles and runs are kept, and the account can be enabled again at any time.",
+      "person": "Person",
+      "actions": "Actions for {name}"
     },
     "roles": {
       "title": "Platform roles: {name}",
