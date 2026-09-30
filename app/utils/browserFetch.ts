@@ -1,22 +1,14 @@
-// Hülle um fetch für Aufrufe an den Modellanbieter des Nutzers.
+// fetch wrapper for calls to the user's model provider.
 //
-// Das AI SDK hängt an jede Anfrage einen eigenen `user-agent`
-// (withUserAgentSuffix in @ai-sdk/provider-utils). Auf einem Server ist das
-// harmlos, im Browser nicht: dort landet jeder selbst gesetzte Kopf in der
-// CORS-Vorabfrage, und Anthropic beantwortet die nur, wenn ausschließlich
-// Header angefragt werden, die es kennt.
+// The AI SDK adds its own `user-agent` header to every request
+// (withUserAgentSuffix in @ai-sdk/provider-utils). Harmless on a server, but in
+// the browser every custom header ends up in the CORS preflight, and Anthropic
+// rejects the preflight (400) when user-agent is among the requested headers.
+// Without this wrapper, calls work with OpenAI but fail with Anthropic, with no
+// hint at the cause in the error.
 //
-// Am 2026-09-04 gegen api.anthropic.com gemessen:
-//   Vorabfrage mit content-type, x-api-key, anthropic-version,
-//   anthropic-dangerous-direct-browser-access  -> 200, allow-origin: *
-//   dieselbe Vorabfrage zusätzlich mit user-agent                -> 400
-//
-// Ohne diese Hülle lautet der Befund also „geht bei OpenAI, bricht bei
-// Anthropic", und die Ursache steht in keiner Fehlermeldung.
-//
-// Bewusst nur der (url, init)-Fall: so ruft das SDK fetch auf. Käme je ein
-// Request-Objekt herein, ginge der Kopf unverändert durch — dann fällt es beim
-// nächsten Anthropic-Aufruf sofort auf.
+// Only the (url, init) form is handled, which is how the SDK calls fetch. A
+// Request object would pass through unchanged and fail visibly on Anthropic.
 export const browserFetch: typeof globalThis.fetch = (eingabe, optionen) => {
   const koepfe = new Headers(optionen?.headers)
   koepfe.delete('user-agent')

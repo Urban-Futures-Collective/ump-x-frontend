@@ -1,9 +1,6 @@
 <script setup lang="ts">
-// Ein Werkzeugaufruf im Chat.
-//
-// Lesende Werkzeuge zeigen aufgeklappt, was tatsächlich an den Anbieter
-// gegangen ist. Unter dem Zugangsformular steht, dass
-// Fragen und Werkzeug-Ergebnisse beim gewählten Anbieter landen.
+// One tool call in the chat. Expanded, a generic card shows exactly what was sent
+// to the user's model provider.
 import type { JobStatus } from '~/types/ump'
 import type { Teil } from '~/composables/useAiChat'
 import type { ErgebnisZusammenfassung } from '~/utils/resultSummary'
@@ -32,13 +29,12 @@ const ausgabe = computed(() => props.teil.ausgabe as Ausgabe | undefined)
 
 const gelungen = computed(() => props.teil.zustand === 'fertig' && !ausgabe.value?.fehler)
 
-// Am Werkzeugnamen erkannt, nicht am Link. Seit showJob ebenfalls einen Link
-// liefert, wäre „hat einen Link" nicht mehr dasselbe wie „ist ein Vorschlag".
+// Detected by tool name, not by the presence of a link: several tools return links.
 const vorbereitet = computed(() => props.teil.name === 'prepareRun' && gelungen.value)
 const lauf = computed(() => props.teil.name === 'showJob' && gelungen.value)
 
-// Die Zusammenfassung als lesbare Zeilen. Die Ausdehnung steht als Eckenpaar da
-// und nicht als vier lose Zahlen, sonst liest sie niemand.
+// The result summary as readable lines; the extent is shown as two corners
+// rather than four bare numbers.
 const ergebniszeilen = computed(() => {
   const e = ausgabe.value?.ergebnis
   if (!e) return []
@@ -61,13 +57,12 @@ const ergebniszeilen = computed(() => {
 const beschriftung = computed(() => {
   const schluessel = `ai.tools.${props.teil.name}`
   const uebersetzt = t(schluessel)
-  // Ein unbekanntes Werkzeug soll seinen Namen zeigen statt den i18n-Schlüssel.
+  // An unknown tool shows its name instead of the raw i18n key.
   return uebersetzt === schluessel ? props.teil.name : uebersetzt
 })
 
-// „Fertig" heißt nur, dass das Werkzeug geantwortet hat. Werkzeuge geben ihre
-// Fehler als Feld zurück statt zu werfen (siehe useUmpTools), sonst risse der
-// Strom ab. Ein Häkchen über einer Fehlermeldung wäre deshalb genau falsch.
+// "fertig" only means the tool answered. Tools return errors as a field instead
+// of throwing (see useUmpTools), so check it to avoid a checkmark on an error.
 const symbol = computed(() => {
   if (props.teil.zustand === 'laeuft') return 'i-lucide-wrench'
   if (props.teil.zustand === 'fehler' || ausgabe.value?.fehler) return 'i-lucide-triangle-alert'
@@ -83,14 +78,14 @@ const zusatz = computed(() => {
   return ''
 })
 
-// Die erkannten Eingaben als Zeilen, damit man sie liest statt JSON zu entziffern.
+// Recognised inputs as readable lines instead of raw JSON.
 const erkannt = computed(() => {
   const e = ausgabe.value?.eingaben
   if (!e || Array.isArray(e)) return []
   return Object.entries(e).map(([k, v]) => `${k} = ${String(v)}`)
 })
 
-// Was das Modell nicht geliefert hat.
+// Required inputs the model did not provide, and names the process does not know.
 const fehlend = computed(() => ausgabe.value?.fehlend ?? [])
 const unbekannt = computed(() => ausgabe.value?.unbekannt ?? [])
 const unvollstaendig = computed(() => fehlend.value.length > 0)
@@ -120,8 +115,7 @@ const inhalt = computed(() => JSON.stringify(props.teil.ausgabe ?? props.teil.ei
       <p v-for="zeile in erkannt" :key="zeile" class="text-xs text-(--ui-text-dimmed)">
         {{ zeile }}
       </p>
-      <!-- Der Mangel steht vor dem Knopf und nicht darunter: wer hier weiterklickt,
-           soll vorher gelesen haben, was im Formular noch fehlt. -->
+      <!-- Missing inputs go above the button so they are read before clicking through. -->
       <p v-if="fehlend.length" class="text-xs font-medium text-(--ui-warning)">
         {{ t('ai.tools.missing', { liste: fehlend.join(', ') }) }}
       </p>
@@ -137,9 +131,8 @@ const inhalt = computed(() => JSON.stringify(props.teil.ausgabe ?? props.teil.ei
     </div>
   </div>
 
-  <!-- Ein gezeigter Lauf ist eine Auskunft, kein Vorschlag: er trägt deshalb
-       keinen Startknopf, sondern den Weg zur Karte und zum Download. Die
-       Zusammenfassung ist alles, was auch das Modell bekommen hat. -->
+  <!-- A shown job is information, not a proposal: no start button, just a link to
+       its page (map and download). The summary is all the model received too. -->
   <div
     v-else-if="lauf"
     class="overflow-hidden rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated)"

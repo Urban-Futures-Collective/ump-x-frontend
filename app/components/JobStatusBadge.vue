@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { JobStatus } from '~/types/ump'
 
-// Eine Stelle für die Übersetzung „Status → Farbe/Text", damit Liste, Detailseite
-// und der laufende Prozess dasselbe zeigen.
+// Single place mapping status to color and label, so the job list, job detail
+// and the running process look the same.
 const props = defineProps<{ status: JobStatus | 'idle', progress?: number }>()
 
 const { t } = useI18n()

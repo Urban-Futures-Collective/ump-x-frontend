@@ -2,18 +2,15 @@ import { createAnthropic } from '@ai-sdk/anthropic'
 import { createOpenAI } from '@ai-sdk/openai'
 import type { LanguageModel } from 'ai'
 
-// Zugang zum Sprachmodell des Nutzers.
+// Access to the user's own language model (bring your own key).
 //
-// UMP-X stellt kein Modell und bezahlt keines. Der Nutzer bringt Anbieter,
-// Schlüssel und Modellnamen mit, und der Aufruf geht aus dem Browser direkt
-// zum Anbieter. Unser Server sieht den Schlüssel nie — das ist keine
-// Bequemlichkeit, sondern der Grund für den ganzen Zuschnitt: wir wollen für
-// KI-Aufrufe weder zahlen noch haften.
+// UMP-X neither provides nor pays for a model. The user supplies provider, key
+// and model name, and calls go from the browser straight to the provider. Our
+// server never sees the key, so we neither pay for nor are liable for AI calls.
 //
-// Drei Anbieter sind vorbereitet, dazu „kompatibel" für alles, was die
-// OpenAI-Form spricht (Groq, Mistral, LM Studio, Ollama, oMLX …). Am
-// 2026-09-04 gemessen, dass alle drei Aufrufe direkt aus dem Browser zulassen;
-// Anthropic aber nur mit dem Kopf anthropic-dangerous-direct-browser-access.
+// Three providers are preset, plus "kompatibel" for anything speaking the OpenAI
+// API (Groq, Mistral, LM Studio, Ollama, ...). All three allow direct browser
+// calls; Anthropic only with the anthropic-dangerous-direct-browser-access header.
 export type Anbieter = 'openrouter' | 'openai' | 'anthropic' | 'kompatibel'
 
 export interface Zugang {
@@ -31,13 +28,12 @@ export const ANBIETER_VORGABEN: Record<Anbieter, { basisUrl: string, modell: str
   kompatibel: { basisUrl: 'http://localhost:8000/v1', modell: '' },
 }
 
-// Der Schlüssel liegt bewusst NICHT in einem Ref und wird nicht zurückgegeben.
-// So kann ihn niemand versehentlich in ein Template rendern oder in eine
-// Fehlermeldung schreiben; er verlässt dieses Modul nur Richtung Provider.
+// The key is deliberately not a ref and never returned, so it cannot end up in a
+// template or error message by accident. It only leaves this module to the provider.
 let schluessel = ''
 
-// Ob einer da ist, muss die Oberfläche trotzdem erfahren. Deshalb ein
-// getrennter, reaktiver Merker: er trägt nur „ja oder nein", nie den Wert.
+// The UI still needs to know whether a key exists: a separate reactive flag
+// carries only yes/no, never the value.
 const schluesselDa = ref(false)
 
 const zugang = ref<Zugang>({ anbieter: 'openrouter', ...ANBIETER_VORGABEN.openrouter })
@@ -61,7 +57,7 @@ function laden() {
     schluesselDa.value = schluessel.length > 0
   }
   catch {
-    // Kaputter Eintrag ist kein Grund, die Seite mitzureißen: dann eben ohne.
+    // A corrupt entry must not break the page; continue without it.
   }
 }
 
@@ -70,9 +66,8 @@ function sichern() {
   localStorage.setItem(SPEICHER, JSON.stringify({ ...zugang.value, schluessel }))
 }
 
-// Auf Modulebene, damit das Abmelden sie aufrufen kann, ohne vorher
-// useAiProvider() zu benutzen: das würde laden() auslösen und den Schlüssel
-// erst in den Speicher holen, um ihn dann zu löschen.
+// Module-level so logout can call it without useAiProvider(), which would run
+// laden() and load the key into memory only to delete it.
 export function vergissZugang() {
   schluessel = ''
   schluesselDa.value = false
@@ -91,8 +86,8 @@ export function useAiProvider() {
     sichern()
   }
 
-  // Baut das Modellobjekt fürs AI SDK. Einzige Stelle, die die Provider-
-  // Fabriken kennt, und die einzige, die den Schlüssel zu sehen bekommt.
+  // Builds the AI SDK model object. The only place that knows the provider
+  // factories and the only one that sees the key.
   function sprachmodell(): LanguageModel {
     const { anbieter, modell, basisUrl } = zugang.value
     if (!schluessel) throw new Error('Kein Schlüssel hinterlegt.')
@@ -101,15 +96,15 @@ export function useAiProvider() {
     if (anbieter === 'anthropic') {
       const provider = createAnthropic({
         apiKey: schluessel,
-        // Ohne diesen Kopf lehnt Anthropic die CORS-Vorabfrage mit 400 ab.
+        // Without this header Anthropic rejects the CORS preflight with 400.
         headers: { 'anthropic-dangerous-direct-browser-access': 'true' },
         fetch: browserFetch,
       })
       return provider(modell)
     }
 
-    // Alles andere spricht die OpenAI-Form. Bewusst .chat() statt der
-    // Vorgabe: die Responses-API kennen OpenRouter und lokale Server nicht.
+    // Everything else speaks the OpenAI API. .chat() instead of the default,
+    // because OpenRouter and local servers do not support the Responses API.
     const provider = createOpenAI({ apiKey: schluessel, baseURL: basisUrl, fetch: browserFetch })
     return provider.chat(modell)
   }

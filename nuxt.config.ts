@@ -1,23 +1,22 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  // Das Paket deklariert `"type": "commonjs"`, liefert aber ESM-Quelltext und
-  // zeigt mit `main` direkt auf `src/`. Ohne transpile hält Vite es für CJS und
-  // findet den Default-Export nicht; dayjs scheitert sonst am selben Punkt.
+  // The package declares `"type": "commonjs"` but ships ESM source with `main` pointing
+  // at `src/`. Without transpile, Vite treats it as CJS and misses the default export;
+  // dayjs fails the same way without the optimizeDeps entry.
   build: { transpile: ['@masterportal/masterportalapi'] },
   vite: { optimizeDeps: { include: ['dayjs'] } },
   compatibilityDate: '2025-06-01',
-  // Der Katalog heißt seit 2026-09-25 Commons. Alte Lesezeichen und geteilte
-  // Links auf /models landen dort, statt ins Leere zu laufen.
+  // Keep old bookmarks and shared links to /models working: the catalog lives at /commons.
   routeRules: { '/models': { redirect: { to: '/commons', statusCode: 301 } } },
   devtools: { enabled: true },
 
   modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxtjs/i18n', 'nuxt-oidc-auth'],
 
-  // Tailwind v4 + Nuxt UI imports leben in dieser Datei (Reihenfolge: tailwindcss vor @nuxt/ui).
+  // Tailwind v4 and Nuxt UI imports live in this file (tailwindcss before @nuxt/ui).
   css: ['~/assets/css/main.css'],
 
-  // Favicon aus derselben Logodatei. SVG zuerst, PNG als Rückfallebene für
-  // Browser ohne SVG-Favicon und als Symbol auf dem iOS-Startbildschirm.
+  // Favicon from the same logo file. SVG first, PNG as fallback for browsers without SVG
+  // favicons and as the iOS home screen icon.
   app: {
     head: {
       link: [
@@ -28,71 +27,67 @@ export default defineNuxtConfig({
     },
   },
 
-  // Vorerst nur der helle Modus. Der Umschalter ist raus, bis die Gestaltung
-  // steht; ohne diese Festlegung würde die Seite der Systemeinstellung des
-  // Besuchers folgen und bei manchen dunkel erscheinen.
+  // Light mode only for now; without this the page would follow the visitor's system
+  // setting and appear dark for some.
   //
-  // Der geänderte storageKey ist Absicht und nicht kosmetisch: Wer den alten
-  // Umschalter je auf dunkel gestellt hat, trägt das im Browser gespeichert mit
-  // sich herum, und eine gespeicherte Einstellung schlägt die Voreinstellung.
-  // Unter neuem Schlüssel gibt es nichts Gespeichertes, also greift 'light'.
+  // The custom storageKey is intentional: a stored preference beats the default, and
+  // under a fresh key no earlier 'dark' choice is stored, so 'light' applies.
   colorMode: {
     preference: 'light',
     fallback: 'light',
     storageKey: 'ump-x-color-mode',
   },
 
-  // Backend-Anbindung: server-seitiger Proxy /ump/** → UMP-API. Base zentral, per Env
-  // überschreibbar. Der Proxy (server/routes/ump/[...].ts) hängt den Bearer-Token aus der
-  // OIDC-Session an. Siehe docs/frontend-backend-architecture-de.md (die zwei Nähte).
+  // Backend connection: server-side proxy /ump/** -> UMP API, target configurable via env.
+  // The proxy (server/routes/ump/[...path].ts) adds the bearer token from the OIDC session.
+  // See docs/frontend-backend-architecture-de.md (the two seams).
   runtimeConfig: {
-    // Ziel des Proxys (server-only). Prod: per NUXT_UMP_API_TARGET überschreiben.
+    // Proxy target (server-only). Override with NUXT_UMP_API_TARGET.
     umpApiTarget: 'http://localhost:5003',
-    // Dienstkonto für die Keycloak-Admin-API (Rollenverwaltung, F11). Server-only, nie
-    // public: wer das Secret hat, kann den Realm verwalten. Per Env
-    // NUXT_KEYCLOAK_ADMIN_CLIENT_ID / NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET. Leer heißt:
-    // die Admin-Routen antworten mit 503 „nicht eingerichtet“.
+    // Service account for the Keycloak Admin API (role management). Server-only, never
+    // public: whoever holds the secret can administer the realm. Set via
+    // NUXT_KEYCLOAK_ADMIN_CLIENT_ID / NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET. When empty, the
+    // admin routes answer 503 "not configured".
     keycloakAdminClientId: '',
     keycloakAdminClientSecret: '',
     public: {
       umpBase: '/ump',
-      // UMP 3.x mountet die OGC-Routen unter einem Versions-Präfix (/v1.0/processes …).
-      // Bis 2.x lagen sie an der Wurzel; ohne dieses Präfix antwortet die API mit 404.
       mcpUrl: 'https://mcp.urbanfuturescollective.org/mcp',
       accountUrl: 'https://auth.urbanfuturescollective.org/realms/UrbanModelPlatform/account',
+      // UMP mounts the OGC routes under a version prefix (/v1.0/processes ...); without
+      // it the API answers 404.
       umpApiVersion: 'v1.0',
     },
   },
 
-  // Keycloak-Anbindung: OIDC Authorization Code + PKCE, confidential Client, server-side (BFF).
-  // Entscheidung: _llm-wiki/decisions/0091-ump-x-keycloak-oidc-auth-code-pkce.md
-  // Secrets + baseUrl/clientId/clientSecret kommen aus .env (NUXT_OIDC_*), nie hartkodiert.
+  // Keycloak: OIDC authorization code + PKCE, confidential client, server-side (BFF).
+  // baseUrl, clientId and clientSecret come from .env (NUXT_OIDC_*), never hardcoded.
   oidc: {
     defaultProvider: 'keycloak',
     providers: {
       keycloak: {
-        // via .env: NUXT_OIDC_PROVIDERS_KEYCLOAK_{BASE_URL,CLIENT_ID,CLIENT_SECRET}
+        // Via .env: NUXT_OIDC_PROVIDERS_KEYCLOAK_{BASE_URL,CLIENT_ID,CLIENT_SECRET}
         baseUrl: '',
         clientId: '',
         clientSecret: '',
-        // Dev-Default; Prod via NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI (siehe .env.example).
+        // Dev default; in production set NUXT_OIDC_PROVIDERS_KEYCLOAK_REDIRECT_URI (see .env.example).
         redirectUri: 'http://localhost:3000/auth/keycloak/callback',
         scope: ['openid', 'profile', 'email'],
-        // Access-Token serverseitig verfügbar machen (für den Proxy). Der Client bekommt ihn
-        // NICHT — server/plugins/oidc-strip-token.ts entfernt ihn aus der Client-Session.
+        // Access token available server-side (for the proxy). The client never gets it:
+        // server/plugins/oidc-strip-token.ts removes it from the client session.
         exposeAccessToken: true,
-        // Keycloak-Access-Token hat aud=account; die UMP-API validiert selbst → hier aus.
+        // Keycloak access tokens have aud=account; the UMP API validates them itself.
         validateAccessToken: false,
-        // Rollen aus dem ID-Token in user.claims übernehmen (Keycloak-Roles-Mapper legt sie
-        // als realm_access / resource_access ab). Ohne das bleibt user.claims leer und
-        // useUmpRoles sieht keine Rollen. Zusätzlich liest useUmpRoles user.userInfo, falls
-        // der Mapper nur auf Userinfo zielt. Siehe app/composables/useUmpRoles.ts.
+        // Copy roles from the ID token into user.claims (Keycloak's roles mapper stores them
+        // as realm_access / resource_access). Without this user.claims stays empty and no
+        // roles are seen. useUmpRoles also reads user.userInfo in case the mapper only
+        // targets userinfo. See app/composables/useUmpRoles.ts.
         optionalClaims: ['realm_access', 'resource_access'],
-        // Dev-Default; Prod via NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI (siehe .env.example).
+        // Dev default; in production set NUXT_OIDC_PROVIDERS_KEYCLOAK_LOGOUT_REDIRECT_URI (see .env.example).
         logoutRedirectUri: 'http://localhost:3000',
       },
     },
-    // Kein Login-Zwang: anonymer Read-Modus (anonymous-access-Prozesse) bleibt möglich.
+    // No forced login: anonymous read access (anonymous-access processes) stays possible.
     middleware: {
       globalMiddlewareEnabled: false,
     },
@@ -104,10 +99,9 @@ export default defineNuxtConfig({
 
   i18n: {
     defaultLocale: 'de',
-    // File-based Routing ist da (pages/), aber die Sprache bleibt bewusst Cookie-basiert
-    // (no_prefix): hält die Routen-Pfade sauber für Middleware/Guards und teilbare Links
-    // ohne /de|/en-Präfix. Auf 'prefix_except_default' umstellbar, falls später
-    // pro-Sprache-URLs / SEO gebraucht werden.
+    // File-based routing (pages/), but the locale is cookie-based (no_prefix): keeps route
+    // paths clean for middleware/guards and shareable links without a /de or /en prefix.
+    // Switch to 'prefix_except_default' if per-locale URLs or SEO are needed.
     strategy: 'no_prefix',
     langDir: 'locales',
     locales: [

@@ -1,15 +1,13 @@
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
-// Bewusst ohne @nuxt/test-utils. Was hier heute getestet wird, sind reine
-// Funktionen aus app/utils: sie kennen weder Nuxt noch einen Browser, und die
-// Nuxt-Umgebung würde jeden Lauf um ein Vielfaches verlangsamen, ohne etwas
-// abzudecken. Sobald ein Composable getestet wird, das useRuntimeConfig oder
-// useFetch braucht, kommt @nuxt/test-utils dazu und diese Datei wird zu
-// defineVitestConfig; die Tests selbst bleiben davon unberührt.
+// Deliberately without @nuxt/test-utils: the tests cover pure functions that know
+// neither Nuxt nor a browser, and the Nuxt environment would slow every run down a lot
+// without adding coverage. Once a composable that needs useRuntimeConfig or useFetch is
+// tested, add @nuxt/test-utils and switch to defineVitestConfig; the tests stay the same.
 //
-// Tests liegen laut .agents/AGENTS.md neben der Quelle, nicht in einem
-// tests/-Verzeichnis: wer eine Funktion ändert, sieht ihren Test im selben Ordner.
+// Tests live next to their source, not in a tests/ directory, so a changed function has
+// its test in the same folder.
 export default defineConfig({
   test: {
     include: ['app/**/*.test.ts', 'server/**/*.test.ts', 'shared/**/*.test.ts'],

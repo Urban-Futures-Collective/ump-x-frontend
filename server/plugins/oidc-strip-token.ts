@@ -1,7 +1,7 @@
-// BFF-Härtung: Access-/ID-Token nie an den Browser geben.
-// Der 'fetch'-Hook läuft in der Session-API-Route, die den User an den Client liefert.
-// getUserSession() im Proxy (server/routes/ump) triggert diesen Hook NICHT → der Token
-// bleibt serverseitig verfügbar, verlässt aber nie den Server.
+// BFF hardening: never send the access or ID token to the browser.
+// The 'fetch' hook runs in the session API route that delivers the user to the client.
+// getUserSession() in the proxy (server/routes/ump) does NOT trigger this hook, so the
+// token stays available on the server but never leaves it.
 export default defineNitroPlugin(() => {
   sessionHooks.hook('fetch', (session) => {
     delete session.accessToken

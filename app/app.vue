@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// Nur noch Hülle. Die eigentliche Erscheinung steckt in den Layouts:
-// `default` ist die Arbeitsumgebung mit Seitenleiste, `auth` der Anmeldebildschirm
-// mit dem Farbverlauf über die ganze Fläche.
+// Shell only. The look lives in the layouts: `default` is the workspace with
+// sidebar, `auth` the sign-in screen with a full-screen gradient.
 </script>
 
 <template>

@@ -1,7 +1,7 @@
-// @nuxt/eslint generiert die Basis-Config unter .nuxt/ (flat config).
+// @nuxt/eslint generates the base flat config under .nuxt/.
 import withNuxt from './.nuxt/eslint.config.mjs'
 
-// Fremde Worktrees von Kilo Code liegen im Projektordner und bringen eigene
-// eslint.config.mjs mit, deren Import auf eine .nuxt/ zeigt, die es dort nicht
-// gibt. Ohne den Ausschluss bricht `npm run lint` ab, bevor es etwas prüft.
+// Kilo Code worktrees inside the project folder bring their own eslint.config.mjs,
+// which imports a .nuxt/ that does not exist there. Without this ignore, `npm run lint`
+// aborts before checking anything.
 export default withNuxt({ ignores: ['.kilo/**', '.kilocode/**'] })

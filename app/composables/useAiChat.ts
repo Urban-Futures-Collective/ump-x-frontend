@@ -1,9 +1,8 @@
 import { stepCountIs, streamText } from 'ai'
 
-// Der Chat-Lauf. Bewusst NICHT useChat aus @ai-sdk/vue: das setzt eine
-// Serverroute voraus, die das UI-Message-Protokoll streamt, also genau den
-// Server, den wir nicht bauen wollen. Hier läuft streamText im Browser und die
-// Nachrichtenliste schreiben wir selbst.
+// The chat loop. Deliberately not useChat from @ai-sdk/vue: that requires a
+// server route streaming the UI message protocol, which is exactly the server we
+// avoid. streamText runs in the browser and we maintain the message list ourselves.
 export type Teil =
   | { type: 'text', text: string }
   | {
@@ -23,10 +22,9 @@ export interface Nachricht {
 
 export type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 
-// Mehr Schritte als nötig kosten Geld des Nutzers, weniger schneiden die
-// Antwort ab. Zwei Werkzeuge hintereinander plus Antwort sind drei Schritte;
-// sechs lassen Luft für eine Nachfrage, ohne dass eine Schleife ausufert.
-// Auch listJobs gefolgt von showJob passt darunter.
+// Extra steps cost the user money, too few cut the answer short. Two chained
+// tool calls plus the answer are three steps; six leave room for a follow-up
+// without letting a loop run away.
 const MAX_SCHRITTE = 6
 
 const SYSTEM = `Du hilfst Menschen bei der Urban Model Platform (UMP), einer offenen Plattform,
@@ -83,35 +81,30 @@ keine Sternchen, keine Rauten, keine Tabellen, keine Klammer-Links. Die Seite
 zeigt deine Antwort als reinen Text an, Auszeichnungen bleiben als Zeichen stehen.
 Aufzählungen höchstens als kurze Zeilen mit einem Bindestrich davor.`
 
-// Der Verlauf steht auf Modulebene und nicht im Composable-Aufruf. Die Schublade
-// hängt das Panel beim Schließen aus, und mit ihm wäre die Unterhaltung weg,
-// obwohl der Nutzer sie nur kurz aus dem Weg geschoben hat. So überlebt sie das
-// Schließen und auch den Wechsel von der Startseite in die Anwendung.
+// Chat state lives at module level, not per composable call: the drawer unmounts
+// the panel on close, which would otherwise drop the conversation. This way it
+// survives closing the drawer and navigating from the landing page into the app.
 //
-// Unbedenklich auf Modulebene, weil der Chat ausschließlich im Browser läuft
-// (das Panel steckt in ClientOnly): auf dem Server entstünde sonst Zustand, den
-// sich fremde Anfragen teilen.
+// Module-level state is safe here only because the chat runs client-side (the
+// panel is wrapped in ClientOnly); on the server it would be shared across requests.
 const nachrichten = ref<Nachricht[]>([])
 const status = ref<ChatStatus>('ready')
 const fehler = ref<string | null>(null)
 
-// Ebenfalls hier oben: sonst hält ein neu eingehängtes Panel einen anderen
-// Controller als der Strom, der noch läuft, und „Abbrechen" träfe ins Leere.
+// Also module-level: otherwise a remounted panel would hold a different controller
+// than the running stream, and "cancel" would do nothing.
 let abbruch: AbortController | null = null
 
-// Den Verlauf übers Neuladen retten, und zwar in sessionStorage, nicht in
-// localStorage. Er gehört zu diesem Besuch in diesem Tab: er verschwindet, wenn
-// der Tab zugeht, ein zweiter Tab fängt bei null an, und niemand findet Wochen
-// später seine alten Fragen auf einem geteilten Rechner wieder.
+// History survives a reload via sessionStorage, not localStorage: it belongs to
+// this tab's visit, disappears when the tab closes, and does not linger on a
+// shared computer.
 //
-// Was hier landet, sind Fragen, Antworten und Werkzeug-Ergebnisse. Der Schlüssel
-// des Anbieters ist NICHT dabei, der wohnt in useAiProvider, und der UMP-Bearer
-// erreicht den Browser ohnehin nicht.
+// Stored: questions, answers and tool results. Not stored: the provider key
+// (kept in useAiProvider) or the UMP bearer token (never reaches the browser).
 const SPEICHER = 'ump-x-chat'
 
-// Ein Werkzeug-Ergebnis kann ein paar Kilobyte wiegen. Die Grenze verhindert,
-// dass ein langer Verlauf am Speicherlimit des Browsers scheitert; gekürzt wird
-// nur das Gespeicherte, nicht das, was auf dem Schirm steht.
+// Tool results can be several kilobytes. This cap keeps a long history within the
+// browser's storage quota; only the stored copy is trimmed, not what is on screen.
 const MAX_ZEICHEN = 512 * 1024
 
 let geladen = false
@@ -124,16 +117,14 @@ function laden() {
     if (roh) nachrichten.value = JSON.parse(roh) as Nachricht[]
   }
   catch {
-    // Kaputter oder fremder Inhalt: lieber leer anfangen als beim Laden stehen
-    // bleiben. Der Chat ist nichts, wofür sich eine Wiederherstellung lohnt.
+    // Corrupt or foreign content: start empty rather than fail on load.
     nachrichten.value = []
   }
 }
 
-// Eine Nachricht ohne sichtbaren Inhalt. Das ist die Antwortblase, die vor dem
-// Absenden angelegt wird: bleibt sie leer, weil der Anbieter nicht antwortet,
-// gehört sie weder auf den Schirm noch in den Speicher. Der Anbieterfehler
-// erreicht uns erst nach dem Ende des Stroms, also nach dem Sichern.
+// A message without visible content, i.e. the placeholder answer bubble created
+// before sending. If the provider never answers, it belongs neither on screen nor
+// in storage (the provider error only arrives after the stream ends and is saved).
 function istLeer(n: Nachricht): boolean {
   return n.parts.every(p => p.type === 'text' && !p.text)
 }
@@ -150,19 +141,14 @@ function sichern() {
     sessionStorage.setItem(SPEICHER, roh)
   }
   catch {
-    // Voll oder gesperrt (privates Fenster, blockierte Website-Daten). Der
-    // Verlauf im Arbeitsspeicher bleibt gültig, nur das Neuladen überlebt er
-    // dann nicht. Kein Grund, den Chat abzubrechen.
+    // Quota full or storage blocked (private window, blocked site data). The
+    // in-memory history stays valid; it just won't survive a reload.
   }
 }
 
-// Auf Modulebene, damit das Abmelden sie aufrufen kann, ohne useAiChat() zu
-// benutzen: das Composable zieht die UMP-Werkzeuge mit hoch und braucht dafür
-// einen Nuxt-Kontext, den die Abmeldung nicht herstellen soll.
-//
-// Der Verlauf enthält die Fragen des Nutzers und die Daten seiner Läufe. Wer
-// sich abmeldet, lässt sonst beides im Browser zurück, auf einem geteilten
-// Rechner für den Nächsten.
+// Module-level so logout can call it without useAiChat(), which pulls in the UMP
+// tools and needs a Nuxt context. Clearing on logout keeps the user's questions
+// and job data from staying behind on a shared computer.
 export function vergissVerlauf() {
   abbruch?.abort()
   abbruch = null
@@ -186,7 +172,7 @@ export function useAiChat() {
     if (laeuft.value) status.value = 'ready'
   }
 
-  // „Verlauf löschen" im Kopf der Schublade und das Abmelden tun dasselbe.
+  // "Clear history" in the drawer header does the same as logout.
   const neu = vergissVerlauf
 
   async function senden(eingabe: string) {
@@ -196,24 +182,19 @@ export function useAiChat() {
     fehler.value = null
     nachrichten.value.push({ id: crypto.randomUUID(), role: 'user', parts: [{ type: 'text', text }] })
 
-    // Reihenfolge ist hier Verhalten, nicht Geschmack. UChatMessages springt beim
-    // Wechsel auf 'submitted' zur letzten Nachricht und polstert den Verlauf so
-    // auf, dass die Frage immer ganz oben landet — auch wenn die Antwort kurz
-    // ist und unten Platz wäre. Das ist die ChatGPT-Anordnung, gewollt ist hier
-    // aber ein gewöhnlicher Chat: der Verlauf wächst nach unten und rutscht erst
-    // hoch, wenn er nicht mehr passt.
+    // Order matters here. On switching to 'submitted', UChatMessages jumps to the
+    // last message and pads the list so the question sits at the top, even for a
+    // short answer. We want a plain chat that grows downward instead.
     //
-    // Abschalten lässt sich der Sprung nicht, er hat keinen Schalter. Er feuert
-    // aber nur, wenn die letzte Nachricht vom Nutzer ist. Die leere Antwortblase
-    // steht deshalb absichtlich VOR dem Statuswechsel. Fürs Mitlaufen während des
-    // Streams sorgt should-auto-scroll am Panel.
+    // The jump has no option to disable it, but it only fires when the last
+    // message is from the user, so the empty answer bubble is pushed BEFORE the
+    // status change. should-auto-scroll on the panel follows the stream.
     const antwort: Nachricht = { id: crypto.randomUUID(), role: 'assistant', parts: [] }
     nachrichten.value.push(antwort)
     status.value = 'submitted'
 
-    // Text landet im letzten Teil, solange der Text ist. Nach einem Werkzeug
-    // beginnt ein neuer, damit die Reihenfolge Text, Werkzeug, Text erhalten
-    // bleibt und die Karte an der Stelle steht, an der sie aufgerufen wurde.
+    // Append text to the last part while it is text. After a tool call a new text
+    // part starts, so each tool card stays where it was called in the answer.
     const textZiel = () => {
       const letzter = antwort.parts[antwort.parts.length - 1]
       if (letzter?.type === 'text') return letzter
@@ -234,8 +215,7 @@ export function useAiChat() {
       const ergebnis = streamText({
         model: sprachmodell(),
         system: SYSTEM,
-        // Nur der Text der bisherigen Runden. Werkzeugaufrufe früherer Runden
-        // muss das Modell nicht noch einmal sehen, das bläht nur die Anfrage.
+        // Only the text of earlier turns; resending past tool calls just bloats the request.
         messages: nachrichten.value
           .filter(n => n !== antwort)
           .map(n => ({
@@ -245,9 +225,8 @@ export function useAiChat() {
         tools: werkzeuge,
         stopWhen: stepCountIs(MAX_SCHRITTE),
         abortSignal: abbruch.signal,
-        // streamText wirft nicht: ein Anbieterfehler beendet den Strom still
-        // und wird nur hier gemeldet. Am 2026-09-04 gegen einen lokalen Server
-        // mit falschem Schlüssel gemessen.
+        // streamText does not throw: a provider error ends the stream silently
+        // and is only reported here.
         onError: ({ error }) => melde(error),
       })
 
@@ -278,7 +257,7 @@ export function useAiChat() {
       if (status.value !== 'error') status.value = 'ready'
     }
     catch (e) {
-      // Abbruch ist kein Fehler, sondern das, was der Knopf verspricht.
+      // A user abort is not an error.
       if (e instanceof Error && e.name === 'AbortError') {
         status.value = 'ready'
         if (leer()) nachrichten.value = nachrichten.value.filter(n => n !== antwort)
@@ -289,8 +268,7 @@ export function useAiChat() {
     }
     finally {
       abbruch = null
-      // Einmal am Ende statt bei jedem Zeichen: ein watch auf den Verlauf würde
-      // während des Stroms pro Delta die ganze Unterhaltung serialisieren.
+      // Save once at the end: a watcher would serialize the whole history on every delta.
       sichern()
     }
   }

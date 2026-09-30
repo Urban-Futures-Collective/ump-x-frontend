@@ -1,7 +1,7 @@
 import type { Process } from '~/types/ump'
 
-// Rohe OGC-API-Processes-Antwort (nur was wir mappen). Ab UMP 3.x sind title und
-// description ausdrücklich nullable, id und version sind Pflicht.
+// Raw OGC API Processes response (only the mapped fields). In UMP 3.x title and
+// description are nullable; id and version are required.
 export interface OgcProcessSummary {
   id: string
   title?: string | null
@@ -13,11 +13,10 @@ export interface OgcProcessList {
   processes?: OgcProcessSummary[]
 }
 
-// Holt die Prozessliste über den Proxy (/ump/v1.0/processes) und mappt OGC → Process.
-// Ohne abschließenden Schrägstrich: UMP 3.x läuft mit redirect_slashes=False, die
-// Variante mit Schrägstrich ist dort schlicht eine 404 (bis 2.x war sie Pflicht).
-// Welche Prozesse zurückkommen, entscheidet die API anhand des Tokens, den der Proxy
-// anhängt — anonym sind es die als anonymous-access markierten.
+// Fetches the process list via the proxy (/ump/v1.0/processes) and maps OGC to
+// Process. No trailing slash: UMP 3.x runs with redirect_slashes=False, so the
+// slash variant returns 404. The API filters processes by the token the proxy
+// attaches; anonymous users see only processes marked anonymous-access.
 export function useUmpProcesses() {
   const { base } = useUmpBase()
   return useFetch<OgcProcessList>(`${base}/processes`, {

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// Die sechs Plattformrollen eines Kontos, zum Vergeben und Entziehen. Nur für
-// platform admins; geprüft wird auf dem Server (server/api/admin/platform/…).
+// The six platform roles of an account, for assigning and revoking. Platform admins only;
+// enforced on the server (server/api/admin/platform/...).
 //
-// Rollen, die über die Standardrollen wirken, sind angehakt, aber gesperrt: am Konto
-// selbst sind sie nicht vergeben, entziehen ließe sich hier also nichts. Die eigene
-// Admin-Rolle ist ebenfalls gesperrt, damit sich niemand aussperrt.
+// Roles effective via the default roles are shown as on but locked: they are not assigned
+// on the account itself, so nothing could be revoked here. Your own admin role is locked
+// too, so nobody locks themselves out.
 const props = defineProps<{ userId: string, username: string, isSelf: boolean }>()
 const { t } = useI18n()
 

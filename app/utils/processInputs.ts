@@ -1,13 +1,9 @@
-// Die eine Regel, wie Formulareingaben zu einem Ausführungs-Rumpf werden.
+// The single rule for turning form inputs into an execution body, shared by
+// ProcessRunner and the chat so both build the same call.
 //
-// Ausgelagert aus ProcessRunner, weil der Chat sie ab Schritt 3 auch braucht.
-// Zwei Fassungen dieser Regel hieße: der Chat baut einen Aufruf, der kippt,
-// obwohl derselbe Aufruf aus dem Formular durchgeht.
-//
-// Der Kern ist das Weglassen. growbike führt Integer-Eingaben mit dem String
-// "auto" als Vorgabe; ein Number("auto") wäre NaN und brächte den Prozess zum
-// Absturz. Wer nichts einträgt, bekommt deshalb die Vorgabe des Backends, und
-// das ist gewollt, nicht bequem.
+// The core is omission. Some models declare integer inputs with the string
+// "auto" as default; Number("auto") would be NaN and crash the process. Empty
+// input therefore gets the backend default, by design.
 export interface EingabeFeld {
   name: string
   type: string
@@ -25,10 +21,10 @@ export function bereinigeEingaben(
     const text = roh == null ? '' : String(roh).trim()
     const vorgabe = feld.default != null ? String(feld.default) : ''
 
-    // Leeres nicht senden: dann gilt die Vorgabe des Backends.
+    // Do not send empty values: the backend default applies.
     if (text === '') continue
-    // Unveränderte Vorgabe auch nicht: sie noch einmal zu schicken ändert
-    // nichts und geht bei "auto" in einem Zahlenfeld sogar schief.
+    // Nor an unchanged default: resending it changes nothing and breaks for
+    // "auto" in a number field.
     if (vorgabe !== '' && text === vorgabe) continue
 
     if (feld.type === 'integer' || feld.type === 'number') {

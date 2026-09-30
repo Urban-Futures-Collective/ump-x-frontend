@@ -2,20 +2,18 @@ import type { FeatureCollection } from 'geojson'
 import type { ProcessOutput, ResultLayer } from '~/types/ump'
 import { resultLayers } from '~/utils/resultLayers'
 
-// NAHT 2 (die wichtige): „Job-Ergebnis → kartenfertiges Layer" in genau einem Modul.
-// Hier landet später die Umstellung, falls Ergebnisse als OGC API Features oder WFS/WMS
-// statt inline-GeoJSON kommen (siehe docs/frontend-backend-architecture-de.md).
+// Seam 2: "job result -> map-ready layer", kept in this one module. If results
+// are later served as OGC API Features or WFS/WMS instead of inline GeoJSON,
+// only this changes (see docs/frontend-backend-architecture-en.md).
 export function useUmpResult() {
   const { base } = useUmpBase()
-  // useRequestFetch statt $fetch: beim Server-Rendern werden so die Cookies des
-  // eingehenden Requests weitergereicht. Ohne sie sieht der Proxy keine Session,
-  // hängt keinen Bearer an, und die API antwortet mit „nicht gefunden".
-  // Im Browser ist das identisch zu $fetch.
+  // useRequestFetch instead of $fetch forwards the incoming request's cookies
+  // during SSR. Without them the proxy sees no session, attaches no bearer
+  // token, and the API answers "not found". In the browser it equals $fetch.
   const request = useRequestFetch()
 
-  // Die Outputs kommen aus der Prozessbeschreibung und sind optional: wer sie
-  // nicht hat, bekommt trotzdem einen Layer, sofern die Antwort erkennbar
-  // Geodaten sind. Siehe `resultLayers`.
+  // Outputs come from the process description and are optional: a response
+  // that is recognisably geodata still gets a layer (see `resultLayers`).
   async function fetchResult(
     jobId: string,
     processId?: string,

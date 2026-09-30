@@ -1,14 +1,12 @@
 <script setup lang="ts">
-// Zugang zum eigenen Sprachmodell eintragen.
+// Form for connecting the user's own language model.
 //
-// Bewusst kein eigener Einstellungsbereich: es gibt sonst nichts zu regeln,
-// und ein Eintrag in der Seitenleiste würde einen Bereich versprechen, den es
-// nicht gibt. Das Formular lebt im Leerzustand des Chats und hinter dem
-// Zahnrad in der Kopfzeile.
+// No separate settings page, since there is nothing else to configure. The form
+// lives in the chat's empty state and behind the gear icon in its header.
 //
-// Die drei Hinweise stehen sichtbar und nicht aufklappbar. Dass wir den
-// Schlüssel nicht halten, ist etwas anderes als dass er sicher liegt, und wer
-// das erst nach dem Eintragen erfährt, wurde nicht gefragt, sondern überrumpelt.
+// The three notices are always visible, not collapsible: our server not holding
+// the key does not mean the key is safe in the browser, and users must know that
+// before entering it.
 import type { Anbieter, Zugang } from '~/composables/useAiProvider'
 
 const emit = defineEmits<{ verbunden: [] }>()
@@ -26,8 +24,7 @@ const auswahl = (['openrouter', 'openai', 'anthropic', 'kompatibel'] as const).m
   value: wert,
 }))
 
-// Nur der freie Fall braucht eine eigene Adresse. Bei den drei bekannten
-// Anbietern steht sie fest, ein Feld dafür wäre eine Fehlerquelle ohne Nutzen.
+// Only the generic compatible option needs a base URL; the known providers have fixed ones.
 const eigeneAdresse = computed(() => anbieter.value === 'kompatibel')
 
 watch(anbieter, (neu) => {
@@ -62,9 +59,8 @@ function absenden() {
         {{ t('ai.connect.lead') }}
       </p>
 
-      <!-- Der Verbrauch entsteht beim Anbieter des Nutzers, nicht bei uns, und wir
-           können ihn weder vorhersagen noch begrenzen. Das gehört vor das Eingabefeld
-           und nicht hinterher. -->
+      <!-- Usage is billed by the user's provider and we can neither predict nor cap
+           it, so this warning comes before the input fields. -->
       <UAlert
         icon="i-lucide-flask-conical"
         color="warning"

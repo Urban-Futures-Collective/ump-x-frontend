@@ -4,22 +4,22 @@ import type { Job } from '~/types/ump'
 interface JobView {
   job: Job
   result: FeatureCollection | null
-  // Ergebnis-Fehler getrennt vom Lade-Fehler: „Lauf gescheitert" ist etwas
-  // anderes als „Lauf nicht gefunden", und die Seite muss beides unterscheiden.
+  // Result error kept separate from the load error: "run failed" differs from
+  // "run not found", and the page must tell them apart.
   resultError: string | null
 }
 
-// Einzelner Lauf inklusive Ergebnis. Gegenstück zu useUmpRun: dort wird ein Lauf
-// gestartet und live verfolgt, hier wird ein bereits vorhandener nachgeschlagen.
-// Die Feldnamen kennt nur toJob (useUmpJobs), das Ergebnis nur useUmpResult.
+// A single run including its result. Counterpart to useUmpRun, which starts and
+// tracks a run live; this looks up an existing one. Only toJob (useUmpJobs)
+// knows the field names, only useUmpResult knows the result.
 //
-// Job und Ergebnis bewusst in EINEM useAsyncData: Als zwei getrennte Ladevorgänge
-// startet der zweite, bevor der erste den Status geliefert hat, und ein Nachziehen
-// per watch greift nach der Hydration nicht mehr — die Karte bliebe leer.
+// Job and result are loaded in ONE useAsyncData: as two separate loads the
+// second starts before the first has the status, and a watch-based follow-up no
+// longer fires after hydration, leaving the map empty.
 export function useUmpJob(jobId: MaybeRefOrGetter<string>) {
   const { base } = useUmpBase()
   const { fetchResult } = useUmpResult()
-  // Siehe useUmpResult: beim Server-Rendern müssen die Cookies mitgehen.
+  // See useUmpResult: cookies must be forwarded during SSR.
   const request = useRequestFetch()
 
   const id = computed(() => toValue(jobId))
@@ -28,8 +28,7 @@ export function useUmpJob(jobId: MaybeRefOrGetter<string>) {
     () => `ump-job-${id.value}`,
     async () => {
       const job = toJob(await request(`${base}/jobs/${id.value}`))
-      // Bei einem gescheiterten Lauf antwortet /results mit 404 „Job failed",
-      // deshalb gar nicht erst fragen.
+      // For a failed run /results answers 404 "Job failed", so do not ask.
       if (job.status !== 'successful') {
         return { job, result: null, resultError: null }
       }
@@ -38,8 +37,8 @@ export function useUmpJob(jobId: MaybeRefOrGetter<string>) {
         return { job, result: layer, resultError: null }
       }
       catch (e) {
-        // Ergebnisse älterer Läufe können weg sein, obwohl der Lauf erfolgreich
-        // war (Modelserver neu aufgesetzt). Der Lauf selbst bleibt anzeigbar.
+        // Results of older runs can be gone even though the run succeeded (e.g.
+        // the model server was reset). The run itself stays viewable.
         return { job, result: null, resultError: apiErrorMessage(e) }
       }
     },

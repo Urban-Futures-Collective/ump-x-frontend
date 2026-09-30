@@ -5,16 +5,15 @@ const props = defineProps<{ processId: string }>()
 const emit = defineEmits<{ result: [ResultLayer | null] }>()
 
 const { t } = useI18n()
-// Mit await: das Formular soll schon beim Server-Rendern seine Werte tragen.
-// Ohne await lief der watch unten auf dem Server einmal, bevor das Detail da
-// war, der Server lieferte leere Felder und der Browser gefüllte, und jedes Feld
-// meldete einen Hydration-Mismatch.
+// Awaited so the form already carries its values during SSR. Without await the
+// watch below ran on the server before the detail arrived, server and client
+// rendered different values and every field hit a hydration mismatch.
 const { data: proc, pending: loadingProc } = await useUmpProcess(() => props.processId)
 const { run, jobId, status, progress, error, result, running } = useUmpRun()
 
-// Ein Job, der ohne Meldung scheitert, liefert nur seinen Status als Schlüssel,
-// eine Antwort ohne Erklärung nur ihren HTTP-Status. Beides übersetzen, alles
-// andere ist schon Text von UMP oder dem Modell.
+// A job that fails without a message only yields its status as a key, a
+// response without a body only its HTTP status. Translate those two; anything
+// else is already text from UMP or the model.
 const fehlertext = computed(() => {
   const e = error.value
   if (!e) return null
@@ -27,13 +26,12 @@ const fehlertext = computed(() => {
   return e
 })
 
-// Formular mit Defaults initialisieren, sobald das Prozess-Detail geladen ist.
+// Initialise the form with defaults once the process detail has loaded.
 //
-// Werte aus der Adresszeile stechen die Vorgabe. Darüber
-// übergibt der Chat einen vorbereiteten Lauf: er schlägt vor, die Adresszeile
-// trägt den Vorschlag, und abgeschickt wird hier von Hand. Ein Tieflink statt
-// eines geteilten Zustands, damit der Vorschlag ein Neuladen übersteht und
-// sich weitergeben lässt.
+// Query values (`?in.<name>=...`) override the defaults. The chat uses this to
+// hand over a prepared run: it proposes, the URL carries the proposal, and the
+// user submits here by hand. A deep link rather than shared state, so the
+// proposal survives a reload and can be shared.
 const route = useRoute()
 
 function anfangswerte(p: typeof proc.value): Record<string, string> {
@@ -50,13 +48,13 @@ function anfangswerte(p: typeof proc.value): Record<string, string> {
 const form = ref<Record<string, string>>(anfangswerte(proc.value))
 watch(proc, p => (form.value = anfangswerte(p)))
 
-// Ergebnis nach außen (an die Karte) reichen.
+// Pass the result up to the map.
 watch(result, r => emit('result', r))
 
-// Zahlenfelder können eine nicht-numerische Vorgabe nicht anzeigen: der Browser
-// wirft "auto" aus einem type=number heraus. Das Feld sieht dann leer aus, und
-// niemand erfährt, dass genau dieses Leerlassen die Vorgabe auslöst. Deshalb der
-// Hinweis darunter — nur dort, wo die Vorgabe wirklich unsichtbar ist.
+// Number inputs cannot show a non-numeric default: the browser drops "auto"
+// from a type=number field. The field looks empty and nobody learns that
+// leaving it empty is what applies the default, so show a hint below it, but
+// only where the default is actually invisible.
 function vorgabeUnsichtbar(inp: { type: string, default?: unknown }) {
   if (inp.default == null) return false
   const zahlenfeld = inp.type === 'integer' || inp.type === 'number'
@@ -64,8 +62,8 @@ function vorgabeUnsichtbar(inp: { type: string, default?: unknown }) {
 }
 
 async function onSubmit() {
-  // Die Regel liegt in app/utils/processInputs.ts, weil der Chat sie ebenfalls
-  // anwendet. Zwei Fassungen davon wären zwei Wahrheiten über den "auto"-Default.
+  // The rule lives in app/utils/processInputs.ts because the chat applies it
+  // too; two copies would disagree about the "auto" default.
   await run(props.processId, bereinigeEingaben(proc.value?.inputs ?? [], form.value))
 }
 </script>
@@ -104,7 +102,7 @@ async function onSubmit() {
           {{ t('run.execute') }}
         </UButton>
         <JobStatusBadge v-if="status !== 'idle'" :status="status" :progress="progress" />
-        <!-- Anschluss nach dem Start: der Lauf ist auch nach einem Reload wiederzufinden. -->
+        <!-- Link to the job so the run can be found again after a reload. -->
         <ULink
           v-if="jobId"
           :to="`/jobs/${jobId}`"

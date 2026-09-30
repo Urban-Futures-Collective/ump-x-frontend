@@ -3,31 +3,27 @@ import type { OgcJob, OgcJobList } from '~/composables/useUmpJobs'
 import type { OgcProcessDetail } from '~/composables/useUmpProcess'
 import type { OgcProcessList } from '~/composables/useUmpProcesses'
 
-// Die Werkzeuge, die der Chat benutzen darf. Einzige Naht zwischen Modell und
-// Backend, deshalb `useUmp*` benannt: Backend-Zugriff gehört laut AGENTS.md
-// ausschließlich hierher, nicht in Komponenten.
+// The tools the chat may use. This is the only seam between model and backend,
+// hence the `useUmp*` name: backend access belongs in useUmp* composables, not
+// in components.
 //
-// Bewusst NICHT über den MCP-Server. Der ist die Tür für fremde Clients; unsere
-// eigene Seite sitzt schon hinter dem /ump-Proxy, der den Bearer aus der Session
-// anhängt. Ein Werkzeugaufruf trägt damit automatisch die Rechte des
-// angemeldeten Nutzers, und abgemeldet eben nur die anonymen.
+// Deliberately not via the MCP server, which is for external clients. Our page
+// already sits behind the /ump proxy that attaches the session's bearer token,
+// so every tool call carries the signed-in user's rights (or anonymous rights).
 //
-// Alle Werkzeuge lesen. Der Chat kann nichts starten und nichts verändern, auch
-// nicht auf Zuruf: Werkzeuge, die es nicht gibt, kann sich kein Modell herbeireden.
+// All tools are read-only. The chat cannot start or change anything, since no
+// such tool exists for a model to call.
 
-// So viele Läufe gehen an das Modell. Wer mehr sehen will, öffnet die Liste; ein
-// Verlauf über Monate im Kontext kostet nur Geld und beantwortet keine Frage.
+// Max jobs passed to the model. Months of history in the context only cost money.
 const MAX_LAEUFE = 20
 
 export function useUmpTools() {
   const { base } = useUmpBase()
-  // Ergebnisse laufen über dieselbe Naht wie Karte und Download, nicht über
-  // einen zweiten Abruf daneben.
+  // Results go through the same path as map and download, not a separate fetch.
   const { fetchResult } = useUmpResult()
 
-  // Fehler werden zurückgegeben statt geworfen. Ein 401 ist für den Chat keine
-  // Störung, sondern eine Auskunft: „dafür brauchst du eine Rolle" ist eine
-  // brauchbare Antwort, ein abgebrochener Strom nicht.
+  // Errors are returned, not thrown. A 401 is useful information for the chat
+  // ("you need a role for that"), whereas a thrown error would abort the stream.
   const alsFehler = (e: unknown) => ({ fehler: apiErrorMessage(e) })
 
   const listProcesses = tool({
@@ -75,8 +71,8 @@ export function useUmpTools() {
     }),
     async execute({ processId }) {
       try {
-        // Der Doppelpunkt im Präfix darf nicht kodiert werden, UMP 3.x weist
-        // Ids ohne Doppelpunkt mit 400 ab. Siehe useUmpProcess.
+        // Do not encode the colon in the prefix: UMP 3.x rejects ids without it
+        // with 400. See useUmpProcess.
         const roh = await $fetch<OgcProcessDetail>(`${base}/processes/${processId}`)
         return {
           id: roh.id,
@@ -103,8 +99,8 @@ export function useUmpTools() {
       'Bereitet einen Lauf vor, OHNE ihn zu starten. Prüft die Eingaben gegen das Schema '
       + 'des Modells und liefert einen Link auf das ausgefüllte Formular. Erst describeProcess '
       + 'aufrufen, damit die Namen stimmen. Lass Eingaben weg, die eine Vorgabe haben.',
-    // Die Schlüssel dieses Schemas liest ein fremdes Sprachmodell, nicht unser
-    // Code. Deshalb heißen sie englisch, anders als die Bezeichner im Repo.
+    // These schema keys are read by an external language model, not our code,
+    // hence English names unlike the German identifiers elsewhere.
     inputSchema: jsonSchema<{ processId: string, inputs?: Record<string, unknown> }>({
       type: 'object',
       properties: {
@@ -133,14 +129,14 @@ export function useUmpTools() {
 
         const gegeben = inputs ?? {}
         const unbekannt = Object.keys(gegeben).filter(k => !felder.some(f => f.name === k))
-        // Dieselbe Regel wie im Formular, nicht eine zweite daneben.
+        // Same rule as the run form, not a second copy.
         const rumpf = bereinigeEingaben(felder, gegeben)
         const fehlend = felder
           .filter(f => f.pflicht && rumpf[f.name] === undefined)
           .map(f => f.name)
 
-        // Tieflink statt geteiltem Zustand: übersteht ein Neuladen und lässt
-        // sich weitergeben. Abgeschickt wird im Formular, von Hand.
+        // A deep link instead of shared state: survives a reload and can be shared.
+        // The user submits the form manually.
         const suche = new URLSearchParams({ process: processId })
         for (const [k, v] of Object.entries(rumpf)) suche.set(`in.${k}`, String(v))
 
@@ -162,8 +158,7 @@ export function useUmpTools() {
     },
   })
 
-  // Welche Läufe zurückkommen, entscheidet die API anhand des Tokens, den der
-  // Proxy anhängt.
+  // The API decides which jobs are returned, based on the token the proxy attaches.
   const listJobs = tool({
     description:
       'Listet die Läufe (Szenarien), die dem Aufrufer zugänglich sind, neueste zuerst, mit '
@@ -230,17 +225,16 @@ export function useUmpTools() {
           dauer: formatDuration(job.created, job.finished) ?? undefined,
           link: `/jobs/${job.id}`,
         }
-        // Bei einem gescheiterten Lauf antwortet /results mit 404 „Job failed",
-        // deshalb gar nicht erst fragen. Siehe useUmpJob.
+        // For a failed job /results returns 404 "Job failed", so skip it. See useUmpJob.
         if (job.status !== 'successful') return grund
         try {
           const layer = await fetchResult(job.id, job.processId)
-          // Das GeoJSON bleibt im Browser. Was hier zurückgeht, sind vier Zahlen.
+          // The GeoJSON stays in the browser; only a small summary goes to the model.
           return { ...grund, ergebnis: fasseErgebnisZusammen(layer.featureCollection) }
         }
         catch (e) {
-          // Ergebnisse älterer Läufe können weg sein, obwohl der Lauf erfolgreich
-          // war. Der Lauf selbst bleibt eine brauchbare Auskunft.
+          // Results of older jobs may be gone even though the job succeeded;
+          // the job info alone is still useful.
           return { ...grund, ergebnisFehler: apiErrorMessage(e) }
         }
       }

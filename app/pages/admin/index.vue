@@ -1,26 +1,26 @@
 <script setup lang="ts">
-// Administration. auth + admin-Middleware: nur mit einer Admin-Rolle erreichbar;
-// Reihenfolge zählt (erst Session, dann Rolle). Die Middleware blendet nur aus,
-// geschützt sind die Daten serverseitig in jeder Route unter server/api/admin/.
+// Administration. auth + admin middleware: only reachable with an admin role; order
+// matters (session first, then role). The middleware only hides UI; the data is protected
+// server-side in every route under server/api/admin/.
 //
-// Bisher nur der Bereich des platform admins: Konten auflisten, aktivieren und
-// deaktivieren, Plattformrollen vergeben. Konten anlegen kommt, sobald Keycloak Mails
-// verschicken kann (Einladung zum Passwort-Setzen).
+// Currently only the platform admin section: list accounts, enable and disable them,
+// assign platform roles. Creating accounts needs Keycloak to send email (password setup
+// invitation).
 definePageMeta({ middleware: ['auth', 'admin'] })
 const { t } = useI18n()
 const { isPlatformAdmin } = useUmpRoles()
 const { user } = useOidcAuth()
 const eigeneId = computed(() => (user.value?.userInfo as { sub?: string } | undefined)?.sub ?? null)
 
-// Das Konto, dessen Rollen gerade im Dialog offen sind.
+// The account whose roles are open in the dialog.
 const rollenFuer = ref<{ id: string, username: string } | null>(null)
 const dialogOffen = computed({
   get: () => rollenFuer.value !== null,
   set: (offen) => { if (!offen) rollenFuer.value = null },
 })
 
-// Das Konto, das gerade deaktiviert werden soll. Deaktivieren fragt nach, weil es
-// die Person sofort abmeldet; Aktivieren nicht.
+// The account about to be disabled. Disabling asks for confirmation because it signs the
+// user out immediately; enabling does not.
 const deaktivieren = ref<{ id: string, username: string } | null>(null)
 const nachfrageOffen = computed({
   get: () => deaktivieren.value !== null,

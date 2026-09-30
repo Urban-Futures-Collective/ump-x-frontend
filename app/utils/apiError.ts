@@ -1,22 +1,18 @@
-// Die verwertbare Fehlermeldung einer UMP-Antwort herausziehen.
+// Extract the useful error message from a UMP response.
 //
-// Die API antwortet nach OGC mit { type, title, status, detail, instance }, und
-// `detail` ist der Satz, der erklärt, was fehlt. ofetch legt diesen Rumpf in
-// `data` ab und setzt in `message` nur die Zeile „[POST] "…": 403 Forbidden".
-// Wer bloß `e.message` anzeigt, wirft also genau die Erklärung weg: Am
-// 2026-08-31 stand bei einem fixbike-Lauf „Fehler: [POST] "…": 403" auf dem
-// Schirm, während die API „Missing role 'bikebox-modelserver' or
-// 'bikebox-modelserver:fixbike'." mitgeschickt hatte.
+// The API answers per OGC with { type, title, status, detail, instance }, and
+// `detail` explains what is missing. ofetch puts that body in `data` and sets
+// `message` only to a line like `[POST] "...": 403 Forbidden`. Showing only
+// `e.message` would discard the explanation (e.g. which role is missing).
 //
-// Fällt zurück auf die ofetch-Zeile, denn die trägt wenigstens den Status.
+// Falls back to the ofetch line, which at least carries the status.
 interface OgcErrorBody {
   detail?: unknown
   title?: unknown
 }
 
-// Nur die Erklärung aus der Antwort, oder null, wenn keine mitkam. Ein reiner
-// Text-Rumpf zählt auch (so antwortet der Server bei manchen 500ern), eine
-// HTML-Fehlerseite nicht.
+// Only the explanation from the response, or null if none came. A plain-text
+// body counts too (some 500s answer that way), an HTML error page does not.
 export function apiErrorExplanation(e: unknown): string | null {
   const data = (e as { data?: unknown } | null)?.data
   if (typeof data === 'string') {
@@ -32,7 +28,7 @@ export function apiErrorExplanation(e: unknown): string | null {
   return null
 }
 
-// Der HTTP-Status, falls es eine Antwort gab. Bei einem Netzfehler gibt es keinen.
+// The HTTP status if there was a response; a network error has none.
 export function apiErrorStatus(e: unknown): number | null {
   const err = e as { statusCode?: unknown, status?: unknown } | null
   const status = err?.statusCode ?? err?.status

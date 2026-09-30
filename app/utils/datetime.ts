@@ -1,17 +1,12 @@
-// Zeitstempel der UMP-API (ISO 8601, UTC) für die Anzeige aufbereiten.
-// Ein Lauf ohne Zeitstempel zeigt einen Strich statt „Invalid Date".
+// Formats UMP API timestamps (ISO 8601, UTC) for display.
+// Missing or invalid timestamps render as a dash instead of "Invalid Date".
 
-// Feste Zeitzone, damit Server und Client dieselbe Zeichenkette erzeugen.
-// Ohne sie nimmt jede Seite ihre eigene: der Container läuft in UTC, der Browser
-// in seiner lokalen Zone. Am 2026-08-31 auf staging gemessen: der Server lieferte
-// „31.08.2026, 09:27", der Browser „31.08.2026, 11:27", und Vue meldete beim
-// Hydrieren „Hydration completed but contains mismatches". Für einen Moment stand
-// damit die falsche Uhrzeit auf dem Schirm.
+// Fixed time zone so server and client render the same string. Otherwise the
+// server uses UTC and the browser its local zone, causing a hydration mismatch
+// and briefly showing the wrong time.
 //
-// Die Wahl fällt bewusst auf die Projektzeit und nicht auf die des Betrachters:
-// die Plattform beschreibt deutsche Kommunen, und ein Lauf gehört zu dem Tag, an
-// dem er dort gestartet wurde. Wer aus einer anderen Zone zusieht, liest deshalb
-// deutsche Zeit.
+// Project time rather than viewer time: the platform covers German
+// municipalities, and a run belongs to the local day it was started.
 const TIME_ZONE = 'Europe/Berlin'
 
 export function formatDateTime(iso: string | undefined, locale: string): string {
@@ -29,9 +24,8 @@ export function formatDateTime(iso: string | undefined, locale: string): string 
   }).format(d)
 }
 
-// Laufzeit als „3 min 12 s". Läufe dauern Minuten bis Stunden, Sekunden allein
-// wären unlesbar, Millisekunden nichtssagend. Zeitzonenfrei, weil hier nur die
-// Differenz zweier Zeitpunkte zählt.
+// Duration like "3 min 12 s", since runs take minutes to hours. Time zone
+// independent: only the difference between two instants matters.
 export function formatDuration(from: string | undefined, to: string | undefined): string | null {
   if (!from || !to) {
     return null

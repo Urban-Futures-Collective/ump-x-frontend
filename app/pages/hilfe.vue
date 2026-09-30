@@ -1,13 +1,12 @@
 <script setup lang="ts">
-// Hilfe: wie man die Plattform mit einer KI benutzt.
+// Help: how to use the platform with an AI.
 //
-// Zwei Wege, und die Seite nennt beide gleichwertig: der Chat auf dieser Seite
-// und der eigene KI-Client über MCP. Beide tragen genau die Rechte des
-// Angemeldeten, keiner davon kommt an der Zugriffskontrolle vorbei.
+// Two equal routes: the chat on this site and the user's own AI client via MCP.
+// Both carry exactly the signed-in user's permissions; neither bypasses access
+// control.
 //
-// Die MCP-Adresse steht bewusst nur hier und nicht mehr auf der Startseite. Sie
-// ist keine Webseite: im Browser geöffnet antwortet sie mit einer JSON-401, und
-// wer das ohne Erklärung sieht, hält den Dienst für kaputt.
+// The MCP address appears only here because it is not a web page: opened in a
+// browser it answers with a JSON 401, which looks broken without explanation.
 const { t } = useI18n()
 const { mcpUrl } = useRuntimeConfig().public
 
@@ -20,8 +19,8 @@ async function kopieren() {
     setTimeout(() => { kopiert.value = false }, 2000)
   }
   catch {
-    // Ohne Zwischenablage-Recht bleibt die Adresse lesbar und markierbar,
-    // das reicht. Eine Fehlermeldung dafür wäre lauter als der Nutzen.
+    // Without clipboard permission the address stays readable and selectable,
+    // which is enough; an error message would be louder than it is useful.
   }
 }
 
@@ -76,8 +75,8 @@ const mcpSchritte = ['address', 'signin', 'use'] as const
             <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.mcp.steps.${schritt}.title`) }}</span>
             <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.mcp.steps.${schritt}.body`) }}</span>
 
-            <!-- Kopierfeld statt Link: die Adresse gehört in ein anderes
-                 Programm, nicht in die Adresszeile des Browsers. -->
+            <!-- Copy field instead of a link: the address belongs in another
+                 program, not in the browser's address bar. -->
             <span v-if="schritt === 'address'" class="flex w-full max-w-md items-center gap-2 rounded-lg border border-(--ui-border) bg-(--ui-bg) py-2 pe-2 ps-3">
               <code class="flex-1 truncate text-sm">{{ mcpUrl }}</code>
               <UButton

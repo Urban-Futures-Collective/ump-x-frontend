@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { bereinigeEingaben, type EingabeFeld } from './processInputs'
 
-// Diese Regel benutzen Formular und Chat gemeinsam. Zwei Fassungen davon hieße:
-// der Chat baut einen Aufruf, der kippt, obwohl derselbe aus dem Formular
-// durchgeht. Deshalb steht sie hier unter Test und nicht nur unter Kommentar.
+// Form and chat share this rule; two copies would mean the chat builds a call
+// that fails while the same call from the form succeeds. Hence the tests.
 //
-// Die Funktion kennt keine Modelle, sie sieht nur Feldtypen. Die Felder hier
-// sind deshalb keine echten, sondern ein Satz Formen, der jede Besonderheit
-// abdeckt, die uns bisher Ärger gemacht hat.
+// The function knows no models, only field types. The fields here are not real
+// ones but a set of shapes covering every edge case seen so far.
 const felder: EingabeFeld[] = [
   { name: 'pflichtfeld', type: 'string' },
   { name: 'text_mit_vorgabe', type: 'string', default: '3857' },
@@ -33,7 +31,7 @@ describe('bereinigeEingaben', () => {
     expect(bereinigeEingaben(felder, { text_mit_vorgabe: '3035' })).toEqual({ text_mit_vorgabe: '3035' })
   })
 
-  // Der Fall, der uns früher gekippt ist: Number("auto") ist NaN.
+  // Number("auto") is NaN, so this default must not be sent as a number.
   it('schickt die Vorgabe "auto" eines Zahlenfelds nicht als Zahl mit', () => {
     expect(bereinigeEingaben(felder, { zahl_mit_wort_als_vorgabe: 'auto' })).toEqual({})
   })

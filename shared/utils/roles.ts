@@ -1,13 +1,11 @@
-// Das Rollen-Vokabular, einmal für App und Server.
+// The role vocabulary, shared by app and server.
 //
-// Die App blendet damit Menüs ein und aus, der Server entscheidet damit, wer eine
-// Admin-Route aufrufen darf, und prüft, welche Rolle überhaupt vergeben werden darf.
-// Zwei Kopien dieser Liste wären zwei Wahrheiten, und eine Rolle, die nur in einer
-// steht, wäre im Menü sichtbar und auf dem Server gesperrt oder umgekehrt.
+// The app uses it to show or hide menus; the server uses it to decide who may call an
+// admin route and which roles may be assigned. One shared list prevents a role from being
+// visible in the menu but rejected on the server, or the other way round.
 //
-// Schreibweise `user_role_…` (Rico, 2026-09-30): so sieht man in Keycloak, was zu
-// Nutzern gehört und was zu Modellservern. Rollen werden Buchstabe für Buchstabe
-// verglichen, ohne jede Übersetzung (UMP tut das genauso).
+// The `user_role_` prefix separates user roles from model server roles in Keycloak.
+// Roles are compared literally, without any mapping (as UMP does).
 
 export const UMP_CLIENT = 'ump-client'
 
@@ -18,9 +16,9 @@ export const ROLE_VERIFIER = 'user_role_verifier'
 export const ROLE_ACCESS_ADMIN = 'user_role_access_admin'
 export const ROLE_PLATFORM_ADMIN = 'user_role_platform_admin'
 
-// Die sechs Plattformrollen. Nur diese darf ein platform admin über UMP-X vergeben;
-// eine Rolle, die jemand in der Keycloak-Konsole von Hand anlegt, wird dadurch nicht
-// vergebbar (Allowlist statt Liste aus Keycloak, siehe F11).
+// The six platform roles. Only these can be assigned through UMP-X; a role created by
+// hand in the Keycloak console does not become assignable (allowlist rather than a list
+// fetched from Keycloak).
 export const PLATFORM_ROLES = [
   ROLE_VIEWER,
   ROLE_USER,
@@ -30,17 +28,17 @@ export const PLATFORM_ROLES = [
   ROLE_PLATFORM_ADMIN,
 ] as const
 
-// Beide Admin-Rollen öffnen das Admin-Portal (Rico, 2026-09-25). Was darin zu sehen
-// ist, hängt davon ab, welche der beiden jemand hat.
+// Both admin roles open the admin portal; which sections it shows depends on which of
+// the two a user has.
 export const ADMIN_ROLES = [ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const
 
-// Nur die Claim-Teile, die wir für Rollen brauchen (Keycloak-Standardform).
+// Only the claim parts needed for roles (Keycloak's standard shape).
 export interface KeycloakRoleClaims {
   realm_access?: { roles?: string[] }
   resource_access?: Record<string, { roles?: string[] }>
 }
 
-// Realm- und ump-client-Rollen aus einer Claim-Quelle (ID-Token-Claims oder Userinfo).
+// Realm and ump-client roles from one claim source (ID token claims or userinfo).
 export function rolesFrom(src: KeycloakRoleClaims | undefined | null): string[] {
   if (!src) return []
   return [
@@ -49,8 +47,8 @@ export function rolesFrom(src: KeycloakRoleClaims | undefined | null): string[] 
   ]
 }
 
-// Alle Rollen einer Sitzung. nuxt-oidc-auth legt sie je nach Mapper in `claims`
-// (ID-Token) oder `userInfo` ab; gelesen wird aus beiden.
+// All roles of a session. Depending on the mapper, nuxt-oidc-auth stores them in
+// `claims` (ID token) or `userInfo`; both are read.
 export function rolesOfSession(session: { claims?: unknown, userInfo?: unknown } | null | undefined): string[] {
   return [...new Set([
     ...rolesFrom(session?.claims as KeycloakRoleClaims | undefined),
@@ -64,10 +62,9 @@ export function isPlatformRole(r: unknown): r is PlatformRole {
   return typeof r === 'string' && (PLATFORM_ROLES as readonly string[]).includes(r)
 }
 
-// Wie eine Plattformrolle bei einem Konto steht. `direkt` heißt: am Konto selbst
-// vergeben, also hier entfernbar. Ist sie nur wirksam, aber nicht direkt vergeben,
-// kommt sie über eine zusammengesetzte Rolle, in der Regel die Standardrollen
-// (default-roles-urbanmodelplatform); entziehen lässt sie sich dann nicht am Konto.
+// How a platform role applies to an account. `direkt`: assigned on the account itself,
+// so it can be removed here. Effective but not direct means it comes from a composite
+// role, usually the realm's default roles, and cannot be revoked on the account.
 export interface PlatformRoleStatus { role: PlatformRole, wirksam: boolean, direkt: boolean }
 
 export function platformRoleStatus(direkt: string[], wirksam: string[]): PlatformRoleStatus[] {
