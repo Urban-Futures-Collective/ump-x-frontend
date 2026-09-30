@@ -29,8 +29,8 @@ export interface OgcProcessDetail {
 // id must not be URL-encoded.
 export function useUmpProcess(id: MaybeRefOrGetter<string>) {
   const { base } = useUmpBase()
-  return useFetch<OgcProcessDetail>(() => `${base}/processes/${toValue(id)}`, {
-    transform: (raw): ProcessDetail => ({
+  return useFetch(() => `${base}/processes/${toValue(id)}`, {
+    transform: (raw: OgcProcessDetail): ProcessDetail => ({
       id: raw.id,
       title: raw.title ?? raw.id,
       description: raw.description ?? '',

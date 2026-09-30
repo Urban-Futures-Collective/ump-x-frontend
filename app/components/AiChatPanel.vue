@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The chat itself. Placement-agnostic, so it can be mounted in the app drawer or
 // on the landing page.
+import type { UIMessage } from 'ai'
 import type { Message } from '~/composables/useAiChat'
 
 // A question typed on the landing page. Without a key it is not lost but kept in
@@ -12,6 +13,9 @@ const { t } = useI18n()
 const { loggedIn, login } = useOidcAuth()
 const { access, hasKey } = useAiProvider()
 const { messages, status, error, running, send, cancel, clear } = useAiChat()
+// UChatMessages is typed for AI SDK messages. It only renders text and files
+// itself; our tool parts are rendered through the content slot below.
+const chatMessages = computed(() => messages.value as unknown as UIMessage[])
 
 const input = ref('')
 const accessOpen = ref(false)
@@ -65,7 +69,7 @@ onMounted(() => {
           color="neutral"
           variant="ghost"
           size="xs"
-          @click="clearOpen = true"
+          @click="() => { clearOpen = true }"
         >
           {{ t('ai.clear') }}
         </UButton>
@@ -76,7 +80,7 @@ onMounted(() => {
           variant="ghost"
           size="xs"
           :aria-label="t('ai.settings')"
-          @click="accessOpen = !accessOpen"
+          @click="() => { accessOpen = !accessOpen }"
         />
         <UButton
           icon="i-lucide-x"
@@ -127,7 +131,7 @@ onMounted(() => {
              UChatMessage only renders text and files by itself. -->
         <UChatMessages
           v-else
-          :messages="messages"
+          :messages="chatMessages"
           :status="status"
           should-auto-scroll
           :assistant="{ side: 'left', variant: 'naked' }"
@@ -192,7 +196,7 @@ onMounted(() => {
       :description="t('ai.clearConfirm.body')"
     >
       <template #footer>
-        <UButton color="neutral" variant="ghost" @click="clearOpen = false">
+        <UButton color="neutral" variant="ghost" @click="() => { clearOpen = false }">
           {{ t('ai.clearConfirm.cancel') }}
         </UButton>
         <UButton color="error" @click="clearHistory()">

@@ -110,7 +110,7 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
               </UBadge>
             </td>
             <td class="px-3 py-2 text-right whitespace-nowrap">
-              <UButton size="xs" variant="ghost" icon="i-lucide-shield-check" @click="rolesFor = { id: k.id, username: k.username }">
+              <UButton size="xs" variant="ghost" icon="i-lucide-shield-check" @click="() => { rolesFor = { id: k.id, username: k.username } }">
                 {{ t('admin.users.roles') }}
               </UButton>
               <UButton
@@ -121,7 +121,7 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
                 icon="i-lucide-user-x"
                 :disabled="k.id === ownId || statusSaving !== null"
                 :title="k.id === ownId ? t('admin.users.ownAccount') : undefined"
-                @click="toDisable = { id: k.id, username: k.username }"
+                @click="() => { toDisable = { id: k.id, username: k.username } }"
               >
                 {{ t('admin.users.disable') }}
               </UButton>
@@ -152,14 +152,14 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
         </template>
         <template #footer>
           <div class="flex w-full justify-end gap-2">
-            <UButton variant="ghost" color="neutral" @click="toDisable = null">
+            <UButton variant="ghost" color="neutral" @click="() => { toDisable = null }">
               {{ t('admin.users.cancel') }}
             </UButton>
             <UButton
               color="error"
               icon="i-lucide-user-x"
               :loading="statusSaving !== null"
-              @click="toDisable && setEnabled(toDisable.id, false)"
+              @click="() => { if (toDisable) setEnabled(toDisable.id, false) }"
             >
               {{ t('admin.users.disable') }}
             </UButton>

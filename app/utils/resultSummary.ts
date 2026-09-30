@@ -1,4 +1,4 @@
-import type { FeatureCollection, Position } from 'geojson'
+import type { FeatureCollection } from 'geojson'
 
 // A compact summary of a job result that can be shared with the AI provider.
 //
@@ -23,7 +23,8 @@ function extendBounds(coords: unknown, box: number[]): void {
   if (!Array.isArray(coords)) return
   // A position is [x, y, ...]: numbers in the first two slots.
   if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
-    const [x, y] = coords as Position
+    const x = coords[0] as number
+    const y = coords[1] as number
     if (!Number.isFinite(x) || !Number.isFinite(y)) return
     box[0] = Math.min(box[0]!, x)
     box[1] = Math.min(box[1]!, y)

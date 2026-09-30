@@ -52,8 +52,8 @@ export function newestFirst(jobs: Job[]): Job[] {
 // No trailing slash, see useUmpProcesses.
 export function useUmpJobs() {
   const { base } = useUmpBase()
-  return useFetch<OgcJobList>(`${base}/jobs`, {
+  return useFetch(`${base}/jobs`, {
     default: () => [] as Job[],
-    transform: (raw): Job[] => newestFirst((raw?.jobs ?? []).map(toJob)),
+    transform: (raw: OgcJobList): Job[] => newestFirst((raw?.jobs ?? []).map(toJob)),
   })
 }

@@ -9,7 +9,7 @@ export function useUmpExecute() {
   const { base } = useUmpBase()
 
   async function execute(processId: string, inputs: Record<string, unknown>): Promise<string> {
-    const res = await $fetch(`${base}/processes/${processId}/execution`, {
+    const res = await $fetch<OgcJob>(`${base}/processes/${processId}/execution`, {
       method: 'POST',
       headers: { Prefer: 'respond-async' },
       body: { inputs },

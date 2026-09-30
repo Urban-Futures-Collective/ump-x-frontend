@@ -35,7 +35,7 @@ const steps = ['choose', 'configure', 'take'] as const
               size="sm"
               :aria-label="t('commons.view.tiles')"
               :aria-pressed="view === 'tile'"
-              @click="view = 'tile'"
+              @click="() => { view = 'tile' }"
             />
             <UButton
               icon="i-lucide-list"
@@ -44,7 +44,7 @@ const steps = ['choose', 'configure', 'take'] as const
               size="sm"
               :aria-label="t('commons.view.list')"
               :aria-pressed="view === 'row'"
-              @click="view = 'row'"
+              @click="() => { view = 'row' }"
             />
             <UButton
               icon="i-lucide-refresh-cw"

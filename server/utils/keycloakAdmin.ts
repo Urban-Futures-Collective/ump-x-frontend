@@ -58,7 +58,7 @@ function settings() {
       statusMessage: `Keycloak-Admin-Zugang ist nicht eingerichtet, es fehlt: ${missing.join(', ')}`,
     })
   }
-  return { clientId, clientSecret, ...keycloakAdminUrls(realmUrl) }
+  return { clientId, clientSecret, ...keycloakAdminUrls(realmUrl!) }
 }
 
 async function serviceAccountToken(): Promise<string> {
@@ -79,12 +79,13 @@ export async function keycloakAdmin<T>(
   options: { method?: 'GET' | 'POST' | 'PUT' | 'DELETE', query?: Record<string, string | number | boolean>, body?: unknown } = {},
 ): Promise<T> {
   const { admin } = settings()
-  const call = async () => $fetch<T>(`${admin}${path}`, {
+  // Cast: Nitro types $fetch for its own routes; this is an external URL.
+  const call = async () => ($fetch(`${admin}${path}`, {
     method: options.method ?? 'GET',
     query: options.query,
     body: options.body as Record<string, unknown> | undefined,
     headers: { authorization: `Bearer ${await serviceAccountToken()}` },
-  })
+  }) as Promise<T>)
   try {
     return await call()
   }
