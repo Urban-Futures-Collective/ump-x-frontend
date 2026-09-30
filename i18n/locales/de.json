@@ -67,8 +67,6 @@
       "heading": "Nutzerkonten",
       "search": "Name oder E-Mail",
       "searchButton": "Suchen",
-      "username": "Nutzername",
-      "name": "Name",
       "email": "E-Mail",
       "status": "Status",
       "enabled": "aktiv",
@@ -81,7 +79,9 @@
       "cancel": "Abbrechen",
       "ownAccount": "Das eigene Konto lässt sich hier nicht deaktivieren.",
       "disableTitle": "{name} deaktivieren?",
-      "disableText": "{name} kann sich danach nicht mehr anmelden und wird sofort überall abgemeldet. Rollen und Läufe bleiben erhalten, das Konto lässt sich jederzeit wieder aktivieren."
+      "disableText": "{name} kann sich danach nicht mehr anmelden und wird sofort überall abgemeldet. Rollen und Läufe bleiben erhalten, das Konto lässt sich jederzeit wieder aktivieren.",
+      "person": "Person",
+      "actions": "Aktionen für {name}"
     },
     "roles": {
       "title": "Plattformrollen: {name}",
