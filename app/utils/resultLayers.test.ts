@@ -1,4 +1,4 @@
-import type { FeatureCollection } from 'geojson'
+import type { FeatureCollection, Geometry } from 'geojson'
 import { describe, expect, it } from 'vitest'
 import type { ProcessOutput } from '~/types/ump'
 import { geometryKind, isGeoDeclared, resultLayers } from './resultLayers'
@@ -23,9 +23,9 @@ function fc(...geometries: FeatureCollection['features'][number]['geometry'][]):
   }
 }
 
-const line = { type: 'LineString', coordinates: [[0, 0], [1, 1]] } as const
-const point = { type: 'Point', coordinates: [0, 0] } as const
-const polygon = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] } as const
+const line: Geometry = { type: 'LineString', coordinates: [[0, 0], [1, 1]] }
+const point: Geometry = { type: 'Point', coordinates: [0, 0] }
+const polygon: Geometry = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] }
 
 describe('isGeoDeclared', () => {
   it('recognises the format', () => {

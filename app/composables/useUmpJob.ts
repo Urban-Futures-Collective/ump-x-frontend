@@ -1,9 +1,8 @@
-import type { FeatureCollection } from 'geojson'
-import type { Job } from '~/types/ump'
+import type { Job, ResultLayer } from '~/types/ump'
 
 interface JobView {
   job: Job
-  result: FeatureCollection | null
+  result: ResultLayer | null
   // Result error kept separate from the load error: "run failed" differs from
   // "run not found", and the page must tell them apart.
   resultError: string | null
@@ -27,7 +26,7 @@ export function useUmpJob(jobId: MaybeRefOrGetter<string>) {
   const { data, pending, error, refresh } = useAsyncData<JobView>(
     () => `ump-job-${id.value}`,
     async () => {
-      const job = toJob(await request(`${base}/jobs/${id.value}`))
+      const job = toJob(await request<OgcJob>(`${base}/jobs/${id.value}`))
       // For a failed run /results answers 404 "Job failed", so do not ask.
       if (job.status !== 'successful') {
         return { job, result: null, resultError: null }

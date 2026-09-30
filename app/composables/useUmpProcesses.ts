@@ -19,9 +19,9 @@ export interface OgcProcessList {
 // attaches; anonymous users see only processes marked anonymous-access.
 export function useUmpProcesses() {
   const { base } = useUmpBase()
-  return useFetch<OgcProcessList>(`${base}/processes`, {
+  return useFetch(`${base}/processes`, {
     default: () => [] as Process[],
-    transform: (raw): Process[] =>
+    transform: (raw: OgcProcessList): Process[] =>
       (raw?.processes ?? []).map(p => ({
         id: p.id,
         title: p.title ?? p.id,

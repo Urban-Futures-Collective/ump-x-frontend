@@ -13,7 +13,7 @@ const { accountUrl } = useRuntimeConfig().public
 const chatOpen = ref(false)
 
 const userName = computed(
-  () => user.value?.userName ?? user.value?.claims?.preferred_username ?? '',
+  () => String(user.value?.userName ?? user.value?.claims?.preferred_username ?? ''),
 )
 
 // Navigation per the "Landing Screen" design: the model catalog (Commons) and
@@ -179,7 +179,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
               variant="ghost"
               size="sm"
               :aria-label="t('nav.chat')"
-              @click="chatOpen = true"
+              @click="() => { chatOpen = true }"
             >
               <span class="hidden md:inline">{{ t('nav.chat') }}</span>
             </UButton>

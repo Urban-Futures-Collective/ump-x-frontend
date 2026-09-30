@@ -262,7 +262,9 @@ export function useAiChat() {
           }
         }
       }
-      if (status.value !== 'error') status.value = 'ready'
+      // status can turn to 'error' inside the stream callbacks above, which TS
+      // does not see, hence the widening cast.
+      if ((status.value as ChatStatus) !== 'error') status.value = 'ready'
     }
     catch (e) {
       // A user abort is not an error.
