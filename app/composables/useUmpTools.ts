@@ -28,8 +28,9 @@ export function useUmpTools() {
 
   const listProcesses = tool({
     description:
-      'Listet die Modelle im Katalog der Urban Model Platform, mit Titel, Beschreibung '
-      + 'und der Angabe, ob der aktuelle Nutzer sie ausführen darf. Ohne Parameter aufrufen.',
+      'Listet die Modelle im Katalog der Urban Model Platform, mit Id, Titel und '
+      + 'Beschreibung. Ob der aktuelle Nutzer ein Modell ausführen darf, steht nicht darin. '
+      + 'Ohne Parameter aufrufen.',
     inputSchema: jsonSchema<Record<string, never>>({
       type: 'object',
       properties: {},
@@ -63,7 +64,7 @@ export function useUmpTools() {
       properties: {
         processId: {
           type: 'string',
-          description: 'Die vollständige Id mit Anbieter-Präfix, etwa bikebox-modelserver:growbike.',
+          description: 'Die vollständige Id im Format <anbieter>:<prozess>, so wie listProcesses sie liefert.',
         },
       },
       required: ['processId'],
