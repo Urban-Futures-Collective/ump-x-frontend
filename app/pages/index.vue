@@ -1,48 +1,43 @@
 <script setup lang="ts">
-// Startseite. Eine Route, zwei Zustände.
+// Landing page. One route, two states.
 //
-// Ohne `redirect` ist es das Schaufenster: Wer von außen kommt, soll sehen, was
-// die Plattform tut, bevor er nach einem Konto gefragt wird. Der Hauptweg ist
-// deshalb der Katalog, nicht die Anmeldung.
+// Without `redirect` it is the showcase: visitors should see what the platform
+// does before being asked for an account, so the main path is the catalog, not
+// sign-in.
 //
-// Mit `redirect` wurde jemand von der auth-Middleware aufgehalten. Der wollte
-// schon irgendwo hin, und dann ist ein Schaufenster die falsche Antwort. Er
-// bekommt eine schmale Karte mit dem Grund und einem Hauptweg.
+// With `redirect` the auth middleware stopped someone on their way elsewhere,
+// and a showcase is the wrong answer. They get a narrow card with the reason
+// and one main action.
 //
-// Bis zum 2026-09-01 waren das zwei getrennte Seiten mit denselben zwei Knöpfen.
-// Die Anmeldung selbst läuft über Keycloak, hier steht deshalb kein Formular für
-// Kennung und Passwort: ein eigenes wäre eine Attrappe.
+// Sign-in runs through Keycloak, so there is no username/password form here:
+// a custom one would be a dummy.
 //
-// Das Schaufenster folgt seit dem 2026-09-18 dem Figma-Entwurf „Startseite,
-// Alternative B". Zwei Dinge daran sind Absicht und keine Nachlässigkeit:
-// Flächen und Knöpfe haben keine abgerundeten Ecken (nur die Badges), und der
-// Verlauf trägt nicht mehr die ganze Kopfzone, sondern nur noch den Kasten mit
-// dem Beispielnetz. Der aufgehaltene Zustand ist vom Entwurf nicht abgedeckt
-// und deshalb unverändert geblieben.
+// The showcase follows the Figma design "Startseite, Alternative B". Two things
+// are intentional: surfaces and buttons have no rounded corners (only badges),
+// and the gradient covers only the box with the example network, not the whole
+// header. The blocked state is not covered by the design.
 definePageMeta({ layout: false })
 
 const { t, locale, locales, setLocale } = useI18n()
 const route = useRoute()
 const { loggedIn, login } = useOidcAuth()
 
-// Angemeldet gehört niemand auf die Startseite, der Katalog ist der Arbeitsplatz.
+// Signed-in users do not belong on the landing page; the catalog is their workspace.
 if (loggedIn.value) {
   await navigateTo('/commons')
 }
 
 const aufgehalten = computed(() => typeof route.query.redirect === 'string' && route.query.redirect !== '')
 
-// Die echten Modelle statt einer gepflegten Liste: was im Katalog steht, steht
-// auch hier. Bewusst unbedingt aufgerufen, auch im aufgehaltenen Zustand: ein
-// Composable hinter einer Bedingung bricht die Reihenfolge der Aufrufe, und die
-// Abfrage ist öffentlich und klein.
+// The real models rather than a curated list: what is in the catalog is shown
+// here too. Called unconditionally, also in the blocked state: a composable
+// behind a condition breaks call order, and the query is public and small.
 const { data: prozesse } = useUmpProcesses()
 
 const schritte = ['choose', 'configure', 'take'] as const
 
-// Schmal zeigt der Entwurf ein Menü statt der ausgeschriebenen Kopf-Aktionen.
-// Es enthält genau dasselbe, damit es keinen zweiten Satz Einstiege gibt, die
-// auseinanderlaufen können.
+// On narrow screens the design shows a menu instead of the header actions. It
+// contains exactly the same entries, so there is no second set that can drift.
 const menue = computed(() => [
   locales.value.map(loc => ({
     label: loc.code.toUpperCase(),
@@ -55,7 +50,7 @@ const menue = computed(() => [
 </script>
 
 <template>
-  <!-- Aufgehalten: schmale Karte auf dem Verlauf, ein Hauptweg. -->
+  <!-- Blocked: narrow card on the gradient, one main action. -->
   <NuxtLayout v-if="aufgehalten" name="auth">
     <div class="space-y-5 text-center">
       <img
@@ -81,15 +76,15 @@ const menue = computed(() => [
         {{ t('start.keycloakHint') }}
       </p>
 
-      <!-- Nur ein Textlink, kein zweiter gleichwertiger Knopf: wer aufgehalten
-           wurde, wollte woanders hin als in den Katalog. -->
+      <!-- Only a text link, not a second equal button: someone who was blocked
+           wanted to go somewhere other than the catalog. -->
       <ULink to="/commons" class="block text-sm font-medium text-(--ui-primary)">
         {{ t('start.blocked.orBrowse') }}
       </ULink>
     </div>
   </NuxtLayout>
 
-  <!-- Schaufenster -->
+  <!-- Showcase -->
   <div v-else class="flex min-h-svh flex-col bg-white">
     <header class="px-6 py-6 sm:px-16">
       <div class="mx-auto flex max-w-7xl items-center justify-between">
@@ -134,9 +129,8 @@ const menue = computed(() => [
       </div>
     </header>
 
-    <!-- Kopfzone. Links der Text, rechts ein echter growbike-Lauf für Oelde,
-         aus dem Ergebnis-GeoJSON gezeichnet. Deshalb steht der Nachweis
-         darunter, und deshalb gibt es kein Symbolbild. -->
+    <!-- Hero. Text on the left; on the right a real model run drawn from its
+         result GeoJSON, hence the credit below and no stock illustration. -->
     <section class="px-6 py-14 sm:px-16 lg:py-22">
       <div class="mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row lg:justify-between lg:gap-16">
         <div class="w-full space-y-6 lg:max-w-[480px]">
@@ -168,10 +162,10 @@ const menue = computed(() => [
         </div>
 
         <figure class="w-full space-y-3 lg:w-[560px] lg:shrink-0">
-          <!-- Die Datei ist quadratisch (600 × 600) und zeichnet das Netz mit Rand.
-               Der Entwurf zeigt es hochkant, 349 × 464. Deshalb auf breiten
-               Schirmen über die Höhe skaliert statt über die Breite: dann füllt
-               das Netz den Kasten so wie dort, ohne dass die Datei verzerrt wird. -->
+          <!-- The file is square (600 x 600) and draws the network with a margin.
+               The design shows it portrait, 349 x 464, so on wide screens it is
+               scaled by height rather than width: the network then fills the box
+               as in the design without distorting the file. -->
           <div class="flex items-center justify-center border border-ufc-slate-900 bg-[linear-gradient(125deg,var(--color-ufc-logo-teal)_10%,var(--color-ufc-logo-gold)_76.667%)] p-8">
             <img
               src="~/assets/images/beispiel-growbike-oelde.svg"
@@ -244,13 +238,12 @@ const menue = computed(() => [
       </div>
     </section>
 
-    <!-- Die zwei Wege nebeneinander. Einzeln wirkt jeder wie eine Hürde,
-         zusammen sagen sie, was das Projekt anbietet: wir verkaufen keine KI,
-         du bringst deine eigene mit.
-         Hier steht bewusst keine Eingabezeile mehr: chatten kann nur, wer
-         angemeldet ist, und ein Feld, das erst zur Anmeldung führt, verspricht
-         mehr als es hält. Die Adresse des MCP-Servers steht ebenfalls nicht da,
-         sondern auf der Hilfeseite, wo danebensteht, was sie ist. -->
+    <!-- The two routes side by side. Alone each looks like a hurdle; together
+         they say what the project offers: we do not sell AI, you bring your
+         own.
+         No input field here: only signed-in users can chat, and a field that
+         first leads to sign-in promises more than it delivers. The MCP server
+         address is on the help page, where it is explained. -->
     <section class="px-6 pb-24 sm:px-16">
       <div class="mx-auto max-w-7xl">
         <div class="space-y-2.5">

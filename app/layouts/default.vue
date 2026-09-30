@@ -1,25 +1,24 @@
 <script setup lang="ts">
 import type { BreadcrumbItem, NavigationMenuItem } from '@nuxt/ui'
 
-// Arbeitsumgebung nach den Wireframes: Seitenleiste links (einklappbar),
-// Kopfleiste mit Brotkrumen, Inhalt in einer hellen Karte.
+// Workspace layout: collapsible sidebar on the left, header with breadcrumbs,
+// content in a light card.
 const { t, locale, locales, setLocale } = useI18n()
 const route = useRoute()
 const { loggedIn, user, login, logout } = useOidcAuth()
 const { isAdmin } = useUmpRoles()
 const { accountUrl } = useRuntimeConfig().public
 
-// Der Chat liegt in einer Schublade, damit er die Arbeitsfläche nicht verdrängt.
+// The chat lives in a slide-over so it does not push the workspace aside.
 const chatOffen = ref(false)
 
 const userName = computed(
   () => user.value?.userName ?? user.value?.claims?.preferred_username ?? '',
 )
 
-// Was es wirklich gibt, nach dem Entwurf „Landing Screen“: der Katalog heißt
-// Commons, daneben die eigenen Läufe. „Neues Szenario“ steht nicht mehr in der
-// Leiste, man kommt über ein Modell in Commons dorthin. Die Hilfe ist als
-// „Read Me“ in die Kopfleiste gewandert.
+// Navigation per the "Landing Screen" design: the model catalog (Commons) and
+// the user's own runs. New scenarios are started from a model in Commons; help
+// is linked from the header.
 const navItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = [
     { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/commons' },
@@ -31,11 +30,9 @@ const navItems = computed<NavigationMenuItem[]>(() => {
   return items
 })
 
-// Was die Wireframes zeigen, wozu aber die Grundlage fehlt: Projekte brauchen
-// eine eigene Datenhaltung, die es im Backend nicht gibt. Rico hat im Team-Chat
-// vorgeschlagen, solche Teile zu zeigen und auszugrauen statt sie wegzulassen.
-// Deaktiviert, damit niemand ins Leere klickt, aber sichtbar, damit erkennbar
-// ist, wohin es geht.
+// Features from the design that have no backend yet (projects need their own
+// storage). Shown disabled rather than hidden: nobody clicks into nothing, but
+// users can see where the product is heading.
 const plannedItems = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.planned.projects'), icon: 'i-lucide-folder', disabled: true },
   { label: t('nav.planned.contribute'), icon: 'i-lucide-file-plus-2', disabled: true },
@@ -43,10 +40,9 @@ const plannedItems = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.planned.report'), icon: 'i-lucide-file-text', disabled: true },
 ])
 
-// Zwei Buchstaben aus dem Namen, wie im Entwurf. Ohne Namen lieber nichts als
-// ein erfundenes Kürzel.
-// Aus Vor- und Nachname, sonst die ersten zwei Buchstaben des Nutzernamens.
-// Nur der Nutzername hieß bei allen Test-Usern „TE“.
+// Two-letter initials: from given and family name if available, otherwise the
+// first two letters of the username (often not distinctive). No name, no
+// initials rather than made-up ones.
 const initialen = computed(() => {
   const info = user.value?.userInfo as { given_name?: string, family_name?: string } | undefined
   const vorname = info?.given_name?.trim() ?? ''
@@ -55,9 +51,8 @@ const initialen = computed(() => {
   return userName.value.slice(0, 2).toUpperCase()
 })
 
-// „Zugriff beantragen" steht bewusst sichtbar und ausgegraut da, nach derselben
-// Regel wie die Einträge in der Seitenleiste: zeigen, wohin es geht, und nicht
-// so tun, als ginge es schon. Wohin so eine Anfrage geht, ist noch offen.
+// "Request access" is visible but disabled, following the same rule as the
+// planned sidebar items. Where such a request would go is not decided yet.
 const benutzerMenue = computed(() => [[
   {
     label: userName.value,
@@ -80,10 +75,10 @@ const benutzerMenue = computed(() => [[
   {
     label: t('auth.logout'),
     icon: 'i-lucide-log-out',
-    // Abgemeldet heißt: hier bleibt nichts von mir. Der Anbieter-Schlüssel liegt
-    // unverschlüsselt im Browser, der Gesprächsverlauf enthält die Fragen und die
-    // Läufe; auf einem geteilten Rechner hätte beides sonst der Nächste. Still,
-    // ohne Rückfrage: wer abmeldet, will genau das.
+    // Signing out leaves nothing behind: the provider API key is stored
+    // unencrypted in the browser and the chat history contains questions and
+    // runs, which the next person on a shared machine would otherwise see.
+    // Silent, without confirmation: signing out means exactly that.
     onSelect: () => {
       vergissZugang()
       vergissVerlauf()
@@ -92,10 +87,9 @@ const benutzerMenue = computed(() => [[
   },
 ]])
 
-// Brotkrume: Home plus die aktuelle Stelle. Bewusst flach, solange es keine
-// Projektebene gibt, in die man hineinnavigieren könnte. Seiten ohne eigenen
-// Eintrag in der Leiste hängen an ihrem Weg: ein neues Szenario entsteht aus
-// Commons heraus.
+// Breadcrumb: Home plus the current location. Flat as long as there is no
+// project level to navigate into. Pages without their own sidebar entry hang
+// off their path: a new scenario starts from Commons.
 const breadcrumb = computed<BreadcrumbItem[]>(() => {
   const items: BreadcrumbItem[] = [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
   if (route.path.startsWith('/run')) {
@@ -127,8 +121,8 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
     >
       <template #header="{ collapsed }">
         <NuxtLink to="/" class="flex min-w-0 items-center gap-2">
-          <!-- Eingeklappt bleibt nur das Zeichen stehen, deshalb trägt es den
-               Alternativtext und die Wortmarke daneben ist rein dekorativ. -->
+          <!-- When collapsed only the logo remains, so it carries the alt text
+               and the wordmark next to it is decorative. -->
           <img
             src="~/assets/images/logo.svg"
             :alt="t('app.title')"
@@ -176,9 +170,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           </template>
 
           <template #right>
-            <!-- Der Chat bringt sein Modell nicht mit, der Nutzer tut das.
-                 Deshalb heißt der Knopf „Chat" und nicht nach einem Anbieter,
-                 und deshalb steht hinter ihm zuerst ein Formular. -->
+            <!-- The chat does not bring its own model; the user supplies one.
+                 Hence the button is called "Chat" rather than after a provider,
+                 and it opens a setup form first. -->
             <UButton
               icon="i-lucide-sparkles"
               color="neutral"
@@ -214,12 +208,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
               </UButton>
             </div>
 
-            <!-- Konto oben rechts, in beiden Zuständen an derselben Stelle.
-                 Abmelden wohnt hier und nicht zusätzlich in der Seitenleiste:
-                 zwei Wege zum selben Ziel sind kein Angebot. Der Anmelde-Knopf
-                 stand bis zum 2026-09-04 unten in der Leiste und war damit das
-                 einzige Bedienelement, das die Ecke gewechselt hat, sobald man
-                 angemeldet war. -->
+            <!-- Account menu top right, in the same place whether signed in or
+                 not. Sign-out lives only here: two routes to the same action
+                 add nothing. -->
             <ClientOnly>
               <UDropdownMenu v-if="loggedIn" :items="benutzerMenue" :ui="{ content: 'w-64' }">
                 <UButton color="neutral" variant="ghost" size="sm" trailing-icon="i-lucide-chevron-down">
@@ -243,9 +234,8 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
         </UDashboardNavbar>
       </template>
 
-      <!-- Inhalt in einer eigenen, leicht getönten Fläche, wie im Entwurf.
-           Ohne das steht weißer Inhalt auf weißem Grund und die Kopfleiste
-           schwebt ohne erkennbare Kante darüber. -->
+      <!-- Content on its own lightly tinted surface, as in the design. Without
+           it white content sits on white and the header floats without an edge. -->
       <template #body>
         <div class="min-h-full rounded-xl bg-ufc-blue-50/40 p-6 sm:p-8">
           <slot />
@@ -253,9 +243,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
       </template>
     </UDashboardPanel>
 
-    <!-- ClientOnly: der Chat zieht das AI SDK nach und läuft ausschließlich im
-         Browser (der Schlüssel des Nutzers darf unseren Server nie sehen).
-         Lazy, damit das SDK nicht im Startbündel jeder Seite landet. -->
+    <!-- ClientOnly: the chat pulls in the AI SDK and runs only in the browser
+         (the user's API key must never reach our server). Lazy so the SDK is
+         not in every page's initial bundle. -->
     <ClientOnly>
       <USlideover v-model:open="chatOffen" :ui="{ content: 'w-full max-w-md' }">
         <template #content>

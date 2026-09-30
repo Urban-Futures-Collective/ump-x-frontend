@@ -2,9 +2,9 @@ import type { FeatureCollection } from 'geojson'
 import { describe, expect, it } from 'vitest'
 import { fasseErgebnisZusammen } from './resultSummary'
 
-// Diese Funktion ist der Grund, warum Ergebnisdaten nicht zum KI-Anbieter gehen:
-// aus 841 kB GeoJSON werden rund 200 Byte. Bricht sie, wandern entweder falsche
-// Zahlen in die Antwort oder es fliegt eine Ausnahme mitten im Werkzeugaufruf.
+// This function keeps result data away from the AI provider by reducing large
+// GeoJSON to a few hundred bytes. If it breaks, wrong numbers reach the answer
+// or an exception is thrown mid tool call.
 function sammlung(features: unknown[]): FeatureCollection {
   return { type: 'FeatureCollection', features } as FeatureCollection
 }
@@ -84,8 +84,8 @@ describe('fasseErgebnisZusammen', () => {
     expect(fasseErgebnisZusammen(sammlung([viele])).eigenschaften).toHaveLength(20)
   })
 
-  // Die Ausdehnung muss alle Objekte sehen, die Stichprobe gilt nur fuer Typen
-  // und Eigenschaften. Sonst beschreibt die bbox die ersten 200 statt das Ergebnis.
+  // The extent must cover all features; the sample only applies to types and
+  // property names.
   it('nimmt für die Ausdehnung auch Objekte jenseits der Stichprobe', () => {
     const viele = Array.from({ length: 250 }, () => linie)
     const weitDraussen = {

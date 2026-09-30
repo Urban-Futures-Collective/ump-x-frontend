@@ -1,8 +1,8 @@
-// Serverseitige Prüfung: hat die angemeldete Person eine der verlangten Rollen?
+// Server-side check: does the signed-in user have one of the required roles?
 //
-// Die Middleware `admin` im Browser blendet nur aus, sie schützt nichts. Schutz gibt
-// es allein hier, in jeder Admin-Route vor dem ersten Keycloak-Aufruf. Die Rollen
-// kommen aus der serverseitigen Sitzung (verschlüsselt, nicht vom Browser änderbar).
+// The browser-side `admin` middleware only hides UI, it protects nothing. Protection
+// happens only here, in every admin route before the first Keycloak call. Roles come from
+// the server-side session (encrypted, not modifiable by the browser).
 import { getUserSession } from 'nuxt-oidc-auth/runtime/server/utils/session.js'
 import type { H3Event } from 'h3'
 

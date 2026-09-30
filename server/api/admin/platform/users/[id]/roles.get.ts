@@ -1,5 +1,5 @@
-// Die sechs Plattformrollen eines Kontos: wirksam oder nicht, direkt vergeben oder
-// über die Standardrollen. Nur für platform admins.
+// The six platform roles of an account: effective or not, assigned directly or via the
+// default roles. Platform admins only.
 interface RoleRep { id: string, name: string }
 
 export default defineEventHandler(async (event) => {

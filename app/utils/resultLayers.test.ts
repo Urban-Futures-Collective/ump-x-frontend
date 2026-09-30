@@ -3,9 +3,8 @@ import { describe, expect, it } from 'vitest'
 import type { ProcessOutput } from '~/types/ump'
 import { geometrieArt, istGeoDeklariert, resultLayers } from './resultLayers'
 
-// Die Funktion kennt keine Modelle, sie sieht Deklarationen und Antworten. Die
-// Fälle hier bilden ab, was UMP am 2026-09-22 wirklich liefert, ohne an einem
-// bestimmten Modell zu hängen.
+// The function knows no models, only declarations and responses. The fixtures
+// mirror the declaration shapes UMP actually returns.
 const deklariertGeo: ProcessOutput = {
   name: 'ergebnis',
   title: 'Ergebnis',

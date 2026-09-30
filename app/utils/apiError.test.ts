@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { apiErrorExplanation, apiErrorMessage, apiErrorStatus } from './apiError'
 
-// Nachgebaut wie ein FetchError von ofetch: die Zeile in `message`, der Rumpf
-// in `data`, der Status in `statusCode`.
+// Shaped like an ofetch FetchError: the line in `message`, the body in `data`,
+// the status in `statusCode`.
 function fetchFehler(statusCode: number, data?: unknown) {
   return Object.assign(new Error(`[POST] "/ump/v1.0/processes/x/execution": ${statusCode}`), { statusCode, data })
 }

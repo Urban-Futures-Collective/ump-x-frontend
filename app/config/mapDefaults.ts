@@ -1,14 +1,12 @@
-// Die Grundeinstellung der Karte.
+// Default map configuration.
 //
-// Sie steht hier vollständig, weil die masterportalapi sonst ihre eigenen
-// Vorgaben zieht, und die sind auf Hamburg zugeschnitten: EPSG:25832, ein
-// Ausschnitt um die Stadt, eine Auflösungsleiter mit zehn Stufen und ein
-// Modellserver-Katalog aus dem LGV. Ohne vollständigen Ersatz landet die Karte
-// im Nirgendwo oder fragt Dienste an, die uns nichts angehen.
+// Fully specified because otherwise the masterportalapi falls back to its own
+// defaults, which target one specific region: EPSG:25832, a fixed extent, a
+// ten-step resolution ladder and a preset service catalog. Without a complete
+// replacement the map ends up in the wrong place or queries unrelated services.
 //
-// EPSG:3857 statt 25832 ist eine Entscheidung vom 2026-09-16: die Basiskarte ist
-// global, und jede weitere globale Quelle kommt in derselben Projektion. Der
-// Preis ist, dass deutsche Fachdienste später umgerechnet werden müssen.
+// EPSG:3857 because the base map is global and other global sources use the
+// same projection. The trade-off: services in EPSG:25832 need reprojection.
 
 export interface MapConfig {
   epsg: string
@@ -16,20 +14,20 @@ export interface MapConfig {
   startCenter: [number, number]
   startResolution: number
   options: { resolution: number, scale: number, zoomLevel: number }[]
-  /** Dienste-Register der masterportalapi. Leer: wir hängen Layer selbst an. */
+  /** masterportalapi service registry. Empty: layers are added directly. */
   layerConf: unknown[]
-  /** Layer, die beim Start sichtbar sind. Leer aus demselben Grund. */
+  /** Layers visible on start. Empty for the same reason. */
   layers: unknown[]
 }
 
-// Die ganze Welt in Web Mercator. Wer weiter hinauszoomt, sieht nichts mehr.
+// The whole world in Web Mercator.
 const WELT: [number, number, number, number] = [
   -20037508.34, -20037508.34, 20037508.34, 20037508.34,
 ]
 
-// Die Stufen der OpenStreetMap-Kacheln, damit jede Stufe genau eine Kachelebene
-// trifft und nichts hochskaliert wird. resolution = 156543.034 / 2^zoom, der
-// Maßstab dazu bei 0,28 mm je Pixel, wie es die OGC rechnet.
+// OpenStreetMap tile levels, so each step matches one tile level exactly and
+// nothing is upscaled. resolution = 156543.034 / 2^zoom; scale assumes the OGC
+// standard pixel size of 0.28 mm.
 const STUFEN = [
   { resolution: 156543.0339280410, scale: 559082264, zoomLevel: 0 },
   { resolution: 78271.5169640205, scale: 279541132, zoomLevel: 1 },
@@ -56,10 +54,10 @@ const STUFEN = [
 export const mapDefaults: MapConfig = {
   epsg: 'EPSG:3857',
   extent: WELT,
-  // Mitte Deutschlands, 10,45° Ost und 51,16° Nord. Ein Startpunkt ohne Ergebnis
-  // ist immer eine Verlegenheit; sobald eines da ist, zoomt die Karte darauf.
+  // Center of Germany (10.45° E, 51.16° N). Only a placeholder: the map zooms
+  // to the result once there is one.
   startCenter: [1163289, 6649645],
-  // Stufe 6, das ganze Land im Bild.
+  // Zoom level 6, the whole country in view.
   startResolution: 2445.9849051256,
   options: STUFEN,
   layerConf: [],

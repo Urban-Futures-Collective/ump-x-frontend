@@ -10,23 +10,20 @@ import { Circle, Fill, Stroke, Style } from 'ol/style'
 import type { ResultLayer } from '~/types/ump'
 import 'ol/ol.css'
 
-// Die Karte. Seit dem 2026-09-22 OpenLayers über die masterportalapi statt
-// MapLibre, siehe Sprint 011.
+// Result map, built with OpenLayers via the masterportalapi.
 //
-// Bewusst NICHT über `src/maps/map.js`: dessen createMap importiert olcs und
-// zieht damit Cesium ins Bundle, obwohl 3D nicht gebraucht wird. Der Einstieg
-// über `src/maps/ol/olMap.js` ist geprüft frei davon.
+// Imports createMap from `src/maps/ol/olMap.js`, not `src/maps/map.js`: the
+// latter pulls in olcs and therefore Cesium, although no 3D is needed.
 //
-// Der Ergebnis-Layer entsteht hier von Hand und nicht über die Bibliothek: deren
-// GeoJSON-Layer liest Inline-Features mit fest verdrahtetem
-// featureProjection EPSG:25832 (src/layer/vector.js). Auf einer 3857-Karte läge
-// unser Netz damit an der falschen Stelle.
+// The result layer is built by hand: the library's GeoJSON layer reads inline
+// features with a hardcoded featureProjection of EPSG:25832
+// (src/layer/vector.js), which misplaces them on an EPSG:3857 map.
 const props = defineProps<{ layer?: ResultLayer | null }>()
 
-// Klassischer Template-Ref auf einem INNEREN div (nicht dem Component-Root) — vermeidet
-// ein Hydration-Timing-Problem, bei dem der Root-Ref im onMounted noch null ist.
 const { t } = useI18n()
 
+// Template ref on an INNER div, not the component root, which avoids a
+// hydration timing issue where the root ref is still null.
 const mapContainer = ref<HTMLDivElement | null>(null)
 let map: Map | undefined
 let ergebnis: VectorLayer<VectorSource> | undefined
@@ -34,8 +31,8 @@ let beobachter: ResizeObserver | undefined
 
 const format = new GeoJSON()
 
-// Eine Farbe, drei Ausprägungen. Welche gilt, sagt die Layer-Beschreibung aus
-// `resultLayers`, nicht ein Blick auf die Geometrie an dieser Stelle.
+// One color, one style per geometry kind. The kind comes from the layer spec
+// produced by `resultLayers`, not from inspecting geometries here.
 const FARBE = '#2563eb'
 const stile: Record<NonNullable<ResultLayer['layers'][number]>['geometry'], Style> = {
   line: new Style({ stroke: new Stroke({ color: FARBE, width: 2 }) }),
@@ -61,16 +58,14 @@ const stile: Record<NonNullable<ResultLayer['layers'][number]>['geometry'], Styl
   }),
 }
 
-// Leer heißt: an diesem Ergebnis ist nichts, was auf eine Karte gehört. Dann
-// zeigt die Seite den Hinweis und nicht eine leere Karte.
+// No layers means nothing mappable: show a notice instead of an empty map.
 const darstellbar = computed(() => (props.layer?.layers.length ?? 0) > 0)
 
-// Die Karte entsteht, wenn ihr Kasten erscheint, und nicht beim Einhängen der
-// Komponente. Der Kasten steht unter `v-if="darstellbar"`: Auf „Neues Szenario“
-// ist die Komponente schon da, bevor es ein Ergebnis gibt, der Kasten aber erst
-// danach. Ein einmaliges onMounted fand dort keinen Kasten und baute nie eine
-// Karte. Verschwindet der Kasten wieder (neuer Lauf), wird die Karte abgebaut,
-// damit der nächste Kasten eine frische bekommt.
+// Build the map when its container appears, not on mount. The container is
+// behind `v-if="darstellbar"`, so the component can mount before any result
+// exists and a one-time onMounted would never find it. When the container
+// disappears (e.g. a new run starts), tear the map down so the next container
+// gets a fresh one.
 watch(mapContainer, (el) => {
   if (el && !map) baueKarte(el)
   else if (!el && map) baueKarteAb()
@@ -80,20 +75,17 @@ onBeforeUnmount(baueKarteAb)
 
 function baueKarte(el: HTMLDivElement) {
   map = createMap({ ...useMapConfig(), target: el }) as Map
-  // Kein Eintrag im Dienste-Register: die Bibliothek kennt keinen XYZ-Typ, und
-  // einen Service-Eintrag zu erfinden wäre unehrlich. Fertige OL-Layer nimmt ihr
-  // addLayer unverändert an.
+  // Added as a plain OL layer, not via the service registry: the library has
+  // no XYZ service type, and addLayer accepts ready-made OL layers as is.
   map.addLayer(new TileLayer({ source: new OSM() }))
   render(props.layer)
 
-  // Beim Einhängen hat der Kasten noch keine Größe, und OpenLayers zeichnet dann
-  // nie, auch wenn die Größe gleich danach steht. Der Beobachter meldet die erste
-  // echte Größe nach und fängt später jede Änderung der Fensterbreite mit ab.
+  // On mount the container has no size yet, and OpenLayers then never draws.
+  // The observer reports the first real size and later window resizes.
   //
-  // Beobachtet wird der äußere Rahmen, NICHT das Element, in das OpenLayers
-  // zeichnet: dort legt es sein Canvas hinein, der Kasten wächst, der Beobachter
-  // feuert erneut, und die Karte schaukelt sich auf mehrere tausend Pixel Breite
-  // hoch. Der äußere Rahmen hat seine Größe dagegen aus dem Layout.
+  // Observe the outer frame, NOT the OpenLayers target: OL inserts its canvas
+  // there, the target grows, the observer fires again, and the map inflates to
+  // thousands of pixels. The outer frame gets its size from the layout.
   beobachter = new ResizeObserver(() => map?.updateSize())
   beobachter.observe(el.parentElement ?? el)
 }
@@ -119,8 +111,7 @@ function render(layer?: ResultLayer | null) {
   const fc = layer?.featureCollection
   if (!spec || !fc?.features?.length) return
 
-  // Die Projektion steht hier ausdrücklich: GeoJSON ist nach RFC 7946 in WGS 84,
-  // die Karte rechnet in Web Mercator.
+  // GeoJSON is WGS 84 per RFC 7946; the map uses Web Mercator.
   const features = format.readFeatures(fc, {
     dataProjection: 'EPSG:4326',
     featureProjection: 'EPSG:3857',
@@ -133,8 +124,7 @@ function render(layer?: ResultLayer | null) {
   if (!extent || !Number.isFinite(extent[0])) return
   map.getView().fit(extent, {
     padding: [48, 48, 48, 48],
-    // Nicht näher als Stufe 14 heran: ein einzelner Punkt würde die Karte sonst
-    // bis an die Kachelgrenze aufziehen.
+    // Cap at zoom level 14, otherwise a single point zooms to the max tile level.
     minResolution: 9.5546285356,
     duration: 600,
   })
@@ -142,17 +132,15 @@ function render(layer?: ResultLayer | null) {
 </script>
 
 <template>
-  <!-- Quadratisch statt fester Höhe: Ergebnisse sind Stadtgebiete, und die sind in
-       beide Richtungen ähnlich weit ausgedehnt. Ein breiter, flacher Ausschnitt
-       zwingt die Karte herauszuzoomen, bis das Netz in der Mitte klein wird.
-       Die Obergrenze hält die Karte trotzdem auf einen Bildschirm, sonst wird sie
-       in einer breiten Spalte höher als das Fenster. -->
+  <!-- Square rather than fixed height: results are city areas of similar width
+       and height, and a wide, flat frame forces the map to zoom out too far.
+       The max width keeps the square within one screen height. -->
   <div v-if="darstellbar" class="mx-auto aspect-square w-full max-w-[calc(100svh_-_9rem)] overflow-hidden rounded-lg border border-(--ui-border)">
     <div ref="mapContainer" class="h-full w-full" />
   </div>
 
-  <!-- Kein darstellbarer Layer. Ehrlicher als eine leere Karte, und der Download
-       steht daneben weiterhin zur Verfügung. -->
+  <!-- Nothing mappable: a notice instead of an empty map. The download is still
+       available alongside. -->
   <div v-else-if="layer" class="flex items-center gap-3 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-4">
     <UIcon name="i-lucide-map-off" class="size-5 shrink-0 text-(--ui-text-muted)" />
     <p class="text-sm text-(--ui-text-muted)">

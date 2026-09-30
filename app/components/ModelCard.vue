@@ -1,14 +1,13 @@
 <script setup lang="ts">
-// Ein Modell, in zwei Formen aus den Entwürfen: als Kachel („Landing Screen“)
-// und als Zeile („Models list“, mit Kennung und Pfeil). Die ganze Fläche ist der
-// Link, damit man nicht erst die Überschrift treffen muss.
+// One model, in two forms: a tile ("Landing Screen" design) and a row ("Models
+// list", with ID and arrow). The whole card is the link, so users do not have to
+// hit the heading.
 //
-// Der Vermerk („ohne Anmeldung ausführbar“) steht im Entwurf, fehlt hier aber
-// bewusst: UMP sagt nicht, ob ein Modell ohne Anmeldung läuft, und geraten wäre
-// er schlimmer als gar keiner. Der Slot ist für den Tag, an dem UMP es sagt.
+// The `badge` slot is reserved for a "runs without sign-in" note. UMP does not
+// report that yet, and guessing it would be worse than showing nothing.
 //
-// `gold` ist die Kachel der Startseite: dort steht sie auf Weiß und bräuchte
-// sonst einen Rahmen, den der Entwurf nicht hat.
+// `gold` is for the landing page, where a white tile on white would need a
+// border the design does not have.
 withDefaults(defineProps<{
   title: string
   description?: string

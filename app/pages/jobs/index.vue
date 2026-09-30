@@ -1,7 +1,7 @@
 <script setup lang="ts">
-// „Meine Szenarien": die eigenen Läufe aus GET /jobs/. Welche Läufe das sind,
-// entscheidet die API anhand des Tokens, den der Proxy anhängt — hier wird
-// bewusst nicht nachgefiltert, sonst gäbe es zwei Stellen, die Zugriff regeln.
+// "My scenarios": the user's own runs from GET /jobs/. The API decides which
+// runs these are based on the token the proxy attaches; no extra filtering
+// here, otherwise two places would control access.
 definePageMeta({ middleware: ['auth'] })
 
 const { t, locale } = useI18n()
@@ -26,8 +26,8 @@ const { data: jobs, pending, error, refresh } = useUmpJobs()
       </UButton>
     </div>
 
-    <!-- Fehlerzustand vor dem Leerzustand: „API antwortet nicht" darf nie wie
-         „keine Läufe" aussehen. -->
+    <!-- Error state before empty state: "API not responding" must never look
+         like "no runs". -->
     <p v-if="error" class="text-sm text-red-600">
       {{ t('jobs.error') }}
     </p>

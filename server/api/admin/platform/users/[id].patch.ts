@@ -1,9 +1,8 @@
-// Ein Konto aktivieren oder deaktivieren. Nur für platform admins (F11).
+// Enable or disable an account. Platform admins only.
 //
-// Deaktivieren heißt in Keycloak: das Konto bekommt kein neues Token mehr. Ein schon
-// ausgestelltes gilt aber bis zu seinem Ablauf weiter, deshalb werden danach alle
-// Sitzungen der Person beendet. Das eigene Konto ist ausgenommen, sonst sperrt man
-// sich aus.
+// Disabling in Keycloak only stops new tokens; tokens already issued stay valid until
+// they expire, so all of the user's sessions are ended as well. Admins cannot disable
+// their own account, so they cannot lock themselves out.
 export default defineEventHandler(async (event) => {
   const aufrufer = await requireRole(event, ROLE_PLATFORM_ADMIN)
   const id = nutzerIdAus(event)
@@ -17,7 +16,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, statusMessage: 'Das eigene Konto lässt sich hier nicht deaktivieren.' })
   }
 
-  // Keycloak übernimmt bei PUT nur die mitgeschickten Felder.
+  // Keycloak's PUT only updates the fields that are sent.
   await keycloakAdmin(`/users/${id}`, { method: 'PUT', body: { enabled: aktiv } })
   if (!aktiv) {
     await keycloakAdmin(`/users/${id}/logout`, { method: 'POST' })

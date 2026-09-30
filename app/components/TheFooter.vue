@@ -1,9 +1,8 @@
 <script setup lang="ts">
-// Fußzeile. Trägerangaben links, rechtliche Verweise rechts.
+// Footer: operator info on the left, legal links on the right.
 //
-// Barrierefreiheit steht bewusst mit drin: als öffentlich gefördertes Angebot
-// gehört die Erklärung dazu, und wer sie erst spät einplant, baut sie nie.
-// Die Ziele sind noch Platzhalter, die Seiten gibt es nicht.
+// The accessibility statement is included on purpose, as it is easiest to plan
+// for from the start. The targets are placeholders; the pages do not exist yet.
 const { t } = useI18n()
 
 const rechtliches = [

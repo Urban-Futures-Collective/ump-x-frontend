@@ -3,14 +3,14 @@ import type { ResultLayer, JobStatus  } from '~/types/ump'
 const POLL_INTERVAL_MS = 1000
 const POLL_MAX = 180
 
-// Orchestriert den vertikalen Durchstich: ausführen → Job pollen → Ergebnis holen.
-// Reaktiver Status für die UI; das Ergebnis-Layer kommt aus der Naht (useUmpResult).
+// Orchestrates the full flow: execute, poll the job, fetch the result. Reactive
+// status for the UI; the result layer comes from the seam (useUmpResult).
 export function useUmpRun() {
   const { execute, getJob } = useUmpExecute()
   const { fetchResult } = useUmpResult()
 
   const status = ref<JobStatus | 'idle'>('idle')
-  // Nach außen sichtbar, damit /run nach dem Start auf /jobs/{id} verweisen kann.
+  // Exposed so /run can link to /jobs/{id} after starting.
   const jobId = ref<string | null>(null)
   const progress = ref(0)
   const error = ref<string | null>(null)
@@ -36,8 +36,8 @@ export function useUmpRun() {
           return
         }
         if (job.status === 'failed' || job.status === 'dismissed') {
-          // Der Grund steht in der Meldung des Jobs, etwa „Upstream Timeout“ oder
-          // die Fehlermeldung des Modells. Nur ohne Meldung bleibt der Status.
+          // The reason is in the job message, e.g. "Upstream Timeout" or the
+          // model's error. Only without a message does the status key remain.
           error.value = job.message?.trim() || `job.${job.status}`
           return
         }
@@ -47,10 +47,10 @@ export function useUmpRun() {
     }
     catch (e) {
       status.value = 'failed'
-      // Der Grund aus dem Rumpf der Antwort, wenn einer mitkam (siehe
-      // apiError.ts). Sonst nur der Status als Schlüssel, den das Formular in
-      // einen Satz übersetzt: die rohe ofetch-Zeile „[POST] "…": 500" sagt
-      // niemandem etwas. Ohne Status (Netzfehler) bleibt die Meldung selbst.
+      // Use the reason from the response body if present (see apiError.ts).
+      // Otherwise pass the status as a key that the form turns into a sentence;
+      // the raw ofetch line `[POST] "...": 500` means nothing to users. Without
+      // a status (network error) keep the message itself.
       const httpStatus = apiErrorStatus(e)
       error.value = apiErrorExplanation(e) ?? (httpStatus ? `http.${httpStatus}` : apiErrorMessage(e))
     }

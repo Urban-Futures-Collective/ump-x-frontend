@@ -1,21 +1,21 @@
 <script setup lang="ts">
-// Commons: der Modell-Katalog nach dem Entwurf „Landing Screen“. Jedes Modell
-// eine Kachel, ein Klick führt zur Ausführung (/run?process=<id>). Rollen-Filter
-// passiert serverseitig in UMP, das Frontend braucht die Rollen dafür nicht.
+// Commons: the model catalog ("Landing Screen" design). Each model is a tile; a
+// click leads to execution (/run?process=<id>). Role filtering happens
+// server-side in UMP, so the frontend does not need the roles for this.
 const { t } = useI18n()
 const { loggedIn } = useOidcAuth()
 const { data: processes, pending, error, refresh } = useUmpProcesses()
 
-// Kacheln („Landing Screen“) oder Liste („Models list“). Gemerkt in einem Cookie
-// statt im localStorage: so rendert schon der Server die gewählte Ansicht, und
-// beim Laden springt nichts um.
+// Tiles ("Landing Screen") or list ("Models list"). Stored in a cookie rather
+// than localStorage so the server already renders the chosen view and nothing
+// jumps on load.
 const ansicht = useCookie<'tile' | 'row'>('ump-x-commons-ansicht', {
   default: () => 'tile',
   maxAge: 60 * 60 * 24 * 365,
   sameSite: 'lax',
 })
 
-// Dieselben drei Schritte wie auf der Startseite.
+// Same three steps as on the landing page.
 const schritte = ['choose', 'configure', 'take'] as const
 </script>
 
@@ -63,10 +63,10 @@ const schritte = ['choose', 'configure', 'take'] as const
         </p>
       </div>
 
-      <!-- Eigene Commons gibt es noch nicht, weder im Backend noch als
-           Datenhaltung. Der Knopf steht nach derselben Regel wie die geplanten
-           Einträge in der Seitenleiste da: sichtbar, damit man sieht, wohin es
-           geht, und ausgegraut, damit niemand ins Leere klickt. -->
+      <!-- User-owned Commons do not exist yet, neither in the backend nor as
+           storage. The button follows the same rule as the planned sidebar
+           items: visible to show where it is heading, disabled so nobody clicks
+           into nothing. -->
       <div class="flex items-center gap-4">
         <UIcon name="i-lucide-folder-pen" class="size-9 text-ufc-blue-500" />
         <UButton icon="i-lucide-plus" class="rounded-full" disabled>

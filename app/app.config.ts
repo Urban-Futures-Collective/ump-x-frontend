@@ -1,9 +1,9 @@
-// Farbrollen von Nuxt UI auf die Palette aus dem Logo legen. Die Skalen selbst
-// stehen in app/assets/css/main.css (@theme), weil Tailwind v4 Farben über
-// CSS-Variablen führt und es keine tailwind.config mehr gibt.
+// Map Nuxt UI color roles onto the logo palette. The scales themselves live in
+// app/assets/css/main.css (@theme): Tailwind v4 defines colors as CSS variables
+// and has no tailwind.config.
 //
-// Bewusst nur die Marken-Rollen umgebogen: success und error bleiben grün und
-// rot. Eine Fehlermeldung in Hausfarbe wäre hübsch und würde übersehen.
+// Only the brand roles are remapped; success and error stay green and red so
+// error messages are not lost in the brand colors.
 export default defineAppConfig({
   ui: {
     colors: {

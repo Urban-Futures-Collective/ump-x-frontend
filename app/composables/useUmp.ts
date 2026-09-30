@@ -1,6 +1,6 @@
-// Zentrale Base-URL fürs UMP (Proxy /ump) inklusive Versions-Präfix.
-// Einziger Ort, der Base + Version kennt (die „versionierte Base-URL"-Naht):
-// UMP 3.x mountet die OGC-Routen unter /v1.0/**, siehe nuxt.config.ts.
+// Central UMP base URL (proxy /ump) including the version prefix. The only place
+// that knows base + version (the "versioned base URL" seam): UMP 3.x mounts the
+// OGC routes under /v1.0/**, see nuxt.config.ts.
 export function useUmpBase() {
   const { umpBase, umpApiVersion } = useRuntimeConfig().public
   const base = umpApiVersion ? `${umpBase}/${umpApiVersion}` : umpBase

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { ResultLayer } from '~/types/ump'
 
-// Neues Szenario ausführen: übernimmt ProcessRunner + UmpMap + Ergebnis-Pfad aus der
-// bisherigen app.vue. Das Modell kommt via Query-Param (/run?process=<id>, gesetzt vom
-// Katalog); links steht eine kompakte Liste zum Wechseln, damit /run selbstständig nutzbar
-// ist. Route-Form (Query-Param vs. /commons/[id]/run) ist bewusst offen — Umstieg billig.
+// Run a new scenario. The model comes via query param (/run?process=<id>, set by
+// the catalog); a compact list on the left allows switching, so /run also works
+// on its own. The route shape (query param vs. /commons/[id]/run) is not fixed
+// yet and cheap to change.
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
@@ -19,11 +19,11 @@ const mapData = ref<ResultLayer | null>(null)
 function selectProcess(id: string) {
   selectedProcessId.value = id
   mapData.value = null
-  // Auswahl in der URL spiegeln → teilbarer Link, Reload-fest.
+  // Mirror the selection in the URL: shareable link, survives a reload.
   router.replace({ query: { process: id } })
 }
 
-// Wechselt der Query-Param (z. B. Navigation vom Katalog), Auswahl nachziehen.
+// If the query param changes (e.g. navigation from the catalog), follow it.
 watch(queryProcess, (id) => {
   if (id && id !== selectedProcessId.value) {
     selectedProcessId.value = id
@@ -34,7 +34,7 @@ watch(queryProcess, (id) => {
 
 <template>
   <div class="grid gap-6 lg:grid-cols-[20rem_1fr]">
-    <!-- Modell-Auswahl (kompakt) -->
+    <!-- Model selection (compact) -->
     <section class="space-y-3">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold">
@@ -71,8 +71,8 @@ watch(queryProcess, (id) => {
       </p>
     </section>
 
-    <!-- Runner + Karte. Ab xl nebeneinander: darunter bleiben zwei Spalten neben der
-         Modell-Liste zu schmal, sowohl für die Eingabefelder als auch für die Karte. -->
+    <!-- Runner + map. Side by side only from xl: below that, two columns next to
+         the model list are too narrow for both the inputs and the map. -->
     <section class="grid items-start gap-4 xl:grid-cols-2">
       <div class="space-y-4">
         <ProcessRunner

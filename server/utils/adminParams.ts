@@ -1,8 +1,8 @@
-// Pfad-Parameter der Admin-Routen prüfen, bevor sie in eine Keycloak-Adresse wandern.
+// Validate admin route path parameters before they end up in a Keycloak admin URL.
 import type { H3Event } from 'h3'
 
-// Keycloak-Nutzer-IDs sind UUIDs. Alles andere wird abgelehnt, damit niemand über den
-// Parameter einen anderen Pfad der Admin-API ansprechen kann (etwa „../clients“).
+// Keycloak user IDs are UUIDs. Anything else is rejected so the parameter cannot address
+// another path of the admin API (e.g. "../clients").
 export function nutzerIdAus(event: H3Event): string {
   const id = getRouterParam(event, 'id') ?? ''
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
@@ -11,9 +11,9 @@ export function nutzerIdAus(event: H3Event): string {
   return id
 }
 
-// Die Rolle aus dem Rumpf, nur aus der Allowlist der sechs Plattformrollen. Das ist
-// die zweite Hälfte der Prüfung aus F11: das Dienstkonto könnte jede Rolle vergeben,
-// auch realm-admin; was nicht auf der Liste steht, kommt hier nicht durch.
+// The role from the request body, accepted only from the allowlist of the six platform
+// roles. The service account could assign any role, including realm-admin; anything not
+// on the list is rejected here.
 export async function plattformRolleAus(event: H3Event): Promise<PlatformRole> {
   const body = await readBody<{ role?: unknown }>(event).catch(() => null)
   if (!isPlatformRole(body?.role)) {

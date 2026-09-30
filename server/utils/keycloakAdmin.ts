@@ -1,21 +1,19 @@
-// Zugang zur Keycloak-Admin-API über das Dienstkonto `ump-x-admin`.
+// Access to the Keycloak Admin REST API through a dedicated service account.
 //
-// Nie das Token der angemeldeten Person: dafür bräuchten echte Menschen
-// realm-management-Rechte, und die lägen dann in einer Browser-Sitzung (F11). Das
-// Dienstkonto meldet sich mit client_credentials an; sein Token bleibt auf dem Server
-// und geht nie an den Browser.
+// Never the signed-in user's token: that would require real people to hold
+// realm-management permissions inside a browser session. The service account uses
+// client_credentials; its token stays on the server and never reaches the browser.
 //
-// Das Konto darf viel (manage-users, manage-realm). Diese Datei ist deshalb bewusst
-// KEIN allgemeiner Durchgang wie der /ump-Proxy: wer sie aufruft, muss vorher selbst
-// geprüft haben, wer fragt und was er darf (requireRole, Allowlists). Jede Route ist
-// eine einzelne, benannte Operation.
+// The account is powerful (manage-users, manage-realm), so this is deliberately NOT a
+// generic passthrough like the /ump proxy: callers must first check who is asking and
+// what they may do (requireRole, allowlists). Each route is one named operation.
 
 interface TokenCache { token: string, gueltigBis: number }
 let cache: TokenCache | null = null
 
-// Aus der OIDC-Adresse des Realms die beiden Adressen, die wir brauchen. Keycloak ab
-// 17 hat kein /auth mehr davor, ältere Installationen schon; beides wird unterstützt,
-// weil nur `/realms/` durch `/admin/realms/` ersetzt wird.
+// Derive the two URLs we need from the realm's OIDC URL. Keycloak 17+ has no /auth
+// prefix, older installations do; both work because only `/realms/` is replaced by
+// `/admin/realms/`.
 export function keycloakAdminUrls(realmUrl: string) {
   const basis = realmUrl.replace(/\/+$/, '')
   if (!/\/realms\/[^/]+$/.test(basis)) {
@@ -27,11 +25,10 @@ export function keycloakAdminUrls(realmUrl: string) {
   }
 }
 
-// Die Realm-Adresse zur Laufzeit. NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL ist ein
-// Build-Argument (docs/deployment-de.md, „Die eine Falle“): nuxt-oidc-auth setzt daraus
-// beim Build die vollen Adressen wie `tokenUrl` zusammen, `baseUrl` selbst ist im
-// laufenden Container leer. Deshalb zuerst aus der `tokenUrl` ableiten, die sicher da
-// ist, und nur ersatzweise `baseUrl` nehmen.
+// Realm URL at runtime. NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL is a build argument
+// (see docs/deployment-de.md): nuxt-oidc-auth builds full URLs such as `tokenUrl` from it
+// at build time, while `baseUrl` itself is empty at runtime. So derive the realm URL from
+// `tokenUrl` first and fall back to `baseUrl`.
 export function realmUrlAus(provider: { baseUrl?: string, tokenUrl?: string } | undefined): string | undefined {
   const ausToken = provider?.tokenUrl?.replace(/\/protocol\/openid-connect\/token\/?$/, '')
   if (ausToken && ausToken !== provider?.tokenUrl && /^https?:\/\//.test(ausToken)) return ausToken
@@ -46,9 +43,9 @@ function einstellungen() {
     (config.oidc as { providers?: { keycloak?: { baseUrl?: string, tokenUrl?: string } } } | undefined)
       ?.providers?.keycloak,
   )
-  // 503 statt 500: nichts ist kaputt, es ist nur nicht eingerichtet. Genannt werden
-  // die NAMEN der fehlenden Einstellungen, nie ihre Werte: so sieht man im Browser,
-  // was in den Environment Settings fehlt, ohne dass ein Secret irgendwo erscheint.
+  // 503 rather than 500: nothing is broken, it is just not configured. Only the NAMES of
+  // missing settings are reported, never their values, so the browser shows what is
+  // missing without exposing a secret.
   const fehlend = [
     !clientId && 'NUXT_KEYCLOAK_ADMIN_CLIENT_ID',
     !clientSecret && 'NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET',
@@ -65,7 +62,7 @@ function einstellungen() {
 }
 
 async function dienstkontoToken(): Promise<string> {
-  // 30 s Puffer, damit ein Token nicht zwischen Prüfung und Aufruf abläuft.
+  // 30 s margin so a token cannot expire between check and call.
   if (cache && cache.gueltigBis > Date.now() + 30_000) return cache.token
   const { clientId, clientSecret, token } = einstellungen()
   const antwort = await $fetch<{ access_token: string, expires_in: number }>(token, {
@@ -92,8 +89,8 @@ export async function keycloakAdmin<T>(
     return await aufruf()
   }
   catch (e) {
-    // Token vorzeitig ungültig (Neustart von Keycloak, Secret gewechselt): einmal neu
-    // holen, dann aufgeben.
+    // Token invalidated early (Keycloak restart, rotated secret): fetch a new one once,
+    // then give up.
     if ((e as { statusCode?: number }).statusCode === 401) {
       cache = null
       return await aufruf()

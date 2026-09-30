@@ -1,7 +1,4 @@
-// Nutzerkonten auflisten. Nur lesend, nur für platform admins (F11).
-//
-// Die erste Admin-Route und bewusst die harmloseste: sie prüft die ganze Kette
-// (Sitzung, Rolle, Dienstkonto, Admin-API), ohne etwas zu verändern.
+// List user accounts. Read-only, platform admins only.
 interface KeycloakUser {
   id: string
   username: string
@@ -24,12 +21,12 @@ export default defineEventHandler(async (event) => {
     query: { search: suche, first: erster, max: anzahl, briefRepresentation: true },
   })
 
-  // Keycloak führt die Admin-Ereignisse unter dem Dienstkonto. Wer wirklich gefragt
-  // hat, steht nur hier (F11, „Where does human admin get recorded?“).
+  // Keycloak records admin events under the service account, so this log line is the
+  // only record of which person made the request.
   console.info(`[admin] ${aufrufer.sub} listet Nutzer (search="${suche}", first=${erster}, max=${anzahl})`)
 
   return nutzer
-    // Dienstkonten sind technische Konten, keine Personen, und gehören nicht in die Liste.
+    // Service accounts are technical accounts, not people.
     .filter(u => !u.username.startsWith('service-account-'))
     .map(u => ({
       id: u.id,
