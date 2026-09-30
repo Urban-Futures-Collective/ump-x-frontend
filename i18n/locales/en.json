@@ -74,7 +74,23 @@
       "enabled": "active",
       "disabled": "disabled",
       "empty": "No accounts found.",
-      "error": "The accounts could not be loaded: {msg}"
+      "error": "The accounts could not be loaded: {msg}",
+      "roles": "Roles"
+    },
+    "roles": {
+      "title": "Platform roles: {name}",
+      "viaDefault": "via the default roles, cannot be removed here",
+      "ownAdmin": "your own role, cannot be removed here",
+      "tokenHint": "Changes apply to {name} after their next sign-in or token refresh.",
+      "loadError": "The roles could not be loaded: {msg}",
+      "names": {
+        "user_role_viewer": "Viewer: browse models",
+        "user_role_user": "User: run models",
+        "user_role_provider": "Provider: submit models",
+        "user_role_verifier": "Verifier: review and publish models",
+        "user_role_access_admin": "Access admin: grant model access",
+        "user_role_platform_admin": "Platform admin: manage accounts and roles"
+      }
     }
   },
   "processes": {

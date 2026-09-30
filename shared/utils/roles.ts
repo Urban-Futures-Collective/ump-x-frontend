@@ -57,3 +57,23 @@ export function rolesOfSession(session: { claims?: unknown, userInfo?: unknown }
     ...rolesFrom(session?.userInfo as KeycloakRoleClaims | undefined),
   ])]
 }
+
+export type PlatformRole = typeof PLATFORM_ROLES[number]
+
+export function isPlatformRole(r: unknown): r is PlatformRole {
+  return typeof r === 'string' && (PLATFORM_ROLES as readonly string[]).includes(r)
+}
+
+// Wie eine Plattformrolle bei einem Konto steht. `direkt` heißt: am Konto selbst
+// vergeben, also hier entfernbar. Ist sie nur wirksam, aber nicht direkt vergeben,
+// kommt sie über eine zusammengesetzte Rolle, in der Regel die Standardrollen
+// (default-roles-urbanmodelplatform); entziehen lässt sie sich dann nicht am Konto.
+export interface PlatformRoleStatus { role: PlatformRole, wirksam: boolean, direkt: boolean }
+
+export function platformRoleStatus(direkt: string[], wirksam: string[]): PlatformRoleStatus[] {
+  return PLATFORM_ROLES.map(role => ({
+    role,
+    wirksam: wirksam.includes(role) || direkt.includes(role),
+    direkt: direkt.includes(role),
+  }))
+}

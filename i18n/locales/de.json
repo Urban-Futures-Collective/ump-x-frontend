@@ -74,7 +74,23 @@
       "enabled": "aktiv",
       "disabled": "deaktiviert",
       "empty": "Keine Konten gefunden.",
-      "error": "Die Konten konnten nicht geladen werden: {msg}"
+      "error": "Die Konten konnten nicht geladen werden: {msg}",
+      "roles": "Rollen"
+    },
+    "roles": {
+      "title": "Plattformrollen: {name}",
+      "viaDefault": "über die Standardrollen, hier nicht entziehbar",
+      "ownAdmin": "eigene Rolle, hier nicht entziehbar",
+      "tokenHint": "Änderungen gelten für {name} erst nach der nächsten Anmeldung bzw. Token-Erneuerung.",
+      "loadError": "Die Rollen konnten nicht geladen werden: {msg}",
+      "names": {
+        "user_role_viewer": "Viewer: Modelle ansehen",
+        "user_role_user": "User: Modelle ausführen",
+        "user_role_provider": "Provider: Modelle einreichen",
+        "user_role_verifier": "Verifier: Modelle prüfen und freigeben",
+        "user_role_access_admin": "Access admin: Modellzugriff vergeben",
+        "user_role_platform_admin": "Platform admin: Konten und Rollen verwalten"
+      }
     }
   },
   "processes": {

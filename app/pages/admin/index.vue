@@ -8,6 +8,15 @@
 definePageMeta({ middleware: ['auth', 'admin'] })
 const { t } = useI18n()
 const { isPlatformAdmin } = useUmpRoles()
+const { user } = useOidcAuth()
+const eigeneId = computed(() => (user.value?.userInfo as { sub?: string } | undefined)?.sub ?? null)
+
+// Das Konto, dessen Rollen gerade im Dialog offen sind.
+const rollenFuer = ref<{ id: string, username: string } | null>(null)
+const dialogOffen = computed({
+  get: () => rollenFuer.value !== null,
+  set: (offen) => { if (!offen) rollenFuer.value = null },
+})
 
 interface Konto {
   id: string
@@ -57,6 +66,7 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
             <th class="px-3 py-2 font-medium">{{ t('admin.users.name') }}</th>
             <th class="px-3 py-2 font-medium">{{ t('admin.users.email') }}</th>
             <th class="px-3 py-2 font-medium">{{ t('admin.users.status') }}</th>
+            <th class="px-3 py-2" />
           </tr>
         </thead>
         <tbody>
@@ -69,12 +79,29 @@ const { data: konten, pending, error, refresh } = await useFetch<Konto[]>('/api/
                 {{ k.enabled ? t('admin.users.enabled') : t('admin.users.disabled') }}
               </UBadge>
             </td>
+            <td class="px-3 py-2 text-right">
+              <UButton size="xs" variant="ghost" icon="i-lucide-shield-check" @click="rollenFuer = { id: k.id, username: k.username }">
+                {{ t('admin.users.roles') }}
+              </UButton>
+            </td>
           </tr>
           <tr v-if="!pending && !konten.length">
-            <td colspan="4" class="px-3 py-4 text-(--ui-text-muted)">{{ t('admin.users.empty') }}</td>
+            <td colspan="5" class="px-3 py-4 text-(--ui-text-muted)">{{ t('admin.users.empty') }}</td>
           </tr>
         </tbody>
       </table>
+
+      <UModal v-model:open="dialogOffen" :title="t('admin.roles.title', { name: rollenFuer?.username ?? '' })">
+        <template #body>
+          <AdminPlatformRoles
+            v-if="rollenFuer"
+            :key="rollenFuer.id"
+            :user-id="rollenFuer.id"
+            :username="rollenFuer.username"
+            :is-self="rollenFuer.id === eigeneId"
+          />
+        </template>
+      </UModal>
     </section>
 
     <p v-else class="text-(--ui-text-muted)">
