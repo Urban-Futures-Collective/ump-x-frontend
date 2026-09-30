@@ -235,9 +235,12 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
       </template>
 
       <!-- Content on its own lightly tinted surface, as in the design. Without
-           it white content sits on white and the header floats without an edge. -->
+           it white content sits on white and the header floats without an edge.
+           The panel body is a scrolling flex column: shrink-0 keeps the surface
+           from shrinking to the viewport height on long pages, min-h-full makes
+           it reach the bottom on short ones. -->
       <template #body>
-        <div class="min-h-full rounded-xl bg-ufc-blue-50/40 p-6 sm:p-8">
+        <div class="min-h-full shrink-0 rounded-xl bg-ufc-blue-50/40 p-6 sm:p-8">
           <slot />
         </div>
       </template>
