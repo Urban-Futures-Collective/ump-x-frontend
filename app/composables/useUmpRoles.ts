@@ -13,36 +13,15 @@
 // Voraussetzung fürs Admin-Gate: die Admin-Rollen landen in ID-Token oder Userinfo.
 // Siehe docs/model-access-admin-decision-de.md.
 
-const UMP_CLIENT = 'ump-client'
-// Seit 2026-09 das Rollenmodell aus dem Weekly (viewer, user, provider, verifier,
-// access admin, platform admin) als Realm-Rollen. `ump_admin` gibt es nicht mehr.
-// Beide Admin-Rollen öffnen das Admin-Portal (Rico, 2026-09-25). Was darin zu
-// sehen ist, hängt später davon ab, welche der beiden jemand hat.
-const ADMIN_ROLES = ['user_role_access_admin', 'user_role_platform_admin']
-
-// Nur die Claim-Teile, die wir für Rollen brauchen (Keycloak-Standardform).
-interface KeycloakRoleClaims {
-  realm_access?: { roles?: string[] }
-  resource_access?: Record<string, { roles?: string[] }>
-}
-
-// Zieht realm- + ump-client-Rollen aus einer Claim-Quelle (claims ODER userInfo).
-function rolesFrom(src: KeycloakRoleClaims | undefined): string[] {
-  if (!src) return []
-  return [
-    ...(src.realm_access?.roles ?? []),
-    ...(src.resource_access?.[UMP_CLIENT]?.roles ?? []),
-  ]
-}
+// Vokabular und Auslesen der Rollen liegen in shared/utils/roles.ts, weil der Server
+// für die Admin-Routen dieselben Namen prüft.
 
 export function useUmpRoles() {
   const { loggedIn, user } = useOidcAuth()
 
   const roles = computed<string[]>(() => {
     if (!loggedIn.value) return []
-    const fromClaims = rolesFrom(user.value?.claims as KeycloakRoleClaims | undefined)
-    const fromUserInfo = rolesFrom(user.value?.userInfo as KeycloakRoleClaims | undefined)
-    return [...new Set([...fromClaims, ...fromUserInfo])]
+    return rolesOfSession(user.value)
   })
 
   // Modell-Zugriffsrollen: `modelserver` (alle) + `modelserver_<id>` (je Modellserver).
@@ -51,8 +30,11 @@ export function useUmpRoles() {
     roles.value.filter(r => r === 'modelserver' || r.startsWith('modelserver_')),
   )
 
-  // Admin-Gate: hängt allein an den Admin-Rollen aus dem Token.
-  const isAdmin = computed(() => ADMIN_ROLES.some(r => roles.value.includes(r)))
+  // Admin-Gate: hängt allein an den Admin-Rollen aus dem Token. Die beiden Rollen
+  // einzeln, weil das Admin-Portal je nach Rolle andere Bereiche zeigt.
+  const isAccessAdmin = computed(() => roles.value.includes(ROLE_ACCESS_ADMIN))
+  const isPlatformAdmin = computed(() => roles.value.includes(ROLE_PLATFORM_ADMIN))
+  const isAdmin = computed(() => isAccessAdmin.value || isPlatformAdmin.value)
 
-  return { roles, modelServerRoles, isAdmin }
+  return { roles, modelServerRoles, isAdmin, isAccessAdmin, isPlatformAdmin }
 }

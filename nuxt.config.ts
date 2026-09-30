@@ -48,6 +48,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Ziel des Proxys (server-only). Prod: per NUXT_UMP_API_TARGET überschreiben.
     umpApiTarget: 'http://localhost:5003',
+    // Dienstkonto für die Keycloak-Admin-API (Rollenverwaltung, F11). Server-only, nie
+    // public: wer das Secret hat, kann den Realm verwalten. Per Env
+    // NUXT_KEYCLOAK_ADMIN_CLIENT_ID / NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET. Leer heißt:
+    // die Admin-Routen antworten mit 503 „nicht eingerichtet“.
+    keycloakAdminClientId: '',
+    keycloakAdminClientSecret: '',
     public: {
       umpBase: '/ump',
       // UMP 3.x mountet die OGC-Routen unter einem Versions-Präfix (/v1.0/processes …).

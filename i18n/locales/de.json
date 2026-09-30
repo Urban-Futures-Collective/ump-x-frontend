@@ -62,7 +62,20 @@
     "download": "Ergebnis herunterladen"
   },
   "admin": {
-    "title": "Administration"
+    "title": "Administration",
+    "users": {
+      "heading": "Nutzerkonten",
+      "search": "Name oder E-Mail",
+      "searchButton": "Suchen",
+      "username": "Nutzername",
+      "name": "Name",
+      "email": "E-Mail",
+      "status": "Status",
+      "enabled": "aktiv",
+      "disabled": "deaktiviert",
+      "empty": "Keine Konten gefunden.",
+      "error": "Die Konten konnten nicht geladen werden: {msg}"
+    }
   },
   "processes": {
     "title": "Modell-Prozesse",
