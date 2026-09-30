@@ -115,6 +115,21 @@ Containerstart neu** (mit Warnung im Log). Der Login funktioniert dann zwar, abe
 Redeploy und jeder Neustart wirft alle angemeldeten Nutzer raus, und bei mehr als einer
 Replica schlägt die Anmeldung sporadisch komplett fehl.
 
+Dienstkonto für die Rollenverwaltung (Admin-Portal), **nur serverseitig**. Der Client
+`ump-x-admin` im Realm hat nur „Service accounts roles“ an, mit den Rollen `view-users`,
+`query-users`, `manage-users`, `view-realm` und `manage-realm` aus `realm-management`.
+Wer das Secret hat, kann den Realm verwalten, es gehört nirgends sonst hin:
+
+```
+NUXT_KEYCLOAK_ADMIN_CLIENT_ID=ump-x-admin
+NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET=<aus Keycloak, Client ump-x-admin, Credentials-Tab>
+```
+
+Fehlen sie, antwortet `/api/admin/*` mit 503 und nennt die fehlenden Namen. Die
+Realm-Adresse liest der Server aus der beim Build gesetzten `tokenUrl` (siehe die Falle
+oben), eine eigene Variable dafür braucht es nicht. Stand 2026-09-30 nur auf Staging
+gesetzt.
+
 ## Keycloak: `ump-client` (Rico)
 
 Am Client `ump-client` im Realm `UrbanModelPlatform` müssen beide Domains eingetragen sein.

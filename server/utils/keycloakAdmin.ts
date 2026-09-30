@@ -27,19 +27,32 @@ export function keycloakAdminUrls(realmUrl: string) {
   }
 }
 
+// Die Realm-Adresse zur Laufzeit. NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL ist ein
+// Build-Argument (docs/deployment-de.md, „Die eine Falle“): nuxt-oidc-auth setzt daraus
+// beim Build die vollen Adressen wie `tokenUrl` zusammen, `baseUrl` selbst ist im
+// laufenden Container leer. Deshalb zuerst aus der `tokenUrl` ableiten, die sicher da
+// ist, und nur ersatzweise `baseUrl` nehmen.
+export function realmUrlAus(provider: { baseUrl?: string, tokenUrl?: string } | undefined): string | undefined {
+  const ausToken = provider?.tokenUrl?.replace(/\/protocol\/openid-connect\/token\/?$/, '')
+  if (ausToken && ausToken !== provider?.tokenUrl && /^https?:\/\//.test(ausToken)) return ausToken
+  return provider?.baseUrl || undefined
+}
+
 function einstellungen() {
   const config = useRuntimeConfig()
   const clientId = config.keycloakAdminClientId
   const clientSecret = config.keycloakAdminClientSecret
-  const realmUrl = (config.oidc as { providers?: { keycloak?: { baseUrl?: string } } } | undefined)
-    ?.providers?.keycloak?.baseUrl
+  const realmUrl = realmUrlAus(
+    (config.oidc as { providers?: { keycloak?: { baseUrl?: string, tokenUrl?: string } } } | undefined)
+      ?.providers?.keycloak,
+  )
   // 503 statt 500: nichts ist kaputt, es ist nur nicht eingerichtet. Genannt werden
   // die NAMEN der fehlenden Einstellungen, nie ihre Werte: so sieht man im Browser,
   // was in den Environment Settings fehlt, ohne dass ein Secret irgendwo erscheint.
   const fehlend = [
     !clientId && 'NUXT_KEYCLOAK_ADMIN_CLIENT_ID',
     !clientSecret && 'NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET',
-    !realmUrl && 'NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL',
+    !realmUrl && 'NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL (Build-Argument)',
   ].filter(Boolean)
   if (fehlend.length) {
     console.warn(`[admin] Keycloak-Admin-Zugang nicht eingerichtet, es fehlt: ${fehlend.join(', ')}`)
