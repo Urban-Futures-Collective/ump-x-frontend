@@ -12,7 +12,7 @@ describe('checkNewAccount', () => {
   })
 
   it('rejects usernames with spaces, slashes or a leading dot', () => {
-    for (const username of ['jane doe', 'a/b', '.jane', 'j', '']) {
+    for (const username of ['jane doe', 'a/b', '.jane', 'j', 'jd', '']) {
       expect(checkNewAccount({ ...valid, username }).problems).toContain('username')
     }
   })

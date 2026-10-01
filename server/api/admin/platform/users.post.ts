@@ -20,8 +20,15 @@ export default defineEventHandler(async (event) => {
     })
   }
   catch (e) {
-    if ((e as { statusCode?: number }).statusCode === 409) {
+    const err = e as { statusCode?: number, data?: { errorMessage?: string, error?: string, field?: string } }
+    if (err.statusCode === 409) {
       throw createError({ statusCode: 409, statusMessage: 'Nutzername oder E-Mail ist bereits vergeben.' })
+    }
+    // Keycloak explains a 400 in the body (e.g. its user profile rejecting a field);
+    // pass that on instead of a bare "Bad Request".
+    if (err.statusCode === 400) {
+      const reason = [err.data?.field, err.data?.errorMessage ?? err.data?.error].filter(Boolean).join(': ')
+      throw createError({ statusCode: 400, statusMessage: `Keycloak lehnt das Konto ab${reason ? `: ${reason}` : '.'}` })
     }
     throw e
   }

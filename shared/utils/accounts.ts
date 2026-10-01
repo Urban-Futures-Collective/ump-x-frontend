@@ -8,9 +8,9 @@ export interface NewAccount {
   lastName: string
 }
 
-// Keycloak stores usernames in lower case; restrict to characters that are safe in
-// URLs and logs.
-const USERNAME = /^[a-z0-9][a-z0-9._-]{1,49}$/
+// Keycloak stores usernames in lower case and, in its default user profile, requires at
+// least 3 characters; restrict further to characters that are safe in URLs and logs.
+const USERNAME = /^[a-z0-9][a-z0-9._-]{2,49}$/
 // Deliberately simple: Keycloak and the mail server decide the rest.
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
