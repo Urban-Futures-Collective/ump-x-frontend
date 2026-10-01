@@ -1,6 +1,4 @@
 // Assign a platform role. Platform admins only, allowlisted roles only.
-interface RoleRep { id: string, name: string }
-
 export default defineEventHandler(async (event) => {
   const caller = await requireRole(event, ROLE_PLATFORM_ADMIN)
   const id = userIdFrom(event)

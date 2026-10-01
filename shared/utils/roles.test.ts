@@ -34,11 +34,22 @@ describe('platformRoleStatus', () => {
     const status = platformRoleStatus(
       ['default-roles-urbanmodelplatform', 'user_role_platform_admin'],
       ['default-roles-urbanmodelplatform', 'user_role_viewer', 'user_role_user', 'user_role_provider', 'user_role_platform_admin', 'offline_access'],
+      ['user_role_viewer', 'user_role_user', 'user_role_provider', 'offline_access'],
     )
-    expect(status.find(s => s.role === 'user_role_platform_admin')).toEqual({ role: 'user_role_platform_admin', effective: true, direct: true })
-    expect(status.find(s => s.role === 'user_role_user')).toEqual({ role: 'user_role_user', effective: true, direct: false })
-    expect(status.find(s => s.role === 'user_role_verifier')).toEqual({ role: 'user_role_verifier', effective: false, direct: false })
+    expect(status.find(s => s.role === 'user_role_platform_admin')).toEqual({ role: 'user_role_platform_admin', effective: true, direct: true, viaDefault: false })
+    expect(status.find(s => s.role === 'user_role_user')).toEqual({ role: 'user_role_user', effective: true, direct: false, viaDefault: true })
+    expect(status.find(s => s.role === 'user_role_verifier')).toEqual({ role: 'user_role_verifier', effective: false, direct: false, viaDefault: false })
     expect(status).toHaveLength(6)
+  })
+
+  it('marks a role effective from elsewhere as neither direct nor via the default roles', () => {
+    const status = platformRoleStatus(['some-group-composite'], ['some-group-composite', 'user_role_verifier'], [])
+    expect(status.find(s => s.role === 'user_role_verifier')).toEqual({ role: 'user_role_verifier', effective: true, direct: false, viaDefault: false })
+  })
+
+  it('treats a role assigned directly as direct even if the default roles contain it', () => {
+    const status = platformRoleStatus(['user_role_viewer'], ['user_role_viewer'], ['user_role_viewer'])
+    expect(status.find(s => s.role === 'user_role_viewer')).toMatchObject({ direct: true, viaDefault: false })
   })
 })
 

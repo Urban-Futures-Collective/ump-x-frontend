@@ -82,8 +82,10 @@ interface Account {
   lastName: string | null
   enabled: boolean
   roles: BadgeRole[]
+  missing: DefaultRole[]
 }
 type BadgeRole = typeof BADGE_ROLES[number]
+type DefaultRole = typeof DEFAULT_ROLES[number]
 
 // Display name for a row: first and last name if Keycloak has them, else the username.
 function displayName(a: Account): string {
@@ -246,6 +248,15 @@ function search() {
               size="sm"
             >
               {{ t(`admin.roles.short.${role}`) }}
+            </UBadge>
+            <UBadge
+              v-for="role in row.original.missing"
+              :key="role"
+              color="warning"
+              variant="outline"
+              size="sm"
+            >
+              {{ t('admin.roles.without', { role: t(`admin.roles.short.${role}`) }) }}
             </UBadge>
           </div>
         </template>

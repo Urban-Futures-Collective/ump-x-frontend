@@ -28,8 +28,12 @@ export const PLATFORM_ROLES = [
   ROLE_PLATFORM_ADMIN,
 ] as const
 
-// The roles shown as badges in the account list. Viewer, User and Provider come with the
-// default roles, so nearly everyone has them and a badge would say nothing.
+// The platform roles contained in the realm's default roles, so every new account has
+// them. The account list marks an account that lacks one.
+export const DEFAULT_ROLES = [ROLE_VIEWER, ROLE_USER, ROLE_PROVIDER] as const
+
+// The roles shown as badges in the account list. The default roles are left out: nearly
+// everyone has them, so a badge would say nothing.
 export const BADGE_ROLES = [ROLE_VERIFIER, ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const
 
 // Both admin roles open the admin portal; which sections it shows depends on which of
@@ -66,15 +70,19 @@ export function isPlatformRole(r: unknown): r is PlatformRole {
   return typeof r === 'string' && (PLATFORM_ROLES as readonly string[]).includes(r)
 }
 
-// How a platform role applies to an account. `direct`: assigned on the account itself,
-// so it can be removed here. Effective but not direct means it comes from a composite
-// role, usually the realm's default roles, and cannot be revoked on the account.
-export interface PlatformRoleStatus { role: PlatformRole, effective: boolean, direct: boolean }
+// How a platform role applies to an account. `direct`: assigned on the account itself.
+// `viaDefault`: comes with the realm's default roles; revoking it replaces the default
+// role on the account by its other parts. Effective but neither of the two means it comes
+// from somewhere else (a group, another composite) and cannot be revoked here.
+export interface PlatformRoleStatus { role: PlatformRole, effective: boolean, direct: boolean, viaDefault: boolean }
 
-export function platformRoleStatus(direct: string[], effective: string[]): PlatformRoleStatus[] {
+// `fromDefault`: the realm roles the account gets through the default role, empty if the
+// account does not hold the default role.
+export function platformRoleStatus(direct: string[], effective: string[], fromDefault: string[] = []): PlatformRoleStatus[] {
   return PLATFORM_ROLES.map(role => ({
     role,
     effective: effective.includes(role) || direct.includes(role),
     direct: direct.includes(role),
+    viaDefault: !direct.includes(role) && fromDefault.includes(role),
   }))
 }
