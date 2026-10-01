@@ -28,6 +28,10 @@ export const PLATFORM_ROLES = [
   ROLE_PLATFORM_ADMIN,
 ] as const
 
+// The roles shown as badges in the account list. Viewer, User and Provider come with the
+// default roles, so nearly everyone has them and a badge would say nothing.
+export const BADGE_ROLES = [ROLE_VERIFIER, ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const
+
 // Both admin roles open the admin portal; which sections it shows depends on which of
 // the two a user has.
 export const ADMIN_ROLES = [ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const

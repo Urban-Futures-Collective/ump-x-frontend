@@ -3,9 +3,8 @@
 // matters (session first, then role). The middleware only hides UI; the data is protected
 // server-side in every route under server/api/admin/.
 //
-// Currently only the platform admin section: list accounts, enable and disable them,
-// assign platform roles. Creating accounts needs Keycloak to send email (password setup
-// invitation).
+// Currently only the platform admin section: list accounts page by page, create them with
+// an email invitation, enable and disable them, assign platform roles.
 import type { TableColumn } from '@nuxt/ui'
 
 definePageMeta({ middleware: ['auth', 'admin'] })
@@ -18,7 +17,12 @@ const ownId = computed(() => (user.value?.userInfo as { sub?: string } | undefin
 const rolesFor = ref<{ id: string, username: string } | null>(null)
 const dialogOpen = computed({
   get: () => rolesFor.value !== null,
-  set: (open) => { if (!open) rolesFor.value = null },
+  set: (open) => {
+    if (open) return
+    rolesFor.value = null
+    // The badges in the list may have changed.
+    refresh()
+  },
 })
 
 // Create-account dialog. Closing it after a successful creation resets the form.
@@ -77,7 +81,9 @@ interface Account {
   firstName: string | null
   lastName: string | null
   enabled: boolean
+  roles: BadgeRole[]
 }
+type BadgeRole = typeof BADGE_ROLES[number]
 
 // Display name for a row: first and last name if Keycloak has them, else the username.
 function displayName(a: Account): string {
@@ -94,9 +100,12 @@ function initialsOf(a: Account): string {
 const columns: TableColumn<Account>[] = [
   { id: 'person', accessorFn: displayName, header: () => t('admin.users.person') },
   { accessorKey: 'email', header: () => t('admin.users.email'), meta: { class: { th: 'hidden md:table-cell', td: 'hidden md:table-cell' } } },
+  { id: 'roles', header: () => t('admin.users.roles'), enableSorting: false, meta: { class: { th: 'hidden sm:table-cell', td: 'hidden sm:table-cell' } } },
   { accessorKey: 'enabled', header: () => t('admin.users.status') },
   { id: 'actions', enableSorting: false, meta: { class: { td: 'text-right w-0' } } },
 ]
+// Sorting only reorders the current page; Keycloak returns accounts by username and
+// cannot sort by anything else.
 const sorting = ref([{ id: 'person', desc: false }])
 
 function actionsFor(a: Account) {
@@ -131,13 +140,25 @@ function actionsFor(a: Account) {
   ]]
 }
 
+// The list loads one page at a time. The search term applies when the form is submitted,
+// not on every keystroke, and starts again at page one.
+const PAGE_SIZE = 25
 const searchTerm = ref('')
-const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/api/admin/platform/users', {
-  query: { search: searchTerm },
+const appliedSearch = ref('')
+const page = ref(1)
+const { data, pending, error, refresh } = await useFetch<{ accounts: Account[], total: number }>('/api/admin/platform/users', {
+  query: computed(() => ({ search: appliedSearch.value, first: (page.value - 1) * PAGE_SIZE, max: PAGE_SIZE })),
   immediate: isPlatformAdmin.value,
-  watch: false,
-  default: () => [],
+  default: () => ({ accounts: [], total: 0 }),
 })
+const accounts = computed(() => data.value.accounts)
+const total = computed(() => data.value.total)
+
+function search() {
+  page.value = 1
+  if (appliedSearch.value === searchTerm.value) refresh()
+  else appliedSearch.value = searchTerm.value
+}
 </script>
 
 <template>
@@ -153,7 +174,7 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
           {{ t('admin.users.heading') }}
         </h2>
         <div class="flex flex-wrap items-center gap-2">
-          <form class="flex items-center gap-2" @submit.prevent="refresh()">
+          <form class="flex items-center gap-2" @submit.prevent="search()">
             <UInput v-model="searchTerm" icon="i-lucide-search" :placeholder="t('admin.users.search')" size="sm" />
             <UButton type="submit" size="sm" variant="subtle" :loading="pending">
               {{ t('admin.users.searchButton') }}
@@ -215,6 +236,20 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
           <span class="text-(--ui-text-muted)">{{ row.original.email }}</span>
         </template>
 
+        <template #roles-cell="{ row }">
+          <div class="flex flex-wrap gap-1">
+            <UBadge
+              v-for="role in row.original.roles"
+              :key="role"
+              color="neutral"
+              variant="outline"
+              size="sm"
+            >
+              {{ t(`admin.roles.short.${role}`) }}
+            </UBadge>
+          </div>
+        </template>
+
         <template #enabled-cell="{ row }">
           <UBadge :color="row.original.enabled ? 'success' : 'neutral'" variant="subtle" size="sm">
             {{ row.original.enabled ? t('admin.users.enabled') : t('admin.users.disabled') }}
@@ -234,6 +269,13 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
           </UDropdownMenu>
         </template>
       </UTable>
+
+      <div v-if="total > PAGE_SIZE" class="flex flex-wrap items-center justify-between gap-2">
+        <p class="text-sm text-(--ui-text-muted)">
+          {{ t('admin.users.range', { from: (page - 1) * PAGE_SIZE + 1, to: Math.min(page * PAGE_SIZE, total), total }) }}
+        </p>
+        <UPagination v-model:page="page" :total="total" :items-per-page="PAGE_SIZE" size="sm" />
+      </div>
 
       <UModal v-model:open="confirmOpen" :title="t('admin.users.disableTitle', { name: toDisable?.username ?? '' })">
         <template #body>
