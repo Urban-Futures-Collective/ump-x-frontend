@@ -88,7 +88,7 @@
     },
     "roles": {
       "title": "Platform roles: {name}",
-      "viaDefault": "via the default roles, cannot be removed here",
+      "viaDefault": "via the default roles",
       "ownAdmin": "your own role, cannot be removed here",
       "tokenHint": "Changes apply to {name} after their next sign-in or token refresh.",
       "loadError": "The roles could not be loaded: {msg}",
@@ -101,10 +101,15 @@
         "user_role_platform_admin": "Platform admin: manage accounts and roles"
       },
       "short": {
+        "user_role_viewer": "Viewer",
+        "user_role_user": "User",
+        "user_role_provider": "Provider",
         "user_role_verifier": "Verifier",
         "user_role_access_admin": "Access admin",
         "user_role_platform_admin": "Platform admin"
-      }
+      },
+      "inherited": "via a group or another role, only changeable in Keycloak",
+      "without": "without {role}"
     },
     "create": {
       "open": "Create account",
