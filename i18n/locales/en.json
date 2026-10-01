@@ -83,7 +83,8 @@
       "person": "Person",
       "actions": "Actions for {name}",
       "resendInvitation": "Resend invitation",
-      "invitationSent": "Invitation sent to {name} again."
+      "invitationSent": "Invitation sent to {name} again.",
+      "range": "{from} to {to} of {total}"
     },
     "roles": {
       "title": "Platform roles: {name}",
@@ -98,6 +99,11 @@
         "user_role_verifier": "Verifier: review and publish models",
         "user_role_access_admin": "Access admin: grant model access",
         "user_role_platform_admin": "Platform admin: manage accounts and roles"
+      },
+      "short": {
+        "user_role_verifier": "Verifier",
+        "user_role_access_admin": "Access admin",
+        "user_role_platform_admin": "Platform admin"
       }
     },
     "create": {

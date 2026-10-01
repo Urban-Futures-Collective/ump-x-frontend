@@ -83,7 +83,8 @@
       "person": "Person",
       "actions": "Aktionen für {name}",
       "resendInvitation": "Einladung erneut senden",
-      "invitationSent": "Einladung an {name} erneut gesendet."
+      "invitationSent": "Einladung an {name} erneut gesendet.",
+      "range": "{from} bis {to} von {total}"
     },
     "roles": {
       "title": "Plattformrollen: {name}",
@@ -98,6 +99,11 @@
         "user_role_verifier": "Verifier: Modelle prüfen und freigeben",
         "user_role_access_admin": "Access admin: Modellzugriff vergeben",
         "user_role_platform_admin": "Platform admin: Konten und Rollen verwalten"
+      },
+      "short": {
+        "user_role_verifier": "Verifier",
+        "user_role_access_admin": "Access admin",
+        "user_role_platform_admin": "Platform admin"
       }
     },
     "create": {
