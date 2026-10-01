@@ -21,6 +21,29 @@ const dialogOpen = computed({
   set: (open) => { if (!open) rolesFor.value = null },
 })
 
+// Create-account dialog. Closing it after a successful creation resets the form.
+const createOpen = ref(false)
+const createKey = ref(0)
+watch(createOpen, (open) => { if (!open) createKey.value++ })
+
+// Re-sending the invitation, e.g. when it did not arrive or the link expired.
+const inviteInfo = ref<string | null>(null)
+async function resendInvitation(a: Account) {
+  statusError.value = null
+  inviteInfo.value = null
+  statusSaving.value = a.id
+  try {
+    await $fetch(`/api/admin/platform/users/${a.id}/invite`, { method: 'POST' })
+    inviteInfo.value = t('admin.users.invitationSent', { name: a.username })
+  }
+  catch (e) {
+    statusError.value = (e as { data?: { statusMessage?: string } }).data?.statusMessage ?? String(e)
+  }
+  finally {
+    statusSaving.value = null
+  }
+}
+
 // The account about to be disabled. Disabling asks for confirmation because it signs the
 // user out immediately; enabling does not.
 const toDisable = ref<{ id: string, username: string } | null>(null)
@@ -84,6 +107,12 @@ function actionsFor(a: Account) {
       icon: 'i-lucide-shield-check',
       onSelect: () => { rolesFor.value = { id: a.id, username: a.username } },
     },
+    {
+      label: t('admin.users.resendInvitation'),
+      icon: 'i-lucide-send',
+      disabled: !a.email || statusSaving.value !== null,
+      onSelect: () => { resendInvitation(a) },
+    },
   ], [
     a.enabled
       ? {
@@ -123,13 +152,22 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
         <h2 class="text-lg font-semibold">
           {{ t('admin.users.heading') }}
         </h2>
-        <form class="flex items-center gap-2" @submit.prevent="refresh()">
-          <UInput v-model="searchTerm" icon="i-lucide-search" :placeholder="t('admin.users.search')" size="sm" />
-          <UButton type="submit" size="sm" variant="subtle" :loading="pending">
-            {{ t('admin.users.searchButton') }}
+        <div class="flex flex-wrap items-center gap-2">
+          <form class="flex items-center gap-2" @submit.prevent="refresh()">
+            <UInput v-model="searchTerm" icon="i-lucide-search" :placeholder="t('admin.users.search')" size="sm" />
+            <UButton type="submit" size="sm" variant="subtle" :loading="pending">
+              {{ t('admin.users.searchButton') }}
+            </UButton>
+          </form>
+          <UButton size="sm" icon="i-lucide-user-plus" @click="() => { createOpen = true }">
+            {{ t('admin.create.open') }}
           </UButton>
-        </form>
+        </div>
       </div>
+
+      <p v-if="inviteInfo" class="text-sm text-(--ui-text-muted)">
+        {{ inviteInfo }}
+      </p>
 
       <p v-if="statusError" class="text-sm text-red-600">
         {{ statusError }}
@@ -217,6 +255,12 @@ const { data: accounts, pending, error, refresh } = await useFetch<Account[]>('/
               {{ t('admin.users.disable') }}
             </UButton>
           </div>
+        </template>
+      </UModal>
+
+      <UModal v-model:open="createOpen" :title="t('admin.create.title')">
+        <template #body>
+          <AdminCreateAccount :key="createKey" @created="refresh()" />
         </template>
       </UModal>
 

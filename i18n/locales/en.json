@@ -81,7 +81,9 @@
       "disableTitle": "Disable {name}?",
       "disableText": "{name} can no longer sign in and is signed out everywhere right away. Roles and runs are kept, and the account can be enabled again at any time.",
       "person": "Person",
-      "actions": "Actions for {name}"
+      "actions": "Actions for {name}",
+      "resendInvitation": "Resend invitation",
+      "invitationSent": "Invitation sent to {name} again."
     },
     "roles": {
       "title": "Platform roles: {name}",
@@ -97,6 +99,22 @@
         "user_role_access_admin": "Access admin: grant model access",
         "user_role_platform_admin": "Platform admin: manage accounts and roles"
       }
+    },
+    "create": {
+      "open": "Create account",
+      "title": "Create account",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "username": "Username",
+      "usernameHint": "Lower case letters, digits, dot, dash",
+      "required": "Required",
+      "emailInvalid": "Not a valid email address",
+      "usernameInvalid": "2 to 50 characters: lower case letters, digits, dot, dash, underscore",
+      "inviteHint": "The person receives an email with a link to set their password and confirm their address. The link is valid for three days.",
+      "submit": "Create and invite",
+      "invited": "Account {name} created, the invitation is on its way to {email}.",
+      "notInvited": "Account {name} created, but the invitation could not be sent. You can send it again from the menu in the list."
     }
   },
   "processes": {

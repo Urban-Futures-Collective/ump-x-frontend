@@ -81,7 +81,9 @@
       "disableTitle": "{name} deaktivieren?",
       "disableText": "{name} kann sich danach nicht mehr anmelden und wird sofort überall abgemeldet. Rollen und Läufe bleiben erhalten, das Konto lässt sich jederzeit wieder aktivieren.",
       "person": "Person",
-      "actions": "Aktionen für {name}"
+      "actions": "Aktionen für {name}",
+      "resendInvitation": "Einladung erneut senden",
+      "invitationSent": "Einladung an {name} erneut gesendet."
     },
     "roles": {
       "title": "Plattformrollen: {name}",
@@ -97,6 +99,22 @@
         "user_role_access_admin": "Access admin: Modellzugriff vergeben",
         "user_role_platform_admin": "Platform admin: Konten und Rollen verwalten"
       }
+    },
+    "create": {
+      "open": "Konto anlegen",
+      "title": "Konto anlegen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "username": "Nutzername",
+      "usernameHint": "Kleinbuchstaben, Ziffern, Punkt, Strich",
+      "required": "Pflichtfeld",
+      "emailInvalid": "Keine gültige E-Mail-Adresse",
+      "usernameInvalid": "2 bis 50 Zeichen: Kleinbuchstaben, Ziffern, Punkt, Strich, Unterstrich",
+      "inviteHint": "Die Person bekommt eine E-Mail mit einem Link, über den sie ihr Passwort setzt und ihre Adresse bestätigt. Der Link gilt drei Tage.",
+      "submit": "Anlegen und einladen",
+      "invited": "Konto {name} angelegt, die Einladung ist an {email} unterwegs.",
+      "notInvited": "Konto {name} angelegt, aber die Einladung konnte nicht gesendet werden. Sie lässt sich in der Liste über das Menü erneut senden."
     }
   },
   "processes": {
