@@ -10,6 +10,17 @@ const jobId = computed(() => String(route.params.id))
 const { job, result, resultError, pending, error, refresh } = useUmpJob(jobId)
 
 const duration = computed(() => formatDuration(job.value?.created, job.value?.finished))
+
+// While the run is still going, reload it every few seconds so status, progress and
+// finally the result appear without pressing refresh.
+const REFRESH_MS = 5000
+const unfinished = computed(() => job.value?.status === 'accepted' || job.value?.status === 'running')
+let timer: ReturnType<typeof setTimeout> | undefined
+watch([unfinished, pending], ([open, loading]) => {
+  clearTimeout(timer)
+  if (open && !loading && import.meta.client) timer = setTimeout(() => refresh(), REFRESH_MS)
+}, { immediate: true })
+onBeforeUnmount(() => clearTimeout(timer))
 </script>
 
 <template>
@@ -116,6 +127,9 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           {{ resultError }}
         </p>
       </div>
+      <p v-else-if="unfinished" class="text-sm text-(--ui-text-muted)">
+        {{ t('jobs.resultPending') }}
+      </p>
       <p v-else-if="job.status !== 'successful'" class="text-sm text-(--ui-text-muted)">
         {{ t('jobs.noResult') }}
       </p>

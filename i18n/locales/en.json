@@ -59,7 +59,8 @@
       "failed": "failed",
       "dismissed": "dismissed"
     },
-    "download": "Download result"
+    "download": "Download result",
+    "resultPending": "The result appears here as soon as the run has finished."
   },
   "admin": {
     "title": "Administration",
@@ -156,8 +157,7 @@
     "defaultHint": "Leave empty for the default {value}.",
     "job": {
       "failed": "the run failed without giving a reason",
-      "dismissed": "the run was dismissed",
-      "timeout": "the run did not finish in time"
+      "dismissed": "the run was dismissed"
     },
     "locked": {
       "heading": "This model is not released for you",
@@ -167,7 +167,8 @@
     "http": {
       "server": "the server stopped the run with an internal error and gave no reason (HTTP {status}).",
       "rejected": "the request was rejected without a reason (HTTP {status})."
-    }
+    },
+    "slow": "This run takes longer. You can leave the page: it keeps running and shows up under My scenarios."
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",

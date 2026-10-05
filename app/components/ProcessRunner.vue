@@ -9,7 +9,7 @@ const { t } = useI18n()
 // watch below ran on the server before the detail arrived, server and client
 // rendered different values and every field hit a hydration mismatch.
 const { data: proc, pending: loadingProc } = await useUmpProcess(() => props.processId)
-const { run, jobId, status, progress, error, result, running } = useUmpRun()
+const { run, jobId, status, progress, error, result, running, slow } = useUmpRun()
 
 // A job that fails without a message only yields its status as a key, a
 // response without a body only its HTTP status. Translate those two; anything
@@ -116,6 +116,10 @@ async function onSubmit() {
           :process-id="processId"
         />
       </div>
+
+      <p v-if="running && slow" class="text-sm text-(--ui-text-muted)">
+        {{ t('run.slow') }}
+      </p>
 
       <p v-if="errorText" class="text-sm text-red-600">
         {{ t('run.error', { msg: errorText }) }}
