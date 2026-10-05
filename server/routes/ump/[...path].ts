@@ -80,6 +80,14 @@ export default defineEventHandler(async (event) => {
       headers[key] = value
     }
   }
+  // A download is a plain link, so the browser asks for HTML first. UMP passes that on,
+  // and a pygeoapi model server then answers with its HTML page instead of the data.
+  // Downloads ask for data; */* still lets through formats such as zip or tiff.
+  // Node delivers header names in lower case, so this replaces the browser's value.
+  if (requestedName) {
+    headers.accept = 'application/geo+json, application/json;q=0.9, */*;q=0.5'
+  }
+
   // getUserSession returns {} without a session; accessToken is only set with
   // exposeAccessToken (server-side only).
   const session = await getUserSession(event).catch(() => null)
