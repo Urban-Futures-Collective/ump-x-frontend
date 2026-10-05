@@ -59,7 +59,8 @@
       "failed": "fehlgeschlagen",
       "dismissed": "abgebrochen"
     },
-    "download": "Ergebnis herunterladen"
+    "download": "Ergebnis herunterladen",
+    "resultPending": "Das Ergebnis erscheint hier, sobald der Lauf fertig ist."
   },
   "admin": {
     "title": "Administration",
@@ -156,8 +157,7 @@
     "defaultHint": "Leer lassen für die Vorgabe {value}.",
     "job": {
       "failed": "der Lauf ist fehlgeschlagen, ohne Angabe von Gründen",
-      "dismissed": "der Lauf wurde abgebrochen",
-      "timeout": "der Lauf ist nicht rechtzeitig fertig geworden"
+      "dismissed": "der Lauf wurde abgebrochen"
     },
     "locked": {
       "heading": "Dieses Modell ist für dich nicht freigegeben",
@@ -167,7 +167,8 @@
     "http": {
       "server": "der Server hat den Lauf mit einem internen Fehler abgebrochen und keinen Grund genannt (HTTP {status}).",
       "rejected": "die Anfrage wurde ohne Begründung abgelehnt (HTTP {status})."
-    }
+    },
+    "slow": "Der Lauf dauert länger. Du kannst die Seite verlassen: Er rechnet weiter und erscheint unter Meine Szenarien."
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",
