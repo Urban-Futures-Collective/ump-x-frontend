@@ -35,6 +35,17 @@ export function cleanInputs(
       body[field.name] = text === 'true' || text === '1'
       continue
     }
+    // Objects and arrays (e.g. a drawn geometry) are held as JSON text in the form.
+    // Text that is not JSON is not sent; inputProblem reports it.
+    if (field.type === 'object' || field.type === 'array') {
+      try {
+        body[field.name] = JSON.parse(text)
+      }
+      catch {
+        // Reported by inputProblem.
+      }
+      continue
+    }
     body[field.name] = text
   }
 
@@ -56,6 +67,7 @@ export type InputProblem
     | { key: 'minimum', limit: number }
     | { key: 'maximum', limit: number }
     | { key: 'pattern', pattern: string }
+    | { key: 'json' }
 
 export function inputProblem(field: InputRule, value: unknown): InputProblem | null {
   const text = value == null ? '' : String(value).trim()
@@ -65,6 +77,15 @@ export function inputProblem(field: InputRule, value: unknown): InputProblem | n
   if (field.default != null && text === String(field.default)) return null
 
   const schema = field.schema ?? {}
+  if (field.type === 'object' || field.type === 'array') {
+    try {
+      JSON.parse(text)
+      return null
+    }
+    catch {
+      return { key: 'json' }
+    }
+  }
   if (field.type === 'integer' || field.type === 'number') {
     const n = Number(text)
     if (!Number.isFinite(n) || (field.type === 'integer' && !Number.isInteger(n))) return { key: 'number' }

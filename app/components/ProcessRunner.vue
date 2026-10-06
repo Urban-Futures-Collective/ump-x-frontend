@@ -114,6 +114,11 @@ async function onSubmit() {
             {{ inp.description }}
           </p>
         </div>
+        <GeometryInput
+          v-else-if="isGeometryInput(inp.schema)"
+          v-model="form[inp.name]!"
+          :schema="inp.schema"
+        />
         <UInput
           v-else
           :id="`in-${inp.name}`"

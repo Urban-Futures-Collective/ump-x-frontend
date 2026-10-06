@@ -102,3 +102,14 @@ describe('inputProblem', () => {
     expect(inputProblem({ name: 'a', type: 'string', schema: { pattern: '(?P<x>a)' } }, 'b')).toBeNull()
   })
 })
+
+describe('object inputs', () => {
+  const area = { name: 'area', type: 'object' }
+  it('sends JSON text as an object', () => {
+    expect(cleanInputs([area], { area: '{"type":"Point","coordinates":[13,52]}' })).toEqual({ area: { type: 'Point', coordinates: [13, 52] } })
+  })
+  it('does not send text that is not JSON, and reports it', () => {
+    expect(cleanInputs([area], { area: 'Beelitz' })).toEqual({})
+    expect(inputProblem(area, 'Beelitz')).toEqual({ key: 'json' })
+  })
+})
