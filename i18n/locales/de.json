@@ -168,7 +168,15 @@
       "server": "der Server hat den Lauf mit einem internen Fehler abgebrochen und keinen Grund genannt (HTTP {status}).",
       "rejected": "die Anfrage wurde ohne Begründung abgelehnt (HTTP {status})."
     },
-    "slow": "Der Lauf dauert länger. Du kannst die Seite verlassen: Er rechnet weiter und erscheint unter Meine Szenarien."
+    "slow": "Der Lauf dauert länger. Du kannst die Seite verlassen: Er rechnet weiter und erscheint unter Meine Szenarien.",
+    "invalid": {
+      "required": "Pflichtfeld",
+      "number": "Bitte eine Zahl eingeben",
+      "minimum": "Mindestens {limit}",
+      "maximum": "Höchstens {limit}",
+      "pattern": "Passt nicht zum erwarteten Format: {pattern}",
+      "json": "Keine gültige Eingabe"
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",
@@ -347,5 +355,18 @@
   },
   "map": {
     "notMappable": "Dieses Ergebnis lässt sich nicht auf einer Karte zeigen. Herunterladen geht trotzdem."
+  },
+  "geometry": {
+    "search": "Ort suchen, z. B. Fichtenwalde",
+    "searchButton": "Suchen",
+    "searchError": "Die Ortssuche hat nicht geantwortet.",
+    "hint": {
+      "Polygon": "Auf die Karte klicken, um Eckpunkte zu setzen; Doppelklick schließt das Gebiet. Ecken lassen sich danach verschieben.",
+      "LineString": "Auf die Karte klicken, um die Linie zu zeichnen; Doppelklick beendet sie.",
+      "Point": "Auf die Karte klicken, um Punkte zu setzen. Punkte lassen sich danach verschieben."
+    },
+    "area": "Fläche {km2} km²",
+    "count": "{n} Punkte",
+    "clear": "Löschen"
   }
 }

@@ -21,6 +21,7 @@ three links currently lead to a 404.
 | UMP jobs | Keycloak ID of the user who started a run, inputs, results | Running models, "My Scenarios" | No deletion yet, kept indefinitely | Retention period, deletion on account removal |
 | Invitation emails | Email address, name | Account invitation | Mail server logs on the Plesk host | Mention in the privacy policy |
 | Base map | IP address, page area viewed | Map display | Third party | Tiles come from `tile.openstreetmap.org` (OSM Foundation, UK); disclose, or serve tiles via an own proxy or tile server |
+| Place search on the map | Search term, IP address | Jump to a place when drawing an area or points | Third party | Requests go from the browser to `nominatim.openstreetmap.org` (OSM Foundation, UK), only when the user searches; disclose together with the map tiles |
 | AI chat | Chat messages, job summaries the chat looks up | Assistant for models and runs | Third party, depending on provider | Requests go from the browser directly to the provider the user selects (OpenRouter, OpenAI, Anthropic or a compatible endpoint), often outside the EU. Needs a notice in the chat and in the privacy policy |
 | MCP server (`mcp.urbanfuturescollective.org`) | Requests from external clients with the user's token | Access for external AI clients | Not checked | Add to the inventory once its logging is known |
 
