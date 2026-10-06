@@ -61,7 +61,25 @@ function defaultInvisible(inp: { type: string, default?: unknown }) {
   return isNumberField && !Number.isFinite(Number(inp.default))
 }
 
+// Rules from the schema, checked before sending. A field shows its problem once it has
+// a value; empty required fields only after the first attempt to send, so a fresh
+// form is not covered in red.
+const attempted = ref(false)
+watch(() => props.processId, () => { attempted.value = false })
+const problems = computed(() => Object.fromEntries(
+  (proc.value?.inputs ?? []).map(inp => [inp.name, inputProblem(inp, form.value[inp.name])]),
+))
+function shownProblem(name: string) {
+  const p = problems.value[name]
+  if (!p || (p.key === 'required' && !attempted.value)) return null
+  return p.key === 'pattern'
+    ? t('run.invalid.pattern', { pattern: p.pattern })
+    : t(`run.invalid.${p.key}`, 'limit' in p ? { limit: p.limit } : {})
+}
+
 async function onSubmit() {
+  attempted.value = true
+  if (Object.values(problems.value).some(Boolean)) return
   // The rule lives in app/utils/processInputs.ts because the chat applies it
   // too; two copies would disagree about the "auto" default.
   await run(props.processId, cleanInputs(proc.value?.inputs ?? [], form.value))
@@ -85,13 +103,30 @@ async function onSubmit() {
           {{ inp.title }}
           <span v-if="inp.required" class="text-(--ui-error)">*</span>
         </label>
+        <!-- Yes/no as a switch; the form keeps text values, so it stores "true"/"false". -->
+        <div v-if="inp.type === 'boolean'" class="space-y-1">
+          <USwitch
+            :id="`in-${inp.name}`"
+            :model-value="form[inp.name] === 'true'"
+            @update:model-value="on => { form[inp.name] = on ? 'true' : 'false' }"
+          />
+          <p v-if="inp.description" class="text-xs text-(--ui-text-dimmed)">
+            {{ inp.description }}
+          </p>
+        </div>
         <UInput
+          v-else
           :id="`in-${inp.name}`"
           v-model="form[inp.name]"
           :type="inp.type === 'integer' || inp.type === 'number' ? 'number' : 'text'"
           :placeholder="inp.description"
+          :color="shownProblem(inp.name) ? 'error' : undefined"
+          :highlight="!!shownProblem(inp.name)"
           class="w-full"
         />
+        <p v-if="shownProblem(inp.name)" class="text-xs text-red-600">
+          {{ shownProblem(inp.name) }}
+        </p>
         <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
           {{ t('run.defaultHint', { value: String(inp.default) }) }}
         </p>

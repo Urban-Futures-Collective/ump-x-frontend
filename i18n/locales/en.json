@@ -168,7 +168,14 @@
       "server": "the server stopped the run with an internal error and gave no reason (HTTP {status}).",
       "rejected": "the request was rejected without a reason (HTTP {status})."
     },
-    "slow": "This run takes longer. You can leave the page: it keeps running and shows up under My scenarios."
+    "slow": "This run takes longer. You can leave the page: it keeps running and shows up under My scenarios.",
+    "invalid": {
+      "required": "Required",
+      "number": "Please enter a number",
+      "minimum": "At least {limit}",
+      "maximum": "At most {limit}",
+      "pattern": "Does not match the expected format: {pattern}"
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",

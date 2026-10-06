@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cleanInputs, type InputField } from './processInputs'
+import { cleanInputs, inputProblem, type InputField } from './processInputs'
 
 // Form and chat share this rule; two copies would mean the chat builds a call
 // that fails while the same call from the form succeeds. Hence the tests.
@@ -70,5 +70,35 @@ describe('cleanInputs', () => {
       toggle: 'false',
     })
     expect(body).toEqual({ required_field: 'Musterstadt', number_without_default: 200 })
+  })
+})
+
+describe('inputProblem', () => {
+  it('reports an empty required field, but not an empty optional one', () => {
+    expect(inputProblem({ name: 'a', type: 'string', required: true }, ' ')).toEqual({ key: 'required' })
+    expect(inputProblem({ name: 'a', type: 'string' }, '')).toBeNull()
+  })
+
+  it('checks a pattern from the schema', () => {
+    const field = { name: 'city_id', type: 'string', schema: { pattern: '^[a-z0-9][a-z0-9-]{1,62}$' } }
+    expect(inputProblem(field, 'Beelitz')).toEqual({ key: 'pattern', pattern: '^[a-z0-9][a-z0-9-]{1,62}$' })
+    expect(inputProblem(field, 'beelitz')).toBeNull()
+  })
+
+  it('checks numbers against type, minimum and maximum', () => {
+    const field = { name: 'res', type: 'number', schema: { minimum: 1, maximum: 100 } }
+    expect(inputProblem(field, 'abc')).toEqual({ key: 'number' })
+    expect(inputProblem(field, '0.5')).toEqual({ key: 'minimum', limit: 1 })
+    expect(inputProblem(field, '101')).toEqual({ key: 'maximum', limit: 100 })
+    expect(inputProblem(field, '30')).toBeNull()
+    expect(inputProblem({ name: 'n', type: 'integer' }, '1.5')).toEqual({ key: 'number' })
+  })
+
+  it('accepts an unchanged word default in a number field', () => {
+    expect(inputProblem({ name: 'n', type: 'integer', default: 'auto' }, 'auto')).toBeNull()
+  })
+
+  it('ignores a pattern JavaScript cannot read', () => {
+    expect(inputProblem({ name: 'a', type: 'string', schema: { pattern: '(?P<x>a)' } }, 'b')).toBeNull()
   })
 })

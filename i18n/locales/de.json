@@ -168,7 +168,14 @@
       "server": "der Server hat den Lauf mit einem internen Fehler abgebrochen und keinen Grund genannt (HTTP {status}).",
       "rejected": "die Anfrage wurde ohne Begründung abgelehnt (HTTP {status})."
     },
-    "slow": "Der Lauf dauert länger. Du kannst die Seite verlassen: Er rechnet weiter und erscheint unter Meine Szenarien."
+    "slow": "Der Lauf dauert länger. Du kannst die Seite verlassen: Er rechnet weiter und erscheint unter Meine Szenarien.",
+    "invalid": {
+      "required": "Pflichtfeld",
+      "number": "Bitte eine Zahl eingeben",
+      "minimum": "Mindestens {limit}",
+      "maximum": "Höchstens {limit}",
+      "pattern": "Passt nicht zum erwarteten Format: {pattern}"
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",
