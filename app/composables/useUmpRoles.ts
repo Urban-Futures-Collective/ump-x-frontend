@@ -30,6 +30,9 @@ export function useUmpRoles() {
   const isAccessAdmin = computed(() => roles.value.includes(ROLE_ACCESS_ADMIN))
   const isPlatformAdmin = computed(() => roles.value.includes(ROLE_PLATFORM_ADMIN))
   const isAdmin = computed(() => isAccessAdmin.value || isPlatformAdmin.value)
+  // Model registry roles: providers contribute models, verifiers review them.
+  const isProvider = computed(() => roles.value.includes(ROLE_PROVIDER))
+  const isVerifier = computed(() => roles.value.includes(ROLE_VERIFIER))
 
-  return { roles, modelServerRoles, isAdmin, isAccessAdmin, isPlatformAdmin }
+  return { roles, modelServerRoles, isAdmin, isAccessAdmin, isPlatformAdmin, isProvider, isVerifier }
 }

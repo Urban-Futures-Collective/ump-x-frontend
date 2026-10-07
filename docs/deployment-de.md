@@ -130,6 +130,14 @@ Realm-Adresse liest der Server aus der beim Build gesetzten `tokenUrl` (siehe di
 oben), eine eigene Variable dafür braucht es nicht. Stand 2026-09-30 nur auf Staging
 gesetzt.
 
+Prototypen mit Beispieldaten (Modellregister: Beitragen und Prüfen) erscheinen nur, wenn
+dieser Schalter gesetzt ist. Er wirkt zur Laufzeit, ohne neuen Build. Auf Produktion nicht
+setzen, solange die Registry-API fehlt:
+
+```
+NUXT_PUBLIC_PROTOTYPES=true
+```
+
 ## Keycloak: `ump-client` (Rico)
 
 Am Client `ump-client` im Realm `UrbanModelPlatform` müssen beide Domains eingetragen sein.

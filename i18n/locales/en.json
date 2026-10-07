@@ -19,7 +19,10 @@
       "report": "Report"
     },
     "chat": "Chat",
-    "help": "Read Me"
+    "help": "Read Me",
+    "contribute": "Contribute",
+    "verify": "Verify",
+    "verifyNew": "{n} new"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -377,5 +380,166 @@
     "area": "Area {km2} km²",
     "count": "{n} points",
     "clear": "Clear"
+  },
+  "prototype": {
+    "title": "Prototype with sample data",
+    "text": "This page shows how contributing and verifying will work. The models are samples; nothing is saved or sent to a server. After a reload everything is back to the start.",
+    "reset": "Reset",
+    "badge": "Prototype"
+  },
+  "legal": {
+    "draftTitle": "Draft",
+    "draftText": "This text is not final and not legally reviewed. Marked passages are still missing.",
+    "germanOnly": "This page is only available in German."
+  },
+  "registry": {
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "in_review": "In review",
+      "changes_requested": "Changes requested",
+      "rejected": "Rejected",
+      "verified": "Verified",
+      "published": "Published",
+      "deactivated": "Deactivated"
+    },
+    "changedOn": "Changed on {date}",
+    "by": "by {name}",
+    "search": "Search models",
+    "noMatch": "No matching models.",
+    "notFound": "This model does not exist.",
+    "yes": "yes",
+    "no": "no",
+    "cancel": "Cancel",
+    "contribute": {
+      "title": "Contribute models",
+      "intro": "Submit models from your model server here. Once reviewed, they appear in Commons.",
+      "new": "New model",
+      "mine": "My models",
+      "empty": "You have not submitted any models yet."
+    },
+    "new": {
+      "title": "New model",
+      "server": "Model server",
+      "serverWhy": "The server your model runs on. It has to speak OGC API Processes. Its name becomes the prefix of the model id.",
+      "serverPick": "Server",
+      "newServer": "Register a new server",
+      "name": "Name",
+      "nameHint": "e.g. modelserver-1",
+      "nameInvalid": "Lower case letters, digits and dashes only, 2 to 63 characters",
+      "url": "Address",
+      "urlInvalid": "Please give an address starting with https://",
+      "auth": "Authentication",
+      "authWhy": "How the platform signs in to your server. Credentials are stored encrypted and never shown again.",
+      "user": "User",
+      "password": "Password",
+      "token": "Key",
+      "secretNote": "The prototype neither stores nor sends credentials.",
+      "discover": "Fetch processes",
+      "processes": "Choose processes",
+      "processesWhy": "These processes are offered by the server. Each one you choose becomes a model of its own.",
+      "next": "Next, fill in the model card for each model and submit it.",
+      "create": "Create as draft ({n})"
+    },
+    "auth": {
+      "NoAuth": "None",
+      "BasicAuth": "User and password",
+      "ApiKey": "API key",
+      "BearerToken": "Bearer token"
+    },
+    "card": {
+      "title": "Model card",
+      "why": "What OGC does not describe: what the model is for, where its limits are and under which licence it is published. Required in the main language, the other language is optional.",
+      "defaultLang": "Main language",
+      "defaultLangHint": "All texts must be filled in this language.",
+      "fullName": "Name",
+      "shortDescription": "Short description",
+      "purpose": "Purpose",
+      "limitationsRisks": "Limitations and risks",
+      "license": "Licence",
+      "licenseHint": "SPDX identifier, e.g. MIT",
+      "version": "Version",
+      "repository": "Source code",
+      "missing": "Missing before submitting: {fields}",
+      "complete": "The model card is complete.",
+      "saved": "Saved",
+      "save": "Save",
+      "empty": "not given"
+    },
+    "action": {
+      "submitted": "Submit for review",
+      "draft": "Withdraw submission",
+      "in_review": "Take over review",
+      "verified": "Verify",
+      "changes_requested": "Request changes",
+      "rejected": "Reject",
+      "published": "Publish",
+      "deactivated": "Deactivate"
+    },
+    "noteTitle": {
+      "changes_requested": "Request from the review",
+      "rejected": "Reason for rejection",
+      "deactivated": "Reason for deactivation"
+    },
+    "explain": {
+      "draft": "Not submitted yet. Fill in the model card and submit the model for review.",
+      "submitted": "Submitted. Waiting for someone to take over the review. Until then you can withdraw it.",
+      "in_review": "Being reviewed.",
+      "changes_requested": "The review has a request. Update the model card and submit again.",
+      "rejected": "The model was rejected.",
+      "verified": "Reviewed and confirmed. It will be published soon.",
+      "published": "Published and visible in Commons. Changes to the model card apply right away.",
+      "deactivated": "Deactivated. New runs are not possible."
+    },
+    "verifyExplain": {
+      "draft": "Draft, not submitted yet.",
+      "submitted": "Waiting for review. Take over the review to decide.",
+      "in_review": "Check model card and interface, start a test run and decide.",
+      "changes_requested": "Changes requested. Waiting for the provider.",
+      "rejected": "Rejected.",
+      "verified": "Verified. Publish now?",
+      "published": "Published. If the interface changes, the review can be reopened.",
+      "deactivated": "Deactivated."
+    },
+    "noteLabel": {
+      "changes_requested": "What should be changed?",
+      "rejected": "Why is the model rejected?",
+      "deactivated": "Why is the model deactivated?"
+    },
+    "facts": {
+      "title": "Technical details",
+      "process": "Model id",
+      "owner": "Submitted by",
+      "interface": "Interface",
+      "verifiedBy": "Verified by",
+      "inputs": "Inputs",
+      "noInputs": "Not read from the server yet.",
+      "inputName": "Name",
+      "inputType": "Type",
+      "inputRequired": "Required",
+      "history": "History",
+      "noHistory": "No status changes yet."
+    },
+    "interface": {
+      "in_sync": "unchanged since the review",
+      "drifted": "changed since the review",
+      "unchecked": "not checked yet"
+    },
+    "verify": {
+      "title": "Verify models",
+      "intro": "Review, confirm and publish submitted models. Your own models are always reviewed by someone else.",
+      "fresh": "Newly submitted",
+      "noneFresh": "No new submissions.",
+      "all": "All models",
+      "allStatuses": "All statuses",
+      "filter": "Filter by status",
+      "ownModel": "This is your own model. Someone else has to review and publish it.",
+      "decide": "Review",
+      "testRun": "Start test run",
+      "testRunNote": "Test runs are not possible in the prototype. Later, reviewers start a run here, also before the model is published.",
+      "publishNote": "On publishing, UMP-X creates the access role {role} in Keycloak.",
+      "noteVisible": "The provider sees this text."
+    },
+    "me": "me"
   }
 }

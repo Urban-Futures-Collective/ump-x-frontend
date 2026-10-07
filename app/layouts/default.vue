@@ -6,8 +6,9 @@ import type { BreadcrumbItem, NavigationMenuItem } from '@nuxt/ui'
 const { t, locale, locales, setLocale } = useI18n()
 const route = useRoute()
 const { loggedIn, user, login, logout } = useOidcAuth()
-const { isAdmin } = useUmpRoles()
-const { accountUrl } = useRuntimeConfig().public
+const { isAdmin, isProvider, isVerifier } = useUmpRoles()
+const { accountUrl, prototypes } = useRuntimeConfig().public
+const { awaitingReview } = useRegistryPrototype()
 
 // The chat lives in a slide-over so it does not push the workspace aside.
 const chatOpen = ref(false)
@@ -24,6 +25,20 @@ const navItems = computed<NavigationMenuItem[]>(() => {
     { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/commons' },
     { label: t('nav.jobs'), icon: 'i-lucide-history', to: '/jobs' },
   ]
+  // Model registry as a prototype with sample data, only where switched on
+  // (NUXT_PUBLIC_PROTOTYPES) and for the matching role.
+  if (prototypes && isProvider.value) {
+    items.push({ label: t('nav.contribute'), icon: 'i-lucide-file-plus-2', to: '/contribute', badge: { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' } })
+  }
+  if (prototypes && isVerifier.value) {
+    const n = awaitingReview.value.length
+    items.push({
+      label: t('nav.verify'),
+      icon: 'i-lucide-list-checks',
+      to: '/verify',
+      badge: n ? { label: t('nav.verifyNew', { n }), color: 'info', variant: 'subtle', size: 'sm' } : { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' },
+    })
+  }
   if (isAdmin.value) {
     items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
   }
@@ -35,7 +50,7 @@ const navItems = computed<NavigationMenuItem[]>(() => {
 // users can see where the product is heading.
 const plannedItems = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.planned.projects'), icon: 'i-lucide-folder', disabled: true },
-  { label: t('nav.planned.contribute'), icon: 'i-lucide-file-plus-2', disabled: true },
+  ...(prototypes ? [] : [{ label: t('nav.planned.contribute'), icon: 'i-lucide-file-plus-2', disabled: true }]),
   { label: t('nav.planned.data'), icon: 'i-lucide-git-fork', disabled: true },
   { label: t('nav.planned.report'), icon: 'i-lucide-file-text', disabled: true },
 ])
