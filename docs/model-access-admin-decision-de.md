@@ -8,7 +8,7 @@
 > UMP 3 hat den Schreibweg zu Keycloak bewusst entfernt: es prüft Tokens offline gegen JWKS
 > und hält kein Admin-Secret. Die Verwaltung liegt deshalb im **Frontend**, dessen Server
 > sich als eigenes Dienstkonto `ump-x-admin` bei der Keycloak-Admin-API anmeldet.
-> Festgehalten in Ricos Konzept F11 (`urban-model-platform`, Branch
+> Festgehalten im Konzept F11 (`urban-model-platform`, Branch
 > `v3.0.0alpha/user-management-db`, `reports/REF-F11-role-administration.md`).
 >
 > Was sich außerdem geändert hat:
