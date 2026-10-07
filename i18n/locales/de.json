@@ -545,5 +545,9 @@
       "noteVisible": "Die Anbieterin oder der Anbieter sieht diesen Text."
     },
     "me": "ich"
+  },
+  "results": {
+    "legend": "Legende",
+    "indicators": "Kennzahlen"
   }
 }

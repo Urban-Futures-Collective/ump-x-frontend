@@ -86,7 +86,10 @@ watch(queryProcess, (id) => {
         </p>
       </div>
 
-      <UmpMap :layer="mapData" />
+      <div class="space-y-4">
+        <UmpMap :layer="mapData" />
+        <ResultIndicators :layer="mapData" />
+      </div>
     </section>
   </div>
 </template>
