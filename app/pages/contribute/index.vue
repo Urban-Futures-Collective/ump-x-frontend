@@ -6,13 +6,8 @@ const { t, locale } = useI18n()
 const { myModels } = useRegistryPrototype()
 
 const search = ref('')
-const shown = computed(() => {
-  const q = search.value.trim().toLowerCase()
-  if (!q) return myModels.value
-  return myModels.value.filter(m =>
-    [inLang(m.fullName, locale.value, m.defaultLang), inLang(m.shortDescription, locale.value, m.defaultLang), m.remoteProcessId]
-      .some(s => s.toLowerCase().includes(q)))
-})
+const shown = computed(() => myModels.value.filter(m => matchesSearch(search.value,
+  inLang(m.fullName, locale.value, m.defaultLang), inLang(m.shortDescription, locale.value, m.defaultLang), m.serverName, m.remoteProcessId)))
 </script>
 
 <template>

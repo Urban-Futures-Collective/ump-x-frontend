@@ -63,7 +63,9 @@
       "dismissed": "abgebrochen"
     },
     "download": "Ergebnis herunterladen",
-    "resultPending": "Das Ergebnis erscheint hier, sobald der Lauf fertig ist."
+    "resultPending": "Das Ergebnis erscheint hier, sobald der Lauf fertig ist.",
+    "search": "Szenarien durchsuchen",
+    "noMatch": "Kein Szenario passt zu „{q}“."
   },
   "admin": {
     "title": "Administration",
@@ -149,7 +151,9 @@
     "view": {
       "tiles": "Kachelansicht",
       "list": "Listenansicht"
-    }
+    },
+    "search": "Modelle durchsuchen",
+    "noMatch": "Kein Modell passt zu „{q}“."
   },
   "run": {
     "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",

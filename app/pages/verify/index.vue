@@ -5,7 +5,7 @@ import type { RegistryStatus } from '~/types/registry'
 // Drafts are the owner's business and not listed. Prototype with sample data.
 definePageMeta({ middleware: ['auth', 'prototype', 'verifier'] })
 const { t, locale } = useI18n()
-const { models, awaitingReview } = useRegistryPrototype()
+const { models, awaitingReview, ownerLabel } = useRegistryPrototype()
 
 const search = ref('')
 const statusFilter = ref<RegistryStatus | 'all'>('all')
@@ -15,18 +15,15 @@ const statusItems = computed(() => [
     .map(s => ({ label: t(`registry.status.${s}`), value: s })),
 ])
 
-const matches = (q: string) => (m: (typeof models.value)[number]) => !q
-  || [inLang(m.fullName, locale.value, m.defaultLang), m.remoteProcessId, m.serverName].some(s => s.toLowerCase().includes(q))
+const matches = (m: (typeof models.value)[number]) =>
+  matchesSearch(search.value, inLang(m.fullName, locale.value, m.defaultLang), m.serverName, m.remoteProcessId, ownerLabel(m))
 
-const all = computed(() => {
-  const q = search.value.trim().toLowerCase()
-  return models.value
-    .filter(m => m.status !== 'draft')
-    .filter(m => statusFilter.value === 'all' || m.status === statusFilter.value)
-    .filter(matches(q))
-    .sort((a, b) => b.statusChangedAt.localeCompare(a.statusChangedAt))
-})
-const fresh = computed(() => awaitingReview.value.filter(matches(search.value.trim().toLowerCase())))
+const all = computed(() => models.value
+  .filter(m => m.status !== 'draft')
+  .filter(m => statusFilter.value === 'all' || m.status === statusFilter.value)
+  .filter(matches)
+  .sort((a, b) => b.statusChangedAt.localeCompare(a.statusChangedAt)))
+const fresh = computed(() => awaitingReview.value.filter(matches))
 </script>
 
 <template>
