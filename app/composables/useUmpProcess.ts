@@ -5,6 +5,9 @@ export interface OgcInput {
   description?: string
   minOccurs?: number
   schema?: { type?: string, default?: unknown }
+  // Model server extensions, see inputKinds.ts. Not standard OGC; ignored if absent.
+  'x-ump-group'?: string
+  'x-ump-relevant-if'?: Record<string, unknown[]>
 }
 export interface OgcOutput {
   title?: string
@@ -59,6 +62,8 @@ export function useUmpProcess(id: MaybeRefOrGetter<string>) {
         // Keep the full schema: the form needs only type and default, but the
         // AI tool schema also needs enum, minimum and maximum.
         schema: v.schema as Record<string, unknown> | undefined,
+        group: inputGroup(v['x-ump-group']),
+        relevantIf: v['x-ump-relevant-if'],
       })),
     }),
   })

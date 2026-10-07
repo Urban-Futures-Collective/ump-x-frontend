@@ -113,3 +113,27 @@ describe('object inputs', () => {
     expect(inputProblem(area, 'Beelitz')).toEqual({ key: 'json' })
   })
 })
+
+describe('choices, dates and exclusive limits', () => {
+  it('accepts only offered values', () => {
+    const f = { name: 'indicator', type: 'string', schema: { enum: ['utci_max', 'utci_at_time'] } }
+    expect(inputProblem(f, 'utci_max')).toBeNull()
+    expect(inputProblem(f, 'other')).toEqual({ key: 'choice' })
+    expect(inputProblem({ name: 'n', type: 'integer', schema: { enum: [10, 30] } }, '30')).toBeNull()
+  })
+
+  it('checks dates, also as the alternative to fixed values', () => {
+    expect(inputProblem({ name: 'date', type: 'string', schema: { format: 'date' } }, '2026-02-30')).toEqual({ key: 'date' })
+    expect(inputProblem({ name: 'date', type: 'string', schema: { format: 'date' } }, '2026-07-20')).toBeNull()
+    const weather = { name: 'weather', type: 'string', schema: { oneOf: [{ enum: ['hot_day'] }, { format: 'date' }] } }
+    expect(inputProblem(weather, 'hot_day')).toBeNull()
+    expect(inputProblem(weather, '2022-07-20')).toBeNull()
+    expect(inputProblem(weather, 'cold_day')).toEqual({ key: 'choice' })
+  })
+
+  it('checks exclusive limits', () => {
+    const f = { name: 'resolution', type: 'number', schema: { exclusiveMinimum: 0 } }
+    expect(inputProblem(f, '0')).toEqual({ key: 'above', limit: 0 })
+    expect(inputProblem(f, '0.5')).toBeNull()
+  })
+})

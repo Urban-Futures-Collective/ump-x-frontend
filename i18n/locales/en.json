@@ -175,7 +175,16 @@
       "minimum": "At least {limit}",
       "maximum": "At most {limit}",
       "pattern": "Does not match the expected format: {pattern}",
-      "json": "Not a valid value"
+      "json": "Not a valid value",
+      "choice": "Please choose one of the offered values",
+      "date": "Not a valid date",
+      "above": "Greater than {limit}",
+      "below": "Less than {limit}"
+    },
+    "advanced": "Advanced settings ({n})",
+    "field": {
+      "none": "Not set",
+      "pickDate": "Pick a date …"
     }
   },
   "footer": {
