@@ -83,8 +83,9 @@ const title = computed(() => model.value ? inLang(model.value.fullName, locale.v
 
       <UAlert
         v-if="model.statusNote && (model.status === 'changes_requested' || model.status === 'rejected' || model.status === 'deactivated')"
-        :color="model.status === 'changes_requested' ? 'warning' : 'error'"
+        color="neutral"
         variant="subtle"
+        :ui="{ icon: model.status === 'changes_requested' ? 'text-(--ui-warning)' : 'text-(--ui-error)' }"
         icon="i-lucide-message-square"
         :title="t(`registry.noteTitle.${model.status}`)"
         :description="model.statusNote"

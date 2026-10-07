@@ -10,7 +10,8 @@ export function useRegistryPrototype() {
   const servers = useState<RegistryServer[]>('registry-prototype-servers', sampleServers)
   const { isProvider, isVerifier, isPlatformAdmin } = useUmpRoles()
   const { user } = useOidcAuth()
-  const myName = computed(() => String(user.value?.userName ?? '') || 'ich')
+  const { t } = useI18n()
+  const myName = computed(() => String(user.value?.userName ?? '') || t('registry.me'))
 
   function actorFor(m: RegistryModel) {
     return { isOwner: m.ownerSub === ME, isProvider: isProvider.value, isVerifier: isVerifier.value, isPlatformAdmin: isPlatformAdmin.value }

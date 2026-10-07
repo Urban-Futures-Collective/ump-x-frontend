@@ -6,12 +6,15 @@ const { reset } = useRegistryPrototype()
 </script>
 
 <template>
+  <!-- Neutral text with a warning icon: the warning colour as text colour is too pale
+       to read on its light background. -->
   <UAlert
-    color="warning"
+    color="neutral"
     variant="subtle"
     icon="i-lucide-flask-conical"
+    :ui="{ icon: 'text-(--ui-warning)' }"
     :title="t('prototype.title')"
     :description="t('prototype.text')"
-    :actions="[{ label: t('prototype.reset'), color: 'warning', variant: 'outline', onClick: reset }]"
+    :actions="[{ label: t('prototype.reset'), color: 'neutral', variant: 'outline', onClick: reset }]"
   />
 </template>

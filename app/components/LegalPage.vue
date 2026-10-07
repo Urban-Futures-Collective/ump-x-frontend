@@ -13,9 +13,10 @@ const { t, locale } = useI18n()
     </h1>
     <UAlert
       v-if="draft"
-      color="warning"
+      color="neutral"
       variant="subtle"
       icon="i-lucide-file-pen"
+      :ui="{ icon: 'text-(--ui-warning)' }"
       :title="t('legal.draftTitle')"
       :description="t('legal.draftText')"
     />

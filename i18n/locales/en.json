@@ -539,6 +539,7 @@
       "testRunNote": "Test runs are not possible in the prototype. Later, reviewers start a run here, also before the model is published.",
       "publishNote": "On publishing, UMP-X creates the access role {role} in Keycloak.",
       "noteVisible": "The provider sees this text."
-    }
+    },
+    "me": "me"
   }
 }
