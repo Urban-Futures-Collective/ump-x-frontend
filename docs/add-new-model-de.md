@@ -1,6 +1,6 @@
 # Ein neues Modell zur UMP hinzufügen
 
-*Stand 2026-09-18. Aussagen über laufende Systeme sind im Text einzeln datiert.*
+*Stand 2026-09-18, `providers.yaml`-Format 2026-10-07. Aussagen über laufende Systeme sind im Text einzeln datiert.*
 
 **Kurz gesagt:** Ein neues Modell ist fast vollständig eine **Backend-/Plattform-Sache**.
 Am **Frontend** muss in der Regel **nichts** geändert werden — es listet automatisch, was
@@ -93,22 +93,29 @@ docker exec urban-model-platform-api-1 \
 Erst wenn das die Prozess-Ids ausgibt, lohnt sich Schritt 3.
 
 ### 3. `providers.yaml` — den Modellserver registrieren  *(die zentrale Datei)*
-Einen neuen Top-Level-Block ergänzen:
+Einen neuen Listeneintrag ergänzen. Seit UMP 3 ist die Datei eine **Liste** von
+Modellservern, die Prozesse sind ebenfalls eine Liste mit `id`. Am sichersten einen
+bestehenden Eintrag kopieren, dann stimmen die Einrückungen (Stand Staging 2026-10-07):
 
 ```yaml
-deinmodell:
-    name: deinmodell
-    url: "http://dein-container:80"        # interne Container-URL (Name + interner Port)
-    authentication:                         # OPTIONAL — weglassen = kein Auth
-      type: "BasicAuth"
-      user: "user"
-      password: "password"
-    timeout: 1800
-    processes:
-      prozess-id:                           # muss der Prozess-ID auf dem Modell-Server entsprechen
-        result-storage: "remote"            # siehe Tabelle unten
-        anonymous-access: true              # true = ohne Login ausführbar | false = nur mit Rolle
+- name: deinmodell
+  url: "https://deinmodell.urbanfuturescollective.org"   # öffentliche Adresse, siehe unten
+  ttw-job-done: 300                     # Sekunden, die UMP auf das Ende eines Laufs wartet
+  authentication:                       # optional; weglassen = keine Anmeldung
+    type: "BasicAuth"
+    user: "ump"
+    password: "<Passwort des Modellservers>"
+  processes:
+    - id: prozess-id                    # muss der Prozess-ID auf dem Modellserver entsprechen
+      result-storage: "remote"          # siehe Tabelle unten
+      anonymous-access: true            # true = ohne Anmeldung ausführbar, false = nur mit Rolle
 ```
+
+Auf dem UFC-Server erreicht UMP die Modellserver über ihre öffentlichen Adressen: Plesk
+nimmt HTTPS an (Subdomain mit Let's Encrypt, nginx-Direktive
+`proxy_pass http://127.0.0.1:8085;`) und reicht an Dokploys Traefik weiter, der nach
+Domain an den Container verteilt (Domain-Eintrag in Dokploy mit HTTPS aus). Beispiel:
+`osmnx-modelserver`.
 
 **`result-storage`:**
 
