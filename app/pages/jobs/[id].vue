@@ -135,6 +135,7 @@ onBeforeUnmount(() => clearTimeout(timer))
       </p>
 
       <UmpMap v-if="result" :layer="result" />
+      <ResultIndicators v-if="result" :layer="result" />
     </template>
   </section>
 </template>

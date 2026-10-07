@@ -545,5 +545,9 @@
       "noteVisible": "The provider sees this text."
     },
     "me": "me"
+  },
+  "results": {
+    "legend": "Legend",
+    "indicators": "Key figures"
   }
 }
