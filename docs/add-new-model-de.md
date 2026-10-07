@@ -21,6 +21,20 @@ exponiert — z. B. via pygeoapi). UMP registriert diesen Server und reicht sein
 Als durchgearbeitetes Beispiel dient die growbike-Einbindung, siehe
 [`runbook-growbike-modelserver-de.md`](./runbook-growbike-modelserver-de.md).
 
+> **Nachtrag 2026-10-07:**
+> - **Rolle nicht vergessen.** Für ein Modell ohne `anonymous-access` braucht es in Keycloak
+>   die Client-Rolle am `ump-client`, benannt wie der Modellserver (z. B. `umep-modelserver`),
+>   und sie muss den Konten zugewiesen sein. Ohne die Rolle lehnt UMP jeden Lauf mit
+>   „Missing role …“ ab. Die Rolle steht nicht in der Sitzungsansicht von UMP-X, nur im
+>   Zugangstoken; prüfen lässt sie sich in der Keycloak-Konsole unter Users → Role mapping.
+> - **Formular und Karte entstehen aus dem Schema.** Je genauer die Prozessbeschreibung
+>   (`enum`, `format: date`, `format: geojson-geometry`, `minimum`, `pattern`), desto besser
+>   das Formular. Ein Leitfaden dazu liegt im umep-modelserver-Repo
+>   (`docs/process-descriptions.md`).
+> - **Dieser Handweg wird abgelöst** durch das geplante Modellregister (Konzept F12): Server
+>   eintragen, Modellkarte, Prüfung und Rollenanlage dann über UMP-X. Vorschau als Prototyp
+>   unter „Beitragen“ und „Prüfen“.
+
 ---
 
 ## Backend (`urban-model-platform`) — hier passiert die Arbeit

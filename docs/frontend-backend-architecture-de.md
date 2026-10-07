@@ -1,6 +1,6 @@
 # Frontend ↔ Backend: Architektur-Entscheidung (UMP-X)
 
-**Status:** Vorschlag / zur Abstimmung
+**Status:** umgesetzt, Stand 2026-10-07 nachgetragen
 **Datum:** 2026-06-21
 **Kontext:** UMP-X (Nuxt-4-Frontend für die Urban Model Platform). Das UMP-Backend wird parallel auf eine **hexagonale Architektur** umgestellt (Flask → FastAPI), der Umbau wird aber **voraussichtlich nicht innerhalb der Förderung fertig**.
 
@@ -43,6 +43,8 @@ Bei den „Planned Adapters" stehen **GeoServer Result Storage** (WFS/WMS publis
 
 → **„Job-Ergebnis holen → kartenfertiges Layer" in genau einer Funktion/Composable kapseln.** Das ist die einzige Stelle, an der das Frontend echte Arbeit bekommt, wenn der Umbau landet. Hier die Naht am saubersten ziehen.
 
+**Stand 2026-10-07:** Die Naht ist `useUmpResult` plus `resultLayers` (Layer aus dem deklarierten Output). Inline-GeoJSON wird gezeigt, mit den Farben, die ein Modell pro Objekt mitliefert (simplestyle). Noch nicht gezeigt werden Ergebnisse, die aus mehreren Ebenen oder Rastern bestehen. Ein Modellserver (umep) bietet seine Ebenen bereits als OGC-API-Features-Collections an (GeoJSON, ohne Anmeldung lesbar); es fehlt der Link vom Ergebnis zur Collection. UMP holt Ergebnisse ohne Accept-Header ab, ein pygeoapi-Modellserver antwortet dann mit HTML (Issue im UMP-Repo).
+
 ### Auth (bleibt)
 Der geplante Keycloak-Adapter (JWT, Realm-Roles) ändert das Auth-Konzept nicht. Unser OIDC-Ansatz ist davon nicht betroffen.
 
@@ -66,10 +68,13 @@ Die hexagonale Architektur **nicht im Frontend nachbauen** (keine formalen Ports
 
 ## Was wir schon haben
 
-- Serverseitiger Proxy `/ump/**` → `http://localhost:5003/**` (löst CORS, gleiches Muster wie später in Prod).
-- `runtimeConfig.public.umpBase` als zentrale Backend-Basis.
-- Getippte Interfaces für Prozesse (erste Domänen-Modelle).
-- Verifizierter End-to-End-Durchstich: Katalog → Execution → Job-Polling → GeoJSON auf MapLibre-Karte.
+- Serverseitiger Proxy `/ump/**` → `NUXT_UMP_API_TARGET`, hängt das Token der Sitzung an (löst CORS, kein Token im Browser).
+- `runtimeConfig.public.umpBase` + `umpApiVersion` als zentrale Backend-Basis (`useUmpBase()`).
+- Eine Anbindungsschicht `app/composables/useUmp*` mit Domänen-Modellen in `app/types/`.
+- Formular aus dem JSON Schema der Prozessbeschreibung, inklusive Karteneingabe für `format: geojson-geometry`.
+- Karte auf OpenLayers über die masterportalapi (Web Mercator, OSM).
+- Lange Läufe: Polling ohne Zeitgrenze im Formular, Lauf-Seite lädt sich selbst nach.
+- Prototyp des Modellregisters (Beitragen, Prüfen) mit Beispieldaten, Typen nach dem Konzept F12.
 
 ---
 
@@ -78,7 +83,8 @@ Die hexagonale Architektur **nicht im Frontend nachbauen** (keine formalen Ports
 Diese zwei Antworten entscheiden, wie tief wir jetzt schon bauen können:
 
 1. ~~**Bleibt der OGC-Routen-Vertrag** beim FastAPI-Adapter kompatibel, nur unter `/v1.0` versioniert?~~ **Beantwortet mit 3.0.0: ja**, bis auf den Schrägstrich am Ende (siehe Naht 1).
-2. **Wie kommen Ergebnisse nach dem Umbau** — inline-GeoJSON, OGC API Features oder WFS/WMS? Das ist die einzige Antwort, die unseren Karten-/Rendering-Code wirklich prägt. **Vor** dem tiefen Ausbau des Result-Pfads klären.
+2. **Wie kommen Ergebnisse nach dem Umbau** — inline-GeoJSON, OGC API Features oder WFS/WMS? Das ist die einzige Antwort, die unseren Karten-/Rendering-Code wirklich prägt. **Teilweise beantwortet (2026-10-07):** umep bietet OGC API Features an; offen ist, wie das Ergebnis darauf verweist und wie Raster kommen (COG oder WMS).
+3. **Was das Frontend sonst noch vom Backend braucht** (Stand 2026-10-07): Eingaben eines Laufs (`/jobs/{id}/definition`), `x-ump-*` und `metadata` in Prozessbeschreibungen unverändert durchreichen, `Accept` und `Accept-Language` beim Abholen, Endpunkte des Modellregisters (Konzept F12) inklusive Projekten.
 
 ---
 

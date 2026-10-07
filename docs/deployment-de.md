@@ -138,7 +138,7 @@ setzen, solange die Registry-API fehlt:
 NUXT_PUBLIC_PROTOTYPES=true
 ```
 
-## Keycloak: `ump-client` (Rico)
+## Keycloak: `ump-client` (Backend)
 
 Am Client `ump-client` im Realm `UrbanModelPlatform` müssen beide Domains eingetragen sein.
 Stand 2026-07-20 zeigten die Redirect-URIs nur auf die UMP-API (`:5003`), nicht auf das
