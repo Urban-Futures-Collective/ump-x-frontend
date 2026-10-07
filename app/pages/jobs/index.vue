@@ -6,15 +6,31 @@ definePageMeta({ middleware: ['auth'] })
 
 const { t, locale } = useI18n()
 const { data: jobs, pending, error, refresh } = useUmpJobs()
+
+// Search over model, run id, status and date, in the browser.
+const search = ref('')
+const shown = computed(() => (jobs.value ?? []).filter(job =>
+  matchesSearch(search.value, job.processId, job.id, t(`jobs.status.${job.status}`), formatDateTime(jobTime(job), locale.value))))
 </script>
 
 <template>
   <section class="mx-auto max-w-3xl space-y-4">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-wrap items-center justify-between gap-3">
       <h1 class="text-xl font-semibold">
         {{ t('jobs.title') }}
       </h1>
-      <UButton
+      <div class="flex flex-wrap items-center gap-2">
+        <UInput
+          v-if="jobs?.length"
+          v-model="search"
+          type="search"
+          icon="i-lucide-search"
+          :placeholder="t('jobs.search')"
+          :aria-label="t('jobs.search')"
+          size="xs"
+          class="w-48"
+        />
+        <UButton
         icon="i-lucide-refresh-cw"
         color="neutral"
         variant="ghost"
@@ -22,8 +38,9 @@ const { data: jobs, pending, error, refresh } = useUmpJobs()
         :loading="pending"
         @click="refresh()"
       >
-        {{ t('jobs.refresh') }}
-      </UButton>
+          {{ t('jobs.refresh') }}
+        </UButton>
+      </div>
     </div>
 
     <!-- Error state before empty state: "API not responding" must never look
@@ -32,8 +49,12 @@ const { data: jobs, pending, error, refresh } = useUmpJobs()
       {{ t('jobs.error') }}
     </p>
 
-    <ul v-else-if="jobs?.length" class="space-y-2">
-      <li v-for="job in jobs" :key="job.id">
+    <p v-else-if="jobs?.length && !shown.length" class="text-sm text-(--ui-text-muted)" role="status">
+      {{ t('jobs.noMatch', { q: search }) }}
+    </p>
+
+    <ul v-else-if="shown.length" class="space-y-2">
+      <li v-for="job in shown" :key="job.id">
         <ULink
           :to="`/jobs/${job.id}`"
           class="flex items-center justify-between gap-3 rounded-md border border-(--ui-border) px-4 py-3 transition-colors hover:bg-(--ui-bg-elevated)"

@@ -15,6 +15,12 @@ const view = useCookie<'tile' | 'row'>('ump-x-commons-ansicht', {
   sameSite: 'lax',
 })
 
+// Search over name, description, id and keywords, in the browser: the catalog is small
+// and already loaded.
+const search = ref('')
+const shown = computed(() => (processes.value ?? []).filter(p =>
+  matchesSearch(search.value, p.title, p.description, p.id, ...(p.keywords ?? []))))
+
 // Same three steps as on the landing page.
 const steps = ['choose', 'configure', 'take'] as const
 </script>
@@ -27,7 +33,16 @@ const steps = ['choose', 'configure', 'take'] as const
           <h1 class="text-2xl font-semibold text-ufc-slate-900">
             {{ t('commons.title') }}
           </h1>
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <UInput
+              v-model="search"
+              type="search"
+              icon="i-lucide-search"
+              :placeholder="t('commons.search')"
+              :aria-label="t('commons.search')"
+              size="sm"
+              class="w-56"
+            />
             <UButton
               icon="i-lucide-layout-grid"
               :color="view === 'tile' ? 'primary' : 'neutral'"
@@ -84,10 +99,10 @@ const steps = ['choose', 'configure', 'take'] as const
         </p>
 
         <ul
-          v-if="processes?.length"
+          v-if="shown.length"
           :class="view === 'row' ? 'max-w-3xl space-y-3' : 'grid gap-6 sm:grid-cols-2 xl:grid-cols-4'"
         >
-          <li v-for="p in processes" :key="p.id">
+          <li v-for="p in shown" :key="p.id">
             <ModelCard
               :title="p.title"
               :description="p.description"
@@ -97,6 +112,9 @@ const steps = ['choose', 'configure', 'take'] as const
             />
           </li>
         </ul>
+        <p v-else-if="search && processes?.length" class="text-sm text-(--ui-text-muted)" role="status">
+          {{ t('commons.noMatch', { q: search }) }}
+        </p>
         <p v-else-if="!pending && !error" class="text-sm text-(--ui-text-muted)">
           {{ t('processes.empty') }}
         </p>

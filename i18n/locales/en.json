@@ -63,7 +63,9 @@
       "dismissed": "dismissed"
     },
     "download": "Download result",
-    "resultPending": "The result appears here as soon as the run has finished."
+    "resultPending": "The result appears here as soon as the run has finished.",
+    "search": "Search scenarios",
+    "noMatch": "No scenario matches “{q}”."
   },
   "admin": {
     "title": "Administration",
@@ -149,7 +151,9 @@
     "view": {
       "tiles": "Tile view",
       "list": "List view"
-    }
+    },
+    "search": "Search models",
+    "noMatch": "No model matches “{q}”."
   },
   "run": {
     "selectHint": "Select a process on the left to run it.",
