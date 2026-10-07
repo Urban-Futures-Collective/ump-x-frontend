@@ -1,4 +1,5 @@
 import type { FeatureCollection } from 'geojson'
+import type { InputGroup } from '~/utils/inputKinds'
 
 // Domain models. Components consume only these, never raw OGC JSON.
 
@@ -20,6 +21,10 @@ export interface ProcessInput {
   default?: unknown
   /** The unmodified JSON Schema of the input, including enum/minimum/maximum. */
   schema?: Record<string, unknown>
+  /** Display group from `x-ump-group`; main if the model gives none. */
+  group: InputGroup
+  /** From `x-ump-relevant-if`: only relevant for these values of other inputs. */
+  relevantIf?: Record<string, unknown[]>
 }
 
 export interface ProcessDetail extends Process {

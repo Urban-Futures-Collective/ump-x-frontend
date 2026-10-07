@@ -66,8 +66,14 @@ function defaultInvisible(inp: { type: string, default?: unknown }) {
 // form is not covered in red.
 const attempted = ref(false)
 watch(() => props.processId, () => { attempted.value = false })
+// Inputs that matter for the current values (`x-ump-relevant-if`). Hidden ones are
+// neither checked nor sent.
+const visibleInputs = computed(() => (proc.value?.inputs ?? []).filter(inp => isRelevant(inp.relevantIf, form.value)))
+const mainInputs = computed(() => visibleInputs.value.filter(inp => inp.group !== 'advanced'))
+const advancedInputs = computed(() => visibleInputs.value.filter(inp => inp.group === 'advanced'))
+
 const problems = computed(() => Object.fromEntries(
-  (proc.value?.inputs ?? []).map(inp => [inp.name, inputProblem(inp, form.value[inp.name])]),
+  visibleInputs.value.map(inp => [inp.name, inputProblem(inp, form.value[inp.name])]),
 ))
 function shownProblem(name: string) {
   const p = problems.value[name]
@@ -77,12 +83,18 @@ function shownProblem(name: string) {
     : t(`run.invalid.${p.key}`, 'limit' in p ? { limit: p.limit } : {})
 }
 
+// Advanced settings start collapsed but open when one of them has a problem.
+const advancedOpen = ref(false)
+watch(attempted, (a) => {
+  if (a && advancedInputs.value.some(inp => problems.value[inp.name])) advancedOpen.value = true
+})
+
 async function onSubmit() {
   attempted.value = true
   if (Object.values(problems.value).some(Boolean)) return
   // The rule lives in app/utils/processInputs.ts because the chat applies it
   // too; two copies would disagree about the "auto" default.
-  await run(props.processId, cleanInputs(proc.value?.inputs ?? [], form.value))
+  await run(props.processId, cleanInputs(visibleInputs.value, form.value))
 }
 </script>
 
@@ -98,44 +110,45 @@ async function onSubmit() {
     </div>
 
     <form class="space-y-3" @submit.prevent="onSubmit">
-      <div v-for="inp in proc?.inputs ?? []" :key="inp.name" class="space-y-1">
-        <label :for="`in-${inp.name}`" class="text-sm font-medium">
-          {{ inp.title }}
-          <span v-if="inp.required" class="text-(--ui-error)">*</span>
-        </label>
-        <!-- Yes/no as a switch; the form keeps text values, so it stores "true"/"false". -->
-        <div v-if="inp.type === 'boolean'" class="space-y-1">
-          <USwitch
-            :id="`in-${inp.name}`"
-            :model-value="form[inp.name] === 'true'"
-            @update:model-value="on => { form[inp.name] = on ? 'true' : 'false' }"
-          />
-          <p v-if="inp.description" class="text-xs text-(--ui-text-dimmed)">
-            {{ inp.description }}
-          </p>
-        </div>
-        <GeometryInput
-          v-else-if="isGeometryInput(inp.schema)"
-          v-model="form[inp.name]!"
-          :schema="inp.schema"
-        />
-        <UInput
-          v-else
-          :id="`in-${inp.name}`"
-          v-model="form[inp.name]"
-          :type="inp.type === 'integer' || inp.type === 'number' ? 'number' : 'text'"
-          :placeholder="inp.description"
-          :color="shownProblem(inp.name) ? 'error' : undefined"
-          :highlight="!!shownProblem(inp.name)"
-          class="w-full"
-        />
-        <p v-if="shownProblem(inp.name)" class="text-xs text-red-600">
-          {{ shownProblem(inp.name) }}
-        </p>
+      <ProcessInputField
+        v-for="inp in mainInputs"
+        :key="inp.name"
+        v-model="form[inp.name]!"
+        :input="inp"
+        :problem="shownProblem(inp.name)"
+      >
         <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
           {{ t('run.defaultHint', { value: String(inp.default) }) }}
         </p>
-      </div>
+      </ProcessInputField>
+
+      <!-- Model settings with sensible defaults (x-ump-group: advanced). -->
+      <UCollapsible v-if="advancedInputs.length" v-model:open="advancedOpen" class="space-y-3">
+        <UButton
+          type="button"
+          variant="link"
+          color="neutral"
+          class="px-0"
+          :trailing-icon="advancedOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+        >
+          {{ t('run.advanced', { n: advancedInputs.length }) }}
+        </UButton>
+        <template #content>
+          <div class="space-y-3">
+            <ProcessInputField
+              v-for="inp in advancedInputs"
+              :key="inp.name"
+              v-model="form[inp.name]!"
+              :input="inp"
+              :problem="shownProblem(inp.name)"
+            >
+              <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
+                {{ t('run.defaultHint', { value: String(inp.default) }) }}
+              </p>
+            </ProcessInputField>
+          </div>
+        </template>
+      </UCollapsible>
 
       <div class="flex items-center gap-3">
         <UButton type="submit" :loading="running" :disabled="loadingProc" icon="i-lucide-play">

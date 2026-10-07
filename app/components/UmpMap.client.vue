@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { createMap } from '@masterportal/masterportalapi/src/maps/ol/olMap.js'
+import type { FeatureLike } from 'ol/Feature'
 import GeoJSON from 'ol/format/GeoJSON'
 import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
-import type Map from 'ol/Map'
+import type OlMap from 'ol/Map'
 import OSM from 'ol/source/OSM'
 import VectorSource from 'ol/source/Vector'
 import { Circle, Fill, Stroke, Style } from 'ol/style'
@@ -25,7 +26,7 @@ const { t } = useI18n()
 // Template ref on an INNER div, not the component root, which avoids a
 // hydration timing issue where the root ref is still null.
 const mapContainer = ref<HTMLDivElement | null>(null)
-let map: Map | undefined
+let map: OlMap | undefined
 let resultLayer: VectorLayer<VectorSource> | undefined
 let observer: ResizeObserver | undefined
 
@@ -58,6 +59,30 @@ const styles: Record<NonNullable<ResultLayer['layers'][number]>['geometry'], Sty
   }),
 }
 
+// Colours the result sets per feature (simplestyle), cached per combination so a large
+// result does not create one style object per feature.
+const styleCache = new Map<string, Style>()
+function featureStyle(f: FeatureLike): Style | null {
+  const s = simpleStyleOf(f.getProperties())
+  if (!s) return null
+  const key = `${s.fill}|${s.stroke}|${s.strokeWidth}|${s.marker}`
+  let style = styleCache.get(key)
+  if (!style) {
+    const stroke = s.stroke ? new Stroke({ color: s.stroke, width: s.strokeWidth ?? 1 }) : undefined
+    style = new Style({
+      fill: s.fill ? new Fill({ color: s.fill }) : undefined,
+      stroke,
+      image: new Circle({
+        radius: 5,
+        fill: new Fill({ color: s.marker ?? s.fill ?? COLOR }),
+        stroke: new Stroke({ color: '#fff', width: 1 }),
+      }),
+    })
+    styleCache.set(key, style)
+  }
+  return style
+}
+
 // No layers means nothing mappable: show a notice instead of an empty map.
 const mappable = computed(() => (props.layer?.layers.length ?? 0) > 0)
 
@@ -74,7 +99,7 @@ watch(mapContainer, (el) => {
 onBeforeUnmount(teardownMap)
 
 function buildMap(el: HTMLDivElement) {
-  map = createMap({ ...useMapConfig(), target: el }) as Map
+  map = createMap({ ...useMapConfig(), target: el }) as OlMap
   // Added as a plain OL layer, not via the service registry: the library has
   // no XYZ service type, and addLayer accepts ready-made OL layers as is.
   map.addLayer(new TileLayer({ source: new OSM() }))
@@ -117,7 +142,8 @@ function render(layer?: ResultLayer | null) {
     featureProjection: 'EPSG:3857',
   })
 
-  resultLayer = new VectorLayer({ source: new VectorSource({ features }), style: styles[spec.geometry] })
+  const fallback = styles[spec.geometry]
+  resultLayer = new VectorLayer({ source: new VectorSource({ features }), style: f => featureStyle(f) ?? fallback })
   map.addLayer(resultLayer)
 
   const extent = resultLayer.getSource()?.getExtent()

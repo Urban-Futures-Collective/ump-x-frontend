@@ -175,7 +175,16 @@
       "minimum": "Mindestens {limit}",
       "maximum": "Höchstens {limit}",
       "pattern": "Passt nicht zum erwarteten Format: {pattern}",
-      "json": "Keine gültige Eingabe"
+      "json": "Keine gültige Eingabe",
+      "choice": "Bitte einen der angebotenen Werte wählen",
+      "date": "Kein gültiges Datum",
+      "above": "Größer als {limit}",
+      "below": "Kleiner als {limit}"
+    },
+    "advanced": "Erweiterte Einstellungen ({n})",
+    "field": {
+      "none": "Keine Angabe",
+      "pickDate": "Datum wählen …"
     }
   },
   "footer": {

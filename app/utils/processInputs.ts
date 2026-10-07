@@ -1,3 +1,5 @@
+import { choicesOf } from './inputKinds'
+
 // The single rule for turning form inputs into an execution body, shared by
 // ProcessRunner and the chat so both build the same call.
 //
@@ -66,8 +68,12 @@ export type InputProblem
     | { key: 'number' }
     | { key: 'minimum', limit: number }
     | { key: 'maximum', limit: number }
+    | { key: 'above', limit: number }
+    | { key: 'below', limit: number }
     | { key: 'pattern', pattern: string }
     | { key: 'json' }
+    | { key: 'choice' }
+    | { key: 'date' }
 
 export function inputProblem(field: InputRule, value: unknown): InputProblem | null {
   const text = value == null ? '' : String(value).trim()
@@ -77,6 +83,17 @@ export function inputProblem(field: InputRule, value: unknown): InputProblem | n
   if (field.default != null && text === String(field.default)) return null
 
   const schema = field.schema ?? {}
+
+  // Fixed values, possibly next to a date (oneOf): one of the values or a valid date.
+  const choices = choicesOf(schema)
+  const takesDate = schema.format === 'date'
+    || ((schema.oneOf as unknown[] | undefined) ?? []).some(b => (b as { format?: unknown })?.format === 'date')
+  if (choices.length || takesDate) {
+    if (choices.map(String).includes(text)) return null
+    if (takesDate) return isDate(text) ? null : (choices.length ? { key: 'choice' } : { key: 'date' })
+    return { key: 'choice' }
+  }
+
   if (field.type === 'object' || field.type === 'array') {
     try {
       JSON.parse(text)
@@ -91,6 +108,8 @@ export function inputProblem(field: InputRule, value: unknown): InputProblem | n
     if (!Number.isFinite(n) || (field.type === 'integer' && !Number.isInteger(n))) return { key: 'number' }
     if (typeof schema.minimum === 'number' && n < schema.minimum) return { key: 'minimum', limit: schema.minimum }
     if (typeof schema.maximum === 'number' && n > schema.maximum) return { key: 'maximum', limit: schema.maximum }
+    if (typeof schema.exclusiveMinimum === 'number' && n <= schema.exclusiveMinimum) return { key: 'above', limit: schema.exclusiveMinimum }
+    if (typeof schema.exclusiveMaximum === 'number' && n >= schema.exclusiveMaximum) return { key: 'below', limit: schema.exclusiveMaximum }
     return null
   }
 
@@ -106,4 +125,11 @@ export function inputProblem(field: InputRule, value: unknown): InputProblem | n
     if (!re.test(text)) return { key: 'pattern', pattern: schema.pattern }
   }
   return null
+}
+
+// A calendar date as YYYY-MM-DD (JSON Schema `format: date`) that actually exists.
+function isDate(text: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return false
+  const d = new Date(`${text}T00:00:00Z`)
+  return !Number.isNaN(d.getTime()) && d.toISOString().startsWith(text)
 }
