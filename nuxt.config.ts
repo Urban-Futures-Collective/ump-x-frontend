@@ -57,6 +57,9 @@ export default defineNuxtConfig({
       // UMP mounts the OGC routes under a version prefix (/v1.0/processes ...); without
       // it the API answers 404.
       umpApiVersion: 'v1.0',
+      // Pages that are prototypes with sample data (model registry). Off unless
+      // NUXT_PUBLIC_PROTOTYPES=true, so production does not show them.
+      prototypes: false,
     },
   },
 

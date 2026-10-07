@@ -19,7 +19,10 @@
       "report": "Bericht"
     },
     "chat": "Chat",
-    "help": "Hilfe"
+    "help": "Hilfe",
+    "contribute": "Beitragen",
+    "verify": "Prüfen",
+    "verifyNew": "{n} neu"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -377,5 +380,165 @@
     "area": "Fläche {km2} km²",
     "count": "{n} Punkte",
     "clear": "Löschen"
+  },
+  "prototype": {
+    "title": "Prototyp mit Beispieldaten",
+    "text": "Diese Seite zeigt, wie Beitragen und Prüfen später funktionieren. Die Modelle sind Beispiele, nichts wird gespeichert oder an einen Server geschickt. Nach dem Neuladen ist alles wieder wie am Anfang.",
+    "reset": "Zurücksetzen",
+    "badge": "Prototyp"
+  },
+  "legal": {
+    "draftTitle": "Entwurf",
+    "draftText": "Dieser Text ist noch nicht fertig und nicht rechtlich geprüft. Markierte Stellen fehlen noch.",
+    "germanOnly": "This page is only available in German."
+  },
+  "registry": {
+    "status": {
+      "draft": "Entwurf",
+      "submitted": "Eingereicht",
+      "in_review": "In Prüfung",
+      "changes_requested": "Rückfrage",
+      "rejected": "Abgelehnt",
+      "verified": "Verifiziert",
+      "published": "Veröffentlicht",
+      "deactivated": "Deaktiviert"
+    },
+    "changedOn": "Geändert am {date}",
+    "by": "von {name}",
+    "search": "Modelle suchen",
+    "noMatch": "Keine passenden Modelle.",
+    "notFound": "Dieses Modell gibt es nicht.",
+    "yes": "ja",
+    "no": "nein",
+    "cancel": "Abbrechen",
+    "contribute": {
+      "title": "Modelle beitragen",
+      "intro": "Hier reichst du Modelle von deinem Modellserver ein. Nach der Prüfung erscheinen sie in Commons.",
+      "new": "Neues Modell",
+      "mine": "Meine Modelle",
+      "empty": "Du hast noch keine Modelle eingereicht."
+    },
+    "new": {
+      "title": "Neues Modell",
+      "server": "Modellserver",
+      "serverWhy": "Der Server, auf dem dein Modell läuft. Er muss OGC API Processes sprechen. Sein Name wird zum Präfix der Modell-ID.",
+      "serverPick": "Server",
+      "newServer": "Neuen Server eintragen",
+      "name": "Name",
+      "nameHint": "z. B. modelserver-1",
+      "nameInvalid": "Nur Kleinbuchstaben, Ziffern und Bindestriche, 2 bis 63 Zeichen",
+      "url": "Adresse",
+      "urlInvalid": "Bitte eine Adresse mit https:// angeben",
+      "auth": "Anmeldung",
+      "authWhy": "Wie sich die Plattform bei deinem Server anmeldet. Zugangsdaten werden verschlüsselt gespeichert und nie wieder angezeigt.",
+      "user": "Benutzer",
+      "password": "Passwort",
+      "token": "Schlüssel",
+      "secretNote": "Im Prototyp werden keine Zugangsdaten gespeichert oder verschickt.",
+      "discover": "Prozesse abrufen",
+      "processes": "Prozesse auswählen",
+      "processesWhy": "Diese Prozesse bietet der Server an. Jeder ausgewählte wird ein eigenes Modell.",
+      "next": "Danach füllst du für jedes Modell die Modellkarte aus und reichst es ein.",
+      "create": "Als Entwurf anlegen ({n})"
+    },
+    "auth": {
+      "NoAuth": "Keine",
+      "BasicAuth": "Benutzer und Passwort",
+      "ApiKey": "API-Schlüssel",
+      "BearerToken": "Bearer-Token"
+    },
+    "card": {
+      "title": "Modellkarte",
+      "why": "Was OGC nicht beschreibt: wofür das Modell da ist, wo seine Grenzen liegen und unter welcher Lizenz es steht. Pflicht in der Hauptsprache, die andere Sprache ist freiwillig.",
+      "defaultLang": "Hauptsprache",
+      "defaultLangHint": "In dieser Sprache müssen alle Texte ausgefüllt sein.",
+      "fullName": "Name",
+      "shortDescription": "Kurzbeschreibung",
+      "purpose": "Zweck",
+      "limitationsRisks": "Grenzen und Risiken",
+      "license": "Lizenz",
+      "licenseHint": "SPDX-Kennung, z. B. MIT",
+      "version": "Version",
+      "repository": "Quellcode",
+      "missing": "Zum Einreichen fehlt noch: {fields}",
+      "complete": "Die Modellkarte ist vollständig.",
+      "saved": "Gespeichert",
+      "save": "Speichern",
+      "empty": "keine Angabe"
+    },
+    "action": {
+      "submitted": "Zur Prüfung einreichen",
+      "draft": "Einreichung zurückziehen",
+      "in_review": "Prüfung übernehmen",
+      "verified": "Verifizieren",
+      "changes_requested": "Rückfrage stellen",
+      "rejected": "Ablehnen",
+      "published": "Veröffentlichen",
+      "deactivated": "Deaktivieren"
+    },
+    "noteTitle": {
+      "changes_requested": "Rückfrage aus der Prüfung",
+      "rejected": "Grund der Ablehnung",
+      "deactivated": "Grund der Deaktivierung"
+    },
+    "explain": {
+      "draft": "Noch nicht eingereicht. Fülle die Modellkarte aus und reiche das Modell zur Prüfung ein.",
+      "submitted": "Eingereicht. Wartet darauf, dass jemand die Prüfung übernimmt. Solange kannst du die Einreichung zurückziehen.",
+      "in_review": "Wird gerade geprüft.",
+      "changes_requested": "Die Prüfung hat eine Rückfrage. Passe die Modellkarte an und reiche erneut ein.",
+      "rejected": "Das Modell wurde abgelehnt.",
+      "verified": "Geprüft und bestätigt. Es wird bald veröffentlicht.",
+      "published": "Veröffentlicht und in Commons sichtbar. Änderungen an der Modellkarte gelten sofort.",
+      "deactivated": "Deaktiviert. Neue Läufe sind nicht möglich."
+    },
+    "verifyExplain": {
+      "draft": "Entwurf, noch nicht eingereicht.",
+      "submitted": "Wartet auf Prüfung. Übernimm die Prüfung, um zu entscheiden.",
+      "in_review": "Prüfe Modellkarte und Schnittstelle, starte einen Testlauf und entscheide.",
+      "changes_requested": "Rückfrage gestellt. Wartet auf die Anbieterin oder den Anbieter.",
+      "rejected": "Abgelehnt.",
+      "verified": "Verifiziert. Jetzt veröffentlichen?",
+      "published": "Veröffentlicht. Bei Änderungen an der Schnittstelle kann die Prüfung erneut geöffnet werden.",
+      "deactivated": "Deaktiviert."
+    },
+    "noteLabel": {
+      "changes_requested": "Was soll geändert werden?",
+      "rejected": "Warum wird das Modell abgelehnt?",
+      "deactivated": "Warum wird das Modell deaktiviert?"
+    },
+    "facts": {
+      "title": "Technische Angaben",
+      "process": "Modell-ID",
+      "owner": "Eingereicht von",
+      "interface": "Schnittstelle",
+      "verifiedBy": "Verifiziert von",
+      "inputs": "Eingaben",
+      "noInputs": "Noch nicht vom Server gelesen.",
+      "inputName": "Name",
+      "inputType": "Typ",
+      "inputRequired": "Pflicht",
+      "history": "Verlauf",
+      "noHistory": "Noch keine Statusänderungen."
+    },
+    "interface": {
+      "in_sync": "unverändert seit der Prüfung",
+      "drifted": "seit der Prüfung geändert",
+      "unchecked": "noch nicht geprüft"
+    },
+    "verify": {
+      "title": "Modelle prüfen",
+      "intro": "Eingereichte Modelle prüfen, bestätigen und veröffentlichen. Eigene Modelle prüft immer jemand anderes.",
+      "fresh": "Neu eingereicht",
+      "noneFresh": "Keine neuen Einreichungen.",
+      "all": "Alle Modelle",
+      "allStatuses": "Alle Status",
+      "filter": "Nach Status filtern",
+      "ownModel": "Das ist dein eigenes Modell. Prüfen und veröffentlichen muss es jemand anderes.",
+      "decide": "Prüfung",
+      "testRun": "Testlauf starten",
+      "testRunNote": "Testläufe sind im Prototyp nicht möglich. Später starten Prüferinnen und Prüfer hier einen Lauf, auch bevor das Modell veröffentlicht ist.",
+      "publishNote": "Beim Veröffentlichen legt UMP-X die Zugriffsrolle {role} in Keycloak an.",
+      "noteVisible": "Die Anbieterin oder der Anbieter sieht diesen Text."
+    }
   }
 }
