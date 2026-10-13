@@ -191,7 +191,9 @@
     "advanced": "Erweiterte Einstellungen ({n})",
     "field": {
       "none": "Keine Angabe",
-      "pickDate": "Datum wählen …"
+      "pickDate": "Datum wählen …",
+      "byName": "Ortsname",
+      "onMap": "Auf der Karte"
     }
   },
   "footer": {

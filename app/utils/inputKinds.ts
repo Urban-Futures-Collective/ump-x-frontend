@@ -1,4 +1,4 @@
-import { isGeometryInput } from './geometryInput'
+import { geometryBranch, isGeometryInput } from './geometryInput'
 
 // Which form field an input gets, read from its JSON Schema, plus the grouping hints a
 // model server can add (`x-ump-group`, `x-ump-relevant-if`). Everything here works from
@@ -7,6 +7,7 @@ import { isGeometryInput } from './geometryInput'
 export type InputKind
   = | 'boolean'
     | 'geometry'
+    | 'textOrGeometry'
     | 'choice'
     | 'choiceOrDate'
     | 'date'
@@ -36,6 +37,7 @@ export function inputKind(input: { type: string, schema?: Record<string, unknown
   const schema = input.schema
   if (input.type === 'boolean') return 'boolean'
   if (isGeometryInput(schema)) return 'geometry'
+  if (geometryBranch(schema)) return 'textOrGeometry'
   if (enumOf(schema)) return 'choice'
   const branches = (schema?.oneOf as unknown[] | undefined) ?? []
   if (branches.some(b => enumOf(b)) && branches.some(isDateSchema)) return 'choiceOrDate'

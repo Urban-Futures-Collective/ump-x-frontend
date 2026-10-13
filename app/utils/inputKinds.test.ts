@@ -18,6 +18,12 @@ describe('inputKind', () => {
     expect(inputKind(weather)).toBe('choiceOrDate')
     expect(choicesOf(weather.schema)).toEqual(['hot_day', 'typical_hot_day'])
   })
+
+  it('recognises a name or a geometry', () => {
+    const location = { type: 'string', schema: { oneOf: [{ type: 'string', pattern: '\\S' }, { type: 'object', format: 'geojson-geometry' }] } }
+    expect(inputKind(location)).toBe('textOrGeometry')
+    expect(inputKind({ type: 'string', schema: { oneOf: [{ type: 'object', format: 'geojson-geometry' }] } })).toBe('text')
+  })
 })
 
 describe('groups and relevance', () => {

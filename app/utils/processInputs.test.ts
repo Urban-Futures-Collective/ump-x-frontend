@@ -137,3 +137,35 @@ describe('choices, dates and exclusive limits', () => {
     expect(inputProblem(f, '0.5')).toBeNull()
   })
 })
+
+// prepare-city's `location`: a place name or a drawn area.
+describe('name or geometry', () => {
+  const location = {
+    name: 'location',
+    type: 'string',
+    required: true,
+    schema: {
+      oneOf: [
+        { type: 'string', minLength: 1, pattern: '\\S' },
+        { type: 'object', format: 'geojson-geometry', allOf: [{ properties: { type: { enum: ['Polygon', 'MultiPolygon'] } } }] },
+      ],
+    },
+  }
+  const square = { type: 'Polygon', coordinates: [[[13, 52], [13.1, 52], [13.1, 52.1], [13, 52]]] }
+
+  it('sends a name as text and a drawing as an object', () => {
+    expect(cleanInputs([location], { location: ' Beelitz ' })).toEqual({ location: 'Beelitz' })
+    expect(cleanInputs([location], { location: JSON.stringify(square) })).toEqual({ location: square })
+  })
+
+  it('takes an object from the chat as it is', () => {
+    expect(cleanInputs([location], { location: square })).toEqual({ location: square })
+  })
+
+  it('checks a drawing as JSON and a name against the text branch', () => {
+    expect(inputProblem(location, JSON.stringify(square))).toBeNull()
+    expect(inputProblem(location, '{"type":')).toEqual({ key: 'json' })
+    expect(inputProblem(location, 'Beelitz')).toBeNull()
+    expect(inputProblem(location, '')).toEqual({ key: 'required' })
+  })
+})

@@ -32,6 +32,24 @@ const selected = computed({
     value.value = v === NONE || v === DATE ? '' : v
   },
 })
+
+// For a name-or-geometry input: whether the map is shown. Starts on the map if the
+// current value is a geometry; switching clears the value, since a name and a drawing
+// cannot both be sent.
+const geometry = computed(() => geometryBranch(props.input.schema) ?? undefined)
+const mapMode = ref(kind.value === 'textOrGeometry' && looksLikeGeometry(value.value))
+const modes = computed(() => [
+  { label: t('run.field.byName'), value: 'text' },
+  { label: t('run.field.onMap'), value: 'map' },
+])
+const mode = computed({
+  get: () => mapMode.value ? 'map' : 'text',
+  set: (m: string) => {
+    if ((m === 'map') === mapMode.value) return
+    mapMode.value = m === 'map'
+    value.value = ''
+  },
+})
 </script>
 
 <template>
@@ -51,6 +69,19 @@ const selected = computed({
     </div>
 
     <GeometryInput v-else-if="kind === 'geometry'" v-model="value" :schema="input.schema" />
+
+    <div v-else-if="kind === 'textOrGeometry'" class="space-y-2">
+      <URadioGroup v-model="mode" :items="modes" orientation="horizontal" :aria-label="input.title" />
+      <GeometryInput v-if="mapMode" v-model="value" :schema="geometry" />
+      <UInput
+        v-else
+        :id="`in-${input.name}`"
+        v-model="value"
+        :color="problem ? 'error' : undefined"
+        :highlight="!!problem"
+        class="w-full"
+      />
+    </div>
 
     <div v-else-if="kind === 'choice' || kind === 'choiceOrDate'" class="flex flex-wrap gap-2">
       <USelect

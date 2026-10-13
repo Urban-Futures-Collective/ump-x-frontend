@@ -191,7 +191,9 @@
     "advanced": "Advanced settings ({n})",
     "field": {
       "none": "Not set",
-      "pickDate": "Pick a date …"
+      "pickDate": "Pick a date …",
+      "byName": "Place name",
+      "onMap": "On the map"
     }
   },
   "footer": {
