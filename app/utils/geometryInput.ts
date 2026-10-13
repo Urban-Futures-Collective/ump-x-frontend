@@ -13,6 +13,26 @@ export function isGeometryInput(schema: Record<string, unknown> | undefined): bo
   return schema?.format === 'geojson-geometry'
 }
 
+// An input that takes either a text or a geometry (oneOf), as with a place name or a
+// drawn area: the geometry branch, or null for any other input.
+export function geometryBranch(schema: Record<string, unknown> | undefined): Record<string, unknown> | null {
+  const branches = (schema?.oneOf as unknown[] | undefined) ?? []
+  const geometry = branches.find(b => isGeometryInput(b as Record<string, unknown>))
+  const text = branches.find(b => (b as { type?: unknown })?.type === 'string')
+  return geometry && text ? geometry as Record<string, unknown> : null
+}
+
+// The text branch of such an input, for its pattern.
+export function textBranch(schema: Record<string, unknown> | undefined): Record<string, unknown> {
+  const branches = (schema?.oneOf as unknown[] | undefined) ?? []
+  return (branches.find(b => (b as { type?: unknown })?.type === 'string') ?? {}) as Record<string, unknown>
+}
+
+// Whether a form value of such an input is a geometry (JSON text) rather than a name.
+export function looksLikeGeometry(text: string): boolean {
+  return text.trimStart().startsWith('{')
+}
+
 // The geometry types an input accepts: the enum on `properties.type`, looked for in the
 // schema itself and in allOf/oneOf/anyOf. Without such an enum every type is allowed.
 export function allowedGeometryTypes(schema: Record<string, unknown> | undefined): GeometryType[] {

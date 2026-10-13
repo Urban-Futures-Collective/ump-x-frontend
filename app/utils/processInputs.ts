@@ -1,3 +1,4 @@
+import { geometryBranch, looksLikeGeometry, textBranch } from './geometryInput'
 import { choicesOf } from './inputKinds'
 
 // The single rule for turning form inputs into an execution body, shared by
@@ -10,6 +11,14 @@ export interface InputField {
   name: string
   type: string
   default?: unknown
+  schema?: Record<string, unknown>
+}
+
+// The form holds text; a value that already is an object (from the chat) becomes JSON
+// text, so both paths share one rule.
+function textOf(raw: unknown): string {
+  if (raw == null) return ''
+  return typeof raw === 'object' ? JSON.stringify(raw) : String(raw).trim()
 }
 
 export function cleanInputs(
@@ -19,8 +28,7 @@ export function cleanInputs(
   const body: Record<string, unknown> = {}
 
   for (const field of fields) {
-    const raw = values[field.name]
-    const text = raw == null ? '' : String(raw).trim()
+    const text = textOf(values[field.name])
     const defaultText = field.default != null ? String(field.default) : ''
 
     // Do not send empty values: the backend default applies.
@@ -35,6 +43,19 @@ export function cleanInputs(
     }
     if (field.type === 'boolean') {
       body[field.name] = text === 'true' || text === '1'
+      continue
+    }
+    // A name or a drawn geometry: the geometry goes out as an object.
+    if (geometryBranch(field.schema)) {
+      if (!looksLikeGeometry(text)) body[field.name] = text
+      else {
+        try {
+          body[field.name] = JSON.parse(text)
+        }
+        catch {
+          // Reported by inputProblem.
+        }
+      }
       continue
     }
     // Objects and arrays (e.g. a drawn geometry) are held as JSON text in the form.
@@ -60,7 +81,6 @@ export function cleanInputs(
 // description ("give either place or area") are left to the model server.
 export interface InputRule extends InputField {
   required?: boolean
-  schema?: Record<string, unknown>
 }
 
 export type InputProblem
@@ -76,13 +96,27 @@ export type InputProblem
     | { key: 'date' }
 
 export function inputProblem(field: InputRule, value: unknown): InputProblem | null {
-  const text = value == null ? '' : String(value).trim()
+  const text = textOf(value)
   if (text === '') return field.required ? { key: 'required' } : null
   // An unchanged default is not sent (see cleanInputs), so it cannot be wrong. This
   // covers number fields whose default is a word such as "auto".
   if (field.default != null && text === String(field.default)) return null
 
-  const schema = field.schema ?? {}
+  let schema = field.schema ?? {}
+
+  // A name or a geometry: a geometry must be valid JSON, a name follows the text branch.
+  if (geometryBranch(schema)) {
+    if (looksLikeGeometry(text)) {
+      try {
+        JSON.parse(text)
+        return null
+      }
+      catch {
+        return { key: 'json' }
+      }
+    }
+    schema = textBranch(schema)
+  }
 
   // Fixed values, possibly next to a date (oneOf): one of the values or a valid date.
   const choices = choicesOf(schema)

@@ -124,6 +124,7 @@ export function useUmpTools() {
           name,
           type: v.schema?.type ?? 'string',
           default: v.schema?.default,
+          schema: v.schema as Record<string, unknown> | undefined,
           required: (v.minOccurs ?? 0) >= 1 && v.schema?.default === undefined,
         }))
 
