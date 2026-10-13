@@ -1,4 +1,5 @@
 import type { FeatureCollection } from 'geojson'
+import type { LinkedLayer } from '~/utils/linkedLayers'
 import type { InputGroup } from '~/utils/inputKinds'
 
 // Domain models. Components consume only these, never raw OGC JSON.
@@ -87,6 +88,8 @@ export interface ResultLayer {
   // when the job itself has no processID.
   processId?: string
   featureCollection: FeatureCollection
-  /** Empty means nothing in this result is mappable. */
+  /** Empty means the result itself holds no geodata. */
   layers: ResultLayerSpec[]
+  /** Layers the result links to (see app/utils/linkedLayers.ts), loaded on demand. */
+  linked: LinkedLayer[]
 }

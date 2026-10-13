@@ -372,7 +372,18 @@
     }
   },
   "map": {
-    "notMappable": "This result cannot be shown on a map. You can still download it."
+    "notMappable": "This result cannot be shown on a map. You can still download it.",
+    "layers": "Layers",
+    "layerCount": "{n} features",
+    "layerError": "Could not be loaded.",
+    "layerTruncated": "Only the first {n} are shown.",
+    "layer": {
+      "boundary": "Boundary",
+      "buildings": "Buildings",
+      "trees": "Trees",
+      "land_cover": "Land cover",
+      "streets": "Streets"
+    }
   },
   "geometry": {
     "search": "Search a place, e.g. Fichtenwalde",
