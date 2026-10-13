@@ -1,5 +1,6 @@
 import type { FeatureCollection } from 'geojson'
 import type { ProcessOutput, ResultLayer } from '~/types/ump'
+import { linkedLayersOf } from '~/utils/linkedLayers'
 import { resultLayers } from '~/utils/resultLayers'
 
 // Seam 2: "job result -> map-ready layer", kept in this one module. If results
@@ -20,7 +21,7 @@ export function useUmpResult() {
     outputs: ProcessOutput[] = [],
   ): Promise<ResultLayer> {
     const fc = await request<FeatureCollection>(`${base}/jobs/${jobId}/results`)
-    return { jobId, processId, featureCollection: fc, layers: resultLayers(outputs, fc) }
+    return { jobId, processId, featureCollection: fc, layers: resultLayers(outputs, fc), linked: linkedLayersOf(fc) }
   }
 
   return { fetchResult }

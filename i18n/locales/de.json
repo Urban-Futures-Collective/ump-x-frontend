@@ -372,7 +372,18 @@
     }
   },
   "map": {
-    "notMappable": "Dieses Ergebnis lässt sich nicht auf einer Karte zeigen. Herunterladen geht trotzdem."
+    "notMappable": "Dieses Ergebnis lässt sich nicht auf einer Karte zeigen. Herunterladen geht trotzdem.",
+    "layers": "Ebenen",
+    "layerCount": "{n} Objekte",
+    "layerError": "Konnte nicht geladen werden.",
+    "layerTruncated": "Nur die ersten {n} werden gezeigt.",
+    "layer": {
+      "boundary": "Umriss",
+      "buildings": "Gebäude",
+      "trees": "Bäume",
+      "land_cover": "Landnutzung",
+      "streets": "Straßen"
+    }
   },
   "geometry": {
     "search": "Ort suchen, z. B. Fichtenwalde",
