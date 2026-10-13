@@ -331,7 +331,7 @@
   },
   "help": {
     "title": "Hilfe",
-    "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist.",
+    "lead": "Hier steht, wie du ein Modell rechnest und wie du die Plattform mit einer KI benutzt.",
     "chat": {
       "heading": "Chat auf dieser Seite",
       "lead": "Du verbindest dein eigenes Modell, dann führt der Chat dich durch den Katalog.",
@@ -369,7 +369,68 @@
       },
       "copy": "Adresse kopieren",
       "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
-    }
+    },
+    "nav": {
+      "scenarios": "Szenarien rechnen",
+      "chat": "Chat auf dieser Seite",
+      "mcp": "Eigener KI-Client"
+    },
+    "scenarios": {
+      "heading": "Szenarien rechnen",
+      "lead": "Ein Szenario ist ein Lauf eines Modells mit deinen Eingaben. So kommst du vom Modell zum Ergebnis.",
+      "sections": {
+        "find": {
+          "title": "Ein Modell finden",
+          "points": [
+            "Unter Commons stehen alle Modelle, als Kacheln oder als Liste. Das Suchfeld filtert nach Name, Beschreibung und Stichworten.",
+            "Ansehen geht ohne Konto. Zum Ausführen brauchen die meisten Modelle eine Anmeldung und eine Freigabe für ihren Modellserver. Fehlt sie, steht das im Formular statt des Knopfs „Ausführen“."
+          ]
+        },
+        "form": {
+          "title": "Ein Szenario anlegen",
+          "points": [
+            "Felder mit * sind Pflicht. Felder mit Vorgabe kannst du leer lassen, dann gilt die Vorgabe.",
+            "Selten gebrauchte Felder liegen unter „Erweiterte Einstellungen“. Manche Felder erscheinen erst, wenn eine andere Auswahl sie braucht.",
+            "Vor dem Absenden prüft das Formular deine Eingaben und zeigt Fehler direkt am Feld."
+          ]
+        },
+        "map": {
+          "title": "Ein Gebiet oder Punkte zeichnen",
+          "points": [
+            "Über das Suchfeld über der Karte springst du zu einem Ort.",
+            "Klicke die Eckpunkte an, ein Doppelklick schließt das Gebiet. Ecken lassen sich danach verschieben, „Löschen“ fängt neu an. Unter der Karte steht die Fläche.",
+            "Manche Modelle nehmen wahlweise einen Ortsnamen oder eine Fläche. Dann wählst du über der Eingabe „Ortsname“ oder „Auf der Karte“.",
+            "Ohne Maus geht das Zeichnen noch nicht. Wo ein Modell einen Ortsnamen annimmt, ist das der Ausweg."
+          ]
+        },
+        "wait": {
+          "title": "Warten",
+          "points": [
+            "Kurze Läufe zeigen ihr Ergebnis gleich neben dem Formular.",
+            "Dauert ein Lauf länger als eine Minute, kannst du die Seite verlassen. Er rechnet weiter.",
+            "Unter „Meine Szenarien“ findest du alle deine Läufe mit Status und Fortschritt. Laufende Läufe aktualisieren sich von selbst."
+          ]
+        },
+        "result": {
+          "title": "Das Ergebnis",
+          "points": [
+            "Geodaten erscheinen auf der Karte. Farben, Legende und Kennzahlen liefert das Modell mit.",
+            "Verweist ein Ergebnis auf Ebenen, etwa Gebäude oder Straßen einer Stadt, schaltest du sie unter der Karte einzeln ein.",
+            "„Lässt sich nicht auf einer Karte zeigen“ heißt: Das Ergebnis enthält keine Geodaten, etwa eine Tabelle oder eine Datei. Herunterladen geht immer."
+          ]
+        },
+        "failed": {
+          "title": "Wenn etwas schiefgeht",
+          "points": [
+            "„Für dich nicht freigegeben“: Deinem Konto fehlt die Freigabe für diesen Modellserver. Die vergibt ein Admin der Plattform.",
+            "„Pflichtfeld“ oder „Passt nicht zum erwarteten Format“: Die Eingabe am markierten Feld korrigieren.",
+            "Ein Lauf ist fehlgeschlagen: Die Meldung des Modellservers steht beim Lauf unter „Meine Szenarien“. Weist sie auf eine überlastete Datenquelle hin, etwa OpenStreetMap, später noch einmal versuchen.",
+            "„Ein identisches Szenario liefert denselben Lauf zurück“: Mit genau denselben Eingaben gibt es keinen neuen Lauf. Für einen neuen Lauf eine Eingabe ändern."
+          ]
+        }
+      }
+    },
+    "aiLead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist."
   },
   "map": {
     "notMappable": "Dieses Ergebnis lässt sich nicht auf einer Karte zeigen. Herunterladen geht trotzdem.",

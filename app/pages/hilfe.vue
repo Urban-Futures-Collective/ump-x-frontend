@@ -1,13 +1,14 @@
 <script setup lang="ts">
-// Help: how to use the platform with an AI.
+// Help: how to run a scenario, and how to use the platform with an AI.
 //
-// Two equal routes: the chat on this site and the user's own AI client via MCP.
+// Scenarios come first: most visitors use the form, not a chat. For the AI there are
+// two equal routes: the chat on this site and the user's own AI client via MCP.
 // Both carry exactly the signed-in user's permissions; neither bypasses access
 // control.
 //
 // The MCP address appears only here because it is not a web page: opened in a
 // browser it answers with a JSON 401, which looks broken without explanation.
-const { t } = useI18n()
+const { t, tm, rt } = useI18n()
 const { mcpUrl } = useRuntimeConfig().public
 
 const copied = ref(false)
@@ -24,6 +25,10 @@ async function copy() {
   }
 }
 
+const sections = ['find', 'form', 'map', 'wait', 'result', 'failed'] as const
+const points = (section: string) => (tm(`help.scenarios.sections.${section}.points`) as unknown[]).map(p => rt(p as never))
+const nav = ['scenarios', 'chat', 'mcp'] as const
+
 const chatSteps = ['provider', 'key', 'ask'] as const
 const mcpSteps = ['address', 'signin', 'use'] as const
 </script>
@@ -37,9 +42,46 @@ const mcpSteps = ['address', 'signin', 'use'] as const
       <p class="text-(--ui-text-muted)">
         {{ t('help.lead') }}
       </p>
+      <nav :aria-label="t('help.title')">
+        <ul class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+          <li v-for="id in nav" :key="id">
+            <a :href="`#${id}`" class="text-(--ui-primary) underline-offset-2 hover:underline">{{ t(`help.nav.${id}`) }}</a>
+          </li>
+        </ul>
+      </nav>
     </div>
 
-    <div class="space-y-4">
+    <div id="scenarios" class="scroll-mt-20 space-y-6">
+      <div class="space-y-2">
+        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+          {{ t('help.scenarios.heading') }}
+        </h2>
+        <p class="text-sm text-(--ui-text-muted)">
+          {{ t('help.scenarios.lead') }}
+        </p>
+      </div>
+      <div v-for="(section, i) in sections" :key="section" class="flex gap-4">
+        <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
+          {{ i + 1 }}
+        </span>
+        <div class="space-y-1">
+          <h3 class="font-medium text-(--ui-text-highlighted)">
+            {{ t(`help.scenarios.sections.${section}.title`) }}
+          </h3>
+          <ul class="list-disc space-y-1 ps-4 text-sm text-(--ui-text-muted)">
+            <li v-for="p in points(section)" :key="p">
+              {{ p }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-sm text-(--ui-text-muted)">
+      {{ t('help.aiLead') }}
+    </p>
+
+    <div id="chat" class="scroll-mt-20 space-y-4">
       <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
         {{ t('help.chat.heading') }}
       </h2>
@@ -59,7 +101,7 @@ const mcpSteps = ['address', 'signin', 'use'] as const
       </ol>
     </div>
 
-    <div class="space-y-4">
+    <div id="mcp" class="scroll-mt-20 space-y-4">
       <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
         {{ t('help.mcp.heading') }}
       </h2>

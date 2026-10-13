@@ -331,7 +331,7 @@
   },
   "help": {
     "title": "Help",
-    "lead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
+    "lead": "How to run a model, and how to use the platform with an AI.",
     "chat": {
       "heading": "Chat on this site",
       "lead": "You connect your own model, then the chat walks you through the catalogue.",
@@ -369,7 +369,68 @@
       },
       "copy": "Copy the address",
       "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
-    }
+    },
+    "nav": {
+      "scenarios": "Running scenarios",
+      "chat": "Chat on this site",
+      "mcp": "Your own AI client"
+    },
+    "scenarios": {
+      "heading": "Running scenarios",
+      "lead": "A scenario is one run of a model with your inputs. This is how you get from a model to a result.",
+      "sections": {
+        "find": {
+          "title": "Find a model",
+          "points": [
+            "Commons lists all models, as tiles or as a list. The search field filters by name, description and keywords.",
+            "Viewing needs no account. To run them, most models need you to sign in and to have access to their model server. Without it, the form says so instead of showing the “Run” button."
+          ]
+        },
+        "form": {
+          "title": "Set up a scenario",
+          "points": [
+            "Fields marked * are required. Fields with a default can stay empty; the default then applies.",
+            "Rarely used fields are under “Advanced settings”. Some fields only appear when another choice needs them.",
+            "Before sending, the form checks your inputs and shows problems right at the field."
+          ]
+        },
+        "map": {
+          "title": "Draw an area or points",
+          "points": [
+            "Use the search field above the map to jump to a place.",
+            "Click the corners; a double click closes the area. You can move corners afterwards, and “Clear” starts over. The area size shows below the map.",
+            "Some models take either a place name or an area. Then choose “Place name” or “On the map” above the input.",
+            "Drawing does not work without a mouse yet. Where a model takes a place name, use that instead."
+          ]
+        },
+        "wait": {
+          "title": "Waiting",
+          "points": [
+            "Short runs show their result right next to the form.",
+            "If a run takes longer than a minute, you can leave the page. It keeps running.",
+            "“My scenarios” lists all your runs with status and progress. Running ones update by themselves."
+          ]
+        },
+        "result": {
+          "title": "The result",
+          "points": [
+            "Geodata shows on the map. Colours, legend and key figures come from the model.",
+            "If a result links to layers, such as the buildings or streets of a city, switch them on one by one below the map.",
+            "“Cannot be shown on a map” means the result holds no geodata, for example a table or a file. You can always download it."
+          ]
+        },
+        "failed": {
+          "title": "When something goes wrong",
+          "points": [
+            "“Not released for you”: your account lacks access to this model server. A platform admin grants it.",
+            "“Required” or “Does not match the expected format”: correct the input at the marked field.",
+            "A run failed: the model server’s message is shown with the run under “My scenarios”. If it points to an overloaded data source, such as OpenStreetMap, try again later.",
+            "“An identical scenario returns the same run”: the exact same inputs give no new run. Change an input to get a new one."
+          ]
+        }
+      }
+    },
+    "aiLead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for."
   },
   "map": {
     "notMappable": "This result cannot be shown on a map. You can still download it.",
