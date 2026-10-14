@@ -1,6 +1,6 @@
 # Privacy inventory (GDPR)
 
-Status: 2026-10-01. A technical inventory of where UMP-X processes personal data and
+Status: 2026-10-13. A technical inventory of where UMP-X processes personal data and
 what is still missing. This is not legal advice; it is meant as input for the data
 protection officer and as the basis for the privacy policy.
 
@@ -22,6 +22,7 @@ three links currently lead to a 404.
 | Invitation emails | Email address, name | Account invitation | Mail server logs on the Plesk host | Mention in the privacy policy |
 | Base map | IP address, page area viewed | Map display | Third party | Tiles come from `tile.openstreetmap.org` (OSM Foundation, UK); disclose, or serve tiles via an own proxy or tile server |
 | Place search on the map | Search term, IP address | Jump to a place when drawing an area or points | Third party | Requests go from the browser to `nominatim.openstreetmap.org` (OSM Foundation, UK), only when the user searches; disclose together with the map tiles |
+| Layers of a result on the map | IP address, requested layer and city | Show the layers a result links to (e.g. buildings of a prepared city) | Model server logs | Requests go from the browser directly to the model server that serves the layer (today `umep.urbanfuturescollective.org`, operated by us): the boundary when such a result is opened, other layers when the user switches them on. Define log retention together with the reverse proxy logs |
 | AI chat | Chat messages, job summaries the chat looks up | Assistant for models and runs | Third party, depending on provider | Requests go from the browser directly to the provider the user selects (OpenRouter, OpenAI, Anthropic or a compatible endpoint), often outside the EU. Needs a notice in the chat and in the privacy policy |
 | MCP server (`mcp.urbanfuturescollective.org`) | Requests from external clients with the user's token | Access for external AI clients | Not checked | Add to the inventory once its logging is known |
 
