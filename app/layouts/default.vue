@@ -30,19 +30,27 @@ const navItems = computed<NavigationMenuItem[]>(() => {
   if (prototypes && isProvider.value) {
     items.push({ label: t('nav.contribute'), icon: 'i-lucide-file-plus-2', to: '/contribute', badge: { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' } })
   }
-  if (prototypes && isVerifier.value) {
-    const n = awaitingReview.value.length
-    items.push({
-      label: t('nav.verify'),
-      icon: 'i-lucide-list-checks',
-      to: '/verify',
-      badge: n ? { label: t('nav.verifyNew', { n }), color: 'info', variant: 'subtle', size: 'sm' } : { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' },
-    })
-  }
   if (isAdmin.value) {
     items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
   }
   return items
+})
+
+// Verify sits at the bottom of the sidebar, as in the design. Verifiers open it
+// and approve models; everyone else sees it greyed out, so the step exists
+// but is not theirs.
+const verifyItems = computed<NavigationMenuItem[]>(() => {
+  if (!prototypes) return []
+  if (!isVerifier.value) {
+    return [{ label: t('nav.verify'), icon: 'i-lucide-list-checks', disabled: true }]
+  }
+  const n = awaitingReview.value.length
+  return [{
+    label: t('nav.verify'),
+    icon: 'i-lucide-list-checks',
+    to: '/verify',
+    badge: n ? { label: t('nav.verifyNew', { n }), color: 'success', variant: 'subtle', size: 'sm' } : { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' },
+  }]
 })
 
 // Features from the design that have no backend yet (projects need their own
@@ -115,7 +123,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
     items.push({ label: t('nav.help') })
     return items
   }
-  const here = [...navItems.value, ...plannedItems.value].find(
+  const here = [...navItems.value, ...verifyItems.value, ...plannedItems.value].find(
     i => i.to && route.path.startsWith(String(i.to)),
   )
   if (here) {
@@ -168,6 +176,15 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           orientation="vertical"
           :collapsed="collapsed"
           :items="plannedItems"
+          class="w-full"
+        />
+      </template>
+
+      <template v-if="verifyItems.length" #footer="{ collapsed }">
+        <UNavigationMenu
+          orientation="vertical"
+          :collapsed="collapsed"
+          :items="verifyItems"
           class="w-full"
         />
       </template>
