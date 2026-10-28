@@ -35,27 +35,6 @@ export async function membersOf(roleName: string): Promise<Set<string>> {
   }
 }
 
-// A platform role as it exists in the realm, under its new or its old name (see
-// LEGACY_NAMES in shared/utils/roles.ts). Null if neither exists.
-export async function findRealmRole(role: string): Promise<RoleRep | null> {
-  for (const name of [role, LEGACY_NAMES[role]].filter((n): n is string => !!n)) {
-    try {
-      return await keycloakAdmin<RoleRep>(`/roles/${encodeURIComponent(name)}`)
-    }
-    catch (e) {
-      if ((e as { statusCode?: number }).statusCode !== 404) throw e
-    }
-  }
-  return null
-}
-
-// Holders of a platform role under either name.
-export async function membersOfRole(role: string): Promise<Set<string>> {
-  const legacy = LEGACY_NAMES[role]
-  const [now, old] = await Promise.all([membersOf(role), legacy ? membersOf(legacy) : Promise.resolve(new Set<string>())])
-  return new Set([...now, ...old])
-}
-
 export async function realmDefaultRole(): Promise<RoleRep> {
   const realm = await keycloakAdmin<{ defaultRole: RoleRep }>('')
   return realm.defaultRole
@@ -69,7 +48,7 @@ export async function compositesOf(role: RoleRep): Promise<RoleRep[]> {
 // assigned before the default role is removed, so the account never has fewer roles in
 // between than it should end up with.
 export async function unpackDefaultRole(userId: string, defaultRole: RoleRep, composites: RoleRep[], without: string) {
-  const realmRoles = composites.filter(r => !r.clientRole && canonicalRole(r.name) !== without)
+  const realmRoles = composites.filter(r => !r.clientRole && r.name !== without)
   if (realmRoles.length) {
     await keycloakAdmin(`/users/${userId}/role-mappings/realm`, { method: 'POST', body: realmRoles })
   }
