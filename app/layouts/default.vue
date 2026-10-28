@@ -120,10 +120,16 @@ const userMenu = computed(() => [[
 // Breadcrumb: Home plus the current location. Flat as long as there is no
 // project level to navigate into. Pages without their own sidebar entry hang
 // off their path: a new scenario starts from Commons.
+const commonsCrumb = useState<string>('commons-crumb', () => '')
 const breadcrumb = computed<BreadcrumbItem[]>(() => {
   const items: BreadcrumbItem[] = [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
   if (route.path.startsWith('/run')) {
     items.push({ label: t('nav.models'), to: '/commons' }, { label: t('nav.run') })
+    return items
+  }
+  // A model page names its model (set by the page, see commons/[id].vue).
+  if (route.path.startsWith('/commons/')) {
+    items.push({ label: t('commons.title'), to: '/commons' }, { label: commonsCrumb.value || String(route.params.id ?? '') })
     return items
   }
   if (route.path.startsWith('/hilfe')) {
