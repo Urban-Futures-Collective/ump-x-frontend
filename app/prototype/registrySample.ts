@@ -1,4 +1,4 @@
-import type { RegistryModel, RegistryServer } from '~/types/registry'
+import type { DiscoveredProcess, RegistryModel, RegistryServer } from '~/types/registry'
 
 // Sample data for the registry prototype. Not from any backend: the registry API does
 // not exist yet. Owner `me` stands for whoever is signed in; other owners are made-up
@@ -138,10 +138,11 @@ export function sampleModels(): RegistryModel[] {
 }
 
 // What "discovering" a server returns in the prototype, whatever URL was entered.
-export function sampleDiscovery(): { id: string, title: string, description: string }[] {
+export function sampleDiscovery(): DiscoveredProcess[] {
   return [
-    { id: 'noise-map', title: 'Noise map', description: 'Road traffic noise for a district.' },
-    { id: 'shade-walk', title: 'Shaded walking routes', description: 'Routes with the most shade at a given time.' },
-    { id: 'flood-risk', title: 'Heavy rain flood risk', description: 'Flooded areas after heavy rain.' },
+    { id: 'noise-map', title: 'Noise map', description: 'Road traffic noise for a district.', version: '1.2.0' },
+    { id: 'shade-walk', title: 'Shaded walking routes', description: 'Routes with the most shade at a given time.', version: '0.9.1' },
+    { id: 'flood-risk', title: 'Heavy rain flood risk', description: 'Flooded areas after heavy rain.', version: '2.0.0' },
+    { id: 'healthcheck', title: 'Healthcheck', description: 'Returns the server status.', version: '1.0.0' },
   ]
 }

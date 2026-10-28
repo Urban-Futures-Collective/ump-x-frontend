@@ -35,6 +35,16 @@ export interface RegistryInput {
   required: boolean
 }
 
+/** A process a model server offers, as found when connecting to it. */
+export interface DiscoveredProcess {
+  id: string
+  title?: string
+  description?: string
+  version?: string
+  /** Set when the process is already registered as a model. */
+  modelId?: string
+}
+
 export interface RegistryHistoryEntry {
   at: string
   actorName: string

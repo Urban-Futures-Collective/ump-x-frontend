@@ -1,4 +1,4 @@
-import type { AuthType, LangMap, RegistryModel, RegistryServer, RegistryStatus } from '~/types/registry'
+import type { AuthType, DiscoveredProcess, LangMap, RegistryModel, RegistryServer, RegistryStatus } from '~/types/registry'
 import { ME, sampleDiscovery, sampleModels, sampleServers } from '~/prototype/registrySample'
 
 // State and actions of the registry prototype (Contribute, Verify). Everything lives in
@@ -48,9 +48,13 @@ export function useRegistryPrototype() {
 
   // Register a server and discover its processes. The prototype answers with sample
   // processes after a short pause, whatever the URL.
-  async function discover(_url: string) {
+  // Processes already taken over from that server are marked, as the API does.
+  async function discover(serverName: string): Promise<DiscoveredProcess[]> {
     await new Promise(r => setTimeout(r, 600))
-    return sampleDiscovery()
+    return sampleDiscovery().map(p => ({
+      ...p,
+      modelId: models.value.find(m => m.serverName === serverName && m.remoteProcessId === p.id)?.id,
+    }))
   }
 
   function addServer(name: string, baseUrl: string, authType: AuthType, hasCredentials: boolean): RegistryServer {
@@ -61,10 +65,10 @@ export function useRegistryPrototype() {
     return s
   }
 
-  function addModels(server: RegistryServer, processes: { id: string, title: string, description: string }[]): string[] {
+  function addModels(server: RegistryServer, processes: DiscoveredProcess[]): string[] {
     const now = new Date().toISOString()
     const created = processes.map((p, i) => {
-      const fullName: LangMap = { en: p.title }
+      const fullName: LangMap = { en: p.title || p.id }
       const m: RegistryModel = {
         id: `m${Date.now()}-${i}`,
         serverName: server.name,
@@ -73,11 +77,11 @@ export function useRegistryPrototype() {
         ownerName: '',
         defaultLang: 'en',
         fullName,
-        shortDescription: { en: p.description },
+        shortDescription: p.description ? { en: p.description } : {},
         purpose: {},
         limitationsRisks: {},
         keywords: [],
-        versionLabel: '1.0',
+        versionLabel: p.version ?? '',
         repositoryUrl: '',
         license: '',
         status: 'draft',
