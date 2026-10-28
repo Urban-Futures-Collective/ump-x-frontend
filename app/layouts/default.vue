@@ -290,6 +290,12 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
            The panel body is a scrolling flex column: shrink-0 keeps the surface
            from shrinking to the viewport height on long pages, min-h-full makes
            it reach the bottom on short ones. -->
+      <!-- Legal links on every workspace page, as in the design; the imprint has to be
+           reachable from everywhere. -->
+      <template #footer>
+        <TheFooter compact />
+      </template>
+
       <template #body>
         <div class="min-h-full shrink-0 bg-ufc-blue-50/40 p-6 sm:p-8">
           <slot />
