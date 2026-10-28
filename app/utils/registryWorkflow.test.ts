@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canEditCard, transitionsFor } from './registryWorkflow'
+import { canEditCard, contributeGroup, transitionsFor } from './registryWorkflow'
 
 const owner = { isOwner: true, isProvider: true, isVerifier: false, isPlatformAdmin: false }
 const verifier = { isOwner: false, isProvider: true, isVerifier: true, isPlatformAdmin: false }
@@ -40,5 +40,18 @@ describe('registry workflow', () => {
     expect(canEditCard('published', owner)).toBe(true)
     expect(canEditCard('deactivated', owner)).toBe(false)
     expect(canEditCard('draft', verifier)).toBe(false)
+  })
+})
+
+describe('contribute groups', () => {
+  it('puts each status where the owner expects it', () => {
+    expect(contributeGroup('draft')).toBe('action')
+    expect(contributeGroup('changes_requested')).toBe('action')
+    expect(contributeGroup('submitted')).toBe('awaiting')
+    expect(contributeGroup('in_review')).toBe('awaiting')
+    expect(contributeGroup('verified')).toBe('awaiting')
+    expect(contributeGroup('published')).toBe('live')
+    expect(contributeGroup('rejected')).toBe('closed')
+    expect(contributeGroup('deactivated')).toBe('closed')
   })
 })
