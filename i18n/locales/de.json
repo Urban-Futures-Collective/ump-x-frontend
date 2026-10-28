@@ -144,16 +144,42 @@
   },
   "commons": {
     "title": "Commons",
-    "anonymousHint": "Ohne Anmeldung kannst du die Modelle ansehen. Melde dich an, um dein eigenes Commons aufzubauen.",
-    "new": "Neues Commons",
-    "lead": "Der Katalog steht allen offen. Entdecke das UFC Commons.",
-    "scenarios": "Szenarien",
-    "view": {
-      "tiles": "Kachelansicht",
-      "list": "Listenansicht"
+    "intro": "Geprüfte Stadtmodelle, die du in deinen Szenarien nutzen kannst. Ohne Anmeldung siehst du nur die öffentlichen Modelle.",
+    "anonymousHint": "Melde dich an, um die Modelle zu sehen, für die dein Konto freigeschaltet ist.",
+    "contribute": "Modell beitragen",
+    "search": "Modelle suchen, z. B. Radnetz",
+    "filter": {
+      "topic": "Thema",
+      "language": "Sprache",
+      "licence": "Lizenz",
+      "reset": "Filter zurücksetzen"
     },
-    "search": "Modelle durchsuchen",
-    "noMatch": "Kein Modell passt zu „{q}“."
+    "sort": {
+      "label": "Sortieren",
+      "published": "Sortieren: zuletzt veröffentlicht",
+      "name": "Sortieren: Name"
+    },
+    "count": "keine Modelle | 1 Modell | {n} Modelle",
+    "fallbackLang": "Ohne Übersetzung erscheinen Modelle in ihrer Hauptsprache",
+    "noMatch": "Kein Modell passt zur Suche oder zu den Filtern.",
+    "onlyPublished": "Hier erscheinen nur veröffentlichte Modelle. Modelle in Prüfung sehen nur Prüfende, deaktivierte Modelle erscheinen hier nicht.",
+    "published": "Veröffentlicht am {date}",
+    "languages": "Sprachen:",
+    "lang": {
+      "de": "Deutsch",
+      "en": "Englisch"
+    },
+    "model": {
+      "newScenario": "Neues Szenario anlegen",
+      "otherLang": "Diese Modellkarte gibt es auch auf {lang}.",
+      "switchLang": "Anzeigen",
+      "io": "Ein- und Ausgaben",
+      "about": "Über dieses Modell",
+      "code": "Code",
+      "runtime": "Laufzeit",
+      "minutes": "etwa {n} min",
+      "resources": "Ressourcen"
+    }
   },
   "run": {
     "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",

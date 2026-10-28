@@ -144,16 +144,42 @@
   },
   "commons": {
     "title": "Commons",
-    "anonymousHint": "Without logging in, you can view the models. Log in to build your own commons.",
-    "new": "New Commons",
-    "lead": "The catalog is open to everyone. Explore the UFC Commons.",
-    "scenarios": "Scenarios",
-    "view": {
-      "tiles": "Tile view",
-      "list": "List view"
+    "intro": "Verified urban models you can use in your scenarios. Without logging in, you see the public models only.",
+    "anonymousHint": "Log in to see the models your account gives you access to.",
+    "contribute": "Contribute a model",
+    "search": "Search models, e.g. bicycle network",
+    "filter": {
+      "topic": "Topic",
+      "language": "Language",
+      "licence": "Licence",
+      "reset": "Reset filters"
     },
-    "search": "Search models",
-    "noMatch": "No model matches “{q}”."
+    "sort": {
+      "label": "Sort",
+      "published": "Sort: recently published",
+      "name": "Sort: name"
+    },
+    "count": "no models | 1 model | {n} models",
+    "fallbackLang": "Models are shown in their main language where no translation exists",
+    "noMatch": "No model matches the search or filters.",
+    "onlyPublished": "Only published models appear here. Models currently in review are listed for verifiers only, deactivated models do not appear on this page.",
+    "published": "Published {date}",
+    "languages": "Languages:",
+    "lang": {
+      "de": "German",
+      "en": "English"
+    },
+    "model": {
+      "newScenario": "Create new scenario",
+      "otherLang": "This model card is also available in {lang}.",
+      "switchLang": "Show",
+      "io": "Inputs and outputs",
+      "about": "About this model",
+      "code": "Code",
+      "runtime": "Runtime",
+      "minutes": "about {n} min",
+      "resources": "Resources"
+    }
   },
   "run": {
     "selectHint": "Select a process on the left to run it.",
