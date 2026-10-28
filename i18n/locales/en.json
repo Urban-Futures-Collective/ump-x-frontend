@@ -560,7 +560,8 @@
       "filledTitle": "Filled in from your server",
       "filled1": "Title, description, keywords and version are copied into each draft. You can change them in the next step.",
       "filled2": "Inputs and outputs are not copied as text. They are read from your server each time and shown on the model page, so they stay correct.",
-      "filled3": "English is the default language of every model card. If your server also answers in other languages, those texts are added automatically; you can add more languages in the next step."
+      "filled3": "English is the default language of every model card. If your server also answers in other languages, those texts are added automatically; you can add more languages in the next step.",
+      "keyName": "Header name"
     },
     "auth": {
       "NoAuth": "None",
@@ -661,7 +662,11 @@
       "publishNote": "On publishing, UMP-X creates the access role {role} in Keycloak.",
       "noteVisible": "The provider sees this text."
     },
-    "me": "me"
+    "me": "me",
+    "otherOwner": "another provider",
+    "failed": "That did not work",
+    "loadFailed": "Could not load the registry",
+    "loading": "Loading models …"
   },
   "results": {
     "legend": "Legend",

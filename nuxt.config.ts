@@ -60,6 +60,9 @@ export default defineNuxtConfig({
       // Pages that are prototypes with sample data (model registry). Off unless
       // NUXT_PUBLIC_PROTOTYPES=true, so production does not show them.
       prototypes: false,
+      // Model registry from UMP (/registry/v1) instead of sample data. Off unless
+      // NUXT_PUBLIC_REGISTRY_API=true; switches the registry pages on as well.
+      registryApi: false,
     },
   },
 

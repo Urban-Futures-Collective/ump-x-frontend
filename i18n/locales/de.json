@@ -560,7 +560,8 @@
       "filledTitle": "Von deinem Server übernommen",
       "filled1": "Titel, Beschreibung, Schlagwörter und Version werden in jeden Entwurf kopiert. Im nächsten Schritt kannst du sie ändern.",
       "filled2": "Ein- und Ausgaben werden nicht als Text kopiert. Sie werden jedes Mal von deinem Server gelesen und auf der Modellseite gezeigt, so bleiben sie richtig.",
-      "filled3": "Englisch ist die Standardsprache jeder Modellkarte. Antwortet dein Server auch in anderen Sprachen, werden diese Texte automatisch übernommen; weitere Sprachen kannst du im nächsten Schritt ergänzen."
+      "filled3": "Englisch ist die Standardsprache jeder Modellkarte. Antwortet dein Server auch in anderen Sprachen, werden diese Texte automatisch übernommen; weitere Sprachen kannst du im nächsten Schritt ergänzen.",
+      "keyName": "Header-Name"
     },
     "auth": {
       "NoAuth": "Keine",
@@ -661,7 +662,11 @@
       "publishNote": "Beim Veröffentlichen legt UMP-X die Zugriffsrolle {role} in Keycloak an.",
       "noteVisible": "Die Anbieterin oder der Anbieter sieht diesen Text."
     },
-    "me": "ich"
+    "me": "ich",
+    "otherOwner": "andere Person",
+    "failed": "Das hat nicht geklappt",
+    "loadFailed": "Die Registry konnte nicht geladen werden",
+    "loading": "Modelle werden geladen …"
   },
   "results": {
     "legend": "Legende",

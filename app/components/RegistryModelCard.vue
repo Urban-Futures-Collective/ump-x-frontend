@@ -6,7 +6,7 @@ import type { RegistryModel } from '~/types/registry'
 // on the right. As a tile the status moves below the text.
 const props = defineProps<{ model: RegistryModel, to: string, showOwner?: boolean, tile?: boolean }>()
 const { t, locale } = useI18n()
-const { ownerLabel } = useRegistryPrototype()
+const { ownerLabel } = useRegistry()
 
 const title = computed(() => inLang(props.model.fullName, locale.value, props.model.defaultLang) || props.model.remoteProcessId)
 const description = computed(() => inLang(props.model.shortDescription, locale.value, props.model.defaultLang))

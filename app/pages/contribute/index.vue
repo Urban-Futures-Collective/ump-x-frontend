@@ -6,10 +6,10 @@ import { CONTRIBUTE_GROUPS, contributeGroup } from '~/utils/registryWorkflow'
 import type { ContributeGroup } from '~/utils/registryWorkflow'
 
 // Contribute (design P1): the signed-in provider's models, grouped by who has to act
-// next, and their model servers. Prototype with sample data (see useRegistryPrototype).
+// next, and their model servers. Prototype with sample data (see useRegistry).
 definePageMeta({ middleware: ['auth', 'prototype', 'provider'] })
 const { t, locale } = useI18n()
-const { myModels, myServers } = useRegistryPrototype()
+const { myModels, myServers, loading, error } = useRegistry()
 
 const tab = ref<'models' | 'servers'>('models')
 const tabs = computed<TabsItem[]>(() => [
@@ -63,6 +63,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
 <template>
   <section class="max-w-6xl space-y-6">
     <PrototypeNotice />
+    <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('registry.loadFailed')" :description="error" />
 
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="max-w-xl space-y-1">
@@ -120,7 +121,10 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
     </div>
 
     <template v-if="tab === 'models'">
-      <p v-if="!groups.length" class="text-sm text-(--ui-text-muted)">
+      <p v-if="loading && !myModels.length" class="text-sm text-(--ui-text-muted)">
+        {{ t('registry.loading') }}
+      </p>
+      <p v-else-if="!groups.length" class="text-sm text-(--ui-text-muted)">
         {{ search || statusFilter !== 'all' ? t('registry.noMatch') : t('registry.contribute.empty') }}
       </p>
       <UCollapsible v-for="g in groups" :key="g.key" v-model:open="open[g.key]" class="space-y-3">

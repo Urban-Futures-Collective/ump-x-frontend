@@ -2,10 +2,10 @@
 import type { RegistryStatus } from '~/types/registry'
 
 // Verify: newly submitted models on the left, all models with their status on the right.
-// Drafts are the owner's business and not listed. Prototype with sample data.
+// Drafts are the owner's business and not listed.
 definePageMeta({ middleware: ['auth', 'prototype', 'verifier'] })
 const { t, locale } = useI18n()
-const { models, awaitingReview, ownerLabel } = useRegistryPrototype()
+const { models, awaitingReview, ownerLabel, error } = useRegistry()
 
 const search = ref('')
 const statusFilter = ref<RegistryStatus | 'all'>('all')
@@ -29,6 +29,7 @@ const fresh = computed(() => awaitingReview.value.filter(matches))
 <template>
   <section class="max-w-6xl space-y-6">
     <PrototypeNotice />
+    <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('registry.loadFailed')" :description="error" />
 
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="space-y-1">

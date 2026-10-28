@@ -3,11 +3,27 @@ import type { RegistryStatus } from '~/types/registry'
 
 // Reviewing one model: the model card as submitted, interface and history, and the
 // decisions the workflow allows (see registryWorkflow.ts). Four-eyes: nobody reviews
-// their own model. Prototype with sample data.
+// their own model.
 definePageMeta({ middleware: ['auth', 'prototype', 'verifier'] })
 const { t, locale } = useI18n()
 const route = useRoute()
-const { byId, actorFor, transition, ownerLabel } = useRegistryPrototype()
+const { byId, actorFor, transition, ownerLabel } = useRegistry()
+const toast = useToast()
+const busy = ref(false)
+
+// A refused step (e.g. someone else was quicker) is shown, not swallowed.
+async function step(to: RegistryStatus, text?: string) {
+  busy.value = true
+  try {
+    await transition(model.value!.id, to, text)
+  }
+  catch (e) {
+    toast.add({ title: t('registry.failed'), description: apiErrorMessage(e), color: 'error' })
+  }
+  finally {
+    busy.value = false
+  }
+}
 
 const model = computed(() => byId(String(route.params.id)))
 const actor = computed(() => model.value ? actorFor(model.value) : null)
@@ -25,12 +41,13 @@ function choose(a: { to: RegistryStatus, needsNote: boolean }) {
     note.value = ''
     return
   }
-  transition(model.value!.id, a.to)
+  step(a.to)
 }
 function confirm() {
   if (!pending.value || !note.value.trim()) return
-  transition(model.value!.id, pending.value, note.value.trim())
+  const to = pending.value
   pending.value = null
+  step(to, note.value.trim())
 }
 
 const ICONS: Partial<Record<RegistryStatus, string>> = {
@@ -143,6 +160,7 @@ const ICONS: Partial<Record<RegistryStatus, string>> = {
               :icon="ICONS[a.to]"
               :color="a.to === 'rejected' || a.to === 'deactivated' ? 'error' : a.to === 'changes_requested' ? 'warning' : 'primary'"
               :variant="a.to === 'verified' || a.to === 'published' || a.to === 'in_review' ? 'solid' : 'outline'"
+              :loading="busy"
               @click="choose(a)"
             >
               {{ t(`registry.action.${a.to}`) }}
@@ -163,7 +181,7 @@ const ICONS: Partial<Record<RegistryStatus, string>> = {
               <UButton type="button" variant="ghost" color="neutral" @click="() => { pending = null }">
                 {{ t('registry.cancel') }}
               </UButton>
-              <UButton type="submit" :disabled="!note.trim()">
+              <UButton type="submit" :disabled="!note.trim()" :loading="busy">
                 {{ t(`registry.action.${pending}`) }}
               </UButton>
             </div>
