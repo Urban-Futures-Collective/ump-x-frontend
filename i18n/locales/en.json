@@ -493,7 +493,6 @@
       "title": "Contribute",
       "intro": "Models you own on the platform. A model goes live in the Commons only after a second person has verified it.",
       "new": "New model",
-      "empty": "You have not submitted any models yet.",
       "tabModels": "My models · {n}",
       "tabServers": "My servers · {n}",
       "searchModels": "Search my models",
@@ -515,7 +514,11 @@
       "serversEmpty": "You have not registered a server yet.",
       "serverModels": "no models | 1 model | {n} models",
       "interfaceChanged": "Interface changed",
-      "note": "Reviewer note: “{note}”"
+      "note": "Reviewer note: “{note}”",
+      "emptyTitle": "You have not contributed any models yet.",
+      "emptyText": "Register the server your model runs on, choose its processes and write a model card. A second person verifies it before it goes into the Commons.",
+      "emptyCreate": "Create new model",
+      "emptyHelp": "How contributing works"
     },
     "new": {
       "title": "Contribute a new model",
@@ -665,7 +668,6 @@
         "closed": "Not live · {n}"
       },
       "empty": {
-        "todo": "Nothing to verify right now.",
         "interface": "No interface changes.",
         "published": "No published models yet.",
         "closed": "No rejected or deactivated models."
@@ -681,7 +683,9 @@
       "days": "{n} days | 1 day | {n} days",
       "you": "You",
       "continue": "Continue review",
-      "open": "Open"
+      "open": "Open",
+      "noneBadge": "No new models",
+      "noneText": "You have nothing to verify yet."
     },
     "me": "me",
     "otherOwner": "another provider",

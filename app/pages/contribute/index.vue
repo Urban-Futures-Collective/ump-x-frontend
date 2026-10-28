@@ -11,6 +11,10 @@ definePageMeta({ middleware: ['auth', 'prototype', 'provider'] })
 const { t, locale } = useI18n()
 const { myModels, myServers, loading, error } = useRegistry()
 
+// Nothing contributed yet (design E1): one invitation instead of empty tabs and tools.
+// The servers tab only matters once there is a model; a server is registered with it.
+const isEmpty = computed(() => !loading.value && !error.value && !myModels.value.length)
+
 const tab = ref<'models' | 'servers'>('models')
 const tabs = computed<TabsItem[]>(() => [
   { label: t('registry.contribute.tabModels', { n: myModels.value.length }), value: 'models' },
@@ -74,7 +78,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
           {{ t('registry.contribute.intro') }}
         </p>
       </div>
-      <div class="flex flex-wrap items-center gap-2">
+      <div v-if="!isEmpty" class="flex flex-wrap items-center gap-2">
         <UInput
           v-model="search"
           icon="i-lucide-search"
@@ -87,7 +91,24 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
       </div>
     </div>
 
-    <div class="flex flex-wrap items-end justify-between gap-2 border-b border-(--ui-border)">
+    <div v-if="isEmpty" class="mx-auto max-w-2xl space-y-5 rounded-lg border border-(--ui-border) bg-white px-6 py-10 text-center">
+      <p class="text-lg font-medium text-(--ui-text-highlighted)">
+        {{ t('registry.contribute.emptyTitle') }}
+      </p>
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('registry.contribute.emptyText') }}
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <UButton size="lg" to="/contribute/new">
+          {{ t('registry.contribute.emptyCreate') }}
+        </UButton>
+        <ULink to="/hilfe" class="font-medium text-(--ui-primary)">
+          {{ t('registry.contribute.emptyHelp') }}
+        </ULink>
+      </div>
+    </div>
+
+    <div v-else class="flex flex-wrap items-end justify-between gap-2 border-b border-(--ui-border)">
       <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="-mb-px" />
       <div v-if="tab === 'models'" class="flex items-center gap-1 pb-1">
         <UDropdownMenu :items="sortItems" :content="{ align: 'end' }">
@@ -120,12 +141,12 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
       </div>
     </div>
 
-    <template v-if="tab === 'models'">
+    <template v-if="!isEmpty && tab === 'models'">
       <p v-if="loading && !myModels.length" class="text-sm text-(--ui-text-muted)">
         {{ t('registry.loading') }}
       </p>
       <p v-else-if="!groups.length" class="text-sm text-(--ui-text-muted)">
-        {{ search || statusFilter !== 'all' ? t('registry.noMatch') : t('registry.contribute.empty') }}
+        {{ t('registry.noMatch') }}
       </p>
       <UCollapsible v-for="g in groups" :key="g.key" v-model:open="open[g.key]" class="space-y-3">
         <UButton
@@ -146,7 +167,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
       </UCollapsible>
     </template>
 
-    <template v-else>
+    <template v-else-if="!isEmpty">
       <h2 class="text-base font-semibold text-(--ui-primary)">
         {{ t('registry.contribute.servers') }}
       </h2>

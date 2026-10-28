@@ -493,7 +493,6 @@
       "title": "Beitragen",
       "intro": "Modelle, die dir auf der Plattform gehören. Ein Modell kommt erst in die Commons, wenn eine zweite Person es verifiziert hat.",
       "new": "Neues Modell",
-      "empty": "Du hast noch keine Modelle eingereicht.",
       "tabModels": "Meine Modelle · {n}",
       "tabServers": "Meine Server · {n}",
       "searchModels": "Meine Modelle suchen",
@@ -515,7 +514,11 @@
       "serversEmpty": "Du hast noch keinen Server registriert.",
       "serverModels": "keine Modelle | 1 Modell | {n} Modelle",
       "interfaceChanged": "Schnittstelle geändert",
-      "note": "Hinweis aus der Prüfung: „{note}“"
+      "note": "Hinweis aus der Prüfung: „{note}“",
+      "emptyTitle": "Du hast noch keine Modelle beigetragen.",
+      "emptyText": "Registriere den Server, auf dem dein Modell läuft, wähle seine Prozesse aus und schreibe eine Modellkarte. Eine zweite Person prüft es, bevor es in die Commons kommt.",
+      "emptyCreate": "Neues Modell anlegen",
+      "emptyHelp": "So funktioniert das Beitragen"
     },
     "new": {
       "title": "Neues Modell beitragen",
@@ -665,7 +668,6 @@
         "closed": "Nicht live · {n}"
       },
       "empty": {
-        "todo": "Gerade gibt es nichts zu prüfen.",
         "interface": "Keine Schnittstellenänderungen.",
         "published": "Noch keine veröffentlichten Modelle.",
         "closed": "Keine abgelehnten oder deaktivierten Modelle."
@@ -681,7 +683,9 @@
       "days": "{n} Tagen | 1 Tag | {n} Tagen",
       "you": "Du",
       "continue": "Prüfung fortsetzen",
-      "open": "Öffnen"
+      "open": "Öffnen",
+      "noneBadge": "Keine neuen Modelle",
+      "noneText": "Gerade gibt es nichts zu prüfen."
     },
     "me": "ich",
     "otherOwner": "andere Person",
