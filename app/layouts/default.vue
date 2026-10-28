@@ -141,13 +141,16 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
 </script>
 
 <template>
-  <UDashboardGroup storage-key="ump-x-sidebar">
+  <!-- Sidebar width in rem, as in the design (16rem = 256px), instead of a share of the
+       window that grows on large screens. New storage key: sizes saved under the old
+       one were percentages. -->
+  <UDashboardGroup storage-key="ump-x-sidebar-rem" unit="rem">
     <UDashboardSidebar
       collapsible
       resizable
-      :default-size="17"
+      :default-size="16"
       :min-size="13"
-      :max-size="24"
+      :max-size="22"
     >
       <template #header="{ collapsed }">
         <NuxtLink to="/" class="flex min-w-0 items-center gap-2">
@@ -200,9 +203,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
       <!-- Partners at the bottom, as in the design; muted so they do not compete with
            the navigation. Too small to read when collapsed, so left out then. -->
       <template #footer="{ collapsed }">
-        <div v-if="!collapsed" class="flex items-center gap-4 px-2.5 pb-1 opacity-60">
-          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="h-5 w-auto" height="20">
-          <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="h-5 w-auto" height="20">
+        <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-4 px-2.5 pb-1 opacity-60">
+          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="mx-auto max-h-8 w-full object-contain">
+          <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="mx-auto max-h-8 w-full object-contain">
         </div>
       </template>
     </UDashboardSidebar>
