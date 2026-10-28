@@ -1,29 +1,59 @@
 <script setup lang="ts">
-import type { RegistryStatus } from '~/types/registry'
+import type { TabsItem } from '@nuxt/ui'
+import type { RegistryModel, RegistryStatus } from '~/types/registry'
+import type { VerifyTab } from '~/utils/registryWorkflow'
+import { verifyTabsOf } from '~/utils/registryWorkflow'
 
-// Verify: newly submitted models on the left, all models with their status on the right.
-// Drafts are the owner's business and not listed.
+// Verify (design V1): the models a verifier looks after, in tabs, as a table with the
+// next step per row. Drafts are the owner's business and not listed.
 definePageMeta({ middleware: ['auth', 'prototype', 'verifier'] })
 const { t, locale } = useI18n()
-const { models, awaitingReview, ownerLabel, error } = useRegistry()
+const { models, ownerLabel, actorFor, transition, load, loading, error } = useRegistry()
+const toast = useToast()
 
-const search = ref('')
-const statusFilter = ref<RegistryStatus | 'all'>('all')
-const statusItems = computed(() => [
-  { label: t('registry.verify.allStatuses'), value: 'all' },
-  ...(['submitted', 'in_review', 'verified', 'published', 'rejected', 'deactivated'] as RegistryStatus[])
-    .map(s => ({ label: t(`registry.status.${s}`), value: s })),
+const tab = ref<VerifyTab>('todo')
+const inTab = (key: VerifyTab) => models.value.filter(m => verifyTabsOf(m.status, m.interfaceState).includes(key))
+const counts = computed(() => ({
+  todo: inTab('todo').length,
+  interface: inTab('interface').length,
+  published: inTab('published').length,
+  closed: inTab('closed').length,
+}))
+// Interface changes need the drift check in UMP (phase D), which is not there yet:
+// greyed out until then.
+const tabs = computed<TabsItem[]>(() => [
+  { label: t('registry.verify.tabs.todo', { n: counts.value.todo }), value: 'todo' },
+  { label: t('registry.verify.tabs.interface', { n: counts.value.interface }), value: 'interface', disabled: true },
+  { label: t('registry.verify.tabs.published', { n: counts.value.published }), value: 'published' },
+  { label: t('registry.verify.tabs.closed', { n: counts.value.closed }), value: 'closed' },
 ])
 
-const matches = (m: (typeof models.value)[number]) =>
-  matchesSearch(search.value, inLang(m.fullName, locale.value, m.defaultLang), m.serverName, m.remoteProcessId, ownerLabel(m))
+const rows = computed(() => inTab(tab.value).sort((a, b) => b.statusChangedAt.localeCompare(a.statusChangedAt)))
 
-const all = computed(() => models.value
-  .filter(m => m.status !== 'draft')
-  .filter(m => statusFilter.value === 'all' || m.status === statusFilter.value)
-  .filter(matches)
-  .sort((a, b) => b.statusChangedAt.localeCompare(a.statusChangedAt)))
-const fresh = computed(() => awaitingReview.value.filter(matches))
+const title = (m: RegistryModel) => inLang(m.fullName, locale.value, m.defaultLang) || m.remoteProcessId
+const isOwn = (m: RegistryModel) => actorFor(m).isOwner
+
+// "5 days", "1 day", "today": how long the model has waited in its status.
+function since(iso: string) {
+  if (!iso) return ''
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
+  return days < 1 ? t('registry.verify.today') : t('registry.verify.days', days)
+}
+
+const busy = ref<string | null>(null)
+async function step(m: RegistryModel, to: RegistryStatus) {
+  busy.value = m.id
+  try {
+    await transition(m.id, to)
+    if (to === 'in_review') await navigateTo(`/verify/${m.id}`)
+  }
+  catch (e) {
+    toast.add({ title: t('registry.failed'), description: apiErrorMessage(e), color: 'error' })
+  }
+  finally {
+    busy.value = null
+  }
+}
 </script>
 
 <template>
@@ -40,43 +70,78 @@ const fresh = computed(() => awaitingReview.value.filter(matches))
           {{ t('registry.verify.intro') }}
         </p>
       </div>
-      <UInput v-model="search" icon="i-lucide-search" :placeholder="t('registry.search')" :aria-label="t('registry.search')" size="sm" />
+      <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="loading" @click="() => { load(true) }">
+        {{ t('registry.verify.refresh') }}
+      </UButton>
     </div>
 
-    <div class="grid gap-8 lg:grid-cols-2">
-      <div class="space-y-3">
-        <h2 class="text-lg font-semibold">
-          {{ t('registry.verify.fresh') }}
-          <UBadge v-if="fresh.length" color="info" variant="subtle" size="sm" class="ml-1">
-            {{ fresh.length }}
-          </UBadge>
-        </h2>
-        <p v-if="!fresh.length" class="text-sm text-(--ui-text-muted)">
-          {{ t('registry.verify.noneFresh') }}
-        </p>
-        <ul v-else class="space-y-3">
-          <li v-for="m in fresh" :key="m.id">
-            <RegistryModelCard :model="m" :to="`/verify/${m.id}`" show-owner />
-          </li>
-        </ul>
-      </div>
+    <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
 
-      <div class="space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <h2 class="text-lg font-semibold">
-            {{ t('registry.verify.all') }}
-          </h2>
-          <USelect v-model="statusFilter" :items="statusItems" size="sm" class="w-48" :aria-label="t('registry.verify.filter')" />
-        </div>
-        <p v-if="!all.length" class="text-sm text-(--ui-text-muted)">
-          {{ t('registry.noMatch') }}
-        </p>
-        <ul v-else class="space-y-3">
-          <li v-for="m in all" :key="m.id">
-            <RegistryModelCard :model="m" :to="`/verify/${m.id}`" show-owner />
-          </li>
-        </ul>
-      </div>
+    <p v-if="!rows.length" class="text-sm text-(--ui-text-muted)">
+      {{ loading ? t('registry.loading') : t(`registry.verify.empty.${tab}`) }}
+    </p>
+
+    <div v-else class="overflow-x-auto rounded-lg border border-(--ui-border) bg-white">
+      <table class="w-full min-w-[40rem] text-left text-sm">
+        <thead class="text-xs text-(--ui-text-muted)">
+          <tr>
+            <th scope="col" class="px-4 py-3 font-medium">
+              {{ t('registry.verify.col.model') }}
+            </th>
+            <th scope="col" class="px-4 py-3 font-medium">
+              {{ t('registry.verify.col.owner') }}
+            </th>
+            <th scope="col" class="px-4 py-3 font-medium">
+              {{ t('registry.verify.col.status') }}
+            </th>
+            <th scope="col" class="px-4 py-3 font-medium">
+              {{ t('registry.verify.col.since') }}
+            </th>
+            <th scope="col" class="px-4 py-3">
+              <span class="sr-only">{{ t('registry.verify.col.action') }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="m in rows" :key="m.id" class="border-t border-(--ui-border)">
+            <td class="px-4 py-3">
+              <ULink :to="`/verify/${m.id}`" class="font-medium text-(--ui-text-highlighted) hover:text-(--ui-primary)">
+                {{ title(m) }}
+              </ULink>
+              <p class="text-xs text-(--ui-text-dimmed)">
+                {{ m.serverName }}:{{ m.remoteProcessId }}
+              </p>
+            </td>
+            <td class="px-4 py-3">
+              {{ isOwn(m) ? t('registry.verify.you') : ownerLabel(m) }}
+            </td>
+            <td class="px-4 py-3">
+              <RegistryStatusBadge :status="m.status" />
+            </td>
+            <td class="px-4 py-3 text-(--ui-text-muted)">
+              {{ since(m.statusChangedAt) }}
+            </td>
+            <td class="px-4 py-3 text-right">
+              <!-- Four-eyes: nobody reviews their own model. -->
+              <p v-if="isOwn(m) && tab === 'todo'" class="ml-auto max-w-56 text-xs text-(--ui-text-muted)">
+                {{ t('registry.verify.ownModel') }}
+              </p>
+              <UButton v-else-if="m.status === 'submitted'" :loading="busy === m.id" @click="step(m, 'in_review')">
+                {{ t('registry.action.in_review') }}
+              </UButton>
+              <UButton v-else-if="m.status === 'verified'" variant="soft" :loading="busy === m.id" @click="step(m, 'published')">
+                {{ t('registry.action.published') }}
+              </UButton>
+              <UButton v-else-if="m.status === 'in_review'" variant="outline" :to="`/verify/${m.id}`">
+                {{ t('registry.verify.continue') }}
+              </UButton>
+              <UButton v-else variant="ghost" color="neutral" trailing-icon="i-lucide-arrow-right" :to="`/verify/${m.id}`">
+                {{ t('registry.verify.open') }}
+              </UButton>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </template>

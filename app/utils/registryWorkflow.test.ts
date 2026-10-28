@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canEditCard, contributeGroup, transitionsFor } from './registryWorkflow'
+import { canEditCard, contributeGroup, transitionsFor, verifyTabsOf } from './registryWorkflow'
 
 const owner = { isOwner: true, isProvider: true, isVerifier: false, isPlatformAdmin: false }
 const verifier = { isOwner: false, isProvider: true, isVerifier: true, isPlatformAdmin: false }
@@ -53,5 +53,17 @@ describe('contribute groups', () => {
     expect(contributeGroup('published')).toBe('live')
     expect(contributeGroup('rejected')).toBe('closed')
     expect(contributeGroup('deactivated')).toBe('closed')
+  })
+})
+
+describe('verify tabs', () => {
+  it('lists each model where a verifier looks for it', () => {
+    expect(verifyTabsOf('draft', 'unchecked')).toEqual([])
+    expect(verifyTabsOf('submitted', 'unchecked')).toEqual(['todo'])
+    expect(verifyTabsOf('verified', 'in_sync')).toEqual(['todo'])
+    expect(verifyTabsOf('published', 'in_sync')).toEqual(['published'])
+    expect(verifyTabsOf('published', 'drifted')).toEqual(['published', 'interface'])
+    expect(verifyTabsOf('rejected', 'unchecked')).toEqual(['closed'])
+    expect(verifyTabsOf('deactivated', 'in_sync')).toEqual(['closed'])
   })
 })

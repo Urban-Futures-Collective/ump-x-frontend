@@ -77,3 +77,19 @@ export function contributeGroup(status: RegistryStatus): ContributeGroup {
   if (status === 'published') return 'live'
   return 'closed'
 }
+
+/** Tabs on the Verify page, in display order (design V1). */
+export const VERIFY_TABS = ['todo', 'interface', 'published', 'closed'] as const
+export type VerifyTab = typeof VERIFY_TABS[number]
+
+/**
+ * Where a verifier finds a model. Drafts are the owner's business and appear nowhere.
+ * A published model whose server interface changed sits under "interface" as well as
+ * under "published", so see verifyTabsOf.
+ */
+export function verifyTabsOf(status: RegistryStatus, interfaceState: string): VerifyTab[] {
+  if (status === 'draft') return []
+  if (AWAITING_REVIEW.includes(status)) return ['todo']
+  if (status === 'published') return interfaceState === 'drifted' ? ['published', 'interface'] : ['published']
+  return ['closed']
+}

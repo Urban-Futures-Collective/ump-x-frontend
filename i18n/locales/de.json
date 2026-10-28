@@ -647,13 +647,8 @@
     },
     "verify": {
       "title": "Modelle prüfen",
-      "intro": "Eingereichte Modelle prüfen, bestätigen und veröffentlichen. Eigene Modelle prüft immer jemand anderes.",
-      "fresh": "Neu eingereicht",
-      "noneFresh": "Keine neuen Einreichungen.",
-      "all": "Alle Modelle",
-      "allStatuses": "Alle Status",
-      "filter": "Nach Status filtern",
-      "ownModel": "Das ist dein eigenes Modell. Prüfen und veröffentlichen muss es jemand anderes.",
+      "intro": "Eingereichte Modelle prüfen, testweise rechnen und entscheiden, ob sie in die Commons kommen.",
+      "ownModel": "Dein eigenes Modell. Entscheiden muss jemand anderes.",
       "decide": "Prüfung",
       "testRun": "Testlauf starten",
       "testRunNote": "Testläufe sind im Prototyp nicht möglich. Später starten Prüferinnen und Prüfer hier einen Lauf, auch bevor das Modell veröffentlicht ist.",
@@ -661,7 +656,32 @@
       "noteVisible": "Die Anbieterin oder der Anbieter sieht diesen Text.",
       "testRunNoteLive": "Öffnet das Lauf-Formular in einem neuen Tab. Zum Verifizieren braucht es die Job-ID eines erfolgreichen Laufs dieses Modells, den du gestartet hast.",
       "jobId": "Job-ID deines Testlaufs",
-      "jobIdHint": "Aus „Meine Szenarien“: ein erfolgreicher Lauf dieses Modells, den du während dieser Prüfung gestartet hast."
+      "jobIdHint": "Aus „Meine Szenarien“: ein erfolgreicher Lauf dieses Modells, den du während dieser Prüfung gestartet hast.",
+      "refresh": "Aktualisieren",
+      "tabs": {
+        "todo": "Zu prüfen · {n}",
+        "interface": "Schnittstellenänderungen · {n}",
+        "published": "Veröffentlicht · {n}",
+        "closed": "Nicht live · {n}"
+      },
+      "empty": {
+        "todo": "Gerade gibt es nichts zu prüfen.",
+        "interface": "Keine Schnittstellenänderungen.",
+        "published": "Noch keine veröffentlichten Modelle.",
+        "closed": "Keine abgelehnten oder deaktivierten Modelle."
+      },
+      "col": {
+        "model": "Modell",
+        "owner": "Owner",
+        "status": "Status",
+        "since": "Seit",
+        "action": "Nächster Schritt"
+      },
+      "today": "heute",
+      "days": "{n} Tagen | 1 Tag | {n} Tagen",
+      "you": "Du",
+      "continue": "Prüfung fortsetzen",
+      "open": "Öffnen"
     },
     "me": "ich",
     "otherOwner": "andere Person",
