@@ -1,10 +1,28 @@
 <script setup lang="ts">
+import type { RegistryStatus } from '~/types/registry'
+
 // Commons: the model catalog ("Landing Screen" design). Each model is a tile; a
 // click leads to execution (/run?process=<id>). Role filtering happens
 // server-side in UMP, so the frontend does not need the roles for this.
 const { t } = useI18n()
 const { loggedIn } = useOidcAuth()
 const { data: processes, pending, error, refresh } = useUmpProcesses()
+
+// Verifiers also see models under review here: UMP lists them for verifiers so they
+// can test-run them (concept F12, D7). Those tiles carry their status, so nobody
+// takes them for published. Only with the registry API: the sample data has no
+// counterpart in the real catalog.
+const { isVerifier } = useUmpRoles()
+const { registryApi } = useRuntimeConfig().public
+const registry = registryApi ? useRegistry() : null
+const unpublished = computed(() => {
+  const map = new Map<string, RegistryStatus>()
+  if (!registry || !isVerifier.value) return map
+  for (const m of registry.models.value) {
+    if (m.status !== 'published') map.set(`${m.serverName}:${m.remoteProcessId}`, m.status)
+  }
+  return map
+})
 
 // Tiles ("Landing Screen") or list ("Models list"). Stored in a cookie rather
 // than localStorage so the server already renders the chosen view and nothing
@@ -109,7 +127,11 @@ const steps = ['choose', 'configure', 'take'] as const
               :process-id="p.id"
               :layout="view"
               :to="{ path: '/run', query: { process: p.id } }"
-            />
+            >
+              <template v-if="unpublished.has(p.id)" #badge>
+                <RegistryStatusBadge :status="unpublished.get(p.id)!" />
+              </template>
+            </ModelCard>
           </li>
         </ul>
         <p v-else-if="search && processes?.length" class="text-sm text-(--ui-text-muted)" role="status">

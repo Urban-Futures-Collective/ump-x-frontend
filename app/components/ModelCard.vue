@@ -3,8 +3,9 @@
 // list", with ID and arrow). The whole card is the link, so users do not have to
 // hit the heading.
 //
-// The `badge` slot is reserved for a "runs without sign-in" note. UMP does not
-// report that yet, and guessing it would be worse than showing nothing.
+// The `badge` slot carries the review status of models verifiers see before they are
+// published (Commons). It was also meant for a "runs without sign-in" note; UMP does
+// not report that yet, and guessing it would be worse than showing nothing.
 //
 // `gold` is for the landing page, where a white tile on white would need a
 // border the design does not have.
