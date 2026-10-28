@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     }),
     keycloakAdmin<number>('/users/count', { query: { search: searchTerm } }),
     realmDefaultRole().then(r => membersOf(r.name)),
-    ...BADGE_ROLES.map(membersOf),
+    ...BADGE_ROLES.map(membersOfRole),
   ])
 
   // Keycloak records admin events under the service account, so this log line is the
@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   // Accounts without the default role were unpacked (see roles.delete.ts) and hold the
   // default roles directly, or not at all. Only then is it worth asking who holds them.
   const unpacked = people.some(u => !defaultMembers.has(u.id))
-  const defaultRoleMembers = unpacked ? await Promise.all(DEFAULT_ROLES.map(membersOf)) : []
+  const defaultRoleMembers = unpacked ? await Promise.all(DEFAULT_ROLES.map(membersOfRole)) : []
 
   const accounts = people.map(u => ({
     id: u.id,

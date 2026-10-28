@@ -83,9 +83,11 @@ the refusal has to say what is missing rather than only that something failed.
 
 Three kinds of role govern this, all from Keycloak:
 
-**Platform roles**, realm roles named `user_role_…`: `viewer`, `user` and `provider`
-come with the realm's default role, so every new account has them; `verifier`,
-`access_admin` and `platform_admin` are assigned. Platform admins assign them in the
+**Platform roles**, realm roles named as UMP's model registry checks them: `viewer`,
+`user` and `provider` come with the realm's default role, so every new account has
+them; `verifier`, `access-admin` and `platform-admin` are assigned. Until the realm is
+renamed they are called `user_role_viewer` and so on; the frontend accepts both
+spellings (`shared/utils/roles.ts`). Platform admins assign them in the
 administration, and can also take a default role away from a single account.
 
 **Running a model** through a client role on `ump-client` named exactly like the
@@ -95,7 +97,7 @@ marked `anonymous-access: true` in the backend's `providers.yaml` needs no role 
 Refused, the API names the role it looked for. These roles are created by hand in the
 Keycloak console until the model registry exists.
 
-**Administration** through `user_role_access_admin` or `user_role_platform_admin`. The
+**Administration** through `access-admin` or `platform-admin`. The
 page shows the sections per role; the server checks the role again in every route.
 
 Whether the catalogue itself is filtered is a server setting, `UMP_PUBLIC_PROCESSES`.
