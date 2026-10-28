@@ -490,11 +490,32 @@
     "no": "nein",
     "cancel": "Abbrechen",
     "contribute": {
-      "title": "Modelle beitragen",
-      "intro": "Hier reichst du Modelle von deinem Modellserver ein. Nach der Prüfung erscheinen sie in Commons.",
+      "title": "Beitragen",
+      "intro": "Modelle, die dir auf der Plattform gehören. Ein Modell kommt erst in die Commons, wenn eine zweite Person es verifiziert hat.",
       "new": "Neues Modell",
-      "mine": "Meine Modelle",
-      "empty": "Du hast noch keine Modelle eingereicht."
+      "empty": "Du hast noch keine Modelle eingereicht.",
+      "tabModels": "Meine Modelle · {n}",
+      "tabServers": "Meine Server · {n}",
+      "searchModels": "Meine Modelle suchen",
+      "searchServers": "Meine Server suchen",
+      "groups": {
+        "action": "Du bist dran",
+        "awaiting": "Wartet auf Prüfung",
+        "live": "In den Commons",
+        "closed": "Nicht live"
+      },
+      "sort": "Sortieren",
+      "sortChanged": "Zuletzt geändert",
+      "sortName": "Name",
+      "filter": "Nach Status filtern",
+      "filterAll": "Alle Status",
+      "viewTiles": "Als Kacheln zeigen",
+      "viewList": "Als Liste zeigen",
+      "servers": "Deine Server",
+      "serversEmpty": "Du hast noch keinen Server registriert.",
+      "serverModels": "keine Modelle | 1 Modell | {n} Modelle",
+      "interfaceChanged": "Schnittstelle geändert",
+      "note": "Hinweis aus der Prüfung: „{note}“"
     },
     "new": {
       "title": "Neues Modell",

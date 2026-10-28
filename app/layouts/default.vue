@@ -23,34 +23,37 @@ const userName = computed(
 const navItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = [
     { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/commons' },
-    { label: t('nav.jobs'), icon: 'i-lucide-history', to: '/jobs' },
   ]
   // Model registry as a prototype with sample data, only where switched on
   // (NUXT_PUBLIC_PROTOTYPES) and for the matching role.
   if (prototypes && isProvider.value) {
     items.push({ label: t('nav.contribute'), icon: 'i-lucide-file-plus-2', to: '/contribute', badge: { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' } })
   }
-  if (isAdmin.value) {
-    items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
-  }
+  items.push({ label: t('nav.jobs'), icon: 'i-lucide-history', to: '/jobs' })
   return items
 })
 
-// Verify sits at the bottom of the sidebar, as in the design. Verifiers open it
-// and approve models; everyone else sees it greyed out, so the step exists
-// but is not theirs.
-const verifyItems = computed<NavigationMenuItem[]>(() => {
-  if (!prototypes) return []
+// Second block, as in the design: administration and Verify. Verifiers open
+// Verify and approve models; everyone else sees it greyed out, so the step
+// exists but is not theirs.
+const manageItems = computed<NavigationMenuItem[]>(() => {
+  const items: NavigationMenuItem[] = []
+  if (isAdmin.value) {
+    items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
+  }
+  if (!prototypes) return items
   if (!isVerifier.value) {
-    return [{ label: t('nav.verify'), icon: 'i-lucide-list-checks', disabled: true }]
+    items.push({ label: t('nav.verify'), icon: 'i-lucide-list-checks', disabled: true })
+    return items
   }
   const n = awaitingReview.value.length
-  return [{
+  items.push({
     label: t('nav.verify'),
     icon: 'i-lucide-list-checks',
     to: '/verify',
     badge: n ? { label: t('nav.verifyNew', { n }), color: 'success', variant: 'subtle', size: 'sm' } : { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' },
-  }]
+  })
+  return items
 })
 
 // Features from the design that have no backend yet (projects need their own
@@ -123,7 +126,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
     items.push({ label: t('nav.help') })
     return items
   }
-  const here = [...navItems.value, ...verifyItems.value, ...plannedItems.value].find(
+  const here = [...navItems.value, ...manageItems.value, ...plannedItems.value].find(
     i => i.to && route.path.startsWith(String(i.to)),
   )
   if (here) {
@@ -167,6 +170,16 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           class="w-full"
         />
 
+        <template v-if="manageItems.length">
+          <USeparator class="my-3" />
+          <UNavigationMenu
+            orientation="vertical"
+            :collapsed="collapsed"
+            :items="manageItems"
+            class="w-full"
+          />
+        </template>
+
         <USeparator class="my-3" />
 
         <p v-if="!collapsed" class="px-2.5 pb-1 text-xs font-medium text-(--ui-text-dimmed)">
@@ -176,15 +189,6 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           orientation="vertical"
           :collapsed="collapsed"
           :items="plannedItems"
-          class="w-full"
-        />
-      </template>
-
-      <template v-if="verifyItems.length" #footer="{ collapsed }">
-        <UNavigationMenu
-          orientation="vertical"
-          :collapsed="collapsed"
-          :items="verifyItems"
           class="w-full"
         />
       </template>

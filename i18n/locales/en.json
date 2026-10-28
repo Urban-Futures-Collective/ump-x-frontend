@@ -490,11 +490,32 @@
     "no": "no",
     "cancel": "Cancel",
     "contribute": {
-      "title": "Contribute models",
-      "intro": "Submit models from your model server here. Once reviewed, they appear in Commons.",
+      "title": "Contribute",
+      "intro": "Models you own on the platform. A model goes live in the Commons only after a second person has verified it.",
       "new": "New model",
-      "mine": "My models",
-      "empty": "You have not submitted any models yet."
+      "empty": "You have not submitted any models yet.",
+      "tabModels": "My models · {n}",
+      "tabServers": "My servers · {n}",
+      "searchModels": "Search my models",
+      "searchServers": "Search my servers",
+      "groups": {
+        "action": "Needs your action",
+        "awaiting": "Awaiting verification",
+        "live": "Live in the Commons",
+        "closed": "Not live"
+      },
+      "sort": "Sort",
+      "sortChanged": "Last changed",
+      "sortName": "Name",
+      "filter": "Filter by status",
+      "filterAll": "All statuses",
+      "viewTiles": "Show as tiles",
+      "viewList": "Show as list",
+      "servers": "Current servers",
+      "serversEmpty": "You have not registered a server yet.",
+      "serverModels": "no models | 1 model | {n} models",
+      "interfaceChanged": "Interface changed",
+      "note": "Reviewer note: “{note}”"
     },
     "new": {
       "title": "New model",

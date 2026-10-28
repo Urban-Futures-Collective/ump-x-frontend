@@ -58,3 +58,19 @@ export const AWAITING_REVIEW: RegistryStatus[] = ['submitted', 'in_review', 'ver
 export function canEditCard(status: RegistryStatus, actor: Actor): boolean {
   return actor.isOwner && actor.isProvider && status !== 'deactivated'
 }
+
+/** Groups on the Contribute page, in display order (design P1). */
+export const CONTRIBUTE_GROUPS = ['action', 'awaiting', 'live', 'closed'] as const
+export type ContributeGroup = typeof CONTRIBUTE_GROUPS[number]
+
+/**
+ * Where an owner finds a model: things only they can move on, things with the
+ * verifiers, models in Commons, and models that are no longer going anywhere.
+ * Rejected counts as closed: the owner cannot resubmit it.
+ */
+export function contributeGroup(status: RegistryStatus): ContributeGroup {
+  if (status === 'draft' || status === 'changes_requested') return 'action'
+  if (AWAITING_REVIEW.includes(status)) return 'awaiting'
+  if (status === 'published') return 'live'
+  return 'closed'
+}
