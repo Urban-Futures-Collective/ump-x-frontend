@@ -5,7 +5,7 @@ import type { RegistryModel } from '~/types/registry'
 // from the server, and every status change with its comment.
 const props = defineProps<{ model: RegistryModel }>()
 const { t, locale } = useI18n()
-const { ownerLabel } = useRegistryPrototype()
+const { ownerLabel } = useRegistry()
 
 const history = computed(() => [...props.model.history].reverse())
 const when = (iso: string) => new Date(iso).toLocaleString(locale.value, { dateStyle: 'medium', timeStyle: 'short' })

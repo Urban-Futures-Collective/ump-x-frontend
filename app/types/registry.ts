@@ -80,3 +80,17 @@ export interface RegistryModel {
   inputs: RegistryInput[]
   history: RegistryHistoryEntry[]
 }
+
+/** Card fields the owner edits on the model page. */
+export type RegistryCardEdit = Partial<Pick<RegistryModel, 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks' | 'license' | 'repositoryUrl' | 'versionLabel' | 'defaultLang'>>
+
+/** A new model server as entered in the form; the secret is only ever sent, never read back. */
+export interface RegistryServerInput {
+  name: string
+  baseUrl: string
+  authType: AuthType
+  user?: string
+  secret?: string
+  /** Header name for an API key. */
+  keyName?: string
+}

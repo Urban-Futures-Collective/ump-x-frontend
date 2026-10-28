@@ -7,8 +7,12 @@ const { t, locale, locales, setLocale } = useI18n()
 const route = useRoute()
 const { loggedIn, user, login, logout } = useOidcAuth()
 const { isAdmin, isProvider, isVerifier } = useUmpRoles()
-const { accountUrl, prototypes } = useRuntimeConfig().public
-const { awaitingReview } = useRegistryPrototype()
+const { accountUrl, prototypes: samples, registryApi } = useRuntimeConfig().public
+// The registry pages exist with sample data or with the registry API.
+const prototypes = samples || registryApi
+const { awaitingReview } = useRegistry()
+// Sample data is marked as such; the live registry is not.
+const sampleBadge = registryApi ? undefined : { label: t('prototype.badge'), color: 'warning' as const, variant: 'subtle' as const, size: 'sm' as const }
 
 // The chat lives in a slide-over so it does not push the workspace aside.
 const chatOpen = ref(false)
@@ -27,7 +31,7 @@ const navItems = computed<NavigationMenuItem[]>(() => {
   // Model registry as a prototype with sample data, only where switched on
   // (NUXT_PUBLIC_PROTOTYPES) and for the matching role.
   if (prototypes && isProvider.value) {
-    items.push({ label: t('nav.contribute'), icon: 'i-lucide-file-plus-2', to: '/contribute', badge: { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' } })
+    items.push({ label: t('nav.contribute'), icon: 'i-lucide-file-plus-2', to: '/contribute', badge: sampleBadge })
   }
   items.push({ label: t('nav.jobs'), icon: 'i-lucide-history', to: '/jobs' })
   return items
@@ -51,7 +55,7 @@ const manageItems = computed<NavigationMenuItem[]>(() => {
     label: t('nav.verify'),
     icon: 'i-lucide-list-checks',
     to: '/verify',
-    badge: n ? { label: t('nav.verifyNew', { n }), color: 'success', variant: 'subtle', size: 'sm' } : { label: t('prototype.badge'), color: 'warning', variant: 'subtle', size: 'sm' },
+    badge: n ? { label: t('nav.verifyNew', { n }), color: 'success', variant: 'subtle', size: 'sm' } : sampleBadge,
   })
   return items
 })

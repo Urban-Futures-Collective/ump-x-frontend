@@ -1,35 +1,22 @@
-import type { AuthType, DiscoveredProcess, LangMap, RegistryModel, RegistryServer, RegistryStatus } from '~/types/registry'
+import type { DiscoveredProcess, LangMap, RegistryCardEdit, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
 import { ME, sampleDiscovery, sampleModels, sampleServers } from '~/prototype/registrySample'
 
-// State and actions of the registry prototype (Contribute, Verify). Everything lives in
-// the browser and starts from sample data on each reload; nothing reaches a backend.
-// Once the registry API exists, these functions become calls to /v1.0/registry/... with
-// the same shapes (see app/types/registry.ts).
+// The registry on sample data (Contribute, Verify). Everything lives in the browser and
+// starts from sample data on each reload; nothing reaches a backend. Same functions as
+// useRegistryApi, so the pages work with either (see useRegistry).
 export function useRegistryPrototype() {
   const models = useState<RegistryModel[]>('registry-prototype-models', sampleModels)
   const servers = useState<RegistryServer[]>('registry-prototype-servers', sampleServers)
-  const { isProvider, isVerifier, isPlatformAdmin } = useUmpRoles()
   const { user } = useOidcAuth()
   const { t } = useI18n()
   const myName = computed(() => String(user.value?.userName ?? '') || t('registry.me'))
-
-  function actorFor(m: RegistryModel) {
-    return { isOwner: m.ownerSub === ME, isProvider: isProvider.value, isVerifier: isVerifier.value, isPlatformAdmin: isPlatformAdmin.value }
-  }
-
-  function ownerLabel(m: RegistryModel) {
-    return m.ownerSub === ME ? myName.value : m.ownerName
-  }
-
-  const myModels = computed(() => models.value.filter(m => m.ownerSub === ME))
-  const myServers = computed(() => servers.value.filter(s => s.ownerSub === ME))
-  const awaitingReview = computed(() => models.value.filter(m => m.status === 'submitted' && m.ownerSub !== ME))
+  const mySub = computed(() => ME)
 
   function byId(id: string) {
     return models.value.find(m => m.id === id)
   }
 
-  function transition(id: string, to: RegistryStatus, note?: string) {
+  async function transition(id: string, to: RegistryStatus, note?: string) {
     const m = byId(id)
     if (!m) return
     const now = new Date().toISOString()
@@ -41,31 +28,30 @@ export function useRegistryPrototype() {
     m.history.push({ at: now, actorName: myName.value, to, note })
   }
 
-  function updateCard(id: string, card: Partial<Pick<RegistryModel, 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks' | 'license' | 'repositoryUrl' | 'versionLabel' | 'defaultLang'>>) {
+  async function updateCard(id: string, card: RegistryCardEdit) {
     const m = byId(id)
     if (m) Object.assign(m, card)
   }
 
-  // Register a server and discover its processes. The prototype answers with sample
-  // processes after a short pause, whatever the URL.
-  // Processes already taken over from that server are marked, as the API does.
-  async function discover(serverName: string): Promise<DiscoveredProcess[]> {
-    await new Promise(r => setTimeout(r, 600))
-    return sampleDiscovery().map(p => ({
-      ...p,
-      modelId: models.value.find(m => m.serverName === serverName && m.remoteProcessId === p.id)?.id,
-    }))
-  }
-
-  function addServer(name: string, baseUrl: string, authType: AuthType, hasCredentials: boolean): RegistryServer {
-    const existing = servers.value.find(s => s.name === name && s.ownerSub === ME)
+  async function addServer(input: RegistryServerInput): Promise<RegistryServer> {
+    const existing = servers.value.find(s => s.name === input.name && s.ownerSub === ME)
     if (existing) return existing
-    const s = { id: `s${Date.now()}`, name, baseUrl, authType, hasCredentials, ownerSub: ME }
+    const s = { id: `s${Date.now()}`, name: input.name, baseUrl: input.baseUrl, authType: input.authType, hasCredentials: input.authType !== 'NoAuth' && !!input.secret, ownerSub: ME }
     servers.value.push(s)
     return s
   }
 
-  function addModels(server: RegistryServer, processes: DiscoveredProcess[]): string[] {
+  // The prototype answers with sample processes after a short pause, whatever the
+  // server. Processes already taken over from it are marked, as the API does.
+  async function discover(server: RegistryServer): Promise<DiscoveredProcess[]> {
+    await new Promise(r => setTimeout(r, 600))
+    return sampleDiscovery().map(p => ({
+      ...p,
+      modelId: models.value.find(m => m.serverName === server.name && m.remoteProcessId === p.id)?.id,
+    }))
+  }
+
+  async function addModels(server: RegistryServer, processes: DiscoveredProcess[]): Promise<string[]> {
     const now = new Date().toISOString()
     const created = processes.map((p, i) => {
       const fullName: LangMap = { en: p.title || p.id }
@@ -97,12 +83,29 @@ export function useRegistryPrototype() {
     return created.map(m => m.id)
   }
 
+  async function load() {}
+
   function reset() {
     models.value = sampleModels()
     servers.value = sampleServers()
   }
 
-  return { models, myModels, myServers, awaitingReview, byId, actorFor, ownerLabel, transition, updateCard, discover, addServer, addModels, reset }
+  return {
+    models,
+    servers,
+    mySub,
+    myName,
+    loading: ref(false),
+    error: ref<string | null>(null),
+    load,
+    byId,
+    transition,
+    updateCard,
+    addServer,
+    discover,
+    addModels,
+    reset,
+  }
 }
 
 /** Text in the requested language, falling back to the model's default language. */

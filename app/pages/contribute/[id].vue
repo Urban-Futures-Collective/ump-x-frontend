@@ -3,11 +3,12 @@ import type { LangMap } from '~/types/registry'
 
 // One of the provider's models: the model card (what OGC does not describe), the review
 // status with the reviewer's comment, and submitting or withdrawing.
-// Prototype with sample data (see useRegistryPrototype).
 definePageMeta({ middleware: ['auth', 'prototype', 'provider'] })
 const { t, locale } = useI18n()
 const route = useRoute()
-const { byId, actorFor, transition, updateCard } = useRegistryPrototype()
+const { byId, actorFor, transition, updateCard } = useRegistry()
+const toast = useToast()
+const busy = ref(false)
 
 const model = computed(() => byId(String(route.params.id)))
 const actor = computed(() => model.value ? actorFor(model.value) : null)
@@ -30,6 +31,8 @@ function cardOf(): Card {
   }
 }
 const card = ref<Card | null>(model.value ? cardOf() : null)
+// With the live registry the model arrives after the page.
+watch(model, (m) => { if (m && !card.value) card.value = cardOf() })
 const saved = ref(false)
 watch(card, () => { saved.value = false }, { deep: true })
 
@@ -44,16 +47,36 @@ const missing = computed(() => {
   return gaps
 })
 
-function save() {
-  if (!model.value || !card.value) return
-  updateCard(model.value.id, structuredClone(toRaw(card.value)))
-  saved.value = true
+// Errors are shown, not swallowed: a refused save (e.g. changed elsewhere in the
+// meantime) must not look like a saved one.
+async function attempt(work: () => Promise<void>): Promise<boolean> {
+  busy.value = true
+  try {
+    await work()
+    return true
+  }
+  catch (e) {
+    toast.add({ title: t('registry.failed'), description: apiErrorMessage(e), color: 'error' })
+    return false
+  }
+  finally {
+    busy.value = false
+  }
 }
 
-function act(to: (typeof actions.value)[number]['to']) {
+async function save() {
+  if (!model.value || !card.value) return false
+  const id = model.value.id
+  const edit = structuredClone(toRaw(card.value))
+  saved.value = await attempt(() => updateCard(id, edit))
+  return saved.value
+}
+
+async function act(to: (typeof actions.value)[number]['to']) {
   if (!model.value) return
-  if (to === 'submitted') save()
-  transition(model.value.id, to)
+  const id = model.value.id
+  if (to === 'submitted' && !(await save())) return
+  await attempt(() => transition(id, to))
 }
 
 const langItems = [{ label: 'Deutsch', value: 'de' }, { label: 'English', value: 'en' }]
@@ -140,7 +163,7 @@ const title = computed(() => model.value ? inLang(model.value.fullName, locale.v
             </p>
             <div class="flex items-center gap-2">
               <span v-if="saved" class="text-xs text-(--ui-text-muted)" role="status">{{ t('registry.card.saved') }}</span>
-              <UButton variant="outline" icon="i-lucide-save" @click="save">
+              <UButton variant="outline" icon="i-lucide-save" :loading="busy" @click="() => { save() }">
                 {{ t('registry.card.save') }}
               </UButton>
             </div>
@@ -155,6 +178,7 @@ const title = computed(() => model.value ? inLang(model.value.fullName, locale.v
           :icon="a.to === 'submitted' ? 'i-lucide-send' : 'i-lucide-undo-2'"
           :variant="a.to === 'submitted' ? 'solid' : 'outline'"
           :disabled="a.to === 'submitted' && missing.length > 0"
+          :loading="busy"
           @click="act(a.to)"
         >
           {{ t(`registry.action.${a.to}`) }}

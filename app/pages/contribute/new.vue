@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { AuthType, DiscoveredProcess } from '~/types/registry'
+import type { AuthType, DiscoveredProcess, RegistryServer } from '~/types/registry'
 
 // New model (designs P2, P3): step 1 picks or registers the model server and connects,
 // step 2 takes the chosen processes over as drafts. Step 3, the model card, is the
-// model's own page. Prototype: the server is not contacted; it "finds" sample processes.
+// model's own page. Connecting registers a new server first: the platform can only
+// look at a server it knows (with sample data nothing is contacted).
 definePageMeta({ middleware: ['auth', 'prototype', 'provider'] })
 const { t } = useI18n()
-const { myServers, discover, addServer, addModels } = useRegistryPrototype()
+const { myServers, discover, addServer, addModels, isLive } = useRegistry()
 
 const step = ref<1 | 2>(1)
 const steps = computed(() => [
@@ -24,6 +25,7 @@ const baseUrl = ref('')
 const authType = ref<AuthType>('NoAuth')
 const user = ref('')
 const secret = ref('')
+const keyName = ref('X-API-Key')
 const authItems = computed(() => (['NoAuth', 'BasicAuth', 'ApiKey', 'BearerToken'] as AuthType[])
   .map(a => ({ label: t(`registry.auth.${a}`), value: a })))
 
@@ -35,31 +37,58 @@ const serverName = computed(() => useExisting.value
   ? myServers.value.find(s => s.id === serverId.value)?.name ?? ''
   : name.value)
 
+const server = ref<RegistryServer | null>(null)
 const found = ref<DiscoveredProcess[]>([])
 const picked = ref<string[]>([])
 const discovering = ref(false)
 const connected = ref(false)
+const failure = ref<string | null>(null)
+const creating = ref(false)
 const selectable = computed(() => found.value.filter(p => !p.modelId))
 
 async function connect() {
   discovering.value = true
-  found.value = await discover(serverName.value)
-  picked.value = []
-  discovering.value = false
-  connected.value = true
-  step.value = 2
+  failure.value = null
+  try {
+    // Registered once: going back and connecting again reuses it.
+    if (useExisting.value) {
+      server.value = myServers.value.find(s => s.id === serverId.value) ?? null
+    }
+    else if (server.value?.name !== name.value || server.value.baseUrl !== baseUrl.value) {
+      server.value = await addServer({ name: name.value, baseUrl: baseUrl.value, authType: authType.value, user: user.value, secret: secret.value, keyName: keyName.value })
+    }
+    if (!server.value) return
+    found.value = await discover(server.value)
+    picked.value = []
+    connected.value = true
+    step.value = 2
+  }
+  catch (e) {
+    failure.value = apiErrorMessage(e)
+  }
+  finally {
+    discovering.value = false
+  }
 }
 
 function togglePick(id: string, on: boolean) {
   picked.value = on ? [...picked.value, id] : picked.value.filter(p => p !== id)
 }
 
-function create() {
-  const server = useExisting.value
-    ? myServers.value.find(s => s.id === serverId.value)!
-    : addServer(name.value, baseUrl.value, authType.value, authType.value !== 'NoAuth' && !!secret.value)
-  const ids = addModels(server, found.value.filter(p => picked.value.includes(p.id)))
-  navigateTo(ids.length === 1 ? `/contribute/${ids[0]}` : '/contribute')
+const toast = useToast()
+async function create() {
+  if (!server.value) return
+  creating.value = true
+  try {
+    const ids = await addModels(server.value, found.value.filter(p => picked.value.includes(p.id)))
+    await navigateTo(ids.length === 1 ? `/contribute/${ids[0]}` : '/contribute')
+  }
+  catch (e) {
+    toast.add({ title: t('registry.failed'), description: apiErrorMessage(e), color: 'error' })
+  }
+  finally {
+    creating.value = false
+  }
 }
 </script>
 
@@ -162,11 +191,19 @@ function create() {
                 <UInput v-model="secret" type="password" autocomplete="new-password" class="w-full" />
               </UFormField>
             </div>
-            <UFormField v-else-if="authType !== 'NoAuth'" :label="t('registry.new.token')">
+            <div v-else-if="authType === 'ApiKey'" class="grid gap-4 sm:grid-cols-2">
+              <UFormField :label="t('registry.new.keyName')">
+                <UInput v-model="keyName" autocomplete="off" class="w-full" />
+              </UFormField>
+              <UFormField :label="t('registry.new.token')">
+                <UInput v-model="secret" type="password" autocomplete="off" class="w-full" />
+              </UFormField>
+            </div>
+            <UFormField v-else-if="authType === 'BearerToken'" :label="t('registry.new.token')">
               <UInput v-model="secret" type="password" autocomplete="off" class="w-full" />
             </UFormField>
             <p v-if="authType !== 'NoAuth'" class="text-xs text-(--ui-text-muted)">
-              {{ t('registry.new.secretNote') }} {{ t('registry.new.secretPrototype') }}
+              {{ t('registry.new.secretNote') }}<template v-if="!isLive"> {{ t('registry.new.secretPrototype') }}</template>
             </p>
           </template>
 
@@ -226,7 +263,7 @@ function create() {
           <UButton color="neutral" variant="outline" @click="() => { step = 1 }">
             {{ t('registry.new.back') }}
           </UButton>
-          <UButton :disabled="!picked.length" @click="create">
+          <UButton :disabled="!picked.length" :loading="creating" @click="create">
             {{ t('registry.new.create', picked.length) }}
           </UButton>
         </div>
@@ -246,7 +283,10 @@ function create() {
             <h3 class="font-semibold text-(--ui-text-highlighted)">
               {{ t('registry.new.check') }}
             </h3>
-            <p v-if="connected" class="text-(--ui-success)">
+            <p v-if="failure" class="text-(--ui-error)" role="alert">
+              {{ failure }}
+            </p>
+            <p v-else-if="connected" class="text-(--ui-success)">
               ✓ {{ t('registry.new.checkOk', found.length) }}
             </p>
             <p class="text-xs">
