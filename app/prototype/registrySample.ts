@@ -29,6 +29,10 @@ function model(m: Partial<RegistryModel> & Pick<RegistryModel, 'id' | 'serverNam
     interfaceState: 'unchecked',
     inputs: [],
     history: [],
+    contributors: [{ name: 'Model team', role: 'author' }],
+    literature: [],
+    requirements: { cpuCores: 2, memoryGb: 4, runtimeSeconds: 120 },
+    testCases: [{ name: 'Hamburg, default inputs', inputUrl: 'https://example.org/test/input.json', expectedOutputUrl: 'https://example.org/test/expected.geojson' }],
     ...m,
   }
 }

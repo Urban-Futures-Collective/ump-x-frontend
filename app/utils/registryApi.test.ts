@@ -35,6 +35,20 @@ describe('registry API mapping', () => {
     expect(m.interfaceState).toBe('unchecked')
   })
 
+  it('maps the card details a reviewer checks', () => {
+    const m = modelFromApi({
+      ...apiModel,
+      contributors: [{ name: 'A', role: 'author' }, { role: 'funder' }],
+      requirements: { cpu_cores: 4, memory_gb: null },
+      test_cases: [{ name: 'Hamburg', input_url: 'https://i', expected_output_url: 'https://o' }, { name: 'incomplete' }],
+      review: { verification_job_id: 'job-1' },
+    })
+    expect(m.contributors).toEqual([{ name: 'A', role: 'author' }])
+    expect(m.requirements).toEqual({ cpuCores: 4, memoryGb: undefined, runtimeSeconds: undefined })
+    expect(m.testCases).toEqual([{ name: 'Hamburg', inputUrl: 'https://i', expectedOutputUrl: 'https://o' }])
+    expect(m.verificationJobId).toBe('job-1')
+  })
+
   it('maps an unknown status to draft rather than failing', () => {
     expect(modelFromApi({ ...apiModel, status: 'archived' }).status).toBe('draft')
   })

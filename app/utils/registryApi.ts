@@ -33,6 +33,10 @@ export interface ApiModel {
   published_at?: string | null
   updated_at?: string | null
   review?: ApiReview | null
+  contributors?: { name?: string, role?: string }[]
+  literature?: { citation?: string }[]
+  requirements?: { cpu_cores?: number | null, memory_gb?: number | null, runtime_seconds?: number | null } | null
+  test_cases?: { name?: string, input_url?: string, expected_output_url?: string }[]
 }
 
 export interface ApiServer {
@@ -113,6 +117,17 @@ export function modelFromApi(m: ApiModel): RegistryModel {
     // (not available yet).
     inputs: [],
     history: [],
+    contributors: (m.contributors ?? []).map(c => ({ name: c.name ?? '', role: c.role ?? '' })).filter(c => c.name),
+    literature: (m.literature ?? []).map(l => ({ citation: l.citation ?? '' })).filter(l => l.citation),
+    requirements: {
+      cpuCores: m.requirements?.cpu_cores ?? undefined,
+      memoryGb: m.requirements?.memory_gb ?? undefined,
+      runtimeSeconds: m.requirements?.runtime_seconds ?? undefined,
+    },
+    testCases: (m.test_cases ?? [])
+      .filter(c => c.name && c.input_url && c.expected_output_url)
+      .map(c => ({ name: c.name!, inputUrl: c.input_url!, expectedOutputUrl: c.expected_output_url! })),
+    verificationJobId: m.review?.verification_job_id ?? undefined,
   }
 }
 

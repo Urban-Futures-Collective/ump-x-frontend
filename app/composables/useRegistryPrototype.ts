@@ -76,6 +76,10 @@ export function useRegistryPrototype() {
         interfaceState: 'unchecked',
         inputs: [],
         history: [],
+        contributors: [],
+        literature: [],
+        requirements: {},
+        testCases: [],
       }
       return m
     })
