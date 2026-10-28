@@ -196,6 +196,15 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           class="w-full"
         />
       </template>
+
+      <!-- Partners at the bottom, as in the design; muted so they do not compete with
+           the navigation. Too small to read when collapsed, so left out then. -->
+      <template #footer="{ collapsed }">
+        <div v-if="!collapsed" class="flex items-center gap-4 px-2.5 pb-1 opacity-60">
+          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="h-5 w-auto" height="20">
+          <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="h-5 w-auto" height="20">
+        </div>
+      </template>
     </UDashboardSidebar>
 
     <UDashboardPanel>
