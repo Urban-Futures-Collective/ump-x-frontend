@@ -593,15 +593,14 @@
       "draft": "Einreichung zurückziehen",
       "in_review": "Prüfung übernehmen",
       "verified": "Verifizieren",
-      "changes_requested": "Rückfrage stellen",
       "rejected": "Ablehnen",
       "published": "Veröffentlichen",
       "deactivated": "Deaktivieren"
     },
     "noteTitle": {
-      "changes_requested": "Rückfrage aus der Prüfung",
       "rejected": "Grund der Ablehnung",
-      "deactivated": "Grund der Deaktivierung"
+      "deactivated": "Grund der Deaktivierung",
+      "changes_requested": "Rückfrage aus der Prüfung"
     },
     "explain": {
       "draft": "Noch nicht eingereicht. Fülle die Modellkarte aus und reiche das Modell zur Prüfung ein.",
@@ -624,7 +623,6 @@
       "deactivated": "Deaktiviert."
     },
     "noteLabel": {
-      "changes_requested": "Was soll geändert werden?",
       "rejected": "Warum wird das Modell abgelehnt?",
       "deactivated": "Warum wird das Modell deaktiviert?"
     },
@@ -660,7 +658,10 @@
       "testRun": "Testlauf starten",
       "testRunNote": "Testläufe sind im Prototyp nicht möglich. Später starten Prüferinnen und Prüfer hier einen Lauf, auch bevor das Modell veröffentlicht ist.",
       "publishNote": "Beim Veröffentlichen legt UMP-X die Zugriffsrolle {role} in Keycloak an.",
-      "noteVisible": "Die Anbieterin oder der Anbieter sieht diesen Text."
+      "noteVisible": "Die Anbieterin oder der Anbieter sieht diesen Text.",
+      "testRunNoteLive": "Öffnet das Lauf-Formular in einem neuen Tab. Zum Verifizieren braucht es die Job-ID eines erfolgreichen Laufs dieses Modells, den du gestartet hast.",
+      "jobId": "Job-ID deines Testlaufs",
+      "jobIdHint": "Aus „Meine Szenarien“: ein erfolgreicher Lauf dieses Modells, den du während dieser Prüfung gestartet hast."
     },
     "me": "ich",
     "otherOwner": "andere Person",

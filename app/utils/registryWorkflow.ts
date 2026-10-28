@@ -3,9 +3,13 @@ import type { RegistryStatus } from '~/types/registry'
 // Review workflow of the model registry, as in concept F12:
 //
 //   draft → submitted → in_review → verified → published
-//               ↑           │ │                    │
-//               └── changes_requested  rejected     └→ in_review (reset)
+//                           │                      │
+//                        rejected                  └→ in_review (reset)
 //   in_review / verified / published → deactivated
+//
+// No "changes requested": the review has no comments for now (decided 2026-10-23), so
+// a reviewer accepts or rejects. The API still knows the status; a model that is in it
+// can be resubmitted by its owner.
 //
 // The backend will enforce these rules; the frontend uses the same table to offer only
 // the actions that can succeed.
@@ -31,7 +35,6 @@ const RULES: { from: RegistryStatus[], to: RegistryStatus, who: Who, needsNote?:
   { from: ['changes_requested'], to: 'submitted', who: 'owner' },
   { from: ['submitted'], to: 'in_review', who: 'verifier' },
   { from: ['in_review'], to: 'verified', who: 'verifier' },
-  { from: ['in_review'], to: 'changes_requested', who: 'verifier', needsNote: true },
   { from: ['in_review'], to: 'rejected', who: 'verifier', needsNote: true },
   { from: ['verified'], to: 'published', who: 'verifier' },
   { from: ['published'], to: 'in_review', who: 'verifier' },

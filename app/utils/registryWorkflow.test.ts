@@ -16,7 +16,7 @@ describe('registry workflow', () => {
 
   it('lets a verifier review, verify and publish', () => {
     expect(to(transitionsFor('submitted', verifier))).toEqual(['in_review'])
-    expect(to(transitionsFor('in_review', verifier))).toEqual(['verified', 'changes_requested', 'rejected', 'deactivated'])
+    expect(to(transitionsFor('in_review', verifier))).toEqual(['verified', 'rejected', 'deactivated'])
     expect(to(transitionsFor('verified', verifier))).toEqual(['published', 'deactivated'])
     expect(to(transitionsFor('published', verifier))).toEqual(['in_review', 'deactivated'])
   })
@@ -31,9 +31,9 @@ describe('registry workflow', () => {
     expect(to(transitionsFor('submitted', admin))).toEqual([])
   })
 
-  it('requires a note for requests, rejections and deactivation', () => {
+  it('requires a note for rejections and deactivation', () => {
     const t = transitionsFor('in_review', verifier)
-    expect(t.filter(x => x.needsNote).map(x => x.to)).toEqual(['changes_requested', 'rejected', 'deactivated'])
+    expect(t.filter(x => x.needsNote).map(x => x.to)).toEqual(['rejected', 'deactivated'])
   })
 
   it('allows card edits by the owner until deactivation', () => {
