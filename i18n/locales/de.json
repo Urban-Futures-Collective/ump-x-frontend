@@ -72,7 +72,6 @@
     "users": {
       "heading": "Nutzerkonten",
       "search": "Name oder E-Mail",
-      "searchButton": "Suchen",
       "email": "E-Mail",
       "status": "Status",
       "enabled": "aktiv",
