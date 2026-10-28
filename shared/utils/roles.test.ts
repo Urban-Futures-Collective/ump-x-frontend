@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { ADMIN_ROLES, LEGACY_NAMES, PLATFORM_ROLES, canonicalRole, isPlatformRole, platformRoleStatus, rolesOfSession } from './roles'
+import { ADMIN_ROLES, PLATFORM_ROLES, isPlatformRole, platformRoleStatus, rolesOfSession } from './roles'
 
 describe('rolesOfSession', () => {
   it('merges realm and ump-client roles from claims and userInfo', () => {
     const session = {
-      claims: { realm_access: { roles: ['user_role_user', 'modelserver-1'] } },
+      claims: { realm_access: { roles: ['user', 'modelserver-1'] } },
       userInfo: {
-        realm_access: { roles: ['user_role_user'] },
+        realm_access: { roles: ['user'] },
         resource_access: { 'ump-client': { roles: ['bikebox-modelserver'] }, 'account': { roles: ['manage-account'] } },
       },
     }
@@ -24,28 +24,21 @@ describe('vocabulary', () => {
     for (const r of ADMIN_ROLES) expect(PLATFORM_ROLES).toContain(r)
   })
 
-  it('uses the names UMP checks, each with its old realm name', () => {
+  it('uses the names UMP checks', () => {
     expect([...PLATFORM_ROLES].sort()).toEqual(['access-admin', 'platform-admin', 'provider', 'user', 'verifier', 'viewer'])
-    for (const r of PLATFORM_ROLES) expect(LEGACY_NAMES[r]).toMatch(/^user_role_[a-z_]+$/)
   })
 
-  it('reads old role names under their new name and leaves others alone', () => {
-    expect(canonicalRole('user_role_access_admin')).toBe('access-admin')
-    expect(canonicalRole('verifier')).toBe('verifier')
-    expect(canonicalRole('bikebox-modelserver')).toBe('bikebox-modelserver')
-  })
-
-  it('accepts both spellings in a session during the switch', () => {
-    expect(rolesOfSession({ claims: { realm_access: { roles: ['user_role_verifier', 'platform-admin'] } } }).sort()).toEqual(['platform-admin', 'verifier'])
+  it('no longer reads the old realm names', () => {
+    expect(rolesOfSession({ claims: { realm_access: { roles: ['user_role_verifier', 'platform-admin'] } } }).sort()).toEqual(['platform-admin', 'user_role_verifier'])
   })
 })
 
 describe('platformRoleStatus', () => {
   it('distinguishes directly assigned roles from roles effective via default roles', () => {
     const status = platformRoleStatus(
-      ['default-roles-urbanmodelplatform', 'user_role_platform_admin'],
-      ['default-roles-urbanmodelplatform', 'user_role_viewer', 'user_role_user', 'user_role_provider', 'user_role_platform_admin', 'offline_access'],
-      ['user_role_viewer', 'user_role_user', 'user_role_provider', 'offline_access'],
+      ['default-roles-urbanmodelplatform', 'platform-admin'],
+      ['default-roles-urbanmodelplatform', 'viewer', 'user', 'provider', 'platform-admin', 'offline_access'],
+      ['viewer', 'user', 'provider', 'offline_access'],
     )
     expect(status.find(s => s.role === 'platform-admin')).toEqual({ role: 'platform-admin', effective: true, direct: true, viaDefault: false })
     expect(status.find(s => s.role === 'user')).toEqual({ role: 'user', effective: true, direct: false, viaDefault: true })
@@ -54,12 +47,12 @@ describe('platformRoleStatus', () => {
   })
 
   it('marks a role effective from elsewhere as neither direct nor via the default roles', () => {
-    const status = platformRoleStatus(['some-group-composite'], ['some-group-composite', 'user_role_verifier'], [])
+    const status = platformRoleStatus(['some-group-composite'], ['some-group-composite', 'verifier'], [])
     expect(status.find(s => s.role === 'verifier')).toEqual({ role: 'verifier', effective: true, direct: false, viaDefault: false })
   })
 
   it('treats a role assigned directly as direct even if the default roles contain it', () => {
-    const status = platformRoleStatus(['user_role_viewer'], ['user_role_viewer'], ['user_role_viewer'])
+    const status = platformRoleStatus(['viewer'], ['viewer'], ['viewer'])
     expect(status.find(s => s.role === 'viewer')).toMatchObject({ direct: true, viaDefault: false })
   })
 })

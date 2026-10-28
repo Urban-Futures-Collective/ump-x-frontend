@@ -85,9 +85,8 @@ Three kinds of role govern this, all from Keycloak:
 
 **Platform roles**, realm roles named as UMP's model registry checks them: `viewer`,
 `user` and `provider` come with the realm's default role, so every new account has
-them; `verifier`, `access-admin` and `platform-admin` are assigned. Until the realm is
-renamed they are called `user_role_viewer` and so on; the frontend accepts both
-spellings (`shared/utils/roles.ts`). Platform admins assign them in the
+them; `verifier`, `access-admin` and `platform-admin` are assigned. Until 2026-10-28 they were
+called `user_role_viewer` and so on. Platform admins assign them in the
 administration, and can also take a default role away from a single account.
 
 **Running a model** through a client role on `ump-client` named exactly like the

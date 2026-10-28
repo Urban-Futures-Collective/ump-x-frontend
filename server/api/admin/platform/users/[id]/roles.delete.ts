@@ -18,9 +18,9 @@ export default defineEventHandler(async (event) => {
     keycloakAdmin<RoleRep[]>(`/users/${id}/role-mappings/realm`),
     realmDefaultRole(),
   ])
-  const directRole = direct.find(r => canonicalRole(r.name) === role)
+  const directRole = direct.find(r => r.name === role)
   const composites = direct.some(r => r.id === defaultRole.id) ? await compositesOf(defaultRole) : []
-  const viaDefault = composites.some(r => !r.clientRole && canonicalRole(r.name) === role)
+  const viaDefault = composites.some(r => !r.clientRole && r.name === role)
 
   if (!directRole && !viaDefault) {
     throw createError({ statusCode: 409, statusMessage: 'Die Rolle ist nicht am Konto selbst vergeben und lässt sich nur in der Keycloak-Konsole ändern.' })
