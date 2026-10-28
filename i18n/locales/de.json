@@ -132,7 +132,8 @@
       "submit": "Anlegen und einladen",
       "invited": "Konto {name} angelegt, die Einladung ist an {email} unterwegs.",
       "notInvited": "Konto {name} angelegt, aber die Einladung konnte nicht gesendet werden. Sie lässt sich in der Liste über das Menü erneut senden."
-    }
+    },
+    "audit": "Audit-Log"
   },
   "processes": {
     "title": "Modell-Prozesse",
@@ -723,6 +724,15 @@
       "jobOtherModel": "Dieser Job hat ein anderes Modell gerechnet ({model}).",
       "jobNotDone": "Dieser Job ist nicht erfolgreich beendet (Status: {status}).",
       "linked": "Job {id}… ist mit der Verifizierung verknüpft."
+    },
+    "cardView": {
+      "open": "Modellkarte öffnen",
+      "readOnly": "So, wie der Anbieter sie geschrieben hat. Nur lesend.",
+      "languages": "Sprachen dieser Karte",
+      "default": "Standard",
+      "testRun": "Testlauf",
+      "runHint": "Öffnet das Lauf-Formular in einem neuen Tab. Die Job-ID trägst du auf der Prüfseite ein.",
+      "back": "Zurück zur Prüfung"
     }
   },
   "results": {

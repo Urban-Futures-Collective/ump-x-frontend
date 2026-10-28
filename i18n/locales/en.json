@@ -132,7 +132,8 @@
       "submit": "Create and invite",
       "invited": "Account {name} created, the invitation is on its way to {email}.",
       "notInvited": "Account {name} created, but the invitation could not be sent. You can send it again from the menu in the list."
-    }
+    },
+    "audit": "Audit log"
   },
   "processes": {
     "title": "Model processes",
@@ -723,6 +724,15 @@
       "jobOtherModel": "This job ran another model ({model}).",
       "jobNotDone": "This job has not finished successfully (status: {status}).",
       "linked": "Job {id}… is linked to the verification."
+    },
+    "cardView": {
+      "open": "Open model card",
+      "readOnly": "As the provider wrote it. Read-only.",
+      "languages": "Languages on this card",
+      "default": "default",
+      "testRun": "Test run",
+      "runHint": "Opens the run form in a new tab. Use the job ID on the review page.",
+      "back": "Back to the review"
     }
   },
   "results": {

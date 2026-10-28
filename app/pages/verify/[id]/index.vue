@@ -140,18 +140,23 @@ const negative = (to: RegistryStatus) => to === 'rejected' || to === 'deactivate
     </p>
 
     <template v-else>
-      <div class="space-y-1">
-        <div class="flex flex-wrap items-center gap-3">
-          <h1 class="text-2xl font-semibold text-ufc-slate-900">
-            {{ t('registry.review.title', { name: title }) }}
-          </h1>
-          <RegistryStatusBadge :status="model.status" />
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 class="text-2xl font-semibold text-ufc-slate-900">
+              {{ t('registry.review.title', { name: title }) }}
+            </h1>
+            <RegistryStatusBadge :status="model.status" />
+          </div>
+          <p class="text-sm text-(--ui-text-muted)">
+            {{ processId }}<template v-if="model.versionLabel">
+              · v{{ model.versionLabel }}
+            </template> · {{ t('registry.review.owner', { name: ownerLabel(model) }) }}
+          </p>
         </div>
-        <p class="text-sm text-(--ui-text-muted)">
-          {{ processId }}<template v-if="model.versionLabel">
-            · v{{ model.versionLabel }}
-          </template> · {{ t('registry.review.owner', { name: ownerLabel(model) }) }}
-        </p>
+        <UButton color="neutral" variant="outline" icon="i-lucide-file-text" :to="`/verify/${model.id}/card`">
+          {{ t('registry.cardView.open') }}
+        </UButton>
       </div>
 
       <UAlert

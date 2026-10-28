@@ -3,15 +3,22 @@
 // matters (session first, then role). The middleware only hides UI; the data is protected
 // server-side in every route under server/api/admin/.
 //
-// Currently only the platform admin section: list accounts page by page, create them with
-// an email invitation, enable and disable them, assign platform roles.
-import type { TableColumn } from '@nuxt/ui'
+// Two tabs as in the design (A1): user accounts (platform admins: list page by page,
+// create with an email invitation, enable and disable, assign platform roles) and the
+// audit log, greyed out until UMP offers it (registry phase D).
+import type { TableColumn, TabsItem } from '@nuxt/ui'
 
 definePageMeta({ middleware: ['auth', 'admin'] })
 const { t } = useI18n()
 const { isPlatformAdmin } = useUmpRoles()
 const { user } = useOidcAuth()
 const ownId = computed(() => (user.value?.userInfo as { sub?: string } | undefined)?.sub ?? null)
+
+const tab = ref('users')
+const tabs = computed<TabsItem[]>(() => [
+  { label: t('admin.users.heading'), value: 'users' },
+  { label: t('admin.audit'), value: 'audit', disabled: true },
+])
 
 // The account whose roles are open in the dialog.
 const rolesFor = ref<{ id: string, username: string } | null>(null)
@@ -164,29 +171,28 @@ function search() {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <h1 class="text-2xl font-semibold text-ufc-slate-900">
-      {{ t('admin.title') }}
-    </h1>
+  <div class="max-w-6xl space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <h1 class="text-2xl font-semibold text-ufc-slate-900">
+        {{ t('admin.title') }}
+      </h1>
+      <div v-if="isPlatformAdmin" class="flex flex-wrap items-center gap-2">
+        <form class="flex items-center gap-2" role="search" @submit.prevent="search()">
+          <UInput v-model="searchTerm" icon="i-lucide-search" :placeholder="t('admin.users.search')" :aria-label="t('admin.users.search')" />
+          <UButton type="submit" variant="subtle" :loading="pending">
+            {{ t('admin.users.searchButton') }}
+          </UButton>
+        </form>
+        <UButton icon="i-lucide-plus" @click="() => { createOpen = true }">
+          {{ t('admin.create.open') }}
+        </UButton>
+      </div>
+    </div>
+
+    <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
 
     <!-- Not full width on purpose: on wide screens a long row is hard to follow. -->
     <section v-if="isPlatformAdmin" class="max-w-4xl space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <h2 class="text-lg font-semibold">
-          {{ t('admin.users.heading') }}
-        </h2>
-        <div class="flex flex-wrap items-center gap-2">
-          <form class="flex items-center gap-2" @submit.prevent="search()">
-            <UInput v-model="searchTerm" icon="i-lucide-search" :placeholder="t('admin.users.search')" size="sm" />
-            <UButton type="submit" size="sm" variant="subtle" :loading="pending">
-              {{ t('admin.users.searchButton') }}
-            </UButton>
-          </form>
-          <UButton size="sm" icon="i-lucide-user-plus" @click="() => { createOpen = true }">
-            {{ t('admin.create.open') }}
-          </UButton>
-        </div>
-      </div>
 
       <p v-if="inviteInfo" class="text-sm text-(--ui-text-muted)">
         {{ inviteInfo }}
