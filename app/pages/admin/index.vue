@@ -149,8 +149,9 @@ function actionsFor(a: Account) {
   ]]
 }
 
-// The list loads one page at a time. The search term applies when the form is submitted,
-// not on every keystroke, and starts again at page one.
+// The list loads one page at a time. The search filters while typing: 300 ms after the
+// last keystroke, so Keycloak gets one request per pause rather than one per letter.
+// Each new term starts again at page one.
 const PAGE_SIZE = 25
 const searchTerm = ref('')
 const appliedSearch = ref('')
@@ -163,11 +164,15 @@ const { data, pending, error, refresh } = await useFetch<{ accounts: Account[], 
 const accounts = computed(() => data.value.accounts)
 const total = computed(() => data.value.total)
 
-function search() {
-  page.value = 1
-  if (appliedSearch.value === searchTerm.value) refresh()
-  else appliedSearch.value = searchTerm.value
-}
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+watch(searchTerm, (term) => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    page.value = 1
+    appliedSearch.value = term.trim()
+  }, 300)
+})
+onBeforeUnmount(() => clearTimeout(searchTimer))
 </script>
 
 <template>
@@ -177,11 +182,15 @@ function search() {
         {{ t('admin.title') }}
       </h1>
       <div v-if="isPlatformAdmin" class="flex flex-wrap items-center gap-2">
-        <form class="flex items-center gap-2" role="search" @submit.prevent="search()">
-          <UInput v-model="searchTerm" icon="i-lucide-search" :placeholder="t('admin.users.search')" :aria-label="t('admin.users.search')" />
-          <UButton type="submit" variant="subtle" :loading="pending">
-            {{ t('admin.users.searchButton') }}
-          </UButton>
+        <form role="search" @submit.prevent>
+          <UInput
+            v-model="searchTerm"
+            type="search"
+            icon="i-lucide-search"
+            :loading="pending"
+            :placeholder="t('admin.users.search')"
+            :aria-label="t('admin.users.search')"
+          />
         </form>
         <UButton icon="i-lucide-plus" @click="() => { createOpen = true }">
           {{ t('admin.create.open') }}
