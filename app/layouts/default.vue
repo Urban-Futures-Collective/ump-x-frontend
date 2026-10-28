@@ -207,7 +207,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
       </template>
     </UDashboardSidebar>
 
-    <UDashboardPanel>
+    <!-- No padding around the body: the tinted surface below runs to the edges, as in
+         the design, instead of sitting as a card in a white frame. -->
+    <UDashboardPanel :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <UDashboardNavbar>
           <template #leading>
@@ -289,7 +291,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
            from shrinking to the viewport height on long pages, min-h-full makes
            it reach the bottom on short ones. -->
       <template #body>
-        <div class="min-h-full shrink-0 rounded-xl bg-ufc-blue-50/40 p-6 sm:p-8">
+        <div class="min-h-full shrink-0 bg-ufc-blue-50/40 p-6 sm:p-8">
           <slot />
         </div>
       </template>
