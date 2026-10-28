@@ -45,6 +45,20 @@ export interface DiscoveredProcess {
   modelId?: string
 }
 
+/** Hardware and runtime a model needs, as the provider states it. */
+export interface RegistryRequirements {
+  cpuCores?: number
+  memoryGb?: number
+  runtimeSeconds?: number
+}
+
+/** A documented run with known input and expected output, for reviewers to repeat. */
+export interface RegistryTestCase {
+  name: string
+  inputUrl: string
+  expectedOutputUrl: string
+}
+
 export interface RegistryHistoryEntry {
   at: string
   actorName: string
@@ -78,6 +92,12 @@ export interface RegistryModel {
   /** Whether the server's process interface still matches the verified one. */
   interfaceState: 'in_sync' | 'drifted' | 'unchecked'
   inputs: RegistryInput[]
+  contributors: { name: string, role: string }[]
+  literature: { citation: string }[]
+  requirements: RegistryRequirements
+  testCases: RegistryTestCase[]
+  /** Job the reviewer linked when verifying. */
+  verificationJobId?: string
   history: RegistryHistoryEntry[]
 }
 
