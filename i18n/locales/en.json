@@ -593,15 +593,14 @@
       "draft": "Withdraw submission",
       "in_review": "Take over review",
       "verified": "Verify",
-      "changes_requested": "Request changes",
       "rejected": "Reject",
       "published": "Publish",
       "deactivated": "Deactivate"
     },
     "noteTitle": {
-      "changes_requested": "Request from the review",
       "rejected": "Reason for rejection",
-      "deactivated": "Reason for deactivation"
+      "deactivated": "Reason for deactivation",
+      "changes_requested": "Request from the review"
     },
     "explain": {
       "draft": "Not submitted yet. Fill in the model card and submit the model for review.",
@@ -624,7 +623,6 @@
       "deactivated": "Deactivated."
     },
     "noteLabel": {
-      "changes_requested": "What should be changed?",
       "rejected": "Why is the model rejected?",
       "deactivated": "Why is the model deactivated?"
     },
@@ -660,7 +658,10 @@
       "testRun": "Start test run",
       "testRunNote": "Test runs are not possible in the prototype. Later, reviewers start a run here, also before the model is published.",
       "publishNote": "On publishing, UMP-X creates the access role {role} in Keycloak.",
-      "noteVisible": "The provider sees this text."
+      "noteVisible": "The provider sees this text.",
+      "testRunNoteLive": "Opens the run form in a new tab. Verifying asks for the job ID of a successful run you started of this model.",
+      "jobId": "Job ID of your test run",
+      "jobIdHint": "From My Scenarios: a successful run of this model that you started during this review."
     },
     "me": "me",
     "otherOwner": "another provider",

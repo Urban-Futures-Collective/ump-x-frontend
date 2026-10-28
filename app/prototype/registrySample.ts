@@ -124,14 +124,14 @@ export function sampleModels(): RegistryModel[] {
       fullName: { en: 'Heat stress', de: 'Hitzebelastung' },
       shortDescription: { en: 'Thermal comfort (UTCI) for a scenario with new trees or buildings.' },
       purpose: { en: 'Compare heat stress before and after planting trees.' },
-      status: 'changes_requested',
-      statusNote: 'Please add the limitations: which areas and resolutions are supported?',
+      status: 'rejected',
+      statusNote: 'The test run failed: the server does not answer within the time limit.',
       statusChangedAt: at('2026-10-06'),
       inputs: [{ name: 'city', type: 'string', required: true }, { name: 'trees', type: 'object', required: false }],
       history: [
         { at: at('2026-10-02'), actorName: '', to: 'submitted' },
         { at: at('2026-10-04'), actorName: 'Verifier A', to: 'in_review' },
-        { at: at('2026-10-06'), actorName: 'Verifier A', to: 'changes_requested', note: 'Please add the limitations: which areas and resolutions are supported?' },
+        { at: at('2026-10-06'), actorName: 'Verifier A', to: 'rejected', note: 'The test run failed: the server does not answer within the time limit.' },
       ],
     }),
   ]

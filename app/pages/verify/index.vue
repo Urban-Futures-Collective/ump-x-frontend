@@ -11,7 +11,7 @@ const search = ref('')
 const statusFilter = ref<RegistryStatus | 'all'>('all')
 const statusItems = computed(() => [
   { label: t('registry.verify.allStatuses'), value: 'all' },
-  ...(['submitted', 'in_review', 'changes_requested', 'verified', 'published', 'rejected', 'deactivated'] as RegistryStatus[])
+  ...(['submitted', 'in_review', 'verified', 'published', 'rejected', 'deactivated'] as RegistryStatus[])
     .map(s => ({ label: t(`registry.status.${s}`), value: s })),
 ])
 

@@ -7,15 +7,15 @@ import type { RegistryStatus } from '~/types/registry'
 definePageMeta({ middleware: ['auth', 'prototype', 'verifier'] })
 const { t, locale } = useI18n()
 const route = useRoute()
-const { byId, actorFor, transition, ownerLabel } = useRegistry()
+const { byId, actorFor, transition, ownerLabel, isLive } = useRegistry()
 const toast = useToast()
 const busy = ref(false)
 
 // A refused step (e.g. someone else was quicker) is shown, not swallowed.
-async function step(to: RegistryStatus, text?: string) {
+async function step(to: RegistryStatus, text?: string, verificationJobId?: string) {
   busy.value = true
   try {
-    await transition(model.value!.id, to, text)
+    await transition(model.value!.id, to, text, verificationJobId)
   }
   catch (e) {
     toast.add({ title: t('registry.failed'), description: apiErrorMessage(e), color: 'error' })
@@ -32,29 +32,33 @@ const actions = computed(() => model.value && actor.value ? transitionsFor(model
 const text = (f: 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks') =>
   model.value ? inLang(model.value[f], locale.value, model.value.defaultLang) : ''
 
-// Decisions that need a reason open a small form first.
+// Decisions that need a reason open a small form first. So does verifying against the
+// API: it needs the job id of the reviewer's own successful test run of this model.
 const pending = ref<RegistryStatus | null>(null)
 const note = ref('')
+const jobId = ref('')
+const needsJob = computed(() => isLive && pending.value === 'verified')
+const ready = computed(() => needsJob.value ? !!jobId.value.trim() : !!note.value.trim())
 function choose(a: { to: RegistryStatus, needsNote: boolean }) {
-  if (a.needsNote) {
+  if (a.needsNote || (isLive && a.to === 'verified')) {
     pending.value = a.to
     note.value = ''
+    jobId.value = ''
     return
   }
   step(a.to)
 }
 function confirm() {
-  if (!pending.value || !note.value.trim()) return
+  if (!pending.value || !ready.value) return
   const to = pending.value
   pending.value = null
-  step(to, note.value.trim())
+  step(to, note.value.trim() || undefined, needsJob.value ? jobId.value.trim() : undefined)
 }
 
 const ICONS: Partial<Record<RegistryStatus, string>> = {
   in_review: 'i-lucide-eye',
   verified: 'i-lucide-badge-check',
   published: 'i-lucide-globe',
-  changes_requested: 'i-lucide-message-square',
   rejected: 'i-lucide-x',
   deactivated: 'i-lucide-power',
 }
@@ -151,14 +155,22 @@ const ICONS: Partial<Record<RegistryStatus, string>> = {
         </template>
         <div class="space-y-4">
           <div class="flex flex-wrap gap-2">
-            <UButton icon="i-lucide-play" variant="outline" disabled>
+            <!-- The run form in a new tab, so this page stays open for the decision.
+                 Reviewers may run models under review (concept F12, D7). -->
+            <UButton
+              icon="i-lucide-play"
+              variant="outline"
+              :disabled="!isLive"
+              :to="isLive ? `/run?process=${encodeURIComponent(`${model.serverName}:${model.remoteProcessId}`)}` : undefined"
+              target="_blank"
+            >
               {{ t('registry.verify.testRun') }}
             </UButton>
             <UButton
               v-for="a in actions"
               :key="a.to"
               :icon="ICONS[a.to]"
-              :color="a.to === 'rejected' || a.to === 'deactivated' ? 'error' : a.to === 'changes_requested' ? 'warning' : 'primary'"
+              :color="a.to === 'rejected' || a.to === 'deactivated' ? 'error' : 'primary'"
               :variant="a.to === 'verified' || a.to === 'published' || a.to === 'in_review' ? 'solid' : 'outline'"
               :loading="busy"
               @click="choose(a)"
@@ -167,21 +179,24 @@ const ICONS: Partial<Record<RegistryStatus, string>> = {
             </UButton>
           </div>
           <p class="text-xs text-(--ui-text-muted)">
-            {{ t('registry.verify.testRunNote') }}
+            {{ t(isLive ? 'registry.verify.testRunNoteLive' : 'registry.verify.testRunNote') }}
             <template v-if="actions.some(a => a.to === 'published')">
               {{ t('registry.verify.publishNote', { role: `${model.serverName}:${model.remoteProcessId}` }) }}
             </template>
           </p>
 
           <form v-if="pending" class="space-y-3 rounded-md border border-(--ui-border) p-3" @submit.prevent="confirm">
-            <UFormField :label="t(`registry.noteLabel.${pending}`)" :description="t('registry.verify.noteVisible')" required>
+            <UFormField v-if="needsJob" :label="t('registry.verify.jobId')" :description="t('registry.verify.jobIdHint')" required>
+              <UInput v-model="jobId" class="w-full" autofocus />
+            </UFormField>
+            <UFormField v-else :label="t(`registry.noteLabel.${pending}`)" :description="t('registry.verify.noteVisible')" required>
               <UTextarea v-model="note" :rows="3" autoresize class="w-full" autofocus />
             </UFormField>
             <div class="flex justify-end gap-2">
               <UButton type="button" variant="ghost" color="neutral" @click="() => { pending = null }">
                 {{ t('registry.cancel') }}
               </UButton>
-              <UButton type="submit" :disabled="!note.trim()" :loading="busy">
+              <UButton type="submit" :disabled="!ready" :loading="busy">
                 {{ t(`registry.action.${pending}`) }}
               </UButton>
             </div>
