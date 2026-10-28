@@ -733,7 +733,8 @@
       "testRun": "Testlauf",
       "runHint": "Öffnet das Lauf-Formular in einem neuen Tab. Die Job-ID trägst du auf der Prüfseite ein.",
       "back": "Zurück zur Prüfung"
-    }
+    },
+    "publishRolesMissing": "Das Modell ist veröffentlicht, aber die Zugriffsrollen {roles} konnten in Keycloak nicht angelegt werden. Bitte die Administration, sie anzulegen."
   },
   "results": {
     "legend": "Legende",

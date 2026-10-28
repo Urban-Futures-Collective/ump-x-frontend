@@ -733,7 +733,8 @@
       "testRun": "Test run",
       "runHint": "Opens the run form in a new tab. Use the job ID on the review page.",
       "back": "Back to the review"
-    }
+    },
+    "publishRolesMissing": "The model is published, but the access roles {roles} could not be created in Keycloak. Please ask an administrator to create them."
   },
   "results": {
     "legend": "Legend",

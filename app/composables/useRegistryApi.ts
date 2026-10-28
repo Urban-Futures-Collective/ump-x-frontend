@@ -10,6 +10,8 @@ import { cardPatchBody, credentialsBody, discoveredFromApi, modelFromApi, server
 export function useRegistryApi() {
   const { umpBase } = useRuntimeConfig().public
   const { loggedIn } = useOidcAuth()
+  const toast = useToast()
+  const { t } = useI18n()
   const base = `${umpBase}/registry/v1`
 
   const models = useState<RegistryModel[]>('registry-api-models', () => [])
@@ -78,6 +80,16 @@ export function useRegistryApi() {
   }
 
   async function transition(id: string, to: RegistryStatus, note?: string, verificationJobId?: string) {
+    // Publishing goes through our server: besides the status in UMP it creates the
+    // model-access roles in Keycloak, which UMP cannot (F12, D8).
+    if (to === 'published') {
+      const result = await $fetch<{ rolesMissing: string[] }>(`/api/registry/models/${id}/publish`, { method: 'POST', body: note ? { note } : {} })
+      if (result.rolesMissing.length) {
+        toast.add({ title: t('registry.publishRolesMissing', { roles: result.rolesMissing.join(', ') }), color: 'warning' })
+      }
+      await reload(id)
+      return
+    }
     await $fetch(`${base}/models/${id}/transitions`, {
       method: 'POST',
       body: { to_status: to, ...(note ? { note } : {}), ...(verificationJobId ? { verification_job_id: verificationJobId } : {}) },
