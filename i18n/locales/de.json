@@ -98,20 +98,20 @@
       "tokenHint": "Änderungen gelten für {name} erst nach der nächsten Anmeldung bzw. Token-Erneuerung.",
       "loadError": "Die Rollen konnten nicht geladen werden: {msg}",
       "names": {
-        "user_role_viewer": "Viewer: Modelle ansehen",
-        "user_role_user": "User: Modelle ausführen",
-        "user_role_provider": "Provider: Modelle einreichen",
-        "user_role_verifier": "Verifier: Modelle prüfen und freigeben",
-        "user_role_access_admin": "Access admin: Modellzugriff vergeben",
-        "user_role_platform_admin": "Platform admin: Konten und Rollen verwalten"
+        "viewer": "Viewer: Modelle ansehen",
+        "user": "User: Modelle ausführen",
+        "provider": "Provider: Modelle einreichen",
+        "verifier": "Verifier: Modelle prüfen und freigeben",
+        "access-admin": "Access admin: Modellzugriff vergeben",
+        "platform-admin": "Platform admin: Konten und Rollen verwalten"
       },
       "short": {
-        "user_role_viewer": "Viewer",
-        "user_role_user": "User",
-        "user_role_provider": "Provider",
-        "user_role_verifier": "Verifier",
-        "user_role_access_admin": "Access admin",
-        "user_role_platform_admin": "Platform admin"
+        "viewer": "Viewer",
+        "user": "User",
+        "provider": "Provider",
+        "verifier": "Verifier",
+        "access-admin": "Access admin",
+        "platform-admin": "Platform admin"
       },
       "inherited": "über eine Gruppe oder andere Rolle, nur in Keycloak änderbar",
       "without": "ohne {role}"

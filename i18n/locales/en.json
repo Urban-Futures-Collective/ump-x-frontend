@@ -98,20 +98,20 @@
       "tokenHint": "Changes apply to {name} after their next sign-in or token refresh.",
       "loadError": "The roles could not be loaded: {msg}",
       "names": {
-        "user_role_viewer": "Viewer: browse models",
-        "user_role_user": "User: run models",
-        "user_role_provider": "Provider: submit models",
-        "user_role_verifier": "Verifier: review and publish models",
-        "user_role_access_admin": "Access admin: grant model access",
-        "user_role_platform_admin": "Platform admin: manage accounts and roles"
+        "viewer": "Viewer: browse models",
+        "user": "User: run models",
+        "provider": "Provider: submit models",
+        "verifier": "Verifier: review and publish models",
+        "access-admin": "Access admin: grant model access",
+        "platform-admin": "Platform admin: manage accounts and roles"
       },
       "short": {
-        "user_role_viewer": "Viewer",
-        "user_role_user": "User",
-        "user_role_provider": "Provider",
-        "user_role_verifier": "Verifier",
-        "user_role_access_admin": "Access admin",
-        "user_role_platform_admin": "Platform admin"
+        "viewer": "Viewer",
+        "user": "User",
+        "provider": "Provider",
+        "verifier": "Verifier",
+        "access-admin": "Access admin",
+        "platform-admin": "Platform admin"
       },
       "inherited": "via a group or another role, only changeable in Keycloak",
       "without": "without {role}"

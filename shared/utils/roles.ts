@@ -4,17 +4,37 @@
 // admin route and which roles may be assigned. One shared list prevents a role from being
 // visible in the menu but rejected on the server, or the other way round.
 //
-// The `user_role_` prefix separates user roles from model server roles in Keycloak.
-// Roles are compared literally, without any mapping (as UMP does).
+// The names are the ones UMP's model registry checks (provider, verifier, ...; UMP
+// src/ump/core/models/registry/roles.py). The realm used `user_role_provider` and so on
+// until the roles are renamed in Keycloak. During the switch both spellings work: roles
+// from the token are read under their new name (canonicalRole), and the admin routes
+// look a role up in Keycloak under either name (server/utils/realmRoles.ts). Once the
+// realm is renamed, LEGACY_NAMES can go.
 
 export const UMP_CLIENT = 'ump-client'
 
-export const ROLE_VIEWER = 'user_role_viewer'
-export const ROLE_USER = 'user_role_user'
-export const ROLE_PROVIDER = 'user_role_provider'
-export const ROLE_VERIFIER = 'user_role_verifier'
-export const ROLE_ACCESS_ADMIN = 'user_role_access_admin'
-export const ROLE_PLATFORM_ADMIN = 'user_role_platform_admin'
+export const ROLE_VIEWER = 'viewer'
+export const ROLE_USER = 'user'
+export const ROLE_PROVIDER = 'provider'
+export const ROLE_VERIFIER = 'verifier'
+export const ROLE_ACCESS_ADMIN = 'access-admin'
+export const ROLE_PLATFORM_ADMIN = 'platform-admin'
+
+// Old realm name of each platform role.
+export const LEGACY_NAMES: Record<string, string> = {
+  [ROLE_VIEWER]: 'user_role_viewer',
+  [ROLE_USER]: 'user_role_user',
+  [ROLE_PROVIDER]: 'user_role_provider',
+  [ROLE_VERIFIER]: 'user_role_verifier',
+  [ROLE_ACCESS_ADMIN]: 'user_role_access_admin',
+  [ROLE_PLATFORM_ADMIN]: 'user_role_platform_admin',
+}
+const FROM_LEGACY = Object.fromEntries(Object.entries(LEGACY_NAMES).map(([now, old]) => [old, now]))
+
+/** A role under its current name: old platform role names become new ones, others stay. */
+export function canonicalRole(name: string): string {
+  return FROM_LEGACY[name] ?? name
+}
 
 // The six platform roles. Only these can be assigned through UMP-X; a role created by
 // hand in the Keycloak console does not become assignable (allowlist rather than a list
@@ -52,7 +72,7 @@ export function rolesFrom(src: KeycloakRoleClaims | undefined | null): string[] 
   return [
     ...(src.realm_access?.roles ?? []),
     ...(src.resource_access?.[UMP_CLIENT]?.roles ?? []),
-  ]
+  ].map(canonicalRole)
 }
 
 // All roles of a session. Depending on the mapper, nuxt-oidc-auth stores them in
@@ -79,6 +99,9 @@ export interface PlatformRoleStatus { role: PlatformRole, effective: boolean, di
 // `fromDefault`: the realm roles the account gets through the default role, empty if the
 // account does not hold the default role.
 export function platformRoleStatus(direct: string[], effective: string[], fromDefault: string[] = []): PlatformRoleStatus[] {
+  direct = direct.map(canonicalRole)
+  effective = effective.map(canonicalRole)
+  fromDefault = fromDefault.map(canonicalRole)
   return PLATFORM_ROLES.map(role => ({
     role,
     effective: effective.includes(role) || direct.includes(role),
