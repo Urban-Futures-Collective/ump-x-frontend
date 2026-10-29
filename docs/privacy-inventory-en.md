@@ -1,14 +1,14 @@
 # Privacy inventory (GDPR)
 
-Status: 2026-10-13. A technical inventory of where UMP-X processes personal data and
+Status: 2026-10-29. A technical inventory of where UMP-X processes personal data and
 what is still missing. This is not legal advice; it is meant as input for the data
 protection officer and as the basis for the privacy policy.
 
 ## Missing pages
 
 The footer links to `/datenschutz` (privacy policy), `/impressum` (legal notice) and
-`/barrierefreiheit` (accessibility statement). None of these pages exist yet, so all
-three links currently lead to a 404.
+`/barrierefreiheit` (accessibility statement). The pages exist as drafts; facts that are
+still missing (controller, contact, data protection officer) are marked in them.
 
 ## Where personal data is processed
 
@@ -16,7 +16,9 @@ three links currently lead to a 404.
 |---|---|---|---|---|
 | Keycloak (`auth.urbanfuturescollective.org`) | Name, email, username, login events, sessions | Accounts and sign-in | Until the account is deleted | Who is the controller; deletion process |
 | Keycloak admin events | Which admin account changed which user | Accountability | 90 days (realm setting) | Shows only the service account `ump-x-admin`, see server logs |
-| UMP-X server logs | Keycloak ID of the admin plus target account, username on creation, search terms in the account list | Accountability for admin actions | Depends on Dokploy log retention | Define retention |
+| UMP-X server logs | Keycloak ID of the admin plus target account, username on creation, search terms in the account list; for the access manager, who granted or revoked which model role for whom | Accountability for admin actions | Depends on Dokploy log retention | Define retention |
+| Access manager (`/access`) | Name, username and email of accounts holding a model role, shown to access admins; account search by name or email | Granting and revoking model access | Not stored by UMP-X, read live from Keycloak | Mention in the privacy policy |
+| Model registry (UMP database) | Keycloak ID of the model's owner and of the reviewer, names of contributors on the model card, review notes | Contributing, reviewing and publishing models | Not defined | Retention, deletion on account removal |
 | Reverse proxy logs | IP address, URL, user agent | Operations, security | Not defined | Define retention |
 | UMP jobs | Keycloak ID of the user who started a run, inputs, results | Running models, "My Scenarios" | No deletion yet, kept indefinitely | Retention period, deletion on account removal |
 | Invitation emails | Email address, name | Account invitation | Mail server logs on the Plesk host | Mention in the privacy policy |
@@ -73,6 +75,11 @@ is most likely not required. To be confirmed by the data protection officer.
 - AI keys currently stay in the user's browser and do not pass through our server.
 
 ## Planned changes that affect this inventory
+
+- **Access requests:** people will ask for access to a model with a purpose, and access
+  admins decide. Request, purpose and decision are to be stored in UMP's database, and
+  the person is notified by email. Needs an entry in the records of processing and a
+  retention rule.
 
 - **AI keys on the server:** keys are to be stored encrypted in the UMP database and the
   chat routed through our server. Then the key, and the chat content in transit, are
