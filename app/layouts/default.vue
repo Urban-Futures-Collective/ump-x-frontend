@@ -6,7 +6,7 @@ import type { BreadcrumbItem, NavigationMenuItem } from '@nuxt/ui'
 const { t, locale, locales, setLocale } = useI18n()
 const route = useRoute()
 const { loggedIn, user, login, logout } = useOidcAuth()
-const { isAdmin, isProvider, isVerifier } = useUmpRoles()
+const { isAdmin, isAccessAdmin, isProvider, isVerifier } = useUmpRoles()
 const { accountUrl, prototypes: samples, registryApi } = useRuntimeConfig().public
 // The registry pages exist with sample data or with the registry API.
 const prototypes = samples || registryApi
@@ -44,6 +44,10 @@ const manageItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = []
   if (isAdmin.value) {
     items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
+  }
+  // Model access (design A4) belongs to access admins, not to platform admins.
+  if (isAccessAdmin.value) {
+    items.push({ label: t('nav.access'), icon: 'i-lucide-key-round', to: '/access' })
   }
   if (!prototypes) return items
   if (!isVerifier.value) {

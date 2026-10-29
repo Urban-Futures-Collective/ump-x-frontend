@@ -22,7 +22,8 @@
     "help": "Hilfe",
     "contribute": "Beitragen",
     "verify": "Prüfen",
-    "verifyNew": "{n} neu"
+    "verifyNew": "{n} neu",
+    "access": "Zugriffsverwaltung"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -768,5 +769,35 @@
   "results": {
     "legend": "Legende",
     "indicators": "Kennzahlen"
+  },
+  "access": {
+    "title": "Zugriffsverwaltung",
+    "refresh": "Aktualisieren",
+    "tabs": {
+      "requests": "Anfragen",
+      "models": "Modelle und Server"
+    },
+    "search": "Server oder Modell suchen",
+    "empty": "Noch kein Modell hat Zugriffsrollen. Sie entstehen beim Veröffentlichen.",
+    "models": "keine Modelle | 1 Modell | {n} Modelle",
+    "users": "keine Personen | 1 Person | {n} Personen",
+    "thisModel": "Dieses Modell",
+    "wholeServer": "Ganzer Server",
+    "server": "Server",
+    "allModels": "Alle Modelle auf diesem Server",
+    "add": "Zugriff geben",
+    "findUser": "Person nach Name oder E-Mail suchen",
+    "grant": "Freigeben",
+    "withAccess": "Personen mit Zugriff · {n}",
+    "nobody": "Noch hat niemand Zugriff.",
+    "col": {
+      "user": "Person",
+      "for": "Zugriff für",
+      "action": "Aktion"
+    },
+    "revoke": "Entziehen",
+    "serverHint": "Ausgegrautes Entziehen: Zugriff auf den ganzen Server. Das lässt sich unter „Ganzer Server“ ändern.",
+    "loadFailed": "Zugriffe konnten nicht geladen werden",
+    "failed": "Die Änderung hat nicht geklappt"
   }
 }
