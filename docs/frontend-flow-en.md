@@ -3,7 +3,7 @@
 Which paths a user can take through UMP-X, depending on sign-in and roles, and
 how much of it is built.
 
-**As of 2026-10-07**, checked against the code (`93c5033`, staging) and against
+**As of 2026-10-29**, checked against the code (`6c98e8e`, staging) and against
 the running staging backend. Anyone changing a route, a middleware or a state updates
 this document with it. See "Keeping this current" at the end.
 
@@ -22,13 +22,15 @@ flowchart TD
 
     Landing --> Q{Signed in?}
 
-    Q -->|no| Anon["Commons<br/><i>every model is listed, search, tiles or list</i>"]
+    Q -->|no| Anon["Commons<br/><i>every model is listed, search,<br/>filters by topic, language, licence</i>"]
     Q -->|sign in| KC[/"Keycloak"/]
 
     KC --> Signed["Commons"]
 
-    Anon --> Run
-    Signed --> Run
+    Anon --> Card
+    Signed --> Card
+    Card["Model page<br/>purpose, inputs and outputs,<br/>limits, people"]
+    Card --> Run
 
     Run["New scenario<br/>form from the model's schema,<br/>area drawn on the map"]
     Run --> Allowed{"Open model,<br/>or matching role?"}
@@ -42,14 +44,15 @@ flowchart TD
     Mine --> Detail["A run in detail<br/>status, times, result,<br/>reloads while running"]
     Detail --> Map
 
-    KC --> AdminQ{"access_admin or<br/>platform_admin?"}
-    AdminQ -->|platform_admin| Accounts["Administration: accounts<br/>create with invitation, roles,<br/>disable, pages, badges"]
-    AdminQ -->|access_admin| Access["Administration: model access"]
+    KC --> AdminQ{"access-admin or<br/>platform-admin?"}
+    AdminQ -->|platform-admin| Accounts["Administration: accounts<br/>create with invitation, roles,<br/>disable, pages, badges"]
+    AdminQ -->|access-admin| Access["Access manager<br/>grant and revoke access<br/>to a model or a whole server"]
+    Access -.-> Requests["Access requests"]
 
-    KC --> Prov{"provider role,<br/>prototypes switched on?"}
+    KC --> Prov{"provider role,<br/>registry switched on?"}
     Prov -->|yes| Contribute["Contribute<br/>server, processes, model card, submit"]
-    KC --> Ver{"verifier role,<br/>prototypes switched on?"}
-    Ver -->|yes| Verify["Verify<br/>review, request changes, publish"]
+    KC --> Ver{"verifier role,<br/>registry switched on?"}
+    Ver -->|yes| Verify["Verify<br/>review, test run, verify or reject, publish"]
 
     Landing --> Legal["Legal notice, privacy,<br/>accessibility (drafts)"]
 
@@ -58,9 +61,9 @@ flowchart TD
     classDef missing fill:#7a1f2a,stroke:#c02a3a,color:#fff
     classDef external fill:#2a3550,stroke:#4a6090,color:#fff
 
-    class Landing,Anon,Signed,Run,Allowed,Denied,Wait,Map,Mine,Detail,Accounts built
+    class Landing,Anon,Signed,Card,Run,Allowed,Denied,Wait,Map,Mine,Detail,Accounts,Access built
     class Contribute,Verify,Legal placeholder
-    class Access missing
+    class Requests missing
     class KC external
 ```
 
@@ -70,16 +73,18 @@ the refusal has to say what is missing rather than only that something failed.
 
 ## Who may do what
 
-| | signed out | signed in (viewer, user, provider) | with model role | verifier | access_admin | platform_admin |
+| | signed out | signed in (viewer, user, provider) | with model role | verifier | access-admin | platform-admin |
 |---|---|---|---|---|---|---|
-| Landing page, Commons, help, legal pages | yes | yes | yes | yes | yes | yes |
+| Landing page, Commons, model pages, help, legal pages | yes | yes | yes | yes | yes | yes |
+| See models not yet published ("available only for verification") | no | no | no | yes | no | no |
 | Run an open model | yes | yes | yes | yes | yes | yes |
 | Run a restricted model | no | no | yes | no | no | no |
 | My scenarios | no | yes | yes | yes | yes | yes |
-| Contribute (prototype) | no | yes, as provider | | | | |
-| Verify (prototype) | no | no | no | yes | no | no |
+| Contribute (registry) | no | yes, as provider | | | | |
+| Verify and publish (registry) | no | no | no | yes | no | no |
 | Administration: accounts and platform roles | no | no | no | no | no | yes |
-| Administration: model access | no | no | no | no | planned | no |
+| Access manager: model access | no | no | no | no | yes | no |
+| Request access to a model | no | planned | | | | |
 
 Three kinds of role govern this, all from Keycloak:
 
@@ -89,23 +94,26 @@ them; `verifier`, `access-admin` and `platform-admin` are assigned. Until 2026-1
 called `user_role_viewer` and so on. Platform admins assign them in the
 administration, and can also take a default role away from a single account.
 
-**Running a model** through a client role on `ump-client` named exactly like the
-process it unlocks: `<provider>` for every process of that model server,
-`<provider>:<process>` for a single one (for example `umep-modelserver`). A process
-marked `anonymous-access: true` in the backend's `providers.yaml` needs no role at all.
-Refused, the API names the role it looked for. These roles are created by hand in the
-Keycloak console until the model registry exists.
+**Running a model** through a realm role named exactly like what it unlocks:
+`<server>` for every process of that model server, `<server>:<process>` for a single
+one (for example `umep-modelserver:prepare-city`). Publishing a model in Verify creates
+both roles; access admins grant and revoke them in the access manager (`/access`). A
+process marked `anonymous-access: true` in the backend needs no role at all. Refused,
+the API names the role it looked for. Older models still carry hand-made roles, some as
+client roles on `ump-client` (for example `bikebox-modelserver`, `modelserver_squareroot`);
+the access manager only shows roles of the form above until those are cleaned up.
 
-**Administration** through `access-admin` or `platform-admin`. The
-page shows the sections per role; the server checks the role again in every route.
+**Administration** (`/admin`) opens for `access-admin` and `platform-admin`; accounts
+and platform roles are for `platform-admin`. The **access manager** (`/access`) is for
+`access-admin`. The server checks the role again in every route.
 
 Whether the catalogue itself is filtered is a server setting, `UMP_PUBLIC_PROCESSES`.
 On staging it is on, so the list shows everything to everyone and only the run is
 gated.
 
 The frontend enforces sign-in and roles per page via `definePageMeta` (`auth`,
-`admin`, `provider`, `verifier`, and `prototype` for pages behind
-`NUXT_PUBLIC_PROTOTYPES`). Who may run what is decided by the backend; the frontend
+`admin`, `access-admin`, `provider`, `verifier`, and `prototype` for the registry pages,
+which need `NUXT_PUBLIC_PROTOTYPES` or `NUXT_PUBLIC_REGISTRY_API`). Who may run what is decided by the backend; the frontend
 only has to explain it.
 
 ## What is missing today
@@ -213,9 +221,10 @@ flowchart LR
 ```
 
 Today there is one entry point for everyone, the landing page with Commons behind it.
-Providers and verifiers additionally see Contribute and Verify when prototypes are
-switched on. The sidebar shows Projects, Data repository and Report greyed out
-(Contribute too, while prototypes are off): visible so the direction is legible,
+Providers and verifiers additionally see Contribute and Verify when the registry is
+switched on (sample data or UMP's registry API), access admins the access manager. The
+sidebar shows Projects, Data repository and Report greyed out (Contribute too, while
+the registry is off): visible so the direction is legible,
 disabled so nobody clicks into nothing.
 
 ## Keeping this current
@@ -244,5 +253,5 @@ helped.
 
 - `add-new-model-de.md`, which places a new model touches technically
 - `runbook-growbike-modelserver-de.md`, model servers and roles
-- `deployment-de.md`, branch chain and environments, including the prototype switch
+- `deployment-en.md`, branch chain and environments, including the registry switches
 - `privacy-inventory-en.md`, which personal data the paths touch

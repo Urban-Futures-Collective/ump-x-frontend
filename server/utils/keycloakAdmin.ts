@@ -26,7 +26,7 @@ export function keycloakAdminUrls(realmUrl: string) {
 }
 
 // Realm URL at runtime. NUXT_OIDC_PROVIDERS_KEYCLOAK_BASE_URL is a build argument
-// (see docs/deployment-de.md): nuxt-oidc-auth builds full URLs such as `tokenUrl` from it
+// (see docs/deployment-en.md): nuxt-oidc-auth builds full URLs such as `tokenUrl` from it
 // at build time, while `baseUrl` itself is empty at runtime. So derive the realm URL from
 // `tokenUrl` first and fall back to `baseUrl`.
 export function realmUrlFrom(provider: { baseUrl?: string, tokenUrl?: string } | undefined): string | undefined {
