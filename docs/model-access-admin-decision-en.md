@@ -58,7 +58,7 @@ Read from the live instance (`auth.urbanfuturescollective.org`, realm `UrbanMode
 
 Consequence for the frontend: the three user views (`/commons`, `/jobs`, `/run`) are the same routes for every signed-in user. The only real route branch is **admin vs. non-admin**.
 
-> **Addendum 2026-08-31.** The original sentence here said the content differs because UMP filters the process list server-side by role. That no longer holds. Since UMP 3.0.0 filtering the list depends on the server setting `UMP_PUBLIC_PROCESSES`, and on production it is on: everyone sees all models. Roles only decide about **running** a model, and they are called `<provider>` or `<provider>:<process-id>`, no longer `modelserver_<id>`. See `docs/add-new-model-de.md`, step 5.
+> **Addendum 2026-08-31.** The original sentence here said the content differs because UMP filters the process list server-side by role. That no longer holds. Since UMP 3.0.0 filtering the list depends on the server setting `UMP_PUBLIC_PROCESSES`, and on production it is on: everyone sees all models. Roles only decide about **running** a model, and they are called `<provider>` or `<provider>:<process-id>`, no longer `modelserver_<id>`. See `docs/add-new-model-en.md`, step 5.
 
 ---
 

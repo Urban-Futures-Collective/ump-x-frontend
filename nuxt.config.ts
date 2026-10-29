@@ -40,7 +40,7 @@ export default defineNuxtConfig({
 
   // Backend connection: server-side proxy /ump/** -> UMP API, target configurable via env.
   // The proxy (server/routes/ump/[...path].ts) adds the bearer token from the OIDC session.
-  // See docs/frontend-backend-architecture-de.md (the two seams).
+  // See docs/frontend-backend-architecture-en.md (the two seams).
   runtimeConfig: {
     // Proxy target (server-only). Override with NUXT_UMP_API_TARGET.
     umpApiTarget: 'http://localhost:5003',
