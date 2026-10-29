@@ -122,6 +122,7 @@
       "title": "Create account",
       "firstName": "First name",
       "lastName": "Last name",
+      "nameHint": "First and last name are publicly visible, for example as the provider of published models.",
       "email": "Email",
       "username": "Username",
       "usernameHint": "At least 3 characters: lower case letters, digits, dot, dash",

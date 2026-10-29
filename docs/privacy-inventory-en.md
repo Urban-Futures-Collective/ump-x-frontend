@@ -81,6 +81,13 @@ is most likely not required. To be confirmed by the data protection officer.
   the person is notified by email. Needs an entry in the records of processing and a
   retention rule.
 
+- **Provider names on models:** the display name of a model's owner (first and last
+  name from Keycloak) is to be returned by UMP's model registry and shown publicly,
+  also without sign-in (UMP issue #13). The account creation form already says that
+  the name is publicly visible. Still open in the backend: `owner_display_name` in
+  `/registry/v1/models`. Once it is shown, add the provider name to the model registry
+  row above and to the privacy policy.
+
 - **AI keys on the server:** keys are to be stored encrypted in the UMP database and the
   chat routed through our server. Then the key, and the chat content in transit, are
   processed by us. This needs its own entry in the records of processing, a retention

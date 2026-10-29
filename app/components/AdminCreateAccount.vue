@@ -55,6 +55,9 @@ async function submit() {
         <UInput v-model="form.lastName" autocomplete="off" class="w-full" />
       </UFormField>
     </div>
+    <p class="-mt-2 text-xs text-(--ui-text-muted)">
+      {{ t('admin.create.nameHint') }}
+    </p>
     <UFormField :label="t('admin.create.email')" :error="problems.includes('email') ? t('admin.create.emailInvalid') : undefined" required>
       <UInput v-model="form.email" type="email" autocomplete="off" class="w-full" />
     </UFormField>
