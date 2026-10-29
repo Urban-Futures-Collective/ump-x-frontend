@@ -164,6 +164,7 @@
     "noMatch": "Kein Modell passt zur Suche oder zu den Filtern.",
     "onlyPublished": "Hier erscheinen nur veröffentlichte Modelle. Modelle in Prüfung sehen nur Prüfende, deaktivierte Modelle erscheinen hier nicht.",
     "published": "Veröffentlicht am {date}",
+    "onlyVerification": "Nur zur Prüfung freigegeben",
     "languages": "Sprachen:",
     "lang": {
       "de": "Deutsch",

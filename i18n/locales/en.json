@@ -164,6 +164,7 @@
     "noMatch": "No model matches the search or filters.",
     "onlyPublished": "Only published models appear here. Models currently in review are listed for verifiers only, deactivated models do not appear on this page.",
     "published": "Published {date}",
+    "onlyVerification": "Available only for verification",
     "languages": "Languages:",
     "lang": {
       "de": "German",
