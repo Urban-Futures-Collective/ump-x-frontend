@@ -22,7 +22,8 @@
     "help": "Read Me",
     "contribute": "Contribute",
     "verify": "Verify",
-    "verifyNew": "{n} new"
+    "verifyNew": "{n} new",
+    "access": "Access manager"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -768,5 +769,35 @@
   "results": {
     "legend": "Legend",
     "indicators": "Key figures"
+  },
+  "access": {
+    "title": "Access manager",
+    "refresh": "Refresh",
+    "tabs": {
+      "requests": "Requests",
+      "models": "Models and servers"
+    },
+    "search": "Search server or model",
+    "empty": "No model has access roles yet. They are created when a model is published.",
+    "models": "no models | 1 model | {n} models",
+    "users": "no users | 1 user | {n} users",
+    "thisModel": "This model",
+    "wholeServer": "Whole server",
+    "server": "Server",
+    "allModels": "All models on this server",
+    "add": "Add access",
+    "findUser": "Search users by name or email",
+    "grant": "Grant",
+    "withAccess": "Users with access · {n}",
+    "nobody": "Nobody has access yet.",
+    "col": {
+      "user": "User",
+      "for": "Access provided for",
+      "action": "Action"
+    },
+    "revoke": "Revoke",
+    "serverHint": "Greyed-out revoke: access to the whole server. Change it under “Whole server”.",
+    "loadFailed": "Could not load access",
+    "failed": "The change did not go through"
   }
 }
