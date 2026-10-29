@@ -3,7 +3,8 @@ import type { RegistryModel } from '~/types/registry'
 import type { TopicTone } from '~/utils/commons'
 
 // The tag row of a model in the Commons (designs C0, C1): when it was published or,
-// for verifiers, its review status; then topics, languages or licence.
+// for models only verifiers can see yet, that they are there for verification; then
+// topics, languages or licence. The exact review status is on the Verify page.
 //
 // "No log-in required" / "Access required" from the design is missing on purpose: the
 // registry does not report anonymous access yet, and guessing it would be worse than
@@ -30,8 +31,9 @@ const TONE: Record<TopicTone, string> = {
 
 <template>
   <ul class="flex flex-wrap items-center gap-2 text-sm">
-    <li v-if="card.status !== 'published'">
-      <RegistryStatusBadge :status="card.status" />
+    <li v-if="card.status !== 'published'" class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-0.5 text-orange-800">
+      <UIcon name="i-lucide-shield-user" class="size-3.5" aria-hidden="true" />
+      {{ t('commons.onlyVerification') }}
     </li>
     <li v-else-if="published" class="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-0.5 text-green-800">
       <UIcon name="i-lucide-check" class="size-3.5" aria-hidden="true" />
