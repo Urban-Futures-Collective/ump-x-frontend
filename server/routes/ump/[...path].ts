@@ -50,7 +50,7 @@ function sanitize(name: string): string {
 // Authenticated proxy /ump/** -> UMP API. Adds the access token from the OIDC session as
 // bearer token, only when logged in, so anonymous read access keeps working.
 // This is the single seam for pointing the frontend at a different backend: change
-// NUXT_UMP_API_TARGET. See docs/frontend-backend-architecture-de.md.
+// NUXT_UMP_API_TARGET. See docs/frontend-backend-architecture-en.md.
 export default defineEventHandler(async (event) => {
   const { umpApiTarget } = useRuntimeConfig(event)
 

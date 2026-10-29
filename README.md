@@ -78,7 +78,7 @@ questions to the backend: `docs/frontend-backend-architecture-en.md`.
 | `docs/frontend-flow-en.md` | paths through the app, roles, what is missing |
 | `docs/frontend-backend-architecture-en.md` | frontend and backend seams |
 | `docs/deployment-en.md` | environments, variables, Keycloak |
-| `docs/add-new-model-de.md` | adding a model server today (by hand) |
-| `docs/runbook-growbike-modelserver-de.md` | model servers and roles, an example |
+| `docs/add-new-model-en.md` | adding a model server today (by hand) |
+| `docs/runbook-growbike-modelserver-en.md` | model servers and roles, an example |
 | `docs/privacy-inventory-en.md` | where personal data is processed |
 | `docs/model-access-admin-decision-en.md` | how model access administration was decided (superseded, with the current state) |

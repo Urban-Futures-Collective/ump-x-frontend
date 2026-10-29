@@ -251,7 +251,7 @@ helped.
 
 ## Related
 
-- `add-new-model-de.md`, which places a new model touches technically
-- `runbook-growbike-modelserver-de.md`, model servers and roles
+- `add-new-model-en.md`, which places a new model touches technically
+- `runbook-growbike-modelserver-en.md`, model servers and roles
 - `deployment-en.md`, branch chain and environments, including the registry switches
 - `privacy-inventory-en.md`, which personal data the paths touch
