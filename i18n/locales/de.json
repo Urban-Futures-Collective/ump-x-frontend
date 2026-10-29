@@ -122,6 +122,7 @@
       "title": "Konto anlegen",
       "firstName": "Vorname",
       "lastName": "Nachname",
+      "nameHint": "Vor- und Nachname sind öffentlich sichtbar, zum Beispiel als Anbieter veröffentlichter Modelle.",
       "email": "E-Mail",
       "username": "Nutzername",
       "usernameHint": "Mindestens 3 Zeichen: Kleinbuchstaben, Ziffern, Punkt, Strich",
