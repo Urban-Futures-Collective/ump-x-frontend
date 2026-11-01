@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.114",
+    "@iconify-json/material-symbols": "^1.2.97",
     "@nuxt/eslint": "^1.16.0",
     "@nuxtjs/i18n": "^10.4.0",
     "@types/geojson": "^7946.0.16",

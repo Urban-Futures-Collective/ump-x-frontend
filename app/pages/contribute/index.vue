@@ -91,20 +91,20 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
       </div>
     </div>
 
-    <div v-if="isEmpty" class="mx-auto max-w-2xl space-y-5 rounded-lg border border-(--ui-border) bg-white px-6 py-10 text-center">
-      <p class="text-lg font-medium text-(--ui-text-highlighted)">
-        {{ t('registry.contribute.emptyTitle') }}
-      </p>
-      <p class="text-sm text-(--ui-text-muted)">
-        {{ t('registry.contribute.emptyText') }}
-      </p>
-      <div class="flex flex-wrap items-center justify-center gap-4">
-        <UButton size="lg" to="/contribute/new">
-          {{ t('registry.contribute.emptyCreate') }}
-        </UButton>
-        <ULink to="/hilfe" class="font-medium text-(--ui-primary)">
-          {{ t('registry.contribute.emptyHelp') }}
-        </ULink>
+    <!-- Centred in the free space below the heading, as in the design. -->
+    <div v-if="isEmpty" class="flex min-h-[55vh] items-center justify-center">
+      <div class="w-full max-w-xl space-y-6 rounded-lg border border-(--ui-border) bg-white px-6 py-10 text-center">
+        <p class="text-lg font-medium text-(--ui-text-highlighted)">
+          {{ t('registry.contribute.emptyTitle') }}
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
+          <UButton size="lg" to="/contribute/new">
+            {{ t('registry.contribute.emptyCreate') }}
+          </UButton>
+          <ULink to="/hilfe" class="font-medium text-(--ui-primary)">
+            {{ t('registry.contribute.emptyHelp') }}
+          </ULink>
+        </div>
       </div>
     </div>
 

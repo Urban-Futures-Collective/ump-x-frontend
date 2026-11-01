@@ -13,5 +13,12 @@ export default defineAppConfig({
       info: 'ufc-plum',
       neutral: 'ufc-slate',
     },
+    // Active sidebar entry on a light blue background, as in the design, instead of
+    // the default grey. Text stays dark (color="neutral" on the menus).
+    navigationMenu: {
+      compoundVariants: [
+        { variant: 'pill', active: true, class: { link: 'before:bg-ufc-blue-50' } },
+      ],
+    },
   },
 })

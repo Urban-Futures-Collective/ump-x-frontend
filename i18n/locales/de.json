@@ -8,7 +8,7 @@
   "nav": {
     "models": "Commons",
     "run": "Neues Szenario",
-    "jobs": "Meine Szenarien",
+    "jobs": "Szenarien",
     "admin": "Administration",
     "home": "Start",
     "planned": {
@@ -544,10 +544,9 @@
       "serverModels": "keine Modelle | 1 Modell | {n} Modelle",
       "interfaceChanged": "Schnittstelle geändert",
       "note": "Hinweis aus der Prüfung: „{note}“",
-      "emptyTitle": "Du hast noch keine Modelle beigetragen.",
-      "emptyText": "Registriere den Server, auf dem dein Modell läuft, wähle seine Prozesse aus und schreibe eine Modellkarte. Eine zweite Person prüft es, bevor es in die Commons kommt.",
+      "emptyTitle": "Du hast hier noch keine Modelle beigetragen!",
       "emptyCreate": "Neues Modell anlegen",
-      "emptyHelp": "So funktioniert das Beitragen"
+      "emptyHelp": "Ich brauche mehr Informationen"
     },
     "new": {
       "title": "Neues Modell beitragen",

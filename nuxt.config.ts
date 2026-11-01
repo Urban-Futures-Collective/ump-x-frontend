@@ -111,8 +111,9 @@ export default defineNuxtConfig({
     strategy: 'no_prefix',
     langDir: 'locales',
     locales: [
-      { code: 'de', name: 'Deutsch', language: 'de-DE', file: 'de.json' },
+      // EN before DE in every language switch, as in the design.
       { code: 'en', name: 'English', language: 'en-US', file: 'en.json' },
+      { code: 'de', name: 'Deutsch', language: 'de-DE', file: 'de.json' },
     ],
   },
 })
