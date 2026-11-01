@@ -26,14 +26,14 @@ const userName = computed(
 // is linked from the header.
 const navItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = [
-    { label: t('nav.models'), icon: 'i-lucide-grid-3x3', to: '/commons' },
+    { label: t('nav.models'), icon: 'i-material-symbols-apps', to: '/commons' },
   ]
   // Model registry as a prototype with sample data, only where switched on
   // (NUXT_PUBLIC_PROTOTYPES) and for the matching role.
   if (prototypes && isProvider.value) {
-    items.push({ label: t('nav.contribute'), icon: 'i-lucide-file-plus-2', to: '/contribute', badge: sampleBadge })
+    items.push({ label: t('nav.contribute'), icon: 'i-material-symbols-file-export-outline', to: '/contribute', badge: sampleBadge })
   }
-  items.push({ label: t('nav.jobs'), icon: 'i-lucide-history', to: '/jobs' })
+  items.push({ label: t('nav.jobs'), icon: 'i-material-symbols-history', to: '/jobs' })
   return items
 })
 
@@ -43,21 +43,21 @@ const navItems = computed<NavigationMenuItem[]>(() => {
 const manageItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = []
   if (isAdmin.value) {
-    items.push({ label: t('nav.admin'), icon: 'i-lucide-shield', to: '/admin' })
+    items.push({ label: t('nav.admin'), icon: 'i-material-symbols-admin-panel-settings-outline', to: '/admin' })
   }
   // Model access (design A4) belongs to access admins, not to platform admins.
   if (isAccessAdmin.value) {
-    items.push({ label: t('nav.access'), icon: 'i-lucide-key-round', to: '/access' })
+    items.push({ label: t('nav.access'), icon: 'i-material-symbols-approval-delegation-outline', to: '/access' })
   }
   if (!prototypes) return items
   if (!isVerifier.value) {
-    items.push({ label: t('nav.verify'), icon: 'i-lucide-list-checks', disabled: true })
+    items.push({ label: t('nav.verify'), icon: 'i-material-symbols-playlist-add-check', disabled: true })
     return items
   }
   const n = awaitingReview.value.length
   items.push({
     label: t('nav.verify'),
-    icon: 'i-lucide-list-checks',
+    icon: 'i-material-symbols-playlist-add-check',
     to: '/verify',
     badge: n ? { label: t('nav.verifyNew', { n }), color: 'success', variant: 'subtle', size: 'sm' } : sampleBadge,
   })
@@ -182,6 +182,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
       <template #default="{ collapsed }">
         <UNavigationMenu
           orientation="vertical"
+          color="neutral"
           :collapsed="collapsed"
           :items="navItems"
           class="w-full"
@@ -191,6 +192,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           <USeparator class="my-3" />
           <UNavigationMenu
             orientation="vertical"
+            color="neutral"
             :collapsed="collapsed"
             :items="manageItems"
             class="w-full"
@@ -230,7 +232,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
           </template>
 
           <template #title>
-            <UBreadcrumb :items="breadcrumb" />
+            <UBreadcrumb :items="breadcrumb" separator-icon="i-lucide-slash" />
           </template>
 
           <template #right>

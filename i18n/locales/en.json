@@ -8,8 +8,8 @@
   "nav": {
     "models": "Commons",
     "run": "New scenario",
-    "jobs": "My Scenarios",
-    "admin": "Administration",
+    "jobs": "Scenarios",
+    "admin": "Administrator",
     "home": "Start",
     "planned": {
       "heading": "Planned",
@@ -228,8 +228,8 @@
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",
     "openSource": "Open source",
-    "privacy": "Privacy",
-    "imprint": "Imprint",
+    "privacy": "Data Protection",
+    "imprint": "Legal Notice",
     "accessibility": "Accessibility"
   },
   "start": {
@@ -544,10 +544,9 @@
       "serverModels": "no models | 1 model | {n} models",
       "interfaceChanged": "Interface changed",
       "note": "Reviewer note: “{note}”",
-      "emptyTitle": "You have not contributed any models yet.",
-      "emptyText": "Register the server your model runs on, choose its processes and write a model card. A second person verifies it before it goes into the Commons.",
+      "emptyTitle": "You have not contributed any models here yet!",
       "emptyCreate": "Create new model",
-      "emptyHelp": "How contributing works"
+      "emptyHelp": "I need more information"
     },
     "new": {
       "title": "Contribute a new model",
