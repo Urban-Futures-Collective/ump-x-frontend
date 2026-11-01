@@ -65,7 +65,8 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
+  <!-- Full width when empty, so the box sits in the middle of the content area as in the design. -->
+  <section class="space-y-6" :class="{ 'max-w-6xl': !isEmpty }">
     <PrototypeNotice />
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('registry.loadFailed')" :description="error" />
 
