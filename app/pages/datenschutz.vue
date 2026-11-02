@@ -60,6 +60,18 @@ useHead({ title: () => t('footer.privacy') })
       </div>
 
       <div>
+        <h3>Modelle beitragen</h3>
+        <p>
+          Wenn Sie ein Modell beitragen, speichert die Plattform die Kennung Ihres Kontos, Ihren Vor- und Nachnamen
+          sowie die Angaben der Modellkarte, darunter die Namen der dort genannten Mitwirkenden. Ihr Name erscheint
+          als Anbieter des Modells und ist für alle sichtbar, auch ohne Anmeldung. Bei der Prüfung werden zusätzlich
+          die Kennung der prüfenden Person und ihre Anmerkungen gespeichert.
+          Speicherdauer: <span class="gap">[Angabe fehlt]</span>.
+          Rechtsgrundlage: <span class="gap">[zu prüfen]</span>.
+        </p>
+      </div>
+
+      <div>
         <h3>Karte und Ortssuche</h3>
         <p>
           Die Hintergrundkarte wird von den Servern der OpenStreetMap Foundation (Vereinigtes Königreich) geladen.

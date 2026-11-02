@@ -167,6 +167,8 @@
     "onlyPublished": "Hier erscheinen nur veröffentlichte Modelle. Modelle in Prüfung sehen nur Prüfende, deaktivierte Modelle erscheinen hier nicht.",
     "published": "Veröffentlicht am {date}",
     "onlyVerification": "Nur zur Prüfung freigegeben",
+    "noLogin": "Ohne Anmeldung nutzbar",
+    "accessRequired": "Zugang erforderlich",
     "languages": "Sprachen:",
     "lang": {
       "de": "Deutsch",
@@ -178,6 +180,7 @@
       "switchLang": "Anzeigen",
       "io": "Ein- und Ausgaben",
       "about": "Über dieses Modell",
+      "provider": "Anbieter",
       "code": "Code",
       "runtime": "Laufzeit",
       "minutes": "etwa {n} min",
