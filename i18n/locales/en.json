@@ -167,6 +167,8 @@
     "onlyPublished": "Only published models appear here. Models currently in review are listed for verifiers only, deactivated models do not appear on this page.",
     "published": "Published {date}",
     "onlyVerification": "Available only for verification",
+    "noLogin": "No log-in required",
+    "accessRequired": "Access required",
     "languages": "Languages:",
     "lang": {
       "de": "German",
@@ -178,6 +180,7 @@
       "switchLang": "Show",
       "io": "Inputs and outputs",
       "about": "About this model",
+      "provider": "Provider",
       "code": "Code",
       "runtime": "Runtime",
       "minutes": "about {n} min",

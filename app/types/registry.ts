@@ -91,6 +91,8 @@ export interface RegistryModel {
   verifiedByName?: string
   /** Whether the server's process interface still matches the verified one. */
   interfaceState: 'in_sync' | 'drifted' | 'unchecked'
+  /** Whether anyone can run the model without signing in. */
+  anonymousAccess?: boolean
   inputs: RegistryInput[]
   contributors: { name: string, role: string }[]
   literature: { citation: string }[]

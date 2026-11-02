@@ -42,6 +42,7 @@ const about = computed(() => {
   const req = c?.requirements ?? {}
   const minutes = req.runtimeSeconds ? Math.max(1, Math.round(req.runtimeSeconds / 60)) : 0
   return [
+    { key: 'provider', label: t('commons.model.provider'), value: c?.ownerName ?? '' },
     { key: 'version', label: t('registry.card.version'), value: c?.versionLabel || process.value?.version || '' },
     { key: 'code', label: t('commons.model.code'), value: c?.repositoryUrl ? repoLabel(c.repositoryUrl) : '', link: c?.repositoryUrl },
     { key: 'runtime', label: t('commons.model.runtime'), value: minutes ? t('commons.model.minutes', { n: minutes }) : '' },
@@ -81,8 +82,9 @@ function repoLabel(url: string) {
         <CommonsTags v-if="card" :card="card" :topics="false" :langs="false" licence />
       </div>
       <div class="flex shrink-0 flex-wrap gap-2">
-        <!-- Asking for access has no backend yet; same as in the account menu. -->
-        <UButton color="neutral" variant="outline" size="lg" disabled>
+        <!-- Asking for access has no backend yet; same as in the account menu. Models open
+             to everyone need no request. -->
+        <UButton v-if="!card?.anonymousAccess" color="neutral" variant="outline" size="lg" disabled>
           {{ t('auth.requestAccess') }}
         </UButton>
         <UButton icon="i-lucide-plus" size="lg" :to="{ path: '/run', query: { process: id } }">

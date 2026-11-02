@@ -19,8 +19,8 @@ export function useRegistry() {
     return { isOwner: m.ownerSub === mySub.value, isProvider: isProvider.value, isVerifier: isVerifier.value, isPlatformAdmin: isPlatformAdmin.value }
   }
 
-  // The API names no owners, only their ids; until it does, others' models show
-  // a neutral label rather than an id nobody can read.
+  // Others' models without a display name show a neutral label rather than an id
+  // nobody can read.
   function ownerLabel(m: RegistryModel) {
     if (m.ownerSub === mySub.value) return myName.value || t('registry.me')
     return m.ownerName || t('registry.otherOwner')

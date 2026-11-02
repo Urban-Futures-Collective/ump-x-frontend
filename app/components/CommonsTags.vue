@@ -4,11 +4,8 @@ import type { TopicTone } from '~/utils/commons'
 
 // The tag row of a model in the Commons (designs C0, C1): when it was published or,
 // for models only verifiers can see yet, that they are there for verification; then
-// topics, languages or licence. The exact review status is on the Verify page.
-//
-// "No log-in required" / "Access required" from the design is missing on purpose: the
-// registry does not report anonymous access yet, and guessing it would be worse than
-// leaving it out.
+// whether it needs a log-in; topics, languages or licence. The exact review status is
+// on the Verify page.
 const props = withDefaults(defineProps<{
   card: RegistryModel
   topics?: boolean
@@ -38,6 +35,10 @@ const TONE: Record<TopicTone, string> = {
     <li v-else-if="published" class="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-0.5 text-green-800">
       <UIcon name="i-lucide-check" class="size-3.5" aria-hidden="true" />
       {{ t('commons.published', { date: published }) }}
+    </li>
+    <li v-if="card.status === 'published'" class="inline-flex items-center gap-1 rounded-full bg-(--ui-bg-elevated) px-3 py-0.5">
+      <UIcon :name="card.anonymousAccess ? 'i-lucide-globe' : 'i-lucide-lock'" class="size-3.5" aria-hidden="true" />
+      {{ card.anonymousAccess ? t('commons.noLogin') : t('commons.accessRequired') }}
     </li>
     <template v-if="topics">
       <li v-for="k in card.keywords" :key="k" class="rounded-full px-3 py-0.5" :class="TONE[topicTone(k)]">

@@ -33,6 +33,14 @@ describe('registry API mapping', () => {
     expect(m.statusNote).toBe('Looks fine')
     expect(m.statusChangedAt).toBe('2026-10-21T10:00:00Z')
     expect(m.interfaceState).toBe('unchecked')
+    expect(m.ownerName).toBe('')
+    expect(m.anonymousAccess).toBe(false)
+  })
+
+  it('maps the provider name and anonymous access', () => {
+    const m = modelFromApi({ ...apiModel, owner_display_name: 'Ada Lovelace', anonymous_access: true })
+    expect(m.ownerName).toBe('Ada Lovelace')
+    expect(m.anonymousAccess).toBe(true)
   })
 
   it('maps the card details a reviewer checks', () => {

@@ -19,6 +19,7 @@ export interface ApiModel {
   provider: string
   remote_process_id: string
   owner_sub: string
+  owner_display_name?: string | null
   default_lang: string
   full_name: unknown
   short_description?: unknown
@@ -30,6 +31,7 @@ export interface ApiModel {
   license?: string | null
   status: string
   interface_state: string
+  anonymous_access?: boolean
   published_at?: string | null
   updated_at?: string | null
   review?: ApiReview | null
@@ -95,8 +97,9 @@ export function modelFromApi(m: ApiModel): RegistryModel {
     serverName: m.provider,
     remoteProcessId: m.remote_process_id,
     ownerSub: m.owner_sub,
-    // The API returns only the owner's id, no name (see ownerLabel).
-    ownerName: '',
+    // Public display name from the owner's account (UMP issue #13); empty until UMP
+    // has seen the owner sign in.
+    ownerName: m.owner_display_name ?? '',
     defaultLang: lang,
     fullName: langMap(m.full_name),
     shortDescription: langMap(m.short_description),
@@ -113,6 +116,7 @@ export function modelFromApi(m: ApiModel): RegistryModel {
     publishedAt: m.published_at ?? undefined,
     verifiedByName: m.review?.verified_by ?? undefined,
     interfaceState: interfaceState(m.interface_state),
+    anonymousAccess: m.anonymous_access ?? false,
     // Inputs come from the process description, history from the audit log
     // (not available yet).
     inputs: [],
