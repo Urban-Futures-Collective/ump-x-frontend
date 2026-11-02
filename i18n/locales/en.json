@@ -185,6 +185,20 @@
       "runtime": "Runtime",
       "minutes": "about {n} min",
       "resources": "Resources"
+    },
+    "access": {
+      "title": "Request access to {name}",
+      "intro": "An access admin decides on your request. You will be notified of the decision.",
+      "purpose": "What do you want to use the model for?",
+      "send": "Send request",
+      "cancel": "Cancel",
+      "sent": "Request sent",
+      "failed": "The request could not be sent",
+      "pending": "Request pending",
+      "withdraw": "Withdraw",
+      "denied": "Your last request was denied.",
+      "deniedWith": "Your last request was denied: {note}",
+      "granted": "Access granted. Sign in again to use the model."
     }
   },
   "run": {

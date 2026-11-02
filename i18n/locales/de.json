@@ -185,6 +185,20 @@
       "runtime": "Laufzeit",
       "minutes": "etwa {n} min",
       "resources": "Ressourcen"
+    },
+    "access": {
+      "title": "Zugriff auf {name} beantragen",
+      "intro": "Über deinen Antrag entscheidet eine Person aus der Zugriffsverwaltung. Über die Entscheidung wirst du benachrichtigt.",
+      "purpose": "Wofür möchtest du das Modell nutzen?",
+      "send": "Antrag senden",
+      "cancel": "Abbrechen",
+      "sent": "Antrag gesendet",
+      "failed": "Der Antrag konnte nicht gesendet werden",
+      "pending": "Antrag offen",
+      "withdraw": "Zurückziehen",
+      "denied": "Dein letzter Antrag wurde abgelehnt.",
+      "deniedWith": "Dein letzter Antrag wurde abgelehnt: {note}",
+      "granted": "Zugriff freigegeben. Melde dich neu an, um das Modell zu nutzen."
     }
   },
   "run": {
