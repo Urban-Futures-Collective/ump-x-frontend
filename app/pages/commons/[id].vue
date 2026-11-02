@@ -82,11 +82,7 @@ function repoLabel(url: string) {
         <CommonsTags v-if="card" :card="card" :topics="false" :langs="false" licence />
       </div>
       <div class="flex shrink-0 flex-wrap gap-2">
-        <!-- Asking for access has no backend yet; same as in the account menu. Models open
-             to everyone need no request. -->
-        <UButton v-if="!card?.anonymousAccess" color="neutral" variant="outline" size="lg" disabled>
-          {{ t('auth.requestAccess') }}
-        </UButton>
+        <CommonsRequestAccess :card="card" />
         <UButton icon="i-lucide-plus" size="lg" :to="{ path: '/run', query: { process: id } }">
           {{ t('commons.model.newScenario') }}
         </UButton>
