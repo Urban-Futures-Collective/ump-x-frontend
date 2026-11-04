@@ -23,8 +23,7 @@
     "contribute": "Beitragen",
     "verify": "Prüfen",
     "verifyNew": "{n} neu",
-    "access": "Zugriffsverwaltung",
-    "audit": "Audit-Log"
+    "access": "Zugriffsverwaltung"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -828,7 +827,6 @@
     "failed": "Die Änderung hat nicht geklappt"
   },
   "audit": {
-    "title": "Audit-Log",
     "intro": "Jede Änderung an Modellen, Servern und Zugängen und jeder Lauf, neueste zuerst. Wird drei Monate aufbewahrt.",
     "allActions": "Alle Aktionen",
     "error": "Das Audit-Log ließ sich nicht laden: {msg}",

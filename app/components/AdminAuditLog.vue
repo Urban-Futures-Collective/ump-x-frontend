@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { ApiAuditEvent } from '~/utils/auditLog'
 
-// Audit log (#111, item 13): every registry change and run, newest first. UMP keeps three
-// months. People are only known by their account id; the page names yourself and the
-// owners of models it knows, everyone else by a short id.
-definePageMeta({ middleware: ['auth', 'prototype', 'audit-reader'] })
+// Audit log (#111, item 13), a tab of the admin page (design A1): every registry change
+// and run, newest first. UMP keeps three months. People are only known by their account
+// id; the list names yourself and the owners of models it knows, everyone else by a
+// short id.
 const { t, te, locale } = useI18n()
 const { umpBase } = useRuntimeConfig().public
 const base = `${umpBase}/registry/v1`
@@ -75,16 +75,11 @@ const fieldLabel = (f: string) => {
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <div class="space-y-1">
-        <h1 class="text-3xl font-semibold text-ufc-slate-900">
-          {{ t('audit.title') }}
-        </h1>
-        <p class="text-(--ui-text-muted)">
-          {{ t('audit.intro') }}
-        </p>
-      </div>
+  <section class="max-w-4xl space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('audit.intro') }}
+      </p>
       <USelectMenu v-model="action" :items="actionItems" value-key="value" :search-input="false" class="w-64" />
     </div>
 
