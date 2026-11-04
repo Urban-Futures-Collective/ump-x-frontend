@@ -37,9 +37,8 @@ const navItems = computed<NavigationMenuItem[]>(() => {
   return items
 })
 
-// Second block, as in the design: administration and Verify. Verifiers open
-// Verify and approve models; everyone else sees it greyed out, so the step
-// exists but is not theirs.
+// Second block, as in the design: administration and Verify. Verify only for
+// verifiers: a greyed-out entry for everyone else read as a broken page in testing.
 const manageItems = computed<NavigationMenuItem[]>(() => {
   const items: NavigationMenuItem[] = []
   if (isAdmin.value) {
@@ -49,11 +48,7 @@ const manageItems = computed<NavigationMenuItem[]>(() => {
   if (isAccessAdmin.value) {
     items.push({ label: t('nav.access'), icon: 'i-material-symbols-approval-delegation-outline', to: '/access' })
   }
-  if (!prototypes) return items
-  if (!isVerifier.value) {
-    items.push({ label: t('nav.verify'), icon: 'i-material-symbols-playlist-add-check', disabled: true })
-    return items
-  }
+  if (!prototypes || !isVerifier.value) return items
   const n = awaitingReview.value.length
   items.push({
     label: t('nav.verify'),
@@ -124,30 +119,38 @@ const userMenu = computed(() => [[
 // Breadcrumb: Home plus the current location. Flat as long as there is no
 // project level to navigate into. Pages without their own sidebar entry hang
 // off their path: a new scenario starts from Commons.
+//
+// Every entry is a link, the current page included. Home only for visitors: the
+// start page sends signed-in users straight on to Commons, so for them "Start"
+// was a link that went nowhere.
 const commonsCrumb = useState<string>('commons-crumb', () => '')
 const breadcrumb = computed<BreadcrumbItem[]>(() => {
-  const items: BreadcrumbItem[] = [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
+  const items: BreadcrumbItem[] = loggedIn.value ? [] : [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
+  const here = route.fullPath
   if (route.path.startsWith('/run')) {
-    items.push({ label: t('nav.models'), to: '/commons' }, { label: t('nav.run') })
+    items.push({ label: t('nav.models'), to: '/commons' }, { label: t('nav.run'), to: here })
     return items
   }
   // A model page names its model (set by the page, see commons/[id].vue).
   if (route.path.startsWith('/commons/')) {
-    items.push({ label: t('commons.title'), to: '/commons' }, { label: commonsCrumb.value || String(route.params.id ?? '') })
+    items.push({ label: t('commons.title'), to: '/commons' }, { label: commonsCrumb.value || String(route.params.id ?? ''), to: here })
     return items
   }
   if (route.path.startsWith('/hilfe')) {
-    items.push({ label: t('nav.help') })
+    items.push({ label: t('nav.help'), to: here })
     return items
   }
-  const here = [...navItems.value, ...manageItems.value, ...plannedItems.value].find(
+  const entry = [...navItems.value, ...manageItems.value].find(
     i => i.to && route.path.startsWith(String(i.to)),
   )
-  if (here) {
-    items.push({ label: String(here.label) })
+  if (entry) {
+    items.push({ label: String(entry.label), to: String(entry.to) })
   }
   return items
 })
+
+// Tab title from the last breadcrumb entry; pages with a more specific title set their own.
+useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
 </script>
 
 <template>
@@ -214,10 +217,14 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
 
       <!-- Partners at the bottom, as in the design; muted so they do not compete with
            the navigation. Too small to read when collapsed, so left out then. -->
+      <!-- The collapse toggle sits in the sidebar it collapses, not next to the breadcrumb. -->
       <template #footer="{ collapsed }">
-        <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-4 px-2.5 pb-1 opacity-60">
-          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="mx-auto max-h-8 w-full object-contain">
-          <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="mx-auto max-h-8 w-full object-contain">
+        <div class="w-full space-y-3">
+          <UDashboardSidebarCollapse />
+          <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-4 px-2.5 pb-1 opacity-60">
+            <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="mx-auto max-h-8 w-full object-contain">
+            <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="mx-auto max-h-8 w-full object-contain">
+          </div>
         </div>
       </template>
     </UDashboardSidebar>
@@ -227,10 +234,6 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
     <UDashboardPanel :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <UDashboardNavbar>
-          <template #leading>
-            <UDashboardSidebarCollapse />
-          </template>
-
           <template #title>
             <UBreadcrumb :items="breadcrumb" separator-icon="i-lucide-slash" />
           </template>
