@@ -23,7 +23,8 @@
     "contribute": "Contribute",
     "verify": "Verify",
     "verifyNew": "{n} new",
-    "access": "Access manager"
+    "access": "Access manager",
+    "audit": "Audit log"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -825,5 +826,45 @@
     "serverHint": "Greyed-out revoke: access to the whole server. Change it under “Whole server”.",
     "loadFailed": "Could not load access",
     "failed": "The change did not go through"
+  },
+  "audit": {
+    "title": "Audit log",
+    "intro": "Every change to models, servers and access, and every run, newest first. Kept for three months.",
+    "allActions": "All actions",
+    "error": "The audit log could not be loaded: {msg}",
+    "empty": "No entries.",
+    "system": "System",
+    "you": "You",
+    "account": "Account {id}",
+    "model": "Model {id}",
+    "runSkipped": "without verification run",
+    "run": "Run {id}",
+    "more": "Load more",
+    "outcome": {
+      "denied": "denied",
+      "failure": "failed"
+    },
+    "action": {
+      "model_create": "Model added",
+      "model_card_update": "Model card edited",
+      "model_status_change": "Status changed",
+      "model_reverify": "Verified again",
+      "model_owner_transfer": "Owner changed",
+      "model_interface_changed": "Interface changed",
+      "model_interface_drifted": "Interface differs from the verified one",
+      "model_interface_restored": "Interface matches again",
+      "model_interface_unreachable": "Model server unreachable",
+      "access_request": "Access requested",
+      "access_withdraw": "Request withdrawn",
+      "access_grant": "Access granted",
+      "access_deny": "Access denied",
+      "access_revoke": "Access revoked",
+      "server_create": "Server added",
+      "server_update": "Server edited",
+      "server_discover": "Models looked up on server",
+      "server_rediscover": "Models looked up again",
+      "job_execute": "Run started",
+      "job_complete": "Run finished"
+    }
   }
 }

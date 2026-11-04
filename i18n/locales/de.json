@@ -23,7 +23,8 @@
     "contribute": "Beitragen",
     "verify": "Prüfen",
     "verifyNew": "{n} neu",
-    "access": "Zugriffsverwaltung"
+    "access": "Zugriffsverwaltung",
+    "audit": "Audit-Log"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -825,5 +826,45 @@
     "serverHint": "Ausgegrautes Entziehen: Zugriff auf den ganzen Server. Das lässt sich unter „Ganzer Server“ ändern.",
     "loadFailed": "Zugriffe konnten nicht geladen werden",
     "failed": "Die Änderung hat nicht geklappt"
+  },
+  "audit": {
+    "title": "Audit-Log",
+    "intro": "Jede Änderung an Modellen, Servern und Zugängen und jeder Lauf, neueste zuerst. Wird drei Monate aufbewahrt.",
+    "allActions": "Alle Aktionen",
+    "error": "Das Audit-Log ließ sich nicht laden: {msg}",
+    "empty": "Keine Einträge.",
+    "system": "System",
+    "you": "Du",
+    "account": "Konto {id}",
+    "model": "Modell {id}",
+    "runSkipped": "ohne Prüflauf",
+    "run": "Lauf {id}",
+    "more": "Mehr laden",
+    "outcome": {
+      "denied": "abgelehnt",
+      "failure": "fehlgeschlagen"
+    },
+    "action": {
+      "model_create": "Modell angelegt",
+      "model_card_update": "Modellkarte bearbeitet",
+      "model_status_change": "Status geändert",
+      "model_reverify": "Erneut geprüft",
+      "model_owner_transfer": "Eigentümer gewechselt",
+      "model_interface_changed": "Schnittstelle geändert",
+      "model_interface_drifted": "Schnittstelle weicht von der geprüften ab",
+      "model_interface_restored": "Schnittstelle stimmt wieder",
+      "model_interface_unreachable": "Modellserver nicht erreichbar",
+      "access_request": "Zugang beantragt",
+      "access_withdraw": "Antrag zurückgezogen",
+      "access_grant": "Zugang erteilt",
+      "access_deny": "Zugang abgelehnt",
+      "access_revoke": "Zugang entzogen",
+      "server_create": "Server angelegt",
+      "server_update": "Server bearbeitet",
+      "server_discover": "Modelle auf Server gesucht",
+      "server_rediscover": "Modelle erneut gesucht",
+      "job_execute": "Lauf gestartet",
+      "job_complete": "Lauf beendet"
+    }
   }
 }
