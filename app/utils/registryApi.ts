@@ -160,6 +160,15 @@ export interface Credentials {
   keyName?: string
 }
 
+/**
+ * If-Match value for a PATCH from the ETag of the preceding GET. The nginx in front of UMP
+ * compresses responses and so turns the ETag weak (W/"..."), while UMP compares If-Match
+ * exactly against the strong form; the W/ prefix is dropped so the comparison can match.
+ */
+export function ifMatch(etag: string | null): string {
+  return (etag ?? '*').replace(/^W\//, '')
+}
+
 /** The `authentication` field of POST /servers; null means no authentication. */
 export function credentialsBody(c: Credentials): Record<string, string> | null {
   switch (c.type) {
