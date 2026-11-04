@@ -654,7 +654,8 @@
       "changes_requested": "Request changes",
       "rejected": "Reject",
       "published": "Publish",
-      "deactivated": "Deactivate"
+      "deactivated": "Deactivate",
+      "reopen": "Rework as draft"
     },
     "noteTitle": {
       "rejected": "Reason for rejection",
@@ -666,7 +667,7 @@
       "submitted": "Submitted. Waiting for someone to take over the review. Until then you can withdraw it.",
       "in_review": "Being reviewed.",
       "changes_requested": "The review has a request. Update the model card and submit again.",
-      "rejected": "The model was rejected.",
+      "rejected": "The model was rejected. You can rework it as a draft and submit it again.",
       "verified": "Reviewed and confirmed. It will be published soon.",
       "published": "Published and visible in Commons. Changes to the model card apply right away.",
       "deactivated": "Deactivated. New runs are not possible."

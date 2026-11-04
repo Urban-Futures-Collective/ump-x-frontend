@@ -12,6 +12,7 @@ describe('registry workflow', () => {
     expect(to(transitionsFor('draft', owner))).toEqual(['submitted'])
     expect(to(transitionsFor('submitted', owner))).toEqual(['draft'])
     expect(to(transitionsFor('changes_requested', owner))).toEqual(['submitted'])
+    expect(to(transitionsFor('rejected', owner))).toEqual(['draft'])
   })
 
   it('lets a verifier review, verify and publish', () => {

@@ -181,7 +181,7 @@ const title = computed(() => model.value ? inLang(model.value.fullName, locale.v
           :loading="busy"
           @click="act(a.to)"
         >
-          {{ t(`registry.action.${a.to}`) }}
+          {{ model.status === 'rejected' && a.to === 'draft' ? t('registry.action.reopen') : t(`registry.action.${a.to}`) }}
         </UButton>
       </div>
 

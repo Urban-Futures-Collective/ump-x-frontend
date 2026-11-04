@@ -5,7 +5,7 @@ import type { RegistryStatus } from '~/types/registry'
 //   draft → submitted → in_review → verified → published
 //               ↑           │ │                    │
 //               └── changes_requested  rejected     └→ in_review (reset)
-//   in_review / verified / published → deactivated
+//   in_review / verified / published → deactivated      rejected → draft (owner reopens)
 //
 // "Changes requested" was taken out on 2026-10-23 and is back since 2026-11-04 (#111,
 // item 32): the reviewer names what to change, the owner edits the card and submits
@@ -32,6 +32,8 @@ type Who = 'owner' | 'verifier' | 'verifierOrAdmin'
 const RULES: { from: RegistryStatus[], to: RegistryStatus, who: Who, needsNote?: boolean }[] = [
   { from: ['draft'], to: 'submitted', who: 'owner' },
   { from: ['submitted'], to: 'draft', who: 'owner' },
+  // A rejected model can be reworked and submitted again (#111, item 32).
+  { from: ['rejected'], to: 'draft', who: 'owner' },
   { from: ['changes_requested'], to: 'submitted', who: 'owner' },
   { from: ['submitted'], to: 'in_review', who: 'verifier' },
   { from: ['in_review'], to: 'verified', who: 'verifier' },
