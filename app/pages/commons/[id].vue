@@ -7,7 +7,7 @@ const route = useRoute()
 const { isVerifier } = useUmpRoles()
 
 const id = computed(() => String(route.params.id))
-const { data: process, error } = useUmpProcess(id)
+const { data: process, error } = await useUmpProcess(id)
 const { cards } = useCommonsCards()
 const card = computed(() => {
   const c = cards.value.get(id.value)
@@ -27,9 +27,16 @@ const text = (f: 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks
 const title = computed(() => text('fullName') || process.value?.title || id.value)
 const description = computed(() => text('shortDescription') || process.value?.description || '')
 
+// UMP answers 404 for a model that does not exist and for one this account may not
+// see. The page then says so, answers 404 itself and offers no scenario to start.
+const notFound = computed(() => !card.value && error.value?.statusCode === 404)
+if (import.meta.server && notFound.value) {
+  setResponseStatus(useRequestEvent()!, 404)
+}
+
 // The layout puts the model name into the breadcrumb.
 const crumb = useState<string>('commons-crumb', () => '')
-watchEffect(() => { crumb.value = title.value })
+watchEffect(() => { crumb.value = notFound.value ? t('commons.model.notFound') : title.value })
 onBeforeUnmount(() => { crumb.value = '' })
 
 const io = computed(() => [
@@ -67,7 +74,22 @@ function repoLabel(url: string) {
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
+  <section v-if="notFound" class="max-w-3xl space-y-3">
+    <h1 class="text-3xl font-semibold text-ufc-slate-900">
+      {{ t('commons.model.notFound') }}
+    </h1>
+    <p class="text-[0.9375rem]/[1.6] text-ufc-slate-700">
+      {{ t('commons.model.notFoundBody') }}
+    </p>
+    <p class="text-sm text-(--ui-text-dimmed)">
+      {{ id }}
+    </p>
+    <UButton to="/commons" variant="link" class="px-0" icon="i-lucide-arrow-left">
+      {{ t('commons.model.backToCommons') }}
+    </UButton>
+  </section>
+
+  <section v-else class="max-w-6xl space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-4 lg:flex-nowrap">
       <div class="max-w-3xl min-w-0 space-y-3">
         <h1 class="text-3xl font-semibold text-ufc-slate-900">

@@ -8,7 +8,7 @@ const { t } = useI18n()
 // Awaited so the form already carries its values during SSR. Without await the
 // watch below ran on the server before the detail arrived, server and client
 // rendered different values and every field hit a hydration mismatch.
-const { data: proc, pending: loadingProc } = await useUmpProcess(() => props.processId)
+const { data: proc, pending: loadingProc, error: procError } = await useUmpProcess(() => props.processId)
 const { run, jobId, status, progress, error, result, running, slow } = useUmpRun()
 
 // A job that fails without a message only yields its status as a key, a
@@ -109,7 +109,14 @@ async function onSubmit() {
       </p>
     </div>
 
-    <form class="space-y-3" @submit.prevent="onSubmit">
+    <!-- Without its description the model has no fields to show; a bare "Run" button
+         would only lead to the same failure. UMP answers 404 both for a model that
+         does not exist and for one this account may not see. -->
+    <p v-if="procError" class="text-sm text-red-600">
+      {{ t('run.unavailable') }}
+    </p>
+
+    <form v-else class="space-y-3" @submit.prevent="onSubmit">
       <ProcessInputField
         v-for="inp in mainInputs"
         :key="inp.name"

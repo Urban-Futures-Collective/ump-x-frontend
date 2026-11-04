@@ -1,15 +1,21 @@
 <script setup lang="ts">
 // "My scenarios": the user's own runs from GET /jobs/. The API decides which
-// runs these are based on the token the proxy attaches; no extra filtering
-// here, otherwise two places would control access.
+// runs these are based on the token the proxy attaches; no access filtering
+// here, otherwise two places would control access. Runs of models that are no
+// longer listed are left out (see runsOfAvailableModels).
 definePageMeta({ middleware: ['auth'] })
 
 const { t, locale } = useI18n()
-const { data: jobs, pending, error, refresh } = useUmpJobs()
+const { data: allJobs, pending, error, refresh } = useUmpJobs()
+const { data: processes, status: processesStatus } = useUmpProcesses()
+const jobs = computed(() => runsOfAvailableModels(
+  allJobs.value ?? [],
+  processesStatus.value === 'success' ? (processes.value ?? []).map(p => p.id) : null,
+))
 
 // Search over model, run id, status and date, in the browser.
 const search = ref('')
-const shown = computed(() => (jobs.value ?? []).filter(job =>
+const shown = computed(() => jobs.value.filter(job =>
   matchesSearch(search.value, job.processId, job.id, t(`jobs.status.${job.status}`), formatDateTime(jobTime(job), locale.value))))
 </script>
 
@@ -21,7 +27,7 @@ const shown = computed(() => (jobs.value ?? []).filter(job =>
       </h1>
       <div class="flex flex-wrap items-center gap-2">
         <UInput
-          v-if="jobs?.length"
+          v-if="jobs.length"
           v-model="search"
           type="search"
           icon="i-lucide-search"
@@ -49,7 +55,7 @@ const shown = computed(() => (jobs.value ?? []).filter(job =>
       {{ t('jobs.error') }}
     </p>
 
-    <p v-else-if="jobs?.length && !shown.length" class="text-sm text-(--ui-text-muted)" role="status">
+    <p v-else-if="jobs.length && !shown.length" class="text-sm text-(--ui-text-muted)" role="status">
       {{ t('jobs.noMatch', { q: search }) }}
     </p>
 
