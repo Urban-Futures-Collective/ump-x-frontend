@@ -104,7 +104,8 @@
         "provider": "Provider: submit models",
         "verifier": "Verifier: review and publish models",
         "access-admin": "Access admin: grant model access",
-        "platform-admin": "Platform admin: manage accounts and roles"
+        "platform-admin": "Platform admin: manage accounts and roles",
+        "mcp-user": "MCP: use models from your own AI client"
       },
       "short": {
         "viewer": "Viewer",
@@ -112,7 +113,8 @@
         "provider": "Provider",
         "verifier": "Verifier",
         "access-admin": "Access admin",
-        "platform-admin": "Platform admin"
+        "platform-admin": "Platform admin",
+        "mcp-user": "MCP"
       },
       "inherited": "via a group or another role, only changeable in Keycloak",
       "without": "without {role}"

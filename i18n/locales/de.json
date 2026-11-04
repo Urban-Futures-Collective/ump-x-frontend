@@ -104,7 +104,8 @@
         "provider": "Provider: Modelle einreichen",
         "verifier": "Verifier: Modelle prüfen und freigeben",
         "access-admin": "Access admin: Modellzugriff vergeben",
-        "platform-admin": "Platform admin: Konten und Rollen verwalten"
+        "platform-admin": "Platform admin: Konten und Rollen verwalten",
+        "mcp-user": "MCP: Modelle aus dem eigenen KI-Client nutzen"
       },
       "short": {
         "viewer": "Viewer",
@@ -112,7 +113,8 @@
         "provider": "Provider",
         "verifier": "Verifier",
         "access-admin": "Access admin",
-        "platform-admin": "Platform admin"
+        "platform-admin": "Platform admin",
+        "mcp-user": "MCP"
       },
       "inherited": "über eine Gruppe oder andere Rolle, nur in Keycloak änderbar",
       "without": "ohne {role}"

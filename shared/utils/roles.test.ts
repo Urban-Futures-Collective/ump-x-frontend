@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ADMIN_ROLES, PLATFORM_ROLES, isPlatformRole, platformRoleStatus, rolesOfSession } from './roles'
+import { ADMIN_ROLES, DEFAULT_ROLES, PLATFORM_ROLES, isPlatformRole, platformRoleStatus, rolesOfSession } from './roles'
 
 describe('rolesOfSession', () => {
   it('merges realm and ump-client roles from claims and userInfo', () => {
@@ -24,8 +24,12 @@ describe('vocabulary', () => {
     for (const r of ADMIN_ROLES) expect(PLATFORM_ROLES).toContain(r)
   })
 
-  it('uses the names UMP checks', () => {
-    expect([...PLATFORM_ROLES].sort()).toEqual(['access-admin', 'platform-admin', 'provider', 'user', 'verifier', 'viewer'])
+  it('uses the names UMP checks, plus the MCP role', () => {
+    expect([...PLATFORM_ROLES].sort()).toEqual(['access-admin', 'mcp-user', 'platform-admin', 'provider', 'user', 'verifier', 'viewer'])
+  })
+
+  it('gives every new account MCP through the default roles', () => {
+    expect(DEFAULT_ROLES).toContain('mcp-user')
   })
 
   it('no longer reads the old realm names', () => {
@@ -43,7 +47,7 @@ describe('platformRoleStatus', () => {
     expect(status.find(s => s.role === 'platform-admin')).toEqual({ role: 'platform-admin', effective: true, direct: true, viaDefault: false })
     expect(status.find(s => s.role === 'user')).toEqual({ role: 'user', effective: true, direct: false, viaDefault: true })
     expect(status.find(s => s.role === 'verifier')).toEqual({ role: 'verifier', effective: false, direct: false, viaDefault: false })
-    expect(status).toHaveLength(6)
+    expect(status).toHaveLength(PLATFORM_ROLES.length)
   })
 
   it('marks a role effective from elsewhere as neither direct nor via the default roles', () => {
@@ -58,7 +62,7 @@ describe('platformRoleStatus', () => {
 })
 
 describe('isPlatformRole', () => {
-  it('accepts only the six platform roles', () => {
+  it('accepts only the platform roles', () => {
     expect(isPlatformRole('verifier')).toBe(true)
     expect(isPlatformRole('user_role_verifier')).toBe(false)
     for (const r of ['default-roles-urbanmodelplatform', 'offline_access', 'realm-admin', 'bikebox-modelserver', 'User_Role_User', '', 42]) {
