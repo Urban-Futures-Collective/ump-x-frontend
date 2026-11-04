@@ -4,7 +4,8 @@
 // registered) the page shows what OGC describes.
 const { t, locale } = useI18n()
 const route = useRoute()
-const { isVerifier } = useUmpRoles()
+const { isVerifier, roles } = useUmpRoles()
+const { loggedIn } = useOidcAuth()
 
 const id = computed(() => String(route.params.id))
 const { data: process, error } = await useUmpProcess(id)
@@ -23,6 +24,14 @@ watch(card, (c) => {
 const otherLang = computed(() => card.value ? cardLangs(card.value).find(l => l !== lang.value) : undefined)
 const text = (f: 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks') =>
   card.value ? card.value[f][lang.value] || card.value[f][card.value.defaultLang] || '' : ''
+
+// "Create new scenario" only for accounts that may run the model, by the same rule as
+// UMP. Otherwise "Request access" (or signing in) is the next step, not a locked form
+// (#111, item 2). Without a card the frontend cannot tell and offers the button.
+const canRun = computed(() => {
+  const a = runAccess(cards.value.get(id.value), loggedIn.value, roles.value)
+  return a === 'allowed' || a === 'unknown'
+})
 
 const title = computed(() => text('fullName') || process.value?.title || id.value)
 const description = computed(() => text('shortDescription') || process.value?.description || '')
@@ -103,7 +112,7 @@ function repoLabel(url: string) {
       </div>
       <div class="flex shrink-0 flex-wrap gap-2">
         <CommonsRequestAccess :card="card" />
-        <UButton icon="i-lucide-plus" size="lg" :to="{ path: '/run', query: { process: id } }">
+        <UButton v-if="canRun" icon="i-lucide-plus" size="lg" :to="{ path: '/run', query: { process: id } }">
           {{ t('commons.model.newScenario') }}
         </UButton>
       </div>
