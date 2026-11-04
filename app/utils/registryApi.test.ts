@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cardPatchBody, credentialsBody, discoveredFromApi, langMap, modelFromApi, serverFromApi } from './registryApi'
+import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, langMap, modelFromApi, serverFromApi } from './registryApi'
 
 const apiModel = {
   id: 'a1',
@@ -78,5 +78,19 @@ describe('registry API mapping', () => {
   it('builds a card patch without empty texts', () => {
     expect(cardPatchBody({ fullName: { en: 'A', de: ' ' }, purpose: { en: '' }, license: '' }))
       .toEqual({ full_name: { en: 'A' }, purpose: null, license: null })
+  })
+})
+
+describe('ifMatch', () => {
+  it('drops the weak prefix a compressing proxy adds', () => {
+    expect(ifMatch('W/"2026-11-02T13:20:22.252028+00:00"')).toBe('"2026-11-02T13:20:22.252028+00:00"')
+  })
+
+  it('keeps a strong ETag as it is', () => {
+    expect(ifMatch('"2026-11-02T13:20:22.252028+00:00"')).toBe('"2026-11-02T13:20:22.252028+00:00"')
+  })
+
+  it('falls back to * without an ETag', () => {
+    expect(ifMatch(null)).toBe('*')
   })
 })

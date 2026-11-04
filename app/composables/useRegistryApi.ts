@@ -1,6 +1,6 @@
 import type { DiscoveredProcess, RegistryCardEdit, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
 import type { ApiDiscoveredProcess, ApiModel, ApiServer } from '~/utils/registryApi'
-import { cardPatchBody, credentialsBody, discoveredFromApi, modelFromApi, serverFromApi } from '~/utils/registryApi'
+import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, modelFromApi, serverFromApi } from '~/utils/registryApi'
 
 // The registry from UMP (/registry/v1, concept F12), through the /ump proxy, which adds
 // the user's token. Same functions as useRegistryPrototype (see useRegistry).
@@ -101,8 +101,7 @@ export function useRegistryApi() {
   // is refused rather than overwritten.
   async function updateCard(id: string, card: RegistryCardEdit) {
     const current = await $fetch.raw(`${base}/models/${id}`, { query: { lang: '*' } })
-    const etag = current.headers.get('etag') ?? '*'
-    await $fetch(`${base}/models/${id}`, { method: 'PATCH', headers: { 'If-Match': etag }, body: cardPatchBody(card) })
+    await $fetch(`${base}/models/${id}`, { method: 'PATCH', headers: { 'If-Match': ifMatch(current.headers.get('etag')) }, body: cardPatchBody(card) })
     await reload(id)
   }
 
