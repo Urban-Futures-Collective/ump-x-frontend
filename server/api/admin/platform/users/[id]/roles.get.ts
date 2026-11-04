@@ -1,4 +1,4 @@
-// The six platform roles of an account: effective or not, assigned directly, via the
+// The platform roles of an account: effective or not, assigned directly, via the
 // default roles, or from elsewhere. Platform admins only.
 export default defineEventHandler(async (event) => {
   await requireRole(event, ROLE_PLATFORM_ADMIN)

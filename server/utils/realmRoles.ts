@@ -1,10 +1,10 @@
 // Realm role lookups shared by the admin routes: who holds a role, and the realm's
 // default role.
 //
-// New accounts do not get Viewer, User and Provider one by one. Keycloak gives them the
-// realm's default role (`default-roles-<realm>`), a composite that contains these three
+// New accounts do not get Viewer, User, Provider and MCP one by one. Keycloak gives them the
+// realm's default role (`default-roles-<realm>`), a composite that contains these four
 // plus Keycloak's own (offline_access, uma_authorization, account console roles). To take
-// one of the three away from a single account, the default role is "unpacked": the
+// one of the four away from a single account, the default role is "unpacked": the
 // account gets every part of it directly except the one being removed, then loses the
 // default role. Later changes to the default roles no longer reach such an account.
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The six platform roles of an account, for assigning and revoking. Platform admins only;
+// The platform roles of an account, for assigning and revoking. Platform admins only;
 // enforced on the server (server/api/admin/platform/...).
 //
 // Roles from the default roles can be switched off one by one; the server then gives the

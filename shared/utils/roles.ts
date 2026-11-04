@@ -17,8 +17,12 @@ export const ROLE_PROVIDER = 'provider'
 export const ROLE_VERIFIER = 'verifier'
 export const ROLE_ACCESS_ADMIN = 'access-admin'
 export const ROLE_PLATFORM_ADMIN = 'platform-admin'
+// Use of the MCP server (ump-x-mcp) with your account (#111, item 31). A default role, so
+// every account has it until a platform admin switches it off; the MCP server refuses
+// signed-in callers without it.
+export const ROLE_MCP_USER = 'mcp-user'
 
-// The six platform roles. Only these can be assigned through UMP-X; a role created by
+// The platform roles. Only these can be assigned through UMP-X; a role created by
 // hand in the Keycloak console does not become assignable (allowlist rather than a list
 // fetched from Keycloak).
 export const PLATFORM_ROLES = [
@@ -28,11 +32,12 @@ export const PLATFORM_ROLES = [
   ROLE_VERIFIER,
   ROLE_ACCESS_ADMIN,
   ROLE_PLATFORM_ADMIN,
+  ROLE_MCP_USER,
 ] as const
 
 // The platform roles contained in the realm's default roles, so every new account has
 // them. The account list marks an account that lacks one.
-export const DEFAULT_ROLES = [ROLE_VIEWER, ROLE_USER, ROLE_PROVIDER] as const
+export const DEFAULT_ROLES = [ROLE_VIEWER, ROLE_USER, ROLE_PROVIDER, ROLE_MCP_USER] as const
 
 // The roles shown as badges in the account list. The default roles are left out: nearly
 // everyone has them, so a badge would say nothing.
