@@ -48,6 +48,10 @@ const manageItems = computed<NavigationMenuItem[]>(() => {
   if (isAccessAdmin.value) {
     items.push({ label: t('nav.access'), icon: 'i-material-symbols-approval-delegation-outline', to: '/access' })
   }
+  // Audit log: same readers as in UMP (verifiers, access admins, platform admins).
+  if (registryApi && (isVerifier.value || isAdmin.value)) {
+    items.push({ label: t('nav.audit'), icon: 'i-lucide-history', to: '/audit' })
+  }
   if (!prototypes || !isVerifier.value) return items
   const n = awaitingReview.value.length
   items.push({
