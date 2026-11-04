@@ -16,7 +16,7 @@ describe('registry workflow', () => {
 
   it('lets a verifier review, verify and publish', () => {
     expect(to(transitionsFor('submitted', verifier))).toEqual(['in_review'])
-    expect(to(transitionsFor('in_review', verifier))).toEqual(['verified', 'rejected', 'deactivated'])
+    expect(to(transitionsFor('in_review', verifier))).toEqual(['verified', 'changes_requested', 'rejected', 'deactivated'])
     expect(to(transitionsFor('verified', verifier))).toEqual(['published', 'deactivated'])
     expect(to(transitionsFor('published', verifier))).toEqual(['in_review', 'deactivated'])
   })
@@ -31,9 +31,11 @@ describe('registry workflow', () => {
     expect(to(transitionsFor('submitted', admin))).toEqual([])
   })
 
-  it('requires a note for rejections and deactivation', () => {
+  it('requires a note for requests, rejections and deactivation', () => {
     const t = transitionsFor('in_review', verifier)
-    expect(t.filter(x => x.needsNote).map(x => x.to)).toEqual(['rejected', 'deactivated'])
+    expect(t.filter(x => x.needsNote).map(x => x.to)).toEqual(['changes_requested', 'rejected', 'deactivated'])
+    // UMP asks for a reason when a published model goes back into review, too.
+    expect(transitionsFor('published', verifier).find(x => x.to === 'in_review')?.needsNote).toBe(true)
   })
 
   it('allows card edits by the owner until deactivation', () => {
@@ -63,6 +65,7 @@ describe('verify tabs', () => {
     expect(verifyTabsOf('verified', 'in_sync')).toEqual(['todo'])
     expect(verifyTabsOf('published', 'in_sync')).toEqual(['published'])
     expect(verifyTabsOf('published', 'drifted')).toEqual(['published', 'interface'])
+    expect(verifyTabsOf('changes_requested', 'in_sync')).toEqual(['todo'])
     expect(verifyTabsOf('rejected', 'unchecked')).toEqual(['closed'])
     expect(verifyTabsOf('deactivated', 'in_sync')).toEqual(['closed'])
   })

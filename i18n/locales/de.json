@@ -651,6 +651,7 @@
       "draft": "Einreichung zurückziehen",
       "in_review": "Prüfung übernehmen",
       "verified": "Verifizieren",
+      "changes_requested": "Änderungen anfragen",
       "rejected": "Ablehnen",
       "published": "Veröffentlichen",
       "deactivated": "Deaktivieren"
@@ -681,8 +682,10 @@
       "deactivated": "Deaktiviert."
     },
     "noteLabel": {
+      "changes_requested": "Was soll geändert werden?",
       "rejected": "Warum wird das Modell abgelehnt?",
-      "deactivated": "Warum wird das Modell deaktiviert?"
+      "deactivated": "Warum wird das Modell deaktiviert?",
+      "in_review": "Warum geht das Modell zurück in die Prüfung?"
     },
     "facts": {
       "title": "Technische Angaben",

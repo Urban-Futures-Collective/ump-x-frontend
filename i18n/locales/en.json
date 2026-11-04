@@ -651,6 +651,7 @@
       "draft": "Withdraw submission",
       "in_review": "Take over review",
       "verified": "Verify",
+      "changes_requested": "Request changes",
       "rejected": "Reject",
       "published": "Publish",
       "deactivated": "Deactivate"
@@ -681,8 +682,10 @@
       "deactivated": "Deactivated."
     },
     "noteLabel": {
+      "changes_requested": "What should be changed?",
       "rejected": "Why is the model rejected?",
-      "deactivated": "Why is the model deactivated?"
+      "deactivated": "Why is the model deactivated?",
+      "in_review": "Why does the model go back into review?"
     },
     "facts": {
       "title": "Technical details",

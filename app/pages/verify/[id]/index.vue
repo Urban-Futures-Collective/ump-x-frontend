@@ -208,7 +208,7 @@ const negative = (to: RegistryStatus) => to === 'rejected' || to === 'deactivate
                   v-for="a in actions"
                   :key="a.to"
                   :color="negative(a.to) ? 'neutral' : 'primary'"
-                  :variant="negative(a.to) ? 'outline' : 'solid'"
+                  :variant="negative(a.to) || a.to === 'changes_requested' ? 'outline' : 'solid'"
                   :class="negative(a.to) ? 'sm:ml-auto' : ''"
                   :disabled="blocked(a.to)"
                   :loading="busy"
