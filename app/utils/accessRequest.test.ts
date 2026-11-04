@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ApiAccessRequest } from './accessRequest'
-import { accessState, holdsAccess } from './accessRequest'
+import { accessState, holdsAccess, runAccess } from './accessRequest'
 
 const card = { id: 'm1', status: 'published' as const, anonymousAccess: false, ownerSub: 'owner', serverName: 'bikebox', remoteProcessId: 'growbike' }
 const req = (status: string, created: string, extra: Partial<ApiAccessRequest> = {}): ApiAccessRequest =>
@@ -37,5 +37,35 @@ describe('access requests', () => {
 
   it('ignores requests of others', () => {
     expect(accessState({ ...base, requests: [req('requested', '2026-11-02', { user: { sub: 'other' } })] }).kind).toBe('request')
+  })
+})
+
+describe('run access', () => {
+  const pub = { status: 'published' as const, anonymousAccess: false, serverName: 'bikebox', remoteProcessId: 'growbike' }
+
+  it('does not block without a card', () => {
+    expect(runAccess(undefined, false, [])).toBe('unknown')
+  })
+
+  it('lets everyone run an open model', () => {
+    expect(runAccess({ ...pub, anonymousAccess: true }, false, [])).toBe('allowed')
+  })
+
+  it('asks anonymous callers to sign in', () => {
+    expect(runAccess(pub, false, [])).toBe('login')
+  })
+
+  it('needs the server role, the model role or the verifier role', () => {
+    expect(runAccess(pub, true, [])).toBe('locked')
+    expect(runAccess(pub, true, ['bikebox'])).toBe('allowed')
+    expect(runAccess(pub, true, ['bikebox:growbike'])).toBe('allowed')
+    expect(runAccess(pub, true, ['verifier'])).toBe('allowed')
+  })
+
+  it('keeps models under review to verifiers, even open ones', () => {
+    const review = { ...pub, status: 'in_review' as const, anonymousAccess: true }
+    expect(runAccess(review, true, ['verifier'])).toBe('allowed')
+    expect(runAccess(review, true, ['bikebox'])).toBe('locked')
+    expect(runAccess(review, false, [])).toBe('login')
   })
 })

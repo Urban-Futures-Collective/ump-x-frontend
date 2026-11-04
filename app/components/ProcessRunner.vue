@@ -11,6 +11,15 @@ const { t } = useI18n()
 const { data: proc, pending: loadingProc, error: procError } = await useUmpProcess(() => props.processId)
 const { run, jobId, status, progress, error, result, running, slow } = useUmpRun()
 
+// Whether this account may start a run, from the model card (readable without sign-in)
+// and the session roles. Locked does not hide the form: it shows what the model takes,
+// only starting is closed, with the reason next to it instead of an error after the click.
+const { loggedIn, login } = useOidcAuth()
+const { roles } = useUmpRoles()
+const { cards } = useCommonsCards()
+const access = computed(() => runAccess(cards.value.get(props.processId), loggedIn.value, roles.value))
+const locked = computed(() => access.value === 'login' || access.value === 'locked')
+
 // A job that fails without a message only yields its status as a key, a
 // response without a body only its HTTP status. Translate those two; anything
 // else is already text from UMP or the model.
@@ -158,7 +167,7 @@ async function onSubmit() {
       </UCollapsible>
 
       <div class="flex items-center gap-3">
-        <UButton type="submit" :loading="running" :disabled="loadingProc" icon="i-lucide-play">
+        <UButton type="submit" :loading="running" :disabled="loadingProc || locked" icon="i-lucide-play">
           {{ t('run.execute') }}
         </UButton>
         <JobStatusBadge v-if="status !== 'idle'" :status="status" :progress="progress" />
@@ -175,6 +184,26 @@ async function onSubmit() {
           :job-id="jobId"
           :process-id="processId"
         />
+      </div>
+
+      <div v-if="locked" class="flex gap-3 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-4">
+        <UIcon name="i-lucide-lock" class="mt-0.5 size-4 shrink-0 text-(--ui-text-muted)" />
+        <div class="space-y-2">
+          <p class="text-sm font-medium text-(--ui-text-highlighted)">
+            {{ access === 'login' ? t('run.locked.signInHeading') : t('run.locked.heading') }}
+          </p>
+          <p class="text-sm text-(--ui-text-muted)">
+            {{ access === 'login'
+              ? t('run.locked.anonymous', { modell: proc?.title ?? processId })
+              : t('run.locked.signedIn', { modell: proc?.title ?? processId }) }}
+          </p>
+          <UButton v-if="access === 'login'" type="button" size="sm" icon="i-lucide-log-in" @click="login()">
+            {{ t('auth.login') }}
+          </UButton>
+          <UButton v-else size="sm" variant="outline" color="neutral" :to="`/commons/${processId}`">
+            {{ t('run.locked.toModel') }}
+          </UButton>
+        </div>
       </div>
 
       <p v-if="running && slow" class="text-sm text-(--ui-text-muted)">

@@ -217,9 +217,11 @@
       "dismissed": "the run was dismissed"
     },
     "locked": {
+      "signInHeading": "Sign in to run this model",
       "heading": "This model is not released for you",
-      "signedIn": "Running {modell} needs your account to be cleared for {anbieter}. Looking at it and at other runs stays possible.",
-      "anonymous": "Running {modell} requires you to sign in. Looking at it stays possible without an account."
+      "signedIn": "Running {modell} needs access to this model. You can request it on the model page.",
+      "anonymous": "Running {modell} requires you to sign in. Looking at it stays possible without an account.",
+      "toModel": "Request access"
     },
     "http": {
       "server": "the server stopped the run with an internal error and gave no reason (HTTP {status}).",
