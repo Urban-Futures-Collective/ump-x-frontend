@@ -217,14 +217,10 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
 
       <!-- Partners at the bottom, as in the design; muted so they do not compete with
            the navigation. Too small to read when collapsed, so left out then. -->
-      <!-- The collapse toggle sits in the sidebar it collapses, not next to the breadcrumb. -->
       <template #footer="{ collapsed }">
-        <div class="w-full space-y-3">
-          <UDashboardSidebarCollapse />
-          <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-4 px-2.5 pb-1 opacity-60">
-            <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="mx-auto max-h-8 w-full object-contain">
-            <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="mx-auto max-h-8 w-full object-contain">
-          </div>
+        <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-4 px-2.5 pb-1 opacity-60">
+          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="mx-auto max-h-8 w-full object-contain">
+          <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="mx-auto max-h-8 w-full object-contain">
         </div>
       </template>
     </UDashboardSidebar>
@@ -234,8 +230,21 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
     <UDashboardPanel :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <UDashboardNavbar>
+          <!-- Collapse toggle at the top, set apart from the breadcrumb by a divider so it
+               reads as a control of the sidebar rather than a breadcrumb entry. -->
+          <template #leading>
+            <UDashboardSidebarCollapse />
+            <USeparator orientation="vertical" class="mx-1 h-5" />
+          </template>
+
+          <!-- A typed "/" in the breadcrumb's own font: the slash icon was taller and
+               thinner than the text around it. -->
           <template #title>
-            <UBreadcrumb :items="breadcrumb" separator-icon="i-lucide-slash" />
+            <UBreadcrumb :items="breadcrumb">
+              <template #separator>
+                <span class="px-0.5 text-(--ui-text-dimmed)">/</span>
+              </template>
+            </UBreadcrumb>
           </template>
 
           <template #right>
