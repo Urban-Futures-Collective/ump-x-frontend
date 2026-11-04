@@ -5,7 +5,7 @@
 //
 // Two tabs as in the design (A1): user accounts (platform admins: list page by page,
 // create with an email invitation, enable and disable, assign platform roles) and the
-// audit log, greyed out until UMP offers it (registry phase D).
+// audit log from UMP (needs the registry API, otherwise greyed out).
 import type { TableColumn, TabsItem } from '@nuxt/ui'
 
 definePageMeta({ middleware: ['auth', 'admin'] })
@@ -14,10 +14,12 @@ const { isPlatformAdmin } = useUmpRoles()
 const { user } = useOidcAuth()
 const ownId = computed(() => (user.value?.userInfo as { sub?: string } | undefined)?.sub ?? null)
 
-const tab = ref('users')
+const { registryApi } = useRuntimeConfig().public
+// Access admins have no accounts to manage, so they start on the audit log.
+const tab = ref(isPlatformAdmin.value || !registryApi ? 'users' : 'audit')
 const tabs = computed<TabsItem[]>(() => [
   { label: t('admin.users.heading'), value: 'users' },
-  { label: t('admin.audit'), value: 'audit', disabled: true },
+  { label: t('admin.audit'), value: 'audit', disabled: !registryApi },
 ])
 
 // The account whose roles are open in the dialog.
@@ -181,7 +183,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       <h1 class="text-2xl font-semibold text-ufc-slate-900">
         {{ t('admin.title') }}
       </h1>
-      <div v-if="isPlatformAdmin" class="flex flex-wrap items-center gap-2">
+      <div v-if="isPlatformAdmin && tab === 'users'" class="flex flex-wrap items-center gap-2">
         <form role="search" @submit.prevent>
           <UInput
             v-model="searchTerm"
@@ -201,7 +203,9 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
     <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
 
     <!-- Not full width on purpose: on wide screens a long row is hard to follow. -->
-    <section v-if="isPlatformAdmin" class="max-w-4xl space-y-4">
+    <AdminAuditLog v-if="tab === 'audit'" />
+
+    <section v-else-if="isPlatformAdmin" class="max-w-4xl space-y-4">
 
       <p v-if="inviteInfo" class="text-sm text-(--ui-text-muted)">
         {{ inviteInfo }}
