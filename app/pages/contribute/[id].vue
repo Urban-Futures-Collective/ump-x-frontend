@@ -145,8 +145,8 @@ const title = computed(() => model.value ? inLang(model.value.fullName, locale.v
             </div>
           </div>
           <div class="grid gap-4 sm:grid-cols-3">
-            <UFormField :label="t('registry.card.license')" :hint="t('registry.card.licenseHint')" required>
-              <UInput v-model="card.license" placeholder="MIT" class="w-full" />
+            <UFormField :label="t('registry.card.license')" required>
+              <LicenseSelect v-model="card.license" />
             </UFormField>
             <UFormField :label="t('registry.card.version')">
               <UInput v-model="card.versionLabel" class="w-full" />
