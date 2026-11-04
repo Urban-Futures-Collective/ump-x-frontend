@@ -7,6 +7,7 @@ import type { AuthType, DiscoveredProcess, RegistryServer } from '~/types/regist
 // look at a server it knows (with sample data nothing is contacted).
 definePageMeta({ middleware: ['auth', 'prototype', 'provider'] })
 const { t } = useI18n()
+usePageCrumb(() => t('registry.new.title'))
 const { myServers, discover, addServer, addModels, isLive } = useRegistry()
 
 const step = ref<1 | 2>(1)

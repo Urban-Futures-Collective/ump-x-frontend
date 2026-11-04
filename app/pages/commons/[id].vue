@@ -35,9 +35,7 @@ if (import.meta.server && notFound.value) {
 }
 
 // The layout puts the model name into the breadcrumb.
-const crumb = useState<string>('commons-crumb', () => '')
-watchEffect(() => { crumb.value = notFound.value ? t('commons.model.notFound') : title.value })
-onBeforeUnmount(() => { crumb.value = '' })
+usePageCrumb(() => notFound.value ? t('commons.model.notFound') : title.value)
 
 const io = computed(() => [
   ...(process.value?.inputs ?? []).map(i => ({ key: i.name, label: i.name, description: i.description || (i.title !== i.name ? i.title : ''), output: false })),

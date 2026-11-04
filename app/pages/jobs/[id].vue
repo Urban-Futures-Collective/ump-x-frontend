@@ -8,6 +8,7 @@ const route = useRoute()
 const jobId = computed(() => String(route.params.id))
 
 const { job, result, resultError, pending, error, refresh } = useUmpJob(jobId)
+usePageCrumb(() => job.value?.processId ?? '')
 
 const duration = computed(() => formatDuration(job.value?.created, job.value?.finished))
 

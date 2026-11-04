@@ -22,6 +22,7 @@ const processId = computed(() => model.value ? `${model.value.serverName}:${mode
 const text = (f: 'fullName' | 'purpose' | 'limitationsRisks') =>
   model.value ? inLang(model.value[f], locale.value, model.value.defaultLang) : ''
 const title = computed(() => text('fullName') || model.value?.remoteProcessId || '')
+usePageCrumb(() => title.value)
 
 // Checklist: what the card says, one line per section. Ticks live only on this page.
 const checks = ref<Record<string, boolean>>({})

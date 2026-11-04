@@ -22,6 +22,7 @@ watch(langs, (ls) => { lang.value = ls.includes(locale.value as 'de' | 'en') ? l
 
 const text = (f: 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks') =>
   model.value?.[f][lang.value] ?? ''
+usePageCrumb(() => text('fullName') || model.value?.remoteProcessId || '')
 
 const sections = computed(() => {
   const m = model.value
