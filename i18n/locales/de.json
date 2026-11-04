@@ -171,6 +171,7 @@
     "onlyVerification": "Nur zur Prüfung freigegeben",
     "noLogin": "Ohne Anmeldung nutzbar",
     "accessRequired": "Zugang erforderlich",
+    "hasAccess": "Du hast Zugang",
     "languages": "Sprachen:",
     "lang": {
       "de": "Deutsch",

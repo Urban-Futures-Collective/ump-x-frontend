@@ -171,6 +171,7 @@
     "onlyVerification": "Available only for verification",
     "noLogin": "No log-in required",
     "accessRequired": "Access required",
+    "hasAccess": "You have access",
     "languages": "Languages:",
     "lang": {
       "de": "German",
