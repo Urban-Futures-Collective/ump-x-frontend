@@ -651,9 +651,11 @@
       "draft": "Einreichung zurückziehen",
       "in_review": "Prüfung übernehmen",
       "verified": "Verifizieren",
+      "changes_requested": "Änderungen anfragen",
       "rejected": "Ablehnen",
       "published": "Veröffentlichen",
-      "deactivated": "Deaktivieren"
+      "deactivated": "Deaktivieren",
+      "reopen": "Als Entwurf überarbeiten"
     },
     "noteTitle": {
       "rejected": "Grund der Ablehnung",
@@ -665,7 +667,7 @@
       "submitted": "Eingereicht. Wartet darauf, dass jemand die Prüfung übernimmt. Solange kannst du die Einreichung zurückziehen.",
       "in_review": "Wird gerade geprüft.",
       "changes_requested": "Die Prüfung hat eine Rückfrage. Passe die Modellkarte an und reiche erneut ein.",
-      "rejected": "Das Modell wurde abgelehnt.",
+      "rejected": "Das Modell wurde abgelehnt. Du kannst es als Entwurf überarbeiten und erneut einreichen.",
       "verified": "Geprüft und bestätigt. Es wird bald veröffentlicht.",
       "published": "Veröffentlicht und in Commons sichtbar. Änderungen an der Modellkarte gelten sofort.",
       "deactivated": "Deaktiviert. Neue Läufe sind nicht möglich."
@@ -681,8 +683,10 @@
       "deactivated": "Deaktiviert."
     },
     "noteLabel": {
+      "changes_requested": "Was soll geändert werden?",
       "rejected": "Warum wird das Modell abgelehnt?",
-      "deactivated": "Warum wird das Modell deaktiviert?"
+      "deactivated": "Warum wird das Modell deaktiviert?",
+      "in_review": "Warum geht das Modell zurück in die Prüfung?"
     },
     "facts": {
       "title": "Technische Angaben",
