@@ -116,14 +116,16 @@ const userMenu = computed(() => [[
   },
 ]])
 
-// Breadcrumb: Home plus the current location. Flat as long as there is no
-// project level to navigate into. Pages without their own sidebar entry hang
-// off their path: a new scenario starts from Commons.
+// Breadcrumb: Home plus the current location: the sidebar section and, on a page
+// below it, that page (named by the page itself, see usePageCrumb). Pages without
+// their own sidebar entry hang off their path: a new scenario starts from Commons.
+// Shown only with at least two entries: a single one just repeats the headline
+// (#111, item 22).
 //
 // Every entry is a link, the current page included. Home only for visitors: the
 // start page sends signed-in users straight on to Commons, so for them "Start"
 // was a link that went nowhere.
-const commonsCrumb = useState<string>('commons-crumb', () => '')
+const pageCrumb = usePageCrumbLabel()
 const breadcrumb = computed<BreadcrumbItem[]>(() => {
   const items: BreadcrumbItem[] = loggedIn.value ? [] : [{ label: t('nav.home'), icon: 'i-lucide-house', to: '/' }]
   const here = route.fullPath
@@ -133,7 +135,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
   }
   // A model page names its model (set by the page, see commons/[id].vue).
   if (route.path.startsWith('/commons/')) {
-    items.push({ label: t('commons.title'), to: '/commons' }, { label: commonsCrumb.value || String(route.params.id ?? ''), to: here })
+    items.push({ label: t('commons.title'), to: '/commons' }, { label: pageCrumb.value || String(route.params.id ?? ''), to: here })
     return items
   }
   if (route.path.startsWith('/help')) {
@@ -145,6 +147,9 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
   )
   if (entry) {
     items.push({ label: String(entry.label), to: String(entry.to) })
+    const below = route.path.replace(/\/$/, '') !== String(entry.to)
+    const label = pageCrumb.value || String(route.params.id ?? '')
+    if (below && label) items.push({ label, to: here })
   }
   return items
 })
@@ -234,13 +239,13 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
                reads as a control of the sidebar rather than a breadcrumb entry. -->
           <template #leading>
             <UDashboardSidebarCollapse />
-            <USeparator orientation="vertical" class="mx-1 h-5" />
+            <USeparator v-if="breadcrumb.length > 1" orientation="vertical" class="mx-1 h-5" />
           </template>
 
           <!-- A typed "/" in the breadcrumb's own font: the slash icon was taller and
                thinner than the text around it. -->
           <template #title>
-            <UBreadcrumb :items="breadcrumb">
+            <UBreadcrumb v-if="breadcrumb.length > 1" :items="breadcrumb">
               <template #separator>
                 <span class="px-0.5 text-(--ui-text-dimmed)">/</span>
               </template>

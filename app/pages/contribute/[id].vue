@@ -81,6 +81,7 @@ async function act(to: (typeof actions.value)[number]['to']) {
 
 const langItems = [{ label: 'Deutsch', value: 'de' }, { label: 'English', value: 'en' }]
 const title = computed(() => model.value ? inLang(model.value.fullName, locale.value, model.value.defaultLang) || model.value.remoteProcessId : '')
+usePageCrumb(() => title.value)
 </script>
 
 <template>
