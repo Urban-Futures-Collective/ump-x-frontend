@@ -217,9 +217,11 @@
       "dismissed": "der Lauf wurde abgebrochen"
     },
     "locked": {
+      "signInHeading": "Zum Ausführen anmelden",
       "heading": "Dieses Modell ist für dich nicht freigegeben",
-      "signedIn": "Zum Ausführen von {modell} braucht dein Konto die Freigabe für {anbieter}. Ansehen und Ergebnisse anderer Läufe bleiben möglich.",
-      "anonymous": "Zum Ausführen von {modell} musst du dich anmelden. Ansehen bleibt ohne Konto möglich."
+      "signedIn": "Zum Ausführen von {modell} brauchst du Zugang zu diesem Modell. Du kannst ihn auf der Modellseite beantragen.",
+      "anonymous": "Zum Ausführen von {modell} musst du dich anmelden. Ansehen bleibt ohne Konto möglich.",
+      "toModel": "Zugang beantragen"
     },
     "http": {
       "server": "der Server hat den Lauf mit einem internen Fehler abgebrochen und keinen Grund genannt (HTTP {status}).",
