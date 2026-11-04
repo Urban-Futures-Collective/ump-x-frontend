@@ -286,7 +286,7 @@ const menu = computed(() => [
             <p class="text-[0.9375rem]/[1.6] text-(--ui-text)">
               {{ t('start.ai.mcp.body') }}
             </p>
-            <ULink to="/hilfe" class="flex items-center gap-1.5 text-[0.8125rem] text-ufc-logo-blue">
+            <ULink to="/help" class="flex items-center gap-1.5 text-[0.8125rem] text-ufc-logo-blue">
               {{ t('start.ai.mcp.more') }}
               <UIcon name="i-lucide-arrow-right" class="size-4" />
             </ULink>

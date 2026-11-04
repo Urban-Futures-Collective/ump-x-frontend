@@ -42,7 +42,9 @@ export function accessState(input: {
   const { card, loggedIn, roles, mySub } = input
   if (card.status !== 'published' || card.anonymousAccess) return { kind: 'none' }
   if (!loggedIn) return { kind: 'login' }
-  if (card.ownerSub === mySub || holdsAccess(card, roles)) return { kind: 'none' }
+  // Verifiers may run every published model (UMP's can_access_process), so they have
+  // nothing to request (#111, item 2).
+  if (card.ownerSub === mySub || holdsAccess(card, roles) || roles.includes(ROLE_VERIFIER)) return { kind: 'none' }
 
   const mine = input.requests
     .filter(r => r.user.sub === mySub && r.model.id === card.id)

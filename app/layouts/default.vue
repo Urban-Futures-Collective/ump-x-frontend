@@ -136,7 +136,7 @@ const breadcrumb = computed<BreadcrumbItem[]>(() => {
     items.push({ label: t('commons.title'), to: '/commons' }, { label: commonsCrumb.value || String(route.params.id ?? ''), to: here })
     return items
   }
-  if (route.path.startsWith('/hilfe')) {
+  if (route.path.startsWith('/help')) {
     items.push({ label: t('nav.help'), to: here })
     return items
   }
@@ -267,7 +267,7 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
               color="neutral"
               variant="ghost"
               size="sm"
-              to="/hilfe"
+              to="/help"
               :aria-label="t('nav.help')"
             >
               <span class="hidden md:inline">{{ t('nav.help') }}</span>

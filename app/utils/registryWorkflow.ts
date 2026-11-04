@@ -6,6 +6,7 @@ import type { RegistryStatus } from '~/types/registry'
 //               ↑           │ │                    │
 //               └── changes_requested  rejected     └→ in_review (reset)
 //   in_review / verified / published → deactivated      rejected → draft (owner reopens)
+//   deactivated → in_review (reactivate, a new review round)
 //
 // "Changes requested" was taken out on 2026-10-23 and is back since 2026-11-04 (#111,
 // item 32): the reviewer names what to change, the owner edits the card and submits
@@ -42,6 +43,8 @@ const RULES: { from: RegistryStatus[], to: RegistryStatus, who: Who, needsNote?:
   { from: ['verified'], to: 'published', who: 'verifier' },
   { from: ['published'], to: 'in_review', who: 'verifier', needsNote: true },
   { from: ['in_review', 'verified', 'published'], to: 'deactivated', who: 'verifierOrAdmin', needsNote: true },
+  // A deactivated model can be reactivated; it goes through review again (#111, item 32).
+  { from: ['deactivated'], to: 'in_review', who: 'verifierOrAdmin', needsNote: true },
 ]
 
 function allowed(who: Who, a: Actor): boolean {
@@ -55,6 +58,16 @@ export function transitionsFor(status: RegistryStatus, actor: Actor): Transition
   return RULES
     .filter(r => r.from.includes(status) && allowed(r.who, actor))
     .map(r => ({ to: r.to, needsNote: !!r.needsNote }))
+}
+
+/**
+ * i18n key under registry.action for a step. Most steps are named after their target;
+ * going back to draft from rejected and back to review from deactivated read differently.
+ */
+export function stepKey(from: RegistryStatus, to: RegistryStatus): string {
+  if (from === 'rejected' && to === 'draft') return 'reopen'
+  if (from === 'deactivated' && to === 'in_review') return 'reactivate'
+  return to
 }
 
 /** Statuses a verifier has to act on. */
@@ -72,7 +85,7 @@ export type ContributeGroup = typeof CONTRIBUTE_GROUPS[number]
 /**
  * Where an owner finds a model: things only they can move on, things with the
  * verifiers, models in Commons, and models that are no longer going anywhere.
- * Rejected counts as closed: the owner cannot resubmit it.
+ * Rejected counts as closed until the owner reworks it as a draft.
  */
 export function contributeGroup(status: RegistryStatus): ContributeGroup {
   if (status === 'draft' || status === 'changes_requested') return 'action'

@@ -214,7 +214,7 @@ const negative = (to: RegistryStatus) => to === 'rejected' || to === 'deactivate
                   :loading="busy"
                   @click="choose(a)"
                 >
-                  {{ t(`registry.action.${a.to}`) }}
+                  {{ t(`registry.action.${stepKey(model.status, a.to)}`) }}
                 </UButton>
               </div>
               <p v-if="actions.some(a => blocked(a.to))" class="text-xs text-(--ui-text-muted)">
@@ -233,7 +233,7 @@ const negative = (to: RegistryStatus) => to === 'rejected' || to === 'deactivate
                     {{ t('registry.cancel') }}
                   </UButton>
                   <UButton type="submit" :disabled="!note.trim()" :loading="busy">
-                    {{ t(`registry.action.${pending}`) }}
+                    {{ t(`registry.action.${stepKey(model.status, pending)}`) }}
                   </UButton>
                 </div>
               </form>

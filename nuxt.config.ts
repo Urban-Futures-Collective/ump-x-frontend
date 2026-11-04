@@ -6,8 +6,12 @@ export default defineNuxtConfig({
   build: { transpile: ['@masterportal/masterportalapi'] },
   vite: { optimizeDeps: { include: ['dayjs'] } },
   compatibilityDate: '2025-06-01',
-  // Keep old bookmarks and shared links to /models working: the catalog lives at /commons.
-  routeRules: { '/models': { redirect: { to: '/commons', statusCode: 301 } } },
+  // Keep old bookmarks and shared links working: the catalog lives at /commons, and the
+  // help page was /hilfe in both languages until #111 (item 6).
+  routeRules: {
+    '/models': { redirect: { to: '/commons', statusCode: 301 } },
+    '/hilfe': { redirect: { to: '/help', statusCode: 301 } },
+  },
   devtools: { enabled: true },
 
   modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxtjs/i18n', 'nuxt-oidc-auth'],
