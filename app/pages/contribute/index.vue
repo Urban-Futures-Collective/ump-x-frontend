@@ -102,7 +102,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
           <UButton size="lg" to="/contribute/new">
             {{ t('registry.contribute.emptyCreate') }}
           </UButton>
-          <ULink to="/hilfe" class="font-medium text-(--ui-primary)">
+          <ULink to="/help" class="font-medium text-(--ui-primary)">
             {{ t('registry.contribute.emptyHelp') }}
           </ULink>
         </div>

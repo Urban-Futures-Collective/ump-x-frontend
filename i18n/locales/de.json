@@ -655,7 +655,8 @@
       "rejected": "Ablehnen",
       "published": "Veröffentlichen",
       "deactivated": "Deaktivieren",
-      "reopen": "Als Entwurf überarbeiten"
+      "reopen": "Als Entwurf überarbeiten",
+      "reactivate": "Reaktivieren"
     },
     "noteTitle": {
       "rejected": "Grund der Ablehnung",

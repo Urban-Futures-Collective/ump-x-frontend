@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canEditCard, contributeGroup, transitionsFor, verifyTabsOf } from './registryWorkflow'
+import { stepKey, canEditCard, contributeGroup, transitionsFor, verifyTabsOf } from './registryWorkflow'
 
 const owner = { isOwner: true, isProvider: true, isVerifier: false, isPlatformAdmin: false }
 const verifier = { isOwner: false, isProvider: true, isVerifier: true, isPlatformAdmin: false }
@@ -20,6 +20,8 @@ describe('registry workflow', () => {
     expect(to(transitionsFor('in_review', verifier))).toEqual(['verified', 'changes_requested', 'rejected', 'deactivated'])
     expect(to(transitionsFor('verified', verifier))).toEqual(['published', 'deactivated'])
     expect(to(transitionsFor('published', verifier))).toEqual(['in_review', 'deactivated'])
+    expect(to(transitionsFor('deactivated', verifier))).toEqual(['in_review'])
+    expect(to(transitionsFor('deactivated', owner))).toEqual([])
   })
 
   it('never lets anyone review their own model', () => {
@@ -29,6 +31,7 @@ describe('registry workflow', () => {
 
   it('lets a platform admin deactivate only', () => {
     expect(to(transitionsFor('published', admin))).toEqual(['deactivated'])
+    expect(to(transitionsFor('deactivated', admin))).toEqual(['in_review'])
     expect(to(transitionsFor('submitted', admin))).toEqual([])
   })
 
@@ -69,5 +72,14 @@ describe('verify tabs', () => {
     expect(verifyTabsOf('changes_requested', 'in_sync')).toEqual(['todo'])
     expect(verifyTabsOf('rejected', 'unchecked')).toEqual(['closed'])
     expect(verifyTabsOf('deactivated', 'in_sync')).toEqual(['closed'])
+  })
+})
+
+describe('action labels', () => {
+  it('names reopening and reactivating apart from their target', () => {
+    expect(stepKey('rejected', 'draft')).toBe('reopen')
+    expect(stepKey('deactivated', 'in_review')).toBe('reactivate')
+    expect(stepKey('published', 'in_review')).toBe('in_review')
+    expect(stepKey('submitted', 'draft')).toBe('draft')
   })
 })

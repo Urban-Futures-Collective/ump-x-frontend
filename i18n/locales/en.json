@@ -655,7 +655,8 @@
       "rejected": "Reject",
       "published": "Publish",
       "deactivated": "Deactivate",
-      "reopen": "Rework as draft"
+      "reopen": "Rework as draft",
+      "reactivate": "Reactivate"
     },
     "noteTitle": {
       "rejected": "Reason for rejection",

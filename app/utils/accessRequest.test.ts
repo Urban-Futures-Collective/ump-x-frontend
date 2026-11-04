@@ -19,6 +19,7 @@ describe('access requests', () => {
     expect(accessState({ ...base, card: { ...card, status: 'submitted' } }).kind).toBe('none')
     expect(accessState({ ...base, mySub: 'owner' }).kind).toBe('none')
     expect(accessState({ ...base, roles: ['bikebox'] }).kind).toBe('none')
+    expect(accessState({ ...base, roles: ['verifier'] }).kind).toBe('none')
   })
 
   it('asks to sign in first', () => {

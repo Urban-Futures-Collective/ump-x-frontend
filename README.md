@@ -18,7 +18,7 @@ TypeScript · Vitest.
 | Administration | `/admin` | platform admins: create accounts with an email invitation, platform roles, disable accounts |
 | Access manager | `/access` | access admins: grant and revoke access to a model or a whole model server |
 | Contribute, Verify | `/contribute`, `/verify` | model registry: register servers and models, review, publish; with sample data (`NUXT_PUBLIC_PROTOTYPES=true`) or UMP's registry API (`NUXT_PUBLIC_REGISTRY_API=true`) |
-| Help, chat | `/hilfe`, chat in the header | bring your own AI provider, or use the MCP server |
+| Help, chat | `/help`, chat in the header | bring your own AI provider, or use the MCP server |
 | Legal pages | `/impressum`, `/datenschutz`, `/barrierefreiheit` | drafts, missing facts are marked |
 
 Who may see and do what: `docs/frontend-flow-en.md`.
