@@ -832,7 +832,41 @@
     "revoke": "Revoke",
     "serverHint": "Greyed-out revoke: access to the whole server. Change it under “Whole server”.",
     "loadFailed": "Could not load access",
-    "failed": "The change did not go through"
+    "failed": "The change did not go through",
+    "requests": {
+      "search": "Search user, model or server",
+      "server": "Server",
+      "allServers": "All servers",
+      "statusLabel": "Status",
+      "status": {
+        "requested": "Pending",
+        "granted": "Approved",
+        "denied": "Denied",
+        "withdrawn": "Withdrawn",
+        "revoked": "Revoked",
+        "all": "All"
+      },
+      "empty": "No requests.",
+      "col": {
+        "access": "Requested access",
+        "for": "For",
+        "purpose": "Purpose",
+        "requested": "Requested"
+      },
+      "model": "Model",
+      "approve": "Approve",
+      "deny": "Deny",
+      "cancel": "Cancel",
+      "approved": "{name} now has access",
+      "denyTitle": "Deny request from {name}",
+      "denyIntro": "The person sees your reason on the model page and in the email.",
+      "reason": "Reason",
+      "noteTitle": "Approval",
+      "note": "Approving gives access to this model. The person is notified by email, and the change is written to the audit log. A denial is notified to the person as well.",
+      "auditLog": "Open audit log"
+    },
+    "revokeTitle": "Revoke access for {name}",
+    "revokeIntro": "The person loses this access. Your reason is sent by email if the access came from a request."
   },
   "audit": {
     "intro": "Every change to models, servers and access, and every run, newest first. Kept for three months.",

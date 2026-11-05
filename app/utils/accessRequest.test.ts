@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { ApiAccessRequest } from './accessRequest'
-import { accessState, holdsAccess, runAccess } from './accessRequest'
+import { accessState, holdsAccess, runAccess, serverOf } from './accessRequest'
 
 const card = { id: 'm1', status: 'published' as const, anonymousAccess: false, ownerSub: 'owner', serverName: 'bikebox', remoteProcessId: 'growbike' }
 const req = (status: string, created: string, extra: Partial<ApiAccessRequest> = {}): ApiAccessRequest =>
@@ -68,5 +68,14 @@ describe('run access', () => {
     expect(runAccess(review, true, ['verifier'])).toBe('allowed')
     expect(runAccess(review, true, ['bikebox'])).toBe('locked')
     expect(runAccess(review, false, [])).toBe('login')
+  })
+})
+
+describe('serverOf', () => {
+  it('takes the server from a model role', () => {
+    expect(serverOf({ role: 'bikebox:fixbike' })).toBe('bikebox')
+  })
+  it('keeps a role without a process', () => {
+    expect(serverOf({ role: 'bikebox' })).toBe('bikebox')
   })
 })

@@ -832,7 +832,41 @@
     "revoke": "Entziehen",
     "serverHint": "Ausgegrautes Entziehen: Zugriff auf den ganzen Server. Das lässt sich unter „Ganzer Server“ ändern.",
     "loadFailed": "Zugriffe konnten nicht geladen werden",
-    "failed": "Die Änderung hat nicht geklappt"
+    "failed": "Die Änderung hat nicht geklappt",
+    "requests": {
+      "search": "Person, Modell oder Server suchen",
+      "server": "Server",
+      "allServers": "Alle Server",
+      "statusLabel": "Status",
+      "status": {
+        "requested": "Offen",
+        "granted": "Freigegeben",
+        "denied": "Abgelehnt",
+        "withdrawn": "Zurückgezogen",
+        "revoked": "Entzogen",
+        "all": "Alle"
+      },
+      "empty": "Keine Anfragen.",
+      "col": {
+        "access": "Angefragter Zugang",
+        "for": "Für",
+        "purpose": "Zweck",
+        "requested": "Angefragt"
+      },
+      "model": "Modell",
+      "approve": "Freigeben",
+      "deny": "Ablehnen",
+      "cancel": "Abbrechen",
+      "approved": "{name} hat jetzt Zugang",
+      "denyTitle": "Anfrage von {name} ablehnen",
+      "denyIntro": "Die Person sieht deine Begründung auf der Modellseite und in der E-Mail.",
+      "reason": "Begründung",
+      "noteTitle": "Freigabe",
+      "note": "Eine Freigabe gibt Zugang zu diesem Modell. Die Person wird per E-Mail benachrichtigt, und die Änderung steht im Audit-Log. Auch eine Ablehnung wird der Person mitgeteilt.",
+      "auditLog": "Audit-Log öffnen"
+    },
+    "revokeTitle": "Zugang für {name} entziehen",
+    "revokeIntro": "Die Person verliert diesen Zugang. Kam der Zugang über eine Anfrage, bekommt sie deine Begründung per E-Mail."
   },
   "audit": {
     "intro": "Jede Änderung an Modellen, Servern und Zugängen und jeder Lauf, neueste zuerst. Wird drei Monate aufbewahrt.",

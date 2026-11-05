@@ -16,7 +16,8 @@ const ownId = computed(() => (user.value?.userInfo as { sub?: string } | undefin
 
 const { registryApi } = useRuntimeConfig().public
 // Access admins have no accounts to manage, so they start on the audit log.
-const tab = ref(isPlatformAdmin.value || !registryApi ? 'users' : 'audit')
+// ?tab=audit opens the audit log directly (link from the access requests).
+const tab = ref(registryApi && (useRoute().query.tab === 'audit' || !isPlatformAdmin.value) ? 'audit' : 'users')
 const tabs = computed<TabsItem[]>(() => [
   { label: t('admin.users.heading'), value: 'users' },
   { label: t('admin.audit'), value: 'audit', disabled: !registryApi },
