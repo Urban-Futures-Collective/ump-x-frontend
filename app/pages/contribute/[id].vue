@@ -43,7 +43,7 @@ function cardOf(): Card {
     codeRef: m.codeRef ?? '',
     contributors: m.contributors,
     literature: m.literature,
-    applications: m.applications ?? [],
+    applications: (m.applications ?? []).map(a => ({ ...a, description: a.description ?? {} })),
     requirements: m.requirements,
     testCases: m.testCases.map(c => ({ ...c, description: c.description ?? {} })),
     ioNotes: m.ioNotes ?? {},
