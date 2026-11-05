@@ -1,5 +1,5 @@
-/* UMP-X look for the Keycloak login (keycloak.v2, PatternFly 5): colours, Poppins and the
-   logo of the app. Poppins (SIL Open Font License) is embedded, so the page loads no font
+/* UMP-X look for the Keycloak login (keycloak.v2, PatternFly 5), after the design "Login
+   Page BG 2": gradient background, logo and welcome in the card, rounded fields and buttons. Poppins (SIL Open Font License) is embedded, so the page loads no font
    from elsewhere and the theme is plain text files. */
 @font-face {
   font-family: "Poppins";
@@ -24,6 +24,8 @@
   --ump-slate-200: oklch(0.856 0.0085 270.62);
   --ump-slate-500: oklch(0.605 0.0339 270.62);
   --ump-slate-900: oklch(0.294 0.0433 270.62);
+  --ump-teal: #5ca899;
+  --ump-gold: #e5ac23;
 
   --pf-v5-global--FontFamily--text: "Poppins", system-ui, sans-serif;
   --pf-v5-global--FontFamily--heading: "Poppins", system-ui, sans-serif;
@@ -38,65 +40,120 @@
   --keycloak-card-top-color: transparent;
 }
 
-/* The tinted surface of the app instead of Keycloak's grey. */
-html, body, .pf-v5-c-login {
-  background: var(--ump-blue-50);
+/* Gradient from teal to gold behind everything (keycloak.v2 puts a dark image there). */
+html, body, #keycloak-bg, .pf-v5-c-login {
+  background: linear-gradient(180deg, var(--ump-teal) 0%, var(--ump-gold) 100%) fixed;
+  min-height: 100vh;
 }
 .pf-v5-c-login {
-  --pf-v5-c-login--BackgroundColor: var(--ump-blue-50);
   font-family: "Poppins", system-ui, sans-serif;
   color: var(--ump-slate-900);
 }
 
-/* Logo and name above the card, as in the sidebar of the app. */
-#kc-header-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  font-family: "Poppins", system-ui, sans-serif;
-  font-size: 1.75rem;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-  /* keycloak.v2 sets white with !important for its dark background. */
-  color: var(--ump-slate-900) !important;
-}
-#kc-header-wrapper::before {
-  content: "";
-  width: 2.5rem;
-  height: 2.5rem;
-  background: url("../img/logo.svg") center / contain no-repeat;
+/* The name above the card stays for screen readers only; the logo sits in the card. */
+#kc-header {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
-/* The card: white, rounded, with a hairline instead of a shadow. */
+/* The card: white, rounded, no frame. */
 .pf-v5-c-login__main {
   background: #fff;
-  border: 1px solid var(--ump-slate-200);
-  border-radius: 0.5rem;
-  box-shadow: none;
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.12);
 }
+
+/* Card header: logo, title and (on the sign-in page) a line below it, centred. */
 .pf-v5-c-login__main-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border-top: 0;
+  text-align: center;
+}
+.pf-v5-c-login__main-header::before {
+  content: "";
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.75rem;
+  background: url("../img/logo.svg") center / contain no-repeat;
 }
 .pf-v5-c-login__main-header .pf-v5-c-title,
 #kc-page-title {
   font-family: "Poppins", system-ui, sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 600;
   color: var(--ump-slate-900);
 }
+body[data-page-id="login-login"] .pf-v5-c-login__main-header::after {
+  content: "Log in to your workspace on UMP-X";
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+html:lang(de) body[data-page-id="login-login"] .pf-v5-c-login__main-header::after {
+  content: "Melde dich bei deinem Arbeitsbereich in UMP-X an";
+}
 
-/* Buttons in the app's blue. */
-.pf-v5-c-button.pf-m-primary {
-  --pf-v5-c-button--m-primary--BackgroundColor: var(--ump-blue-500);
-  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--ump-blue-600);
-  --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--ump-blue-600);
-  --pf-v5-c-button--m-primary--active--BackgroundColor: var(--ump-blue-700);
+/* The language switch moves to the top right corner of the card. */
+.pf-v5-c-login__main-header-utilities {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+.pf-v5-c-login__main-header-utilities .pf-v5-c-form-control {
+  --pf-v5-c-form-control--before--BorderStyle: none;
+  --pf-v5-c-form-control--after--BorderStyle: none;
+  width: auto;
+  font-size: 0.8rem;
+  color: var(--ump-slate-500);
+  background: transparent;
+}
+
+/* Rounded fields: the frame is drawn by the input group or the control itself. */
+.pf-v5-c-login__main-body .pf-v5-c-form-control {
+  --pf-v5-c-form-control--before--BorderStyle: none;
+  --pf-v5-c-form-control--after--BorderStyle: none;
+  border: 1px solid var(--ump-slate-500);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pf-v5-c-login__main-body .pf-v5-c-form-control:focus-within {
+  border-color: var(--ump-blue-600);
+  box-shadow: 0 0 0 1px var(--ump-blue-600);
+}
+.pf-v5-c-login__main-body .pf-v5-c-input-group {
+  border: 1px solid var(--ump-slate-500);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pf-v5-c-login__main-body .pf-v5-c-input-group .pf-v5-c-form-control {
+  border: 0;
+  box-shadow: none;
+}
+.pf-v5-c-login__main-body .pf-v5-c-input-group .pf-v5-c-button {
+  --pf-v5-c-button--after--BorderWidth: 0;
+  border-radius: 0;
+}
+
+/* Buttons: pill-shaped, primary in the app's dark blue. */
+.pf-v5-c-button {
+  --pf-v5-c-button--BorderRadius: 999px;
   font-weight: 600;
 }
-.pf-v5-c-form-control {
-  --pf-v5-c-form-control--focus--after--BorderBottomColor: var(--ump-blue-500);
+.pf-v5-c-button.pf-m-primary {
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--ump-blue-600);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(--ump-blue-700);
+  --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--ump-blue-700);
+  --pf-v5-c-button--m-primary--active--BackgroundColor: var(--ump-blue-700);
+}
+.pf-v5-c-login__main-body a {
+  font-weight: 600;
 }
 .pf-v5-c-login__main-footer-band,
 .pf-v5-c-login__main-footer-band-item {

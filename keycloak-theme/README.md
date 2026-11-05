@@ -1,7 +1,8 @@
 # UMP-X login theme for Keycloak
 
-The Keycloak sign-in page in the UMP-X look: logo, Poppins, the app's colours and a light
-background. It extends Keycloak's `keycloak.v2` login theme and changes only styles and a
+The Keycloak sign-in page in the UMP-X look, after the design "Login Page BG 2": teal to
+gold gradient, a white card with the logo, "Welcome" and a line below it, rounded fields
+and buttons, Poppins. It extends Keycloak's `keycloak.v2` login theme and changes only styles and a
 few texts, so Keycloak updates keep working.
 
 Tested with Keycloak 26.3.5 (the version on the UFC server).
@@ -9,9 +10,9 @@ Tested with Keycloak 26.3.5 (the version on the UFC server).
 ```
 ump-x/login/
   theme.properties              parent keycloak.v2, extra stylesheet, light mode, en/de
-  resources/css/ump-x.css       colours, Poppins (embedded), logo, card
+  resources/css/ump-x.css       gradient, card, logo, rounded fields, Poppins (embedded)
   resources/img/logo.svg        the UMP-X logo
-  messages/messages_{en,de}.properties   page title and heading ("Du" in German)
+  messages/messages_{en,de}.properties   page title, "Welcome", "Continue" ("Du" in German)
 ```
 
 ## Install on the UFC server
