@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ADMIN_ROLES, DEFAULT_ROLES, PLATFORM_ROLES, isPlatformRole, platformRoleStatus, rolesOfSession } from './roles'
+import { ADMIN_ROLES, BADGE_ROLES, DEFAULT_ROLES, PLATFORM_ROLES, isPlatformRole, platformRoleStatus, rolesOfSession } from './roles'
 
 describe('rolesOfSession', () => {
   it('merges realm and ump-client roles from claims and userInfo', () => {
@@ -28,8 +28,12 @@ describe('vocabulary', () => {
     expect([...PLATFORM_ROLES].sort()).toEqual(['access-admin', 'mcp-user', 'platform-admin', 'provider', 'user', 'verifier', 'viewer'])
   })
 
-  it('gives every new account MCP through the default roles', () => {
-    expect(DEFAULT_ROLES).toContain('mcp-user')
+  it('gives a new account only viewer; everything else is given by an admin', () => {
+    expect([...DEFAULT_ROLES]).toEqual(['viewer'])
+  })
+
+  it('shows every other platform role as a badge in the account list', () => {
+    expect([...BADGE_ROLES, ...DEFAULT_ROLES].sort()).toEqual([...PLATFORM_ROLES].sort())
   })
 
   it('no longer reads the old realm names', () => {
