@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
+import type { AccessRequestRow } from '~/utils/accessRequest'
 
 // Access manager (design A4): who may run which model. Access is a realm role per model
 // (`{server}:{process}`) or per model server (`{server}`), created when a model is
-// published; access admins hand them out here. Requests (design A3) are greyed out until
-// there is somewhere to store them.
+// published; access admins hand them out here, directly or by deciding requests (A3).
 definePageMeta({ middleware: ['auth', 'access-admin'] })
 const { t } = useI18n()
 const toast = useToast()
@@ -12,10 +12,20 @@ const toast = useToast()
 interface AccessUser { id: string, username: string, firstName: string | null, lastName: string | null, email: string | null }
 interface ServerRow { name: string, hasRole: boolean, users: number, models: { process: string, users: number }[] }
 
+// Requests first, as in the design; the tab is kept in the URL so a link (or a mail) can
+// open it directly.
+const route = useRoute()
+const router = useRouter()
+const tab = computed({
+  get: () => route.query.tab === 'models' ? 'models' : 'requests',
+  set: (v: string) => { router.replace({ query: { ...route.query, tab: v } }) },
+})
+const pendingCount = ref<number | null>(null)
 const tabs = computed<TabsItem[]>(() => [
-  { label: t('access.tabs.requests'), value: 'requests', disabled: true },
+  { label: pendingCount.value ? `${t('access.tabs.requests')} · ${pendingCount.value}` : t('access.tabs.requests'), value: 'requests' },
   { label: t('access.tabs.models'), value: 'models' },
 ])
+const requestsTab = ref<{ load: () => Promise<void> } | null>(null)
 
 const { data: servers, pending, error, refresh } = useFetch<ServerRow[]>('/api/access/servers', { default: () => [] })
 
@@ -88,6 +98,29 @@ watch(role, loadMembers, { immediate: true })
 
 const nameOf = (u: AccessUser) => [u.firstName, u.lastName].filter(Boolean).join(' ') || u.username
 
+// A granted request in UMP stays "granted" after the role is taken away, and an open
+// request blocks a new one; so revoking also records "revoked" on that request (UMP
+// wants a reason, which the person gets by mail).
+const { registryApi, umpBase } = useRuntimeConfig().public
+async function closeGrantedRequests(userId: string, roleName: string, note: string) {
+  if (!registryApi) return
+  const page = await $fetch<{ requests: AccessRequestRow[] }>(`${umpBase}/registry/v1/access-requests`, {
+    query: { user: userId, status: 'granted', limit: 50 },
+  })
+  await Promise.all(page.requests.filter(r => r.role === roleName).map(r =>
+    $fetch(`${umpBase}/registry/v1/access-requests/${r.id}/transitions`, { method: 'POST', body: { to_status: 'revoked', note } }),
+  ))
+}
+const revoking = ref<(AccessUser & { via: 'model' | 'server' }) | null>(null)
+const revokeReason = ref('')
+async function revoke() {
+  const u = revoking.value
+  if (!u || !revokeReason.value.trim()) return
+  await change('DELETE', u.id, revokeReason.value.trim())
+  revoking.value = null
+  revokeReason.value = ''
+}
+
 // Account search for "Add access", debounced like the admin search.
 const query = ref('')
 const found = ref<AccessUser[]>([])
@@ -106,10 +139,11 @@ watch(query, (q) => {
 const pickItems = computed(() => found.value.map(u => ({ label: nameOf(u), suffix: u.email ?? u.username, value: u.id })))
 
 const busy = ref<string | null>(null)
-async function change(method: 'POST' | 'DELETE', userId: string) {
+async function change(method: 'POST' | 'DELETE', userId: string, note?: string) {
   busy.value = userId
   try {
     await $fetch('/api/access/grants', { method, body: { role: role.value, userId } })
+    if (method === 'DELETE' && note) await closeGrantedRequests(userId, role.value, note)
     if (method === 'POST') {
       picked.value = undefined
       query.value = ''
@@ -131,13 +165,16 @@ async function change(method: 'POST' | 'DELETE', userId: string) {
       <h1 class="text-3xl font-semibold text-ufc-slate-900">
         {{ t('access.title') }}
       </h1>
-      <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="pending" @click="() => { refresh(); loadMembers() }">
+      <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="pending" @click="() => { refresh(); loadMembers(); requestsTab?.load() }">
         {{ t('access.refresh') }}
       </UButton>
     </div>
 
-    <UTabs model-value="models" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
+    <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
 
+    <AccessRequests v-if="tab === 'requests'" ref="requestsTab" @pending="(n: number) => { pendingCount = n }" @changed="() => { refresh(); loadMembers() }" />
+
+    <template v-else>
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('access.loadFailed')" :description="apiErrorMessage(error)" />
 
     <UInput v-model="search" type="search" icon="i-lucide-search" :placeholder="t('access.search')" :aria-label="t('access.search')" class="w-full sm:w-80" />
@@ -267,7 +304,7 @@ async function change(method: 'POST' | 'DELETE', userId: string) {
                   variant="outline"
                   :disabled="u.via !== scope"
                   :loading="busy === u.id"
-                  @click="change('DELETE', u.id)"
+                  @click="() => { revoking = u; revokeReason = '' }"
                 >
                   {{ t('access.revoke') }}
                 </UButton>
@@ -280,5 +317,29 @@ async function change(method: 'POST' | 'DELETE', userId: string) {
         </p>
       </div>
     </div>
+    </template>
+
+    <UModal :open="!!revoking" :title="t('access.revokeTitle', { name: revoking ? nameOf(revoking) : '' })" @update:open="(v: boolean) => { if (!v) revoking = null }">
+      <template #body>
+        <form id="revoke-access" class="space-y-4" @submit.prevent="revoke">
+          <p class="text-sm text-(--ui-text-muted)">
+            {{ t('access.revokeIntro') }}
+          </p>
+          <UFormField :label="t('access.requests.reason')" required>
+            <UTextarea v-model="revokeReason" :rows="3" :maxlength="4000" autoresize class="w-full" autofocus />
+          </UFormField>
+        </form>
+      </template>
+      <template #footer>
+        <div class="flex w-full justify-end gap-2">
+          <UButton color="neutral" variant="ghost" @click="() => { revoking = null }">
+            {{ t('access.requests.cancel') }}
+          </UButton>
+          <UButton type="submit" form="revoke-access" color="error" :disabled="!revokeReason.trim()" :loading="!!revoking && busy === revoking.id">
+            {{ t('access.revoke') }}
+          </UButton>
+        </div>
+      </template>
+    </UModal>
   </section>
 </template>

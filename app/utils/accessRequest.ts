@@ -16,6 +16,25 @@ export interface ApiAccessRequest {
   status_changed_at?: string | null
 }
 
+/** A request as access admins see it (UMP's AccessRequestView). */
+export interface AccessRequestRow {
+  id: string
+  status: string
+  /** The Keycloak role to map: `{server}:{process}`. */
+  role: string
+  user: { sub: string, display_name?: string | null, email?: string | null }
+  model: { id: string, process_id: string, full_name?: string | null }
+  request_note?: string | null
+  status_note?: string | null
+  created_at?: string | null
+  status_changed_at?: string | null
+}
+
+/** The model server a request is about, from its role. */
+export function serverOf(r: Pick<AccessRequestRow, 'role'>): string {
+  return r.role.split(':')[0] ?? r.role
+}
+
 export type AccessState =
   /** Nothing to show: open to everyone, own model, not published, or access held. */
   | { kind: 'none' }
