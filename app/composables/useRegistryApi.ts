@@ -1,6 +1,6 @@
-import type { DiscoveredProcess, RegistryCardEdit, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
+import type { DiscoveredProcess, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
 import type { ApiDiscoveredProcess, ApiModel, ApiServer } from '~/utils/registryApi'
-import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, modelFromApi, serverFromApi } from '~/utils/registryApi'
+import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, ioFromDescription, modelFromApi, serverFromApi } from '~/utils/registryApi'
 
 // The registry from UMP (/registry/v1, concept F12), through the /ump proxy, which adds
 // the user's token. Same functions as useRegistryPrototype (see useRegistry).
@@ -105,6 +105,12 @@ export function useRegistryApi() {
     await reload(id)
   }
 
+  /** Inputs and outputs as the model server describes them now (owner and verifiers). */
+  async function modelIo(id: string): Promise<RegistryIo[]> {
+    const view = await $fetch<{ live?: { description?: unknown } | null, verified_interface?: unknown }>(`${base}/models/${id}/interface`)
+    return ioFromDescription(view.live?.description ?? view.verified_interface)
+  }
+
   async function addServer(input: RegistryServerInput): Promise<RegistryServer> {
     const created = await $fetch<ApiServer>(`${base}/servers`, {
       method: 'POST',
@@ -150,6 +156,7 @@ export function useRegistryApi() {
     byId,
     transition,
     updateCard,
+    modelIo,
     addServer,
     discover,
     addModels,

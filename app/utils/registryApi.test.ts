@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, langMap, modelFromApi, serverFromApi } from './registryApi'
+import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, ioFromDescription, langList, langMap, modelFromApi, serverFromApi } from './registryApi'
 
 const apiModel = {
   id: 'a1',
@@ -53,7 +53,7 @@ describe('registry API mapping', () => {
     })
     expect(m.contributors).toEqual([{ name: 'A', role: 'author' }])
     expect(m.requirements).toEqual({ cpuCores: 4, memoryGb: undefined, runtimeSeconds: undefined })
-    expect(m.testCases).toEqual([{ name: 'Hamburg', inputUrl: 'https://i', expectedOutputUrl: 'https://o' }])
+    expect(m.testCases).toMatchObject([{ name: 'Hamburg', inputUrl: 'https://i', expectedOutputUrl: 'https://o' }])
     expect(m.verificationJobId).toBe('job-1')
   })
 
@@ -78,6 +78,61 @@ describe('registry API mapping', () => {
   it('builds a card patch without empty texts', () => {
     expect(cardPatchBody({ fullName: { en: 'A', de: ' ' }, purpose: { en: '' }, license: '' }))
       .toEqual({ full_name: { en: 'A' }, purpose: null, license: null })
+  })
+
+  it('maps the full model card', () => {
+    const m = modelFromApi({
+      ...apiModel,
+      keywords: { en: ['cycling', 'osm'], de: ['Radverkehr'], fr: ['vélo'] },
+      code_ref: 'v1.0.3',
+      applications: [{ title: { en: 'Hamburg 2030' }, location: 'Hamburg', year: 2025 }, { location: 'untitled' }],
+      requirements: { gpu: true, software: ['Python 3.11'] },
+      io_notes: { city: { en: 'OSM name' } },
+    })
+    expect(m.keywordsByLang).toEqual({ en: ['cycling', 'osm'], de: ['Radverkehr'] })
+    expect(m.codeRef).toBe('v1.0.3')
+    expect(m.applications).toMatchObject([{ title: { en: 'Hamburg 2030' }, location: 'Hamburg', year: 2025 }])
+    expect(m.requirements).toMatchObject({ gpu: true, software: ['Python 3.11'] })
+    expect(m.ioNotes).toEqual({ city: { en: 'OSM name' } })
+  })
+
+  it('builds the full card patch and drops incomplete entries', () => {
+    expect(cardPatchBody({
+      keywordsByLang: { en: ['a'], de: [] },
+      codeRef: '',
+      contributors: [{ name: ' Ada ', role: 'author', orcid: '' }, { name: ' ', role: 'funder' }],
+      literature: [{ citation: 'X (2022)', year: 2022 }],
+      applications: [{ title: { en: 'Hamburg' }, description: { en: ' ' } }, { title: {} }],
+      requirements: { cpuCores: 4, gpu: false, software: [] },
+      testCases: [{ name: 'T', inputUrl: 'https://i', expectedOutputUrl: 'https://o', inputSha256: 'AB' }, { name: 'x', inputUrl: '', expectedOutputUrl: '' }],
+      ioNotes: { city: { en: 'OSM' }, steps: { en: '' } },
+    })).toEqual({
+      keywords: { en: ['a'] },
+      code_ref: null,
+      contributors: [{ name: 'Ada', role: 'author' }],
+      literature: [{ citation: 'X (2022)', year: 2022 }],
+      applications: [{ title: { en: 'Hamburg' } }],
+      requirements: { cpu_cores: 4, gpu: false },
+      test_cases: [{ name: 'T', input_url: 'https://i', expected_output_url: 'https://o', input_sha256: 'ab' }],
+      io_notes: { city: { en: 'OSM' } },
+    })
+  })
+
+  it('reads keywords per language', () => {
+    expect(langList({ en: ['a', 3, ''], de: 'x' })).toEqual({ en: ['a'] })
+    expect(langList(null)).toEqual({})
+  })
+
+  it('lists inputs and outputs of a process description', () => {
+    expect(ioFromDescription({
+      inputs: { steps: { schema: { type: 'integer', minimum: 1, maximum: 40 } }, ranking: { schema: { enum: ['betweenness', 'random'] } } },
+      outputs: { network: { schema: { type: 'object' } } },
+    })).toEqual([
+      { id: 'steps', kind: 'input', type: 'integer, 1–40' },
+      { id: 'ranking', kind: 'input', type: 'enum: betweenness, random' },
+      { id: 'network', kind: 'output', type: 'object' },
+    ])
+    expect(ioFromDescription(undefined)).toEqual([])
   })
 })
 

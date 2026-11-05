@@ -1,4 +1,4 @@
-import type { DiscoveredProcess, LangMap, RegistryCardEdit, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
+import type { DiscoveredProcess, LangMap, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
 import { ME, sampleDiscovery, sampleModels, sampleServers } from '~/prototype/registrySample'
 
 // The registry on sample data (Contribute, Verify). Everything lives in the browser and
@@ -30,7 +30,18 @@ export function useRegistryPrototype() {
 
   async function updateCard(id: string, card: RegistryCardEdit) {
     const m = byId(id)
-    if (m) Object.assign(m, card)
+    if (!m) return
+    Object.assign(m, structuredClone(card))
+    if (card.keywordsByLang) m.keywords = card.keywordsByLang[m.defaultLang] ?? []
+  }
+
+  // The sample inputs, plus one result, stand in for the server's process description.
+  async function modelIo(id: string): Promise<RegistryIo[]> {
+    const m = byId(id)
+    return [
+      ...(m?.inputs ?? []).map(i => ({ id: i.name, kind: 'input' as const, type: i.type })),
+      { id: 'result', kind: 'output' as const, type: 'GeoJSON' },
+    ]
   }
 
   async function addServer(input: RegistryServerInput): Promise<RegistryServer> {
@@ -105,6 +116,7 @@ export function useRegistryPrototype() {
     byId,
     transition,
     updateCard,
+    modelIo,
     addServer,
     discover,
     addModels,

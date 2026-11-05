@@ -50,6 +50,37 @@ export interface RegistryRequirements {
   cpuCores?: number
   memoryGb?: number
   runtimeSeconds?: number
+  storageGb?: number
+  /** false: not needed, true: any GPU, text: a specific model. */
+  gpu?: string | boolean
+  software?: string[]
+}
+
+export const CONTRIBUTOR_ROLES = ['author', 'developer', 'contributor', 'maintainer', 'funder'] as const
+export type ContributorRole = typeof CONTRIBUTOR_ROLES[number]
+
+export interface RegistryContributor {
+  name: string
+  role: string
+  orcid?: string
+  affiliation?: string
+  email?: string
+}
+
+export interface RegistryLiterature {
+  citation: string
+  doi?: string
+  url?: string
+  year?: number
+}
+
+/** A place or project where the model was used. */
+export interface RegistryApplication {
+  title: LangMap
+  description?: LangMap
+  location?: string
+  url?: string
+  year?: number
 }
 
 /** A documented run with known input and expected output, for reviewers to repeat. */
@@ -57,6 +88,10 @@ export interface RegistryTestCase {
   name: string
   inputUrl: string
   expectedOutputUrl: string
+  description?: LangMap
+  documentationUrl?: string
+  inputSha256?: string
+  outputSha256?: string
 }
 
 export interface RegistryHistoryEntry {
@@ -78,8 +113,12 @@ export interface RegistryModel {
   purpose: LangMap
   limitationsRisks: LangMap
   keywords: string[]
+  /** Keywords per language, as edited on the card. */
+  keywordsByLang?: Partial<Record<'de' | 'en', string[]>>
   versionLabel: string
   repositoryUrl: string
+  /** Commit, tag or branch of the code the server runs. */
+  codeRef?: string
   /** SPDX identifier, e.g. MIT. */
   license: string
   status: RegistryStatus
@@ -94,17 +133,30 @@ export interface RegistryModel {
   /** Whether anyone can run the model without signing in. */
   anonymousAccess?: boolean
   inputs: RegistryInput[]
-  contributors: { name: string, role: string }[]
-  literature: { citation: string }[]
+  contributors: RegistryContributor[]
+  literature: RegistryLiterature[]
+  applications?: RegistryApplication[]
   requirements: RegistryRequirements
   testCases: RegistryTestCase[]
+  /** Format notes (CRS, units, ranges) per OGC input or output id. */
+  ioNotes?: Record<string, LangMap>
   /** Job the reviewer linked when verifying. */
   verificationJobId?: string
   history: RegistryHistoryEntry[]
 }
 
 /** Card fields the owner edits on the model page. */
-export type RegistryCardEdit = Partial<Pick<RegistryModel, 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks' | 'license' | 'repositoryUrl' | 'versionLabel' | 'defaultLang'>>
+export type RegistryCardEdit = Partial<Pick<RegistryModel,
+  'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks' | 'license' | 'repositoryUrl' | 'versionLabel' | 'defaultLang'
+  | 'keywordsByLang' | 'codeRef' | 'contributors' | 'literature' | 'applications' | 'requirements' | 'testCases' | 'ioNotes'>>
+
+/** An input or output of the model's process, for notes on the card. */
+export interface RegistryIo {
+  id: string
+  kind: 'input' | 'output'
+  /** Short type line, e.g. "integer, 1–40". */
+  type: string
+}
 
 /** A new model server as entered in the form; the secret is only ever sent, never read back. */
 export interface RegistryServerInput {
