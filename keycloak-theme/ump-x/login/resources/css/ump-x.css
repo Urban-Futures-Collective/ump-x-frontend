@@ -123,9 +123,22 @@ html:lang(de) body[data-page-id="login-login"] .pf-v5-c-login__main-header::afte
   border-radius: 999px;
   overflow: hidden;
 }
-.pf-v5-c-login__main-body .pf-v5-c-form-control:focus-within {
+/* One focus line: the rounded frame turns blue and thicker (inset, so nothing moves);
+   the input's own outline and PatternFly's underline are switched off. */
+.pf-v5-c-login__main-body .pf-v5-c-form-control:focus-within,
+.pf-v5-c-login__main-body .pf-v5-c-input-group:focus-within {
   border-color: var(--ump-blue-600);
-  box-shadow: 0 0 0 1px var(--ump-blue-600);
+  box-shadow: inset 0 0 0 1px var(--ump-blue-600);
+}
+.pf-v5-c-login__main-body .pf-v5-c-form-control input,
+.pf-v5-c-login__main-body .pf-v5-c-form-control input:focus,
+.pf-v5-c-login__main-body .pf-v5-c-form-control input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.pf-v5-c-login__main-body .pf-v5-c-form-control::before,
+.pf-v5-c-login__main-body .pf-v5-c-form-control::after {
+  content: none;
 }
 .pf-v5-c-login__main-body .pf-v5-c-input-group {
   border: 1px solid var(--ump-slate-500);
