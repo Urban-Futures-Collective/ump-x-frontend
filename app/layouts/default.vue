@@ -167,24 +167,39 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
       collapsible
       resizable
       :default-size="16"
+      :collapsed-size="4.25"
       :min-size="13"
       :max-size="22"
     >
       <template #header="{ collapsed }">
-        <NuxtLink to="/" class="flex min-w-0 items-center gap-2">
-          <!-- When collapsed only the logo remains, so it carries the alt text
-               and the wordmark next to it is decorative. -->
-          <img
-            src="~/assets/images/logo.svg"
-            :alt="t('app.title')"
-            class="size-7 shrink-0"
-            width="28"
-            height="28"
-          >
-          <span v-if="!collapsed" class="truncate font-semibold">
-            {{ t('app.title') }}
-          </span>
-        </NuxtLink>
+        <!-- Collapsed, the header is narrower than logo and chevron plus padding, so the
+             group reaches into the right padding (keeping some distance to the edge). -->
+        <div class="flex w-full min-w-0 items-center gap-1" :class="collapsed ? '-me-3' : ''">
+          <NuxtLink to="/" class="flex items-center gap-2" :class="collapsed ? 'shrink-0' : 'min-w-0 flex-1'">
+            <!-- When collapsed only the logo remains, so it carries the alt text
+                 and the wordmark next to it is decorative. -->
+            <img
+              src="~/assets/images/logo.svg"
+              :alt="t('app.title')"
+              class="size-7 shrink-0"
+              width="28"
+              height="28"
+            >
+            <span v-if="!collapsed" class="truncate font-semibold">
+              {{ t('app.title') }}
+            </span>
+          </NuxtLink>
+          <!-- Collapse toggle next to the logo (design proposal): a small chevron that
+               points the way the sidebar will move. Hidden on mobile by Nuxt UI, where
+               the sidebar opens as a slideover. -->
+          <UDashboardSidebarCollapse
+            :icon="collapsed ? 'i-lucide-chevron-right' : 'i-lucide-chevron-left'"
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            class="shrink-0 px-0"
+          />
+        </div>
       </template>
 
       <template #default="{ collapsed }">
@@ -193,7 +208,7 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
           color="neutral"
           :collapsed="collapsed"
           :items="navItems"
-          class="w-full"
+          :class="collapsed ? 'w-8' : 'w-full'"
         />
 
         <template v-if="manageItems.length">
@@ -203,7 +218,7 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
             color="neutral"
             :collapsed="collapsed"
             :items="manageItems"
-            class="w-full"
+            :class="collapsed ? 'w-8' : 'w-full'"
           />
         </template>
 
@@ -216,7 +231,7 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
           orientation="vertical"
           :collapsed="collapsed"
           :items="plannedItems"
-          class="w-full"
+          :class="collapsed ? 'w-8' : 'w-full'"
         />
       </template>
 
@@ -235,13 +250,6 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
     <UDashboardPanel :ui="{ body: 'p-0 sm:p-0' }">
       <template #header>
         <UDashboardNavbar>
-          <!-- Collapse toggle at the top, set apart from the breadcrumb by a divider so it
-               reads as a control of the sidebar rather than a breadcrumb entry. -->
-          <template #leading>
-            <UDashboardSidebarCollapse />
-            <USeparator v-if="breadcrumb.length > 1" orientation="vertical" class="mx-1 h-5" />
-          </template>
-
           <!-- A typed "/" in the breadcrumb's own font: the slash icon was taller and
                thinner than the text around it. -->
           <template #title>
