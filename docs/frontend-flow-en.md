@@ -88,11 +88,13 @@ the refusal has to say what is missing rather than only that something failed.
 
 Three kinds of role govern this, all from Keycloak:
 
-**Platform roles**, realm roles named as UMP's model registry checks them: `viewer`,
-`user` and `provider` come with the realm's default role, so every new account has
-them; `verifier`, `access-admin` and `platform-admin` are assigned. Until 2026-10-28 they were
-called `user_role_viewer` and so on. Platform admins assign them in the
-administration, and can also take a default role away from a single account.
+**Platform roles**, realm roles named as UMP's model registry checks them. Only
+`viewer` comes with the realm's default role, so whoever registers can see the models
+(since 2026-11-05); `user`, `provider`, `mcp-user`, `verifier`, `access-admin` and
+`platform-admin` are assigned. Accounts that existed before 2026-11-05 hold `user`,
+`provider` and `mcp-user` directly. Until 2026-10-28 the roles were called
+`user_role_viewer` and so on. Platform admins assign them in the administration, and can
+also take the default role away from a single account.
 
 **Running a model** through a realm role named exactly like what it unlocks:
 `<server>` for every process of that model server, `<server>:<process>` for a single

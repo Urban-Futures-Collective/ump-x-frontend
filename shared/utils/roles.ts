@@ -36,12 +36,14 @@ export const PLATFORM_ROLES = [
 ] as const
 
 // The platform roles contained in the realm's default roles, so every new account has
-// them. The account list marks an account that lacks one.
-export const DEFAULT_ROLES = [ROLE_VIEWER, ROLE_USER, ROLE_PROVIDER, ROLE_MCP_USER] as const
+// them. Since 2026-11-05 only viewer: whoever registers sees the models; running,
+// contributing and MCP are given by an admin. The account list marks an account that
+// lacks a default role.
+export const DEFAULT_ROLES = [ROLE_VIEWER] as const
 
-// The roles shown as badges in the account list. The default roles are left out: nearly
-// everyone has them, so a badge would say nothing.
-export const BADGE_ROLES = [ROLE_VERIFIER, ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const
+// The roles shown as badges in the account list: every platform role except the default
+// one, which nearly everyone has, so a badge would say nothing.
+export const BADGE_ROLES = [ROLE_USER, ROLE_PROVIDER, ROLE_MCP_USER, ROLE_VERIFIER, ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const
 
 // Both admin roles open the admin portal; which sections it shows depends on which of
 // the two a user has.
