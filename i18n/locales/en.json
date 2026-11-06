@@ -255,7 +255,14 @@
       "onMap": "On the map",
       "info": "About {name}"
     },
-    "intro": "Choose a model, set its inputs and start the run. The result appears on the map."
+    "intro": "Choose a model, set its inputs and start the run. The result appears on the map.",
+    "source": {
+      "load": "Load status quo of the city",
+      "needs": "First choose: {fields}",
+      "loaded": "{n} features loaded from the model server.",
+      "failed": "Could not load: {msg}",
+      "notCollection": "The model server did not send a feature collection."
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",

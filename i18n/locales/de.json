@@ -255,7 +255,14 @@
       "onMap": "Auf der Karte",
       "info": "Zu {name}"
     },
-    "intro": "Wähle ein Modell, setze die Eingaben und starte den Lauf. Das Ergebnis erscheint auf der Karte."
+    "intro": "Wähle ein Modell, setze die Eingaben und starte den Lauf. Das Ergebnis erscheint auf der Karte.",
+    "source": {
+      "load": "Ist-Zustand der Stadt laden",
+      "needs": "Zuerst wählen: {fields}",
+      "loaded": "{n} Objekte vom Modellserver geladen.",
+      "failed": "Laden fehlgeschlagen: {msg}",
+      "notCollection": "Der Modellserver hat keine Feature-Collection geliefert."
+    }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",

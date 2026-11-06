@@ -1,3 +1,4 @@
+import type { SourceCollection } from '~/utils/sourceCollection'
 import type { FeatureCollection } from 'geojson'
 import type { LinkedLayer } from '~/utils/linkedLayers'
 import type { InputGroup } from '~/utils/inputKinds'
@@ -26,6 +27,8 @@ export interface ProcessInput {
   group: InputGroup
   /** From `x-ump-relevant-if`: only relevant for these values of other inputs. */
   relevantIf?: Record<string, unknown[]>
+  /** From `metadata` with role `source-collection`: where the input can be prefilled from. */
+  source?: SourceCollection
 }
 
 export interface ProcessDetail extends Process {
