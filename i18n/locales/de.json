@@ -1193,6 +1193,10 @@
     "empty": "Noch nichts auf der Karte",
     "areaSummary": "Gebiet mit {km2} km²",
     "drawn": "Eingezeichnet",
-    "done": "Fertig"
+    "done": "Fertig",
+    "layer": "Ebene:",
+    "editing": "Du bearbeitest {layer}:",
+    "draw": "{layer} zeichnen",
+    "drawKind": "{layer}: {kind}"
   }
 }

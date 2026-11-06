@@ -1193,6 +1193,10 @@
     "empty": "Nothing on the map yet",
     "areaSummary": "Area of {km2} km²",
     "drawn": "Drawn",
-    "done": "Done"
+    "done": "Done",
+    "layer": "Layer:",
+    "editing": "Editing {layer}:",
+    "draw": "Draw {layer}",
+    "drawKind": "{layer}: {kind}"
   }
 }
