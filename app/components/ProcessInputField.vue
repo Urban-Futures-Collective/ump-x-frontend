@@ -4,12 +4,14 @@ import type { ProcessInput } from '~/types/ump'
 // One input of the run form. Which field it gets follows the schema (see
 // app/utils/inputKinds.ts). The value is always text, as the form keeps it; the
 // conversion to numbers, booleans and objects happens once, in cleanInputs.
-// `area` is the value of the form's area input, shown as outline in the feature editor;
-// `extent` the data area of the chosen city (GeoJSON geometry), where the maps open.
-const props = defineProps<{ input: ProcessInput, problem: string | null, area?: string, extent?: string }>()
+// `extent`: the data area of the chosen city (GeoJSON geometry), where the map of a
+// "name or area" input opens. Area and feature inputs are edited in the shared map
+// window (ScenarioMapWindow); here they show a summary and a button that asks for it.
+const props = defineProps<{ input: ProcessInput, problem: string | null, extent?: string }>()
+const emit = defineEmits<{ openMap: [name: string] }>()
 const value = defineModel<string>({ required: true })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const kind = computed(() => inputKind(props.input))
 const choices = computed(() => choicesOf(props.input.schema).map(String))
@@ -44,6 +46,23 @@ const modes = computed(() => [
   { label: t('run.field.byName'), value: 'text' },
   { label: t('run.field.onMap'), value: 'map' },
 ])
+// Short summary of an area or feature input: area in km² or number of features. Invalid
+// features are reported below the field like any other problem.
+const parsedFeatures = computed(() => kind.value === 'features' ? parseFeatureCollection(value.value) : null)
+const summary = computed(() => {
+  if (!value.value) return ''
+  if (kind.value === 'geometry') {
+    try {
+      const km2 = geometryAreaKm2(JSON.parse(value.value))
+      return km2 ? t('scenarioMap.areaSummary', { km2: km2.toLocaleString(locale.value, { maximumFractionDigits: 2 }) }) : t('scenarioMap.drawn')
+    }
+    catch {
+      return ''
+    }
+  }
+  return parsedFeatures.value ? t('features.count', { n: parsedFeatures.value.features.length }) : ''
+})
+
 const mode = computed({
   get: () => mapMode.value ? 'map' : 'text',
   set: (m: string) => {
@@ -88,9 +107,15 @@ const mode = computed({
       />
     </div>
 
-    <GeometryInput v-else-if="kind === 'geometry'" v-model="value" :schema="input.schema" :extent="extent" />
-
-    <FeatureCollectionInput v-else-if="kind === 'features'" v-model="value" :schema="input.schema" :area="area" :extent="extent" />
+    <div v-else-if="kind === 'geometry' || kind === 'features'" class="flex flex-wrap items-center gap-3 rounded-md border border-(--ui-border) bg-white px-3 py-2">
+      <UIcon :name="kind === 'geometry' ? 'i-lucide-square-dashed' : 'i-lucide-layers'" class="size-4 text-(--ui-text-muted)" aria-hidden="true" />
+      <span class="text-sm" :class="summary ? '' : 'text-(--ui-text-muted)'">
+        {{ summary || t('scenarioMap.empty') }}
+      </span>
+      <UButton :id="`in-${input.name}`" type="button" size="sm" color="neutral" variant="outline" icon="i-lucide-map" class="ml-auto" @click="emit('openMap', input.name)">
+        {{ t('scenarioMap.open') }}
+      </UButton>
+    </div>
 
     <div v-else-if="kind === 'textOrGeometry'" class="space-y-2">
       <URadioGroup v-model="mode" :items="modes" orientation="horizontal" :aria-label="input.title" />

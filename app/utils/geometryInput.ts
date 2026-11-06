@@ -83,3 +83,31 @@ export function partsOf(geometry: unknown, kind: DrawKind): unknown[] {
   if (g.type === `Multi${kind}` && Array.isArray(g.coordinates)) return g.coordinates
   return []
 }
+
+// The geometry to send for several drawn or loaded geometries (each single or Multi*):
+// their shapes of the drawn kind, combined as toGeometry does.
+export function combineGeometries(geometries: unknown[], types: GeometryType[]): Record<string, unknown> | null {
+  const kind = drawKind(types)
+  return toGeometry(kind, types, geometries.flatMap(g => partsOf(g, kind)))
+}
+
+// Area of a Polygon or MultiPolygon in km² on a sphere (WGS 84 coordinates), for the
+// short summary in the form; holes are subtracted.
+export function geometryAreaKm2(geometry: unknown): number {
+  const R = 6378137
+  const rad = (d: number) => d * Math.PI / 180
+  const ring = (coords: number[][]) => {
+    let sum = 0
+    for (let i = 0; i < coords.length - 1; i++) {
+      const [x1, y1] = coords[i]!
+      const [x2, y2] = coords[i + 1]!
+      sum += rad(x2! - x1!) * (2 + Math.sin(rad(y1!)) + Math.sin(rad(y2!)))
+    }
+    return Math.abs(sum * R * R / 2)
+  }
+  const polygon = (rings: number[][][]) => rings.reduce((a, r, i) => a + (i === 0 ? ring(r) : -ring(r)), 0)
+  const g = geometry as { type?: string, coordinates?: unknown } | null
+  if (g?.type === 'Polygon') return polygon(g.coordinates as number[][][]) / 1e6
+  if (g?.type === 'MultiPolygon') return (g.coordinates as number[][][][]).reduce((a, p) => a + polygon(p), 0) / 1e6
+  return 0
+}

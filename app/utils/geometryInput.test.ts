@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { allowedGeometryTypes, allowsMany, drawKind, isGeometryInput, partsOf, toGeometry } from './geometryInput'
+import { combineGeometries, geometryAreaKm2, allowedGeometryTypes, allowsMany, drawKind, isGeometryInput, partsOf, toGeometry } from './geometryInput'
 
 // The area input of prepare-city, as the umep server describes it.
 const areaSchema = {
@@ -42,5 +42,24 @@ describe('geometry inputs', () => {
     expect(partsOf({ type: 'MultiPoint', coordinates: [[1, 2], [3, 4]] }, 'Point')).toEqual([[1, 2], [3, 4]])
     expect(partsOf({ type: 'Point', coordinates: [1, 2] }, 'Point')).toEqual([[1, 2]])
     expect(partsOf({ type: 'LineString', coordinates: [] }, 'Point')).toEqual([])
+  })
+})
+
+describe('combineGeometries', () => {
+  it('joins several polygons into a MultiPolygon when allowed', () => {
+    const a = { type: 'Polygon', coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]] }
+    const b = { type: 'MultiPolygon', coordinates: [[[[2, 2], [3, 2], [3, 3], [2, 2]]]] }
+    expect(combineGeometries([a, b], ['Polygon', 'MultiPolygon'])).toEqual({ type: 'MultiPolygon', coordinates: [a.coordinates, b.coordinates[0]] })
+    expect(combineGeometries([a], ['Polygon', 'MultiPolygon'])).toEqual(a)
+    expect(combineGeometries([], ['Polygon'])).toBeNull()
+  })
+})
+
+describe('geometryAreaKm2', () => {
+  it('is about right for a small square near Hamburg', () => {
+    // 0.01° x 0.01° at 53.46° N: about 0.663 km x 1.113 km
+    const square = { type: 'Polygon', coordinates: [[[9.93, 53.46], [9.94, 53.46], [9.94, 53.47], [9.93, 53.47], [9.93, 53.46]]] }
+    expect(geometryAreaKm2(square)).toBeCloseTo(0.738, 2)
+    expect(geometryAreaKm2({ type: 'Point', coordinates: [0, 0] })).toBe(0)
   })
 })
