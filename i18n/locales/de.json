@@ -1040,5 +1040,9 @@
     "viewList": "Als Liste zeigen",
     "newest": "Neueste zuerst",
     "name": "Name"
+  },
+  "partners": {
+    "bmftr": "Gefördert durch das Bundesministerium für Forschung, Technologie und Raumfahrt",
+    "ptf": "Unterstützt durch Prototype Fund"
   }
 }
