@@ -53,7 +53,7 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
+  <section class="space-y-6">
     <PageHeader :title="t('commons.title')" :intro="t('commons.intro')">
       <UInput
         v-model="search"
