@@ -245,15 +245,14 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
         />
       </template>
 
-      <!-- Operator, funders and partner at the bottom, as in the design. Each funding logo gets
-           its own row so its "funded by" / "supported by" line stays legible. Too small
-           to read when collapsed, so left out then. -->
+      <!-- Operator, partner and funders at the bottom, two per row so they stay small.
+           Too small to read when collapsed, so left out then. -->
       <template #footer="{ collapsed }">
-        <div v-if="!collapsed" class="w-full space-y-4 px-2.5 pb-1">
-          <img src="~/assets/images/ufc.svg" alt="Urban Futures Collective" class="w-36">
+        <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-x-4 gap-y-3 px-2.5 pb-1">
+          <img src="~/assets/images/ufc.svg" alt="Urban Futures Collective" class="max-h-9 w-full object-contain object-left">
+          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="max-h-7 w-full object-contain object-left opacity-60">
           <img :src="fundingLogos.bmftr" :alt="t('partners.bmftr')" class="w-full">
-          <img :src="fundingLogos.ptf" :alt="t('partners.ptf')" class="w-44">
-          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="h-7 w-auto opacity-60">
+          <img :src="fundingLogos.ptf" :alt="t('partners.ptf')" class="w-full">
         </div>
       </template>
     </UDashboardSidebar>
