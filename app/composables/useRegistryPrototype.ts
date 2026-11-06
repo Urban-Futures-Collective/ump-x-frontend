@@ -1,4 +1,4 @@
-import type { DiscoveredProcess, LangMap, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
+import type { DiscoveredProcess, LangMap, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryServerPatch, RegistryStatus } from '~/types/registry'
 import { ME, sampleDiscovery, sampleModels, sampleServers } from '~/prototype/registrySample'
 
 // The registry on sample data (Contribute, Verify). Everything lives in the browser and
@@ -49,6 +49,19 @@ export function useRegistryPrototype() {
     if (existing) return existing
     const s = { id: `s${Date.now()}`, name: input.name, baseUrl: input.baseUrl, authType: input.authType, hasCredentials: input.authType !== 'NoAuth' && !!input.secret, ownerSub: ME }
     servers.value.push(s)
+    return s
+  }
+
+  async function updateServer(id: string, patch: RegistryServerPatch): Promise<RegistryServer> {
+    const s = servers.value.find(x => x.id === id)
+    if (!s) throw new Error('unknown server')
+    if (patch.baseUrl !== undefined) s.baseUrl = patch.baseUrl
+    if (patch.auth !== undefined) {
+      s.authType = patch.auth?.type ?? 'NoAuth'
+      s.hasCredentials = !!patch.auth && patch.auth.type !== 'NoAuth' && !!patch.auth.secret
+    }
+    if (patch.ttwSeconds !== undefined) s.ttwSeconds = patch.ttwSeconds
+    if (patch.isActive !== undefined) s.isActive = patch.isActive
     return s
   }
 
@@ -118,6 +131,7 @@ export function useRegistryPrototype() {
     updateCard,
     modelIo,
     addServer,
+    updateServer,
     discover,
     addModels,
     reset,

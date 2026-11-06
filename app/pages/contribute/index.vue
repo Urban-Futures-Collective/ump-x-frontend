@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 import type { ListFilter } from '~/types/list'
-import type { RegistryModel, RegistryStatus } from '~/types/registry'
+import type { RegistryModel, RegistryServer, RegistryStatus } from '~/types/registry'
 import { REGISTRY_STATUSES } from '~/types/registry'
 import { CONTRIBUTE_GROUPS, contributeGroup } from '~/utils/registryWorkflow'
 import type { ContributeGroup } from '~/utils/registryWorkflow'
@@ -59,6 +59,9 @@ const open = reactive<Record<ContributeGroup, boolean>>({ action: true, awaiting
 
 const servers = computed(() => myServers.value.filter(s => matchesSearch(search.value, s.name, s.baseUrl)))
 const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === name).length
+
+// The server whose edit dialog is open (only own servers are listed here).
+const editing = ref<RegistryServer | null>(null)
 </script>
 
 <template>
@@ -148,9 +151,15 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
       </p>
       <ul v-else class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <li v-for="s in servers" :key="s.id" class="space-y-1 rounded-lg border border-(--ui-border) bg-white p-4">
-          <p class="font-semibold text-(--ui-text-highlighted)">
-            {{ s.name }}
-          </p>
+          <div class="flex items-start justify-between gap-2">
+            <p class="font-semibold text-(--ui-text-highlighted)">
+              {{ s.name }}
+              <UBadge v-if="s.isActive === false" color="neutral" variant="soft" size="sm" class="ml-1 align-middle">
+                {{ t('registry.server.inactive') }}
+              </UBadge>
+            </p>
+            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-pencil" :aria-label="t('registry.server.edit', { name: s.name })" @click="() => { editing = s }" />
+          </div>
           <p class="break-all text-sm text-(--ui-text-muted)">
             {{ s.baseUrl }}
           </p>
@@ -159,6 +168,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
           </p>
         </li>
       </ul>
+      <ServerEditModal :server="editing" @close="() => { editing = null }" />
     </template>
   </section>
 </template>

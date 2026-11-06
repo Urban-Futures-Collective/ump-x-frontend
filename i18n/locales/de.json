@@ -920,7 +920,21 @@
       "runHint": "Öffnet das Lauf-Formular in einem neuen Tab. Die Job-ID trägst du auf der Prüfseite ein.",
       "back": "Zurück zur Prüfung"
     },
-    "publishRolesMissing": "Das Modell ist veröffentlicht, aber die Zugriffsrollen {roles} konnten in Keycloak nicht angelegt werden. Bitte die Administration, sie anzulegen."
+    "publishRolesMissing": "Das Modell ist veröffentlicht, aber die Zugriffsrollen {roles} konnten in Keycloak nicht angelegt werden. Bitte die Administration, sie anzulegen.",
+    "server": {
+      "edit": "{name} bearbeiten",
+      "editTitle": "{name} bearbeiten",
+      "nameFixed": "Der Name lässt sich nicht ändern: Er steckt in jeder Modellkennung und Zugangsrolle.",
+      "urlHint": "Eine https://-Adresse",
+      "keepLogin": "Lass das Geheimnis leer, um die gespeicherte Anmeldung zu behalten. Verschlüsselt gespeichert, niemand kann es auslesen.",
+      "ttw": "Zeitlimit für Läufe (Minuten)",
+      "ttwHint": "Kommt in dieser Zeit keine Antwort, gilt ein Lauf als gescheitert.",
+      "active": "Aktiv",
+      "activeHint": "Einen inaktiven Server nutzt das UMP nicht.",
+      "inactive": "inaktiv",
+      "save": "Speichern",
+      "saved": "{name} gespeichert."
+    }
   },
   "results": {
     "legend": "Legende",

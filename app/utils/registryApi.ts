@@ -1,4 +1,4 @@
-import type { AuthType, DiscoveredProcess, LangMap, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryStatus } from '~/types/registry'
+import type { AuthType, DiscoveredProcess, LangMap, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerPatch, RegistryStatus } from '~/types/registry'
 import { REGISTRY_STATUSES } from '~/types/registry'
 
 // Shapes of the UMP registry API (/registry/v1, concept F12) and their mapping onto
@@ -66,6 +66,8 @@ export interface ApiServer {
   owner_sub?: string | null
   auth_type: string
   credentials_set: boolean
+  ttw_job_done_seconds?: number
+  is_active?: boolean
 }
 
 export interface ApiDiscoveredProcess {
@@ -189,7 +191,16 @@ export function serverFromApi(s: ApiServer): RegistryServer {
   const authType = (['NoAuth', 'BasicAuth', 'ApiKey', 'BearerToken'] as AuthType[]).includes(s.auth_type as AuthType)
     ? s.auth_type as AuthType
     : 'NoAuth'
-  return { id: s.id, name: s.name, baseUrl: s.base_url, authType, hasCredentials: s.credentials_set, ownerSub: s.owner_sub ?? '' }
+  return {
+    id: s.id,
+    name: s.name,
+    baseUrl: s.base_url,
+    authType,
+    hasCredentials: s.credentials_set,
+    ownerSub: s.owner_sub ?? '',
+    ttwSeconds: s.ttw_job_done_seconds,
+    isActive: s.is_active ?? true,
+  }
 }
 
 export function discoveredFromApi(p: ApiDiscoveredProcess): DiscoveredProcess {
@@ -320,4 +331,17 @@ export function ioFromDescription(description: unknown): RegistryIo[] {
     ...Object.entries(d.inputs ?? {}).map(([id, i]) => ({ id, kind: 'input' as const, type: typeOf(i.schema) })),
     ...Object.entries(d.outputs ?? {}).map(([id, o]) => ({ id, kind: 'output' as const, type: typeOf(o.schema) })),
   ]
+}
+
+/**
+ * Body of PATCH /servers/{id}: only what is set. `authentication` is sent only when the
+ * login changes; UMP then replaces type and secret (null: no authentication).
+ */
+export function serverPatchBody(patch: RegistryServerPatch): Record<string, unknown> {
+  const body: Record<string, unknown> = {}
+  if (patch.baseUrl !== undefined) body.base_url = patch.baseUrl
+  if (patch.auth !== undefined) body.authentication = patch.auth === null ? null : credentialsBody(patch.auth)
+  if (patch.ttwSeconds !== undefined) body.ttw_job_done_seconds = patch.ttwSeconds
+  if (patch.isActive !== undefined) body.is_active = patch.isActive
+  return body
 }

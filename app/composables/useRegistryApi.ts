@@ -1,6 +1,6 @@
-import type { DiscoveredProcess, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryStatus } from '~/types/registry'
+import type { DiscoveredProcess, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryServerPatch, RegistryStatus } from '~/types/registry'
 import type { ApiDiscoveredProcess, ApiModel, ApiServer } from '~/utils/registryApi'
-import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, ioFromDescription, modelFromApi, serverFromApi } from '~/utils/registryApi'
+import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, ioFromDescription, modelFromApi, serverFromApi, serverPatchBody } from '~/utils/registryApi'
 
 // The registry from UMP (/registry/v1, concept F12), through the /ump proxy, which adds
 // the user's token. Same functions as useRegistryPrototype (see useRegistry).
@@ -125,6 +125,19 @@ export function useRegistryApi() {
     return server
   }
 
+  // Owner or platform admin; If-Match as for the card, so a change made elsewhere in the
+  // meantime is refused rather than overwritten.
+  async function updateServer(id: string, patch: RegistryServerPatch): Promise<RegistryServer> {
+    const current = await $fetch.raw(`${base}/servers/${id}`)
+    const updated = serverFromApi(await $fetch<ApiServer>(`${base}/servers/${id}`, {
+      method: 'PATCH',
+      headers: { 'If-Match': ifMatch(current.headers.get('etag')) },
+      body: serverPatchBody(patch),
+    }))
+    servers.value = servers.value.map(s => s.id === id ? updated : s)
+    return updated
+  }
+
   async function discover(server: RegistryServer): Promise<DiscoveredProcess[]> {
     const result = await $fetch<{ processes: ApiDiscoveredProcess[] }>(`${base}/servers/${server.id}/discover`, { method: 'POST' })
     return result.processes.map(discoveredFromApi)
@@ -158,6 +171,7 @@ export function useRegistryApi() {
     updateCard,
     modelIo,
     addServer,
+    updateServer,
     discover,
     addModels,
     reset,
