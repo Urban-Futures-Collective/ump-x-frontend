@@ -66,7 +66,12 @@
     "download": "Download result",
     "resultPending": "The result appears here as soon as the run has finished.",
     "search": "Search scenarios",
-    "noMatch": "No scenario matches “{q}”."
+    "noMatch": "No scenario matches “{q}”.",
+    "intro": "Your runs, with status and result.",
+    "sortModel": "Model",
+    "filter": "Filter by status",
+    "filterAll": "All statuses",
+    "count": "no runs | 1 run | {n} runs"
   },
   "admin": {
     "title": "Administration",
@@ -136,7 +141,8 @@
       "invited": "Account {name} created, the invitation is on its way to {email}.",
       "notInvited": "Account {name} created, but the invitation could not be sent. You can send it again from the menu in the list."
     },
-    "audit": "Audit log"
+    "audit": "Audit log",
+    "intro": "Accounts, platform roles and the audit log."
   },
   "processes": {
     "title": "Model processes",
@@ -155,13 +161,11 @@
     "filter": {
       "topic": "Topic",
       "language": "Language",
-      "licence": "Licence",
-      "reset": "Reset filters"
+      "licence": "Licence"
     },
     "sort": {
-      "label": "Sort",
-      "published": "Sort: recently published",
-      "name": "Sort: name"
+      "published": "Recently published",
+      "name": "Name"
     },
     "count": "no models | 1 model | {n} models",
     "fallbackLang": "Models are shown in their main language where no translation exists",
@@ -859,7 +863,8 @@
       "continue": "Continue review",
       "open": "Open",
       "noneBadge": "No new models",
-      "noneText": "You have nothing to verify yet."
+      "noneText": "You have nothing to verify yet.",
+      "search": "Search models"
     },
     "me": "me",
     "otherOwner": "another provider",
@@ -982,7 +987,8 @@
       "auditLog": "Open audit log"
     },
     "revokeTitle": "Revoke access for {name}",
-    "revokeIntro": "The person loses this access. Your reason is sent by email if the access came from a request."
+    "revokeIntro": "The person loses this access. Your reason is sent by email if the access came from a request.",
+    "intro": "Who may run which model: decide requests and grant or revoke access."
   },
   "audit": {
     "intro": "Every change to models, servers and access, and every run, newest first. Kept for three months.",
@@ -1021,6 +1027,17 @@
       "server_rediscover": "Models looked up again",
       "job_execute": "Run started",
       "job_complete": "Run finished"
-    }
+    },
+    "filter": "Filter by action"
+  },
+  "list": {
+    "sort": "Sort",
+    "filter": "Filter",
+    "all": "All",
+    "reset": "Reset filters",
+    "viewTiles": "Show as tiles",
+    "viewList": "Show as list",
+    "newest": "Newest first",
+    "name": "Name"
   }
 }

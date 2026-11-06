@@ -66,7 +66,12 @@
     "download": "Ergebnis herunterladen",
     "resultPending": "Das Ergebnis erscheint hier, sobald der Lauf fertig ist.",
     "search": "Szenarien durchsuchen",
-    "noMatch": "Kein Szenario passt zu „{q}“."
+    "noMatch": "Kein Szenario passt zu „{q}“.",
+    "intro": "Deine Läufe mit Status und Ergebnis.",
+    "sortModel": "Modell",
+    "filter": "Nach Status filtern",
+    "filterAll": "Alle Status",
+    "count": "keine Läufe | 1 Lauf | {n} Läufe"
   },
   "admin": {
     "title": "Administration",
@@ -136,7 +141,8 @@
       "invited": "Konto {name} angelegt, die Einladung ist an {email} unterwegs.",
       "notInvited": "Konto {name} angelegt, aber die Einladung konnte nicht gesendet werden. Sie lässt sich in der Liste über das Menü erneut senden."
     },
-    "audit": "Audit-Log"
+    "audit": "Audit-Log",
+    "intro": "Konten, Plattformrollen und das Audit-Log."
   },
   "processes": {
     "title": "Modell-Prozesse",
@@ -155,13 +161,11 @@
     "filter": {
       "topic": "Thema",
       "language": "Sprache",
-      "licence": "Lizenz",
-      "reset": "Filter zurücksetzen"
+      "licence": "Lizenz"
     },
     "sort": {
-      "label": "Sortieren",
-      "published": "Sortieren: zuletzt veröffentlicht",
-      "name": "Sortieren: Name"
+      "published": "Zuletzt veröffentlicht",
+      "name": "Name"
     },
     "count": "keine Modelle | 1 Modell | {n} Modelle",
     "fallbackLang": "Ohne Übersetzung erscheinen Modelle in ihrer Hauptsprache",
@@ -859,7 +863,8 @@
       "continue": "Prüfung fortsetzen",
       "open": "Öffnen",
       "noneBadge": "Keine neuen Modelle",
-      "noneText": "Gerade gibt es nichts zu prüfen."
+      "noneText": "Gerade gibt es nichts zu prüfen.",
+      "search": "Modelle suchen"
     },
     "me": "ich",
     "otherOwner": "andere Person",
@@ -982,7 +987,8 @@
       "auditLog": "Audit-Log öffnen"
     },
     "revokeTitle": "Zugang für {name} entziehen",
-    "revokeIntro": "Die Person verliert diesen Zugang. Kam der Zugang über eine Anfrage, bekommt sie deine Begründung per E-Mail."
+    "revokeIntro": "Die Person verliert diesen Zugang. Kam der Zugang über eine Anfrage, bekommt sie deine Begründung per E-Mail.",
+    "intro": "Wer welches Modell ausführen darf: Anfragen entscheiden, Zugang geben oder entziehen."
   },
   "audit": {
     "intro": "Jede Änderung an Modellen, Servern und Zugängen und jeder Lauf, neueste zuerst. Wird drei Monate aufbewahrt.",
@@ -1021,6 +1027,17 @@
       "server_rediscover": "Modelle erneut gesucht",
       "job_execute": "Lauf gestartet",
       "job_complete": "Lauf beendet"
-    }
+    },
+    "filter": "Nach Aktion filtern"
+  },
+  "list": {
+    "sort": "Sortieren",
+    "filter": "Filtern",
+    "all": "Alle",
+    "reset": "Filter zurücksetzen",
+    "viewTiles": "Als Kacheln zeigen",
+    "viewList": "Als Liste zeigen",
+    "newest": "Neueste zuerst",
+    "name": "Name"
   }
 }
