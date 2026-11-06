@@ -1,3 +1,4 @@
+import { featureSchemaOf, featuresWithProblems, isFeatureCollectionInput, parseFeatureCollection } from './featureCollection'
 import { geometryBranch, looksLikeGeometry, textBranch } from './geometryInput'
 import { choicesOf } from './inputKinds'
 
@@ -94,6 +95,7 @@ export type InputProblem
     | { key: 'json' }
     | { key: 'choice' }
     | { key: 'date' }
+    | { key: 'features', limit: number }
 
 export function inputProblem(field: InputRule, value: unknown): InputProblem | null {
   const text = textOf(value)
@@ -126,6 +128,14 @@ export function inputProblem(field: InputRule, value: unknown): InputProblem | n
     if (choices.map(String).includes(text)) return null
     if (takesDate) return isDate(text) ? null : (choices.length ? { key: 'choice' } : { key: 'date' })
     return { key: 'choice' }
+  }
+
+  // A feature collection: every feature needs the properties its schema asks for.
+  if (isFeatureCollectionInput(schema)) {
+    const collection = parseFeatureCollection(text)
+    if (!collection) return { key: 'json' }
+    const n = featuresWithProblems(collection.features as { properties?: Record<string, unknown> | null }[], featureSchemaOf(schema))
+    return n ? { key: 'features', limit: n } : null
   }
 
   if (field.type === 'object' || field.type === 'array') {
