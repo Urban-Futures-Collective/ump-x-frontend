@@ -252,7 +252,8 @@
       "none": "Not set",
       "pickDate": "Pick a date …",
       "byName": "Place name",
-      "onMap": "On the map"
+      "onMap": "On the map",
+      "info": "About {name}"
     },
     "intro": "Choose a model, set its inputs and start the run. The result appears on the map."
   },

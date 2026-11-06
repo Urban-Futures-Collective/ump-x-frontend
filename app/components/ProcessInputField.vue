@@ -54,10 +54,28 @@ const mode = computed({
 
 <template>
   <div class="space-y-1">
-    <label :for="`in-${input.name}`" class="text-sm font-medium">
-      {{ input.title }}
-      <span v-if="input.required" class="text-(--ui-error)">*</span>
-    </label>
+    <div class="flex items-center gap-1">
+      <label :for="`in-${input.name}`" class="text-sm font-medium">
+        {{ input.title }}
+        <span v-if="input.required" class="text-(--ui-error)">*</span>
+      </label>
+      <!-- The description opens on click (a hover tooltip does not work on touch). -->
+      <UPopover v-if="input.description" :content="{ side: 'top', align: 'start' }">
+        <UButton
+          icon="i-lucide-info"
+          color="neutral"
+          variant="ghost"
+          size="xs"
+          :aria-label="t('run.field.info', { name: input.title })"
+          class="text-(--ui-text-muted)"
+        />
+        <template #content>
+          <p class="max-w-xs p-3 text-sm">
+            {{ input.description }}
+          </p>
+        </template>
+      </UPopover>
+    </div>
 
     <!-- Yes/no as a switch; stored as "true"/"false". -->
     <div v-if="kind === 'boolean'">
@@ -100,16 +118,11 @@ const mode = computed({
       :id="`in-${input.name}`"
       v-model="value"
       :type="kind === 'number' ? 'number' : kind === 'date' ? 'date' : 'text'"
-      :placeholder="input.description"
       :color="problem ? 'error' : undefined"
       :highlight="!!problem"
       class="w-full"
     />
 
-    <!-- Fields without a placeholder show the description below. -->
-    <p v-if="input.description && kind !== 'text' && kind !== 'number'" class="text-xs text-(--ui-text-dimmed)">
-      {{ input.description }}
-    </p>
     <p v-if="problem" class="text-xs text-red-600">
       {{ problem }}
     </p>
