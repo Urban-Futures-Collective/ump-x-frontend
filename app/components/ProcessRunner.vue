@@ -78,6 +78,22 @@ watch(() => props.processId, () => { attempted.value = false })
 // Inputs that matter for the current values (`x-ump-relevant-if`). Hidden ones are
 // neither checked nor sent.
 const visibleInputs = computed(() => (proc.value?.inputs ?? []).filter(inp => isRelevant(inp.relevantIf, form.value)))
+// The data area of the chosen city, drawn on the maps and zoomed to (see cityShapeUrl).
+const cityUrl = computed(() => cityShapeUrl((proc.value?.inputs ?? []).map(inp => inp.source), form.value.city))
+const cityShape = ref<string | undefined>()
+watch(cityUrl, async (url) => {
+  if (!import.meta.client) return
+  cityShape.value = undefined
+  if (!url) return
+  try {
+    const city = await $fetch<{ geometry?: unknown }>(url)
+    if (url === cityUrl.value && city?.geometry) cityShape.value = JSON.stringify(city.geometry)
+  }
+  catch {
+    // The maps then start where they always do.
+  }
+}, { immediate: true })
+
 const inputTitles = computed(() => Object.fromEntries((proc.value?.inputs ?? []).map(inp => [inp.name, inp.title])))
 const mainInputs = computed(() => visibleInputs.value.filter(inp => inp.group !== 'advanced'))
 const advancedInputs = computed(() => visibleInputs.value.filter(inp => inp.group === 'advanced'))
@@ -134,6 +150,7 @@ async function onSubmit() {
         :input="inp"
         :problem="shownProblem(inp.name)"
         :area="form.area"
+        :extent="cityShape"
       >
         <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
           {{ t('run.defaultHint', { value: String(inp.default) }) }}
@@ -161,6 +178,7 @@ async function onSubmit() {
               :input="inp"
               :problem="shownProblem(inp.name)"
               :area="form.area"
+              :extent="cityShape"
             >
               <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
                 {{ t('run.defaultHint', { value: String(inp.default) }) }}

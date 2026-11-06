@@ -4,8 +4,9 @@ import type { ProcessInput } from '~/types/ump'
 // One input of the run form. Which field it gets follows the schema (see
 // app/utils/inputKinds.ts). The value is always text, as the form keeps it; the
 // conversion to numbers, booleans and objects happens once, in cleanInputs.
-// `area` is the value of the form's area input, shown as outline in the feature editor.
-const props = defineProps<{ input: ProcessInput, problem: string | null, area?: string }>()
+// `area` is the value of the form's area input, shown as outline in the feature editor;
+// `extent` the data area of the chosen city (GeoJSON geometry), where the maps open.
+const props = defineProps<{ input: ProcessInput, problem: string | null, area?: string, extent?: string }>()
 const value = defineModel<string>({ required: true })
 
 const { t } = useI18n()
@@ -87,13 +88,13 @@ const mode = computed({
       />
     </div>
 
-    <GeometryInput v-else-if="kind === 'geometry'" v-model="value" :schema="input.schema" />
+    <GeometryInput v-else-if="kind === 'geometry'" v-model="value" :schema="input.schema" :extent="extent" />
 
-    <FeatureCollectionInput v-else-if="kind === 'features'" v-model="value" :schema="input.schema" :area="area" />
+    <FeatureCollectionInput v-else-if="kind === 'features'" v-model="value" :schema="input.schema" :area="area" :extent="extent" />
 
     <div v-else-if="kind === 'textOrGeometry'" class="space-y-2">
       <URadioGroup v-model="mode" :items="modes" orientation="horizontal" :aria-label="input.title" />
-      <GeometryInput v-if="mapMode" v-model="value" :schema="geometry" />
+      <GeometryInput v-if="mapMode" v-model="value" :schema="geometry" :extent="extent" />
       <UInput
         v-else
         :id="`in-${input.name}`"
