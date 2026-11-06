@@ -920,7 +920,21 @@
       "runHint": "Opens the run form in a new tab. Use the job ID on the review page.",
       "back": "Back to the review"
     },
-    "publishRolesMissing": "The model is published, but the access roles {roles} could not be created in Keycloak. Please ask an administrator to create them."
+    "publishRolesMissing": "The model is published, but the access roles {roles} could not be created in Keycloak. Please ask an administrator to create them.",
+    "server": {
+      "edit": "Edit {name}",
+      "editTitle": "Edit {name}",
+      "nameFixed": "The name cannot be changed: it is part of every model id and access role.",
+      "urlHint": "An https:// address",
+      "keepLogin": "Leave the secret empty to keep the stored login. Stored encrypted; nobody can read it back.",
+      "ttw": "Run timeout (minutes)",
+      "ttwHint": "After this time without an answer, a run counts as failed.",
+      "active": "Active",
+      "activeHint": "UMP does not use an inactive server.",
+      "inactive": "inactive",
+      "save": "Save",
+      "saved": "{name} saved."
+    }
   },
   "results": {
     "legend": "Legend",

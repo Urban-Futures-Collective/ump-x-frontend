@@ -27,6 +27,21 @@ export interface RegistryServer {
   /** Credentials are write-only: the API only says whether some are stored. */
   hasCredentials: boolean
   ownerSub: string
+  /** Seconds after which a run counts as stuck (UMP default 1500). */
+  ttwSeconds?: number
+  /** An inactive server's models are not offered. */
+  isActive?: boolean
+}
+
+/**
+ * A change to a model server (PATCH /servers/{id}); the name cannot change. `auth`
+ * absent keeps the stored login, null switches to no authentication.
+ */
+export interface RegistryServerPatch {
+  baseUrl?: string
+  auth?: { type: AuthType, user?: string, secret?: string, keyName?: string } | null
+  ttwSeconds?: number
+  isActive?: boolean
 }
 
 export interface RegistryInput {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, ioFromDescription, langList, langMap, modelFromApi, serverFromApi } from './registryApi'
+import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, ioFromDescription, langList, langMap, modelFromApi, serverFromApi, serverPatchBody } from './registryApi'
 
 const apiModel = {
   id: 'a1',
@@ -61,9 +61,17 @@ describe('registry API mapping', () => {
     expect(modelFromApi({ ...apiModel, status: 'archived' }).status).toBe('draft')
   })
 
+  it('builds the server PATCH body from what changed only', () => {
+    expect(serverPatchBody({})).toEqual({})
+    expect(serverPatchBody({ baseUrl: 'https://y', isActive: false })).toEqual({ base_url: 'https://y', is_active: false })
+    expect(serverPatchBody({ auth: null })).toEqual({ authentication: null })
+    expect(serverPatchBody({ auth: { type: 'BearerToken', secret: 't' }, ttwSeconds: 600 }))
+      .toEqual({ authentication: { type: 'BearerToken', token: 't' }, ttw_job_done_seconds: 600 })
+  })
+
   it('maps servers and discovered processes', () => {
     expect(serverFromApi({ id: 's1', name: 'osmnx', base_url: 'https://x', owner_sub: null, auth_type: 'BasicAuth', credentials_set: true }))
-      .toEqual({ id: 's1', name: 'osmnx', baseUrl: 'https://x', authType: 'BasicAuth', hasCredentials: true, ownerSub: '' })
+      .toEqual({ ttwSeconds: undefined, isActive: true, id: 's1', name: 'osmnx', baseUrl: 'https://x', authType: 'BasicAuth', hasCredentials: true, ownerSub: '' })
     expect(discoveredFromApi({ id: 'p', title: null, version: '1.0', model_id: 'm1' }))
       .toEqual({ id: 'p', title: undefined, description: undefined, version: '1.0', modelId: 'm1' })
   })
