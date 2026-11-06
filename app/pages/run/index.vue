@@ -74,9 +74,10 @@ watch(queryProcess, (id) => {
       </p>
     </section>
 
-    <!-- Runner + map. Side by side only from xl: below that, two columns next to
+    <!-- Runner + map. Next to the list it starts level with the first model (pt-10 =
+         the list heading plus its gap). Side by side only from xl: below that, two columns next to
          the model list are too narrow for both the inputs and the map. -->
-    <section class="grid items-start gap-4 xl:grid-cols-2">
+    <section class="grid items-start gap-4 lg:pt-10 xl:grid-cols-2">
       <div class="space-y-4">
         <ProcessRunner
           v-if="selectedProcessId"
