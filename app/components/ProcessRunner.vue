@@ -94,6 +94,15 @@ watch(cityUrl, async (url) => {
   }
 }, { immediate: true })
 
+// Area and feature inputs share one map window (ScenarioMapWindow).
+const mapInputs = computed(() => visibleInputs.value.filter(inp => ['geometry', 'features'].includes(inputKind(inp))))
+const mapOpen = ref(false)
+const mapActive = ref('')
+function openMap(name: string) {
+  mapActive.value = name
+  mapOpen.value = true
+}
+
 const inputTitles = computed(() => Object.fromEntries((proc.value?.inputs ?? []).map(inp => [inp.name, inp.title])))
 const mainInputs = computed(() => visibleInputs.value.filter(inp => inp.group !== 'advanced'))
 const advancedInputs = computed(() => visibleInputs.value.filter(inp => inp.group === 'advanced'))
@@ -149,8 +158,8 @@ async function onSubmit() {
         v-model="form[inp.name]!"
         :input="inp"
         :problem="shownProblem(inp.name)"
-        :area="form.area"
         :extent="cityShape"
+        @open-map="openMap"
       >
         <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
           {{ t('run.defaultHint', { value: String(inp.default) }) }}
@@ -177,8 +186,8 @@ async function onSubmit() {
               v-model="form[inp.name]!"
               :input="inp"
               :problem="shownProblem(inp.name)"
-              :area="form.area"
               :extent="cityShape"
+              @open-map="openMap"
             >
               <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
                 {{ t('run.defaultHint', { value: String(inp.default) }) }}
@@ -237,6 +246,16 @@ async function onSubmit() {
         {{ t('run.error', { msg: errorText }) }}
       </p>
     </form>
+
+    <ScenarioMapWindow
+      v-if="mapInputs.length"
+      v-model:open="mapOpen"
+      v-model:active="mapActive"
+      v-model:values="form"
+      :inputs="mapInputs"
+      :extent="cityShape"
+      :titles="inputTitles"
+    />
 
   </div>
 </template>

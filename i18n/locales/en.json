@@ -1185,5 +1185,14 @@
     },
     "cancel": "Cancel",
     "applyJson": "Apply JSON"
+  },
+  "scenarioMap": {
+    "title": "Map",
+    "intro": "All map inputs of the model in one map. Choose the layer to edit above; the others stay visible.",
+    "open": "Edit on map",
+    "empty": "Nothing on the map yet",
+    "areaSummary": "Area of {km2} km²",
+    "drawn": "Drawn",
+    "done": "Done"
   }
 }

@@ -1185,5 +1185,14 @@
     },
     "cancel": "Abbrechen",
     "applyJson": "JSON übernehmen"
+  },
+  "scenarioMap": {
+    "title": "Karte",
+    "intro": "Alle Karteneingaben des Modells in einer Karte. Oben die Ebene zum Bearbeiten wählen, die anderen bleiben sichtbar.",
+    "open": "Auf Karte bearbeiten",
+    "empty": "Noch nichts auf der Karte",
+    "areaSummary": "Gebiet mit {km2} km²",
+    "drawn": "Eingezeichnet",
+    "done": "Fertig"
   }
 }
