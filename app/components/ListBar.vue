@@ -32,8 +32,9 @@ function pick(f: ListFilter, value: string) {
   else set(f.key, [value])
 }
 
-// One filter: its values with "All" on top, as in Contribute. Several: one section each,
-// they stay open while ticking, and a reset at the end.
+// One filter: its values with "All" on top, as in Contribute. Several: one submenu each
+// (so long lists stay short), named with the number of ticked values, they stay open
+// while ticking, and a reset at the end.
 const filterMenu = computed<DropdownMenuItem[][]>(() => {
   const several = filters.value.length > 1
   const groups = filters.value.map((f) => {
@@ -53,17 +54,17 @@ const filterMenu = computed<DropdownMenuItem[][]>(() => {
         onUpdateChecked: () => set(f.key, []),
       })
     }
-    return several ? [{ label: f.label, type: 'label' as const }, ...items] : items
+    if (!several) return items
+    const n = chosen(f.key).length
+    return [{ label: n ? `${f.label} · ${n}` : f.label, children: items }]
   })
-  if (several) {
-    groups.push([{
-      label: t('list.reset'),
-      icon: 'i-lucide-x',
-      disabled: !active.value,
-      onSelect: () => { filter.value = {} },
-    }])
-  }
-  return groups
+  if (!several) return groups
+  return [groups.flat(), [{
+    label: t('list.reset'),
+    icon: 'i-lucide-x',
+    disabled: !active.value,
+    onSelect: () => { filter.value = {} },
+  }]]
 })
 const filterLabel = computed(() => filters.value.length === 1 ? filters.value[0]!.label : t('list.filter'))
 </script>
