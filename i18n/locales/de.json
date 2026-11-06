@@ -252,7 +252,8 @@
       "none": "Keine Angabe",
       "pickDate": "Datum wählen …",
       "byName": "Ortsname",
-      "onMap": "Auf der Karte"
+      "onMap": "Auf der Karte",
+      "info": "Zu {name}"
     },
     "intro": "Wähle ein Modell, setze die Eingaben und starte den Lauf. Das Ergebnis erscheint auf der Karte."
   },
