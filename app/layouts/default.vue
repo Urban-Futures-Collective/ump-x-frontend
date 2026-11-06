@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import bmftrDe from '~/assets/images/funding/bmftr-de.svg?url'
+import bmftrEn from '~/assets/images/funding/bmftr-en.svg?url'
+import ptfDe from '~/assets/images/funding/ptf-de.svg?url'
+import ptfEn from '~/assets/images/funding/ptf-en.svg?url'
 import type { BreadcrumbItem, NavigationMenuItem } from '@nuxt/ui'
 
 // Workspace layout: collapsible sidebar on the left, header with breadcrumbs,
 // content in a light card.
 const { t, locale, locales, setLocale } = useI18n()
+
+// Funding logos in the language of the page (BMFTR "Gefördert durch", Prototype Fund
+// "Unterstützt durch"); both must be shown as delivered, so not muted like the rest.
+const fundingLogos = computed(() => locale.value === 'de'
+  ? { bmftr: bmftrDe, ptf: ptfDe }
+  : { bmftr: bmftrEn, ptf: ptfEn })
 const route = useRoute()
 const { loggedIn, user, login, logout } = useOidcAuth()
 const { isAdmin, isAccessAdmin, isProvider, isVerifier } = useUmpRoles()
@@ -235,12 +245,14 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
         />
       </template>
 
-      <!-- Partners at the bottom, as in the design; muted so they do not compete with
-           the navigation. Too small to read when collapsed, so left out then. -->
+      <!-- Operator, partner and funders at the bottom, two per row so they stay small.
+           Too small to read when collapsed, so left out then. -->
       <template #footer="{ collapsed }">
-        <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-4 px-2.5 pb-1 opacity-60">
-          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="mx-auto max-h-8 w-full object-contain">
-          <img src="~/assets/images/prototype-fund.png" alt="Prototype Fund" class="mx-auto max-h-8 w-full object-contain">
+        <div v-if="!collapsed" class="grid w-full grid-cols-2 items-center gap-x-4 gap-y-3 px-2.5 pb-1">
+          <img src="~/assets/images/ufc.svg" alt="Urban Futures Collective" class="max-h-9 w-full object-contain object-left">
+          <img src="~/assets/images/city-science-lab.png" alt="City Science Lab" class="max-h-7 w-full object-contain object-left opacity-60">
+          <img :src="fundingLogos.bmftr" :alt="t('partners.bmftr')" class="w-full">
+          <img :src="fundingLogos.ptf" :alt="t('partners.ptf')" class="w-full">
         </div>
       </template>
     </UDashboardSidebar>

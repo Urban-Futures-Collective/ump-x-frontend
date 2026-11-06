@@ -1040,5 +1040,9 @@
     "viewList": "Show as list",
     "newest": "Newest first",
     "name": "Name"
+  },
+  "partners": {
+    "bmftr": "Funded by the Federal Ministry of Research, Technology and Space",
+    "ptf": "Supported by Prototype Fund"
   }
 }

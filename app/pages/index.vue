@@ -19,6 +19,8 @@
 definePageMeta({ layout: false })
 
 const { t, locale, locales, setLocale } = useI18n()
+// Tab title for the start page; the template adds "· UMP-X".
+useHead({ title: () => t('nav.home') })
 const route = useRoute()
 const { loggedIn, login } = useOidcAuth()
 
