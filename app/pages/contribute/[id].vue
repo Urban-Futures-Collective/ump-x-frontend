@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ContributorRole, LangMap, RegistryCardEdit, RegistryIo } from '~/types/registry'
+import type { ContributorRole, LangMap, RegistryCardEdit, RegistryIo, RegistryStatus } from '~/types/registry'
 import { CONTRIBUTOR_ROLES } from '~/types/registry'
 
 // One of the provider's models: the model card (design: Contribute › Model card, fields
@@ -211,11 +211,26 @@ async function save() {
   return saved.value
 }
 
+// Steps that need a reason (e.g. reactivating, which a platform admin may do on their
+// own model) open a note field first; UMP refuses them without one.
+const pending = ref<RegistryStatus | null>(null)
+const note = ref('')
 async function act(to: (typeof actions.value)[number]['to']) {
   if (!model.value) return
   const id = model.value.id
+  if (actions.value.find(a => a.to === to)?.needsNote) {
+    pending.value = to
+    note.value = ''
+    return
+  }
   if (to === 'submitted' && !(await save())) return
   await attempt(() => transition(id, to))
+}
+async function confirmStep() {
+  if (!model.value || !pending.value || !note.value.trim()) return
+  const id = model.value.id
+  const to = pending.value
+  if (await attempt(() => transition(id, to, note.value.trim()))) pending.value = null
 }
 const submit = computed(() => actions.value.find(a => a.to === 'submitted'))
 const otherActions = computed(() => actions.value.filter(a => a.to !== 'submitted'))
@@ -647,6 +662,19 @@ usePageCrumb(() => title.value)
           >
             {{ t(`registry.action.${stepKey(model.status, a.to)}`) }}
           </UButton>
+          <form v-if="pending" class="space-y-3 rounded-md border border-(--ui-border) p-3" @submit.prevent="confirmStep">
+            <UFormField :label="t(`registry.noteLabel.${pending}`)" :description="t('registry.verify.noteVisible')" required>
+              <UTextarea v-model="note" :rows="3" autoresize class="w-full" autofocus />
+            </UFormField>
+            <div class="flex justify-end gap-2">
+              <UButton type="button" variant="ghost" color="neutral" @click="() => { pending = null }">
+                {{ t('registry.cancel') }}
+              </UButton>
+              <UButton type="submit" :disabled="!note.trim()" :loading="busy">
+                {{ t(`registry.action.${stepKey(model.status, pending)}`) }}
+              </UButton>
+            </div>
+          </form>
         </aside>
       </div>
     </template>
