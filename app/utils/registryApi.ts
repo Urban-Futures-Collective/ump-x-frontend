@@ -16,6 +16,7 @@ export interface ApiReview {
 
 export interface ApiModel {
   id: string
+  slug?: string
   provider: string
   remote_process_id: string
   owner_sub: string
@@ -68,6 +69,9 @@ export interface ApiServer {
   credentials_set: boolean
   ttw_job_done_seconds?: number
   is_active?: boolean
+  created_at?: string | null
+  updated_at?: string | null
+  last_discovered_at?: string | null
 }
 
 export interface ApiDiscoveredProcess {
@@ -125,6 +129,7 @@ export function modelFromApi(m: ApiModel): RegistryModel {
   const changedAt = m.review?.status_changed_at ?? m.updated_at ?? ''
   return {
     id: m.id,
+    slug: m.slug,
     serverName: m.provider,
     remoteProcessId: m.remote_process_id,
     ownerSub: m.owner_sub,
@@ -200,6 +205,9 @@ export function serverFromApi(s: ApiServer): RegistryServer {
     ownerSub: s.owner_sub ?? '',
     ttwSeconds: s.ttw_job_done_seconds,
     isActive: s.is_active ?? true,
+    createdAt: s.created_at ?? undefined,
+    updatedAt: s.updated_at ?? undefined,
+    lastDiscoveredAt: s.last_discovered_at ?? undefined,
   }
 }
 

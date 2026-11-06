@@ -3,9 +3,10 @@
 // matters (session first, then role). The middleware only hides UI; the data is protected
 // server-side in every route under server/api/admin/.
 //
-// Two tabs as in the design (A1): user accounts (platform admins: list page by page,
-// create with an email invitation, enable and disable, assign platform roles) and the
-// audit log from UMP (needs the registry API, otherwise greyed out).
+// Tabs as in the design (A1, A5): user accounts (platform admins: list page by page,
+// create with an email invitation, enable and disable, assign platform roles), the
+// audit log from UMP and the model servers (platform admins; both need the registry
+// API, otherwise greyed out).
 import type { TableColumn, TabsItem } from '@nuxt/ui'
 import type { ListFilter } from '~/types/list'
 
@@ -18,11 +19,30 @@ const ownId = computed(() => (user.value?.userInfo as { sub?: string } | undefin
 const { registryApi } = useRuntimeConfig().public
 // Access admins have no accounts to manage, so they start on the audit log.
 // ?tab=audit opens the audit log directly (link from the access requests).
-const tab = ref(registryApi && (useRoute().query.tab === 'audit' || !isPlatformAdmin.value) ? 'audit' : 'users')
+const queryTab = useRoute().query.tab
+const tab = ref(registryApi && (queryTab === 'audit' || !isPlatformAdmin.value)
+  ? 'audit'
+  : registryApi && queryTab === 'servers' ? 'servers' : 'users')
 const tabs = computed<TabsItem[]>(() => [
   { label: t('admin.users.heading'), value: 'users' },
   { label: t('admin.audit'), value: 'audit', disabled: !registryApi },
+  ...(isPlatformAdmin.value ? [{ label: t('admin.servers.tab'), value: 'servers', disabled: !registryApi }] : []),
 ])
+
+// Servers tab: search in the header, state and deletability in the ListBar.
+const serverSearch = ref('')
+const serverFilter = ref<Record<string, string[]>>({})
+const serverFilters = computed<ListFilter[]>(() => [
+  { key: 'state', label: t('admin.servers.col.state'), allLabel: t('admin.servers.allStates'), items: [
+    { value: 'active', label: t('admin.servers.active') },
+    { value: 'inactive', label: t('admin.servers.inactive') },
+  ] },
+  { key: 'deletable', label: t('admin.servers.col.deletable'), allLabel: t('admin.servers.allDeletable'), items: [
+    { value: 'yes', label: t('admin.servers.deletable') },
+    { value: 'no', label: t('admin.servers.blockedFilter') },
+  ] },
+])
+const serversRef = ref<{ reload: () => Promise<void> } | null>(null)
 
 // Audit log: filter by action in the ListBar.
 const auditFilter = ref<Record<string, string[]>>({})
@@ -207,9 +227,27 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
           {{ t('admin.create.open') }}
         </UButton>
       </template>
+      <template v-else-if="tab === 'servers'">
+        <form role="search" @submit.prevent>
+          <UInput
+            v-model="serverSearch"
+            type="search"
+            icon="i-lucide-search"
+            :placeholder="t('admin.servers.search')"
+            :aria-label="t('admin.servers.search')"
+            class="w-full sm:w-64"
+          />
+        </form>
+        <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" @click="serversRef?.reload()">
+          {{ t('admin.servers.refresh') }}
+        </UButton>
+      </template>
     </PageHeader>
 
     <ListBar v-if="tab === 'audit'" v-model:filter="auditFilter" :filters="auditFilters">
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
+    <ListBar v-else-if="tab === 'servers'" v-model:filter="serverFilter" :filters="serverFilters">
       <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
     </ListBar>
     <ListBar v-else>
@@ -218,6 +256,14 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 
     <!-- Not full width on purpose: on wide screens a long row is hard to follow. -->
     <AdminAuditLog v-if="tab === 'audit'" :action="auditFilter.action?.[0]" />
+
+    <AdminServers
+      v-else-if="tab === 'servers'"
+      ref="serversRef"
+      :search="serverSearch"
+      :filter="serverFilter"
+      @clear-filters="() => { serverSearch = ''; serverFilter = {} }"
+    />
 
     <section v-else-if="isPlatformAdmin" class="max-w-4xl space-y-4">
 

@@ -62,6 +62,12 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
 
 // The server whose edit dialog is open (only own servers are listed here).
 const editing = ref<RegistryServer | null>(null)
+// Deleting a server takes its models along; only while none of them is live or under
+// review (UMP checks again).
+const { models, myName, load } = useRegistry()
+const blockingOn = (s: RegistryServer) => blockingModels(modelsOfServer(s, models.value))
+const deleting = ref<RegistryServer | null>(null)
+const stale = ref<string | null>(null)
 </script>
 
 <template>
@@ -146,6 +152,15 @@ const editing = ref<RegistryServer | null>(null)
       <h2 class="text-lg font-semibold">
         {{ t('registry.contribute.servers') }}
       </h2>
+      <UAlert
+        v-if="stale"
+        color="warning"
+        variant="subtle"
+        icon="i-lucide-triangle-alert"
+        :title="t('admin.servers.staleTitle', { name: stale })"
+        :description="t('admin.servers.staleText')"
+        :actions="[{ label: t('admin.servers.reload'), color: 'neutral', variant: 'outline', onClick: () => { stale = null; load(true) } }]"
+      />
       <p v-if="!servers.length" class="text-sm text-(--ui-text-muted)">
         {{ search ? t('registry.noMatch') : t('registry.contribute.serversEmpty') }}
       </p>
@@ -158,7 +173,20 @@ const editing = ref<RegistryServer | null>(null)
                 {{ t('registry.server.inactive') }}
               </UBadge>
             </p>
-            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-pencil" :aria-label="t('registry.server.edit', { name: s.name })" @click="() => { editing = s }" />
+            <div class="flex shrink-0">
+              <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-pencil" :aria-label="t('registry.server.edit', { name: s.name })" @click="() => { editing = s }" />
+              <UTooltip :text="blockingOn(s).length ? t('registry.serverDelete.blockedTip', { n: blockingOn(s).length }) : t('registry.serverDelete.open', { name: s.name })">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  size="sm"
+                  icon="i-lucide-trash-2"
+                  :disabled="!!blockingOn(s).length"
+                  :aria-label="t('registry.serverDelete.open', { name: s.name })"
+                  @click="() => { deleting = s }"
+                />
+              </UTooltip>
+            </div>
           </div>
           <p class="break-all text-sm text-(--ui-text-muted)">
             {{ s.baseUrl }}
@@ -169,6 +197,7 @@ const editing = ref<RegistryServer | null>(null)
         </li>
       </ul>
       <ServerEditModal :server="editing" @close="() => { editing = null }" />
+      <ServerDeleteModal :server="deleting" :owner="myName" @close="() => { deleting = null }" @stale="(name: string) => { stale = name }" />
     </template>
   </section>
 </template>
