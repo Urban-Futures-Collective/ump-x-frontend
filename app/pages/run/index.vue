@@ -33,6 +33,9 @@ watch(queryProcess, (id) => {
 </script>
 
 <template>
+  <div class="space-y-6">
+  <PageHeader :title="t('nav.run')" :intro="t('run.intro')" />
+
   <div class="grid gap-6 lg:grid-cols-[20rem_1fr]">
     <!-- Model selection (compact) -->
     <section class="space-y-3">
@@ -81,9 +84,13 @@ watch(queryProcess, (id) => {
           :process-id="selectedProcessId"
           @result="mapData = $event"
         />
-        <p v-else class="text-sm text-(--ui-text-muted)">
-          {{ t('run.selectHint') }}
-        </p>
+        <!-- Nothing chosen yet: a box in the place of the form, so the hint belongs to it. -->
+        <div v-else class="flex flex-col items-center gap-3 rounded-lg border border-dashed border-(--ui-border-accented) bg-white px-6 py-10 text-center">
+          <UIcon name="i-lucide-mouse-pointer-click" class="size-8 text-(--ui-text-dimmed)" aria-hidden="true" />
+          <p class="max-w-xs text-sm text-(--ui-text-muted)">
+            {{ t('run.selectHint') }}
+          </p>
+        </div>
       </div>
 
       <div class="space-y-4">
@@ -91,5 +98,6 @@ watch(queryProcess, (id) => {
         <ResultIndicators :layer="mapData" />
       </div>
     </section>
+  </div>
   </div>
 </template>
