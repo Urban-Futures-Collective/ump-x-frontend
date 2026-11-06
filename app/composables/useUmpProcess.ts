@@ -8,6 +8,7 @@ export interface OgcInput {
   // Model server extensions, see inputKinds.ts. Not standard OGC; ignored if absent.
   'x-ump-group'?: string
   'x-ump-relevant-if'?: Record<string, unknown[]>
+  metadata?: unknown
 }
 export interface OgcOutput {
   title?: string
@@ -64,6 +65,7 @@ export function useUmpProcess(id: MaybeRefOrGetter<string>) {
         schema: v.schema as Record<string, unknown> | undefined,
         group: inputGroup(v['x-ump-group']),
         relevantIf: v['x-ump-relevant-if'],
+        source: sourceCollectionOf(v.metadata),
       })),
     }),
   })

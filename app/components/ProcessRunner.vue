@@ -78,6 +78,7 @@ watch(() => props.processId, () => { attempted.value = false })
 // Inputs that matter for the current values (`x-ump-relevant-if`). Hidden ones are
 // neither checked nor sent.
 const visibleInputs = computed(() => (proc.value?.inputs ?? []).filter(inp => isRelevant(inp.relevantIf, form.value)))
+const inputTitles = computed(() => Object.fromEntries((proc.value?.inputs ?? []).map(inp => [inp.name, inp.title])))
 const mainInputs = computed(() => visibleInputs.value.filter(inp => inp.group !== 'advanced'))
 const advancedInputs = computed(() => visibleInputs.value.filter(inp => inp.group === 'advanced'))
 
@@ -136,6 +137,7 @@ async function onSubmit() {
         <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
           {{ t('run.defaultHint', { value: String(inp.default) }) }}
         </p>
+        <SourceCollectionLoad v-if="inp.source" v-model="form[inp.name]!" :source="inp.source" :values="form" :titles="inputTitles" />
       </ProcessInputField>
 
       <!-- Model settings with sensible defaults (x-ump-group: advanced). -->
@@ -161,6 +163,7 @@ async function onSubmit() {
               <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
                 {{ t('run.defaultHint', { value: String(inp.default) }) }}
               </p>
+              <SourceCollectionLoad v-if="inp.source" v-model="form[inp.name]!" :source="inp.source" :values="form" :titles="inputTitles" />
             </ProcessInputField>
           </div>
         </template>
