@@ -31,6 +31,10 @@ export interface RegistryServer {
   ttwSeconds?: number
   /** An inactive server's models are not offered. */
   isActive?: boolean
+  createdAt?: string
+  updatedAt?: string
+  /** When UMP last asked the server for its processes. */
+  lastDiscoveredAt?: string
 }
 
 /**
@@ -118,6 +122,8 @@ export interface RegistryHistoryEntry {
 
 export interface RegistryModel {
   id: string
+  /** Stable name in URLs and messages, e.g. `bikebox-modelserver-growbike`. */
+  slug?: string
   serverName: string
   remoteProcessId: string
   ownerSub: string

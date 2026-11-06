@@ -138,6 +138,17 @@ export function useRegistryApi() {
     return updated
   }
 
+  // Owner or platform admin; If-Match as for edits. UMP refuses with 409 while a model of
+  // the server is not draft, deactivated or rejected, and with 412 when the server or one
+  // of its models changed after the ETag was read. The models go with the server.
+  async function deleteServer(id: string): Promise<void> {
+    const current = await $fetch.raw(`${base}/servers/${id}`)
+    const server = servers.value.find(s => s.id === id)
+    await $fetch(`${base}/servers/${id}`, { method: 'DELETE', headers: { 'If-Match': ifMatch(current.headers.get('etag')) } })
+    servers.value = servers.value.filter(s => s.id !== id)
+    if (server) models.value = models.value.filter(m => m.serverName !== server.name)
+  }
+
   async function discover(server: RegistryServer): Promise<DiscoveredProcess[]> {
     const result = await $fetch<{ processes: ApiDiscoveredProcess[] }>(`${base}/servers/${server.id}/discover`, { method: 'POST' })
     return result.processes.map(discoveredFromApi)
@@ -172,6 +183,7 @@ export function useRegistryApi() {
     modelIo,
     addServer,
     updateServer,
+    deleteServer,
     discover,
     addModels,
     reset,

@@ -65,6 +65,15 @@ export function useRegistryPrototype() {
     return s
   }
 
+  async function deleteServer(id: string): Promise<void> {
+    const s = servers.value.find(x => x.id === id)
+    if (!s) throw new Error('unknown server')
+    const blocking = blockingModels(modelsOfServer(s, models.value))
+    if (blocking.length) throw new Error(`blocking: ${blocking.map(m => `${m.serverName}-${m.remoteProcessId} (${m.status})`).join(', ')}`)
+    servers.value = servers.value.filter(x => x.id !== id)
+    models.value = models.value.filter(m => m.serverName !== s.name)
+  }
+
   // The prototype answers with sample processes after a short pause, whatever the
   // server. Processes already taken over from it are marked, as the API does.
   async function discover(server: RegistryServer): Promise<DiscoveredProcess[]> {
@@ -132,6 +141,7 @@ export function useRegistryPrototype() {
     modelIo,
     addServer,
     updateServer,
+    deleteServer,
     discover,
     addModels,
     reset,
