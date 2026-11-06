@@ -187,6 +187,7 @@ async function change(method: 'POST' | 'DELETE', userId: string, note?: string) 
         icon="i-lucide-search"
         :placeholder="tab === 'requests' ? t('access.requests.search') : t('access.search')"
         :aria-label="tab === 'requests' ? t('access.requests.search') : t('access.search')"
+        class="w-full sm:w-64"
       />
       <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="pending" @click="() => { refresh(); loadMembers(); requestsTab?.load() }">
         {{ t('access.refresh') }}

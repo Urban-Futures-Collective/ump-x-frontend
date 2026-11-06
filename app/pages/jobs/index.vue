@@ -48,6 +48,7 @@ const shown = computed(() => jobs.value
         icon="i-lucide-search"
         :placeholder="t('jobs.search')"
         :aria-label="t('jobs.search')"
+        class="w-full sm:w-64"
       />
       <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="pending" @click="() => { refresh() }">
         {{ t('jobs.refresh') }}

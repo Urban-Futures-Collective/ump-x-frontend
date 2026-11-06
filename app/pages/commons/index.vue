@@ -61,6 +61,7 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
         icon="i-lucide-search"
         :placeholder="t('commons.search')"
         :aria-label="t('commons.search')"
+        class="w-full sm:w-64"
       />
       <UButton v-if="canContribute" to="/contribute/new" icon="i-lucide-plus">
         {{ t('commons.contribute') }}

@@ -200,6 +200,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             :loading="pending"
             :placeholder="t('admin.users.search')"
             :aria-label="t('admin.users.search')"
+            class="w-full sm:w-64"
           />
         </form>
         <UButton icon="i-lucide-plus" @click="() => { createOpen = true }">

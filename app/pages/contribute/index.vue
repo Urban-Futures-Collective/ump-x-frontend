@@ -74,6 +74,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
           icon="i-lucide-search"
           :placeholder="t(tab === 'models' ? 'registry.contribute.searchModels' : 'registry.contribute.searchServers')"
           :aria-label="t(tab === 'models' ? 'registry.contribute.searchModels' : 'registry.contribute.searchServers')"
+          class="w-full sm:w-64"
         />
         <UButton icon="i-lucide-plus" to="/contribute/new">
           {{ t('registry.contribute.new') }}

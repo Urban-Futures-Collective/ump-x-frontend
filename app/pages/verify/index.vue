@@ -98,6 +98,7 @@ async function step(m: RegistryModel, to: RegistryStatus) {
         icon="i-lucide-search"
         :placeholder="t('registry.verify.search')"
         :aria-label="t('registry.verify.search')"
+        class="w-full sm:w-64"
       />
       <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="loading" @click="() => { load(true) }">
         {{ t('registry.verify.refresh') }}
