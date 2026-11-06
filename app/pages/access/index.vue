@@ -259,7 +259,7 @@ async function change(method: 'POST' | 'DELETE', userId: string, note?: string) 
       <div v-if="selected" class="rounded-lg bg-white">
         <div class="flex flex-wrap items-start justify-between gap-4 border-b border-(--ui-border) p-6">
           <div class="min-w-0">
-            <h2 class="text-xl font-semibold">
+            <h2 class="text-lg font-semibold">
               {{ scope === 'model' && modelId ? titleOf(modelId) : selected.server }}
             </h2>
             <p class="text-sm break-all text-(--ui-text-muted)">

@@ -178,7 +178,7 @@ async function create() {
               <UInput v-model="baseUrl" type="url" placeholder="https://" class="w-full" />
             </UFormField>
 
-            <h3 class="pt-2 font-semibold">
+            <h3 class="pt-2 font-medium">
               {{ t('registry.new.login') }}
             </h3>
             <UFormField :label="t('registry.new.auth')">
@@ -281,7 +281,7 @@ async function create() {
             <li>{{ t('registry.new.how3') }}</li>
           </ol>
           <div class="space-y-1 border-t border-(--ui-border) pt-3">
-            <h3 class="font-semibold text-(--ui-text-highlighted)">
+            <h3 class="font-medium text-(--ui-text-highlighted)">
               {{ t('registry.new.check') }}
             </h3>
             <p v-if="failure" class="text-(--ui-error)" role="alert">

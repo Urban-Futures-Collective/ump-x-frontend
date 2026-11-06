@@ -25,7 +25,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 </script>
 
 <template>
-  <section class="mx-auto max-w-3xl space-y-4">
+  <section class="max-w-3xl space-y-4">
     <div class="flex items-center justify-between gap-3">
       <ULink to="/jobs" class="flex items-center gap-1 text-sm text-(--ui-text-muted) hover:text-(--ui-text)">
         <UIcon name="i-lucide-arrow-left" />
@@ -34,8 +34,7 @@ onBeforeUnmount(() => clearTimeout(timer))
       <UButton
         icon="i-lucide-refresh-cw"
         color="neutral"
-        variant="ghost"
-        size="xs"
+        variant="outline"
         :loading="pending"
         @click="refresh()"
       >
@@ -51,7 +50,7 @@ onBeforeUnmount(() => clearTimeout(timer))
       <div class="space-y-3 rounded-lg border border-(--ui-border) p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <h1 class="truncate text-lg font-semibold">
+            <h1 class="truncate text-2xl font-semibold text-ufc-slate-900">
               {{ job.processId ?? '–' }}
             </h1>
             <p class="truncate text-xs text-(--ui-text-muted)">

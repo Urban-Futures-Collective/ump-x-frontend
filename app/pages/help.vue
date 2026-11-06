@@ -36,7 +36,7 @@ const mcpSteps = ['address', 'signin', 'use'] as const
 <template>
   <section class="mx-auto max-w-3xl space-y-10">
     <div class="space-y-3">
-      <h1 class="text-2xl font-semibold text-(--ui-text-highlighted)">
+      <h1 class="text-2xl font-semibold text-ufc-slate-900">
         {{ t('help.title') }}
       </h1>
       <p class="text-(--ui-text-muted)">

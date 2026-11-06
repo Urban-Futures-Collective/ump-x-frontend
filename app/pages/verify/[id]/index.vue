@@ -139,6 +139,8 @@ function confirm() {
 // With the API, verifying needs a checked run; the sample data does without.
 const blocked = (to: RegistryStatus) => to === 'verified' && isLive && !jobReady.value
 const negative = (to: RegistryStatus) => to === 'rejected' || to === 'deactivated'
+// Positive steps on the left, the negative ones together on the right.
+const firstNegative = computed(() => actions.value.find(a => negative(a.to))?.to)
 </script>
 
 <template>
@@ -219,7 +221,7 @@ const negative = (to: RegistryStatus) => to === 'rejected' || to === 'deactivate
                   :key="a.to"
                   :color="negative(a.to) ? 'neutral' : 'primary'"
                   :variant="negative(a.to) || a.to === 'changes_requested' ? 'outline' : 'solid'"
-                  :class="negative(a.to) ? 'sm:ml-auto' : ''"
+                  :class="a.to === firstNegative ? 'sm:ml-auto' : ''"
                   :disabled="blocked(a.to)"
                   :loading="busy"
                   @click="choose(a)"
