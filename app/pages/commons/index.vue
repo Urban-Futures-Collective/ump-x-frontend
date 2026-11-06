@@ -96,7 +96,7 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
               <span class="text-xl font-medium text-ufc-slate-900">{{ e.title }}</span>
               <UIcon name="i-lucide-arrow-right" class="mt-1 size-5 shrink-0 text-(--ui-primary)" aria-hidden="true" />
             </span>
-            <span v-if="e.description" class="text-[0.9375rem]/[1.6] text-ufc-slate-700">{{ e.description }}</span>
+            <span v-if="e.description" class="text-base/[1.6] text-ufc-slate-700">{{ e.description }}</span>
             <span class="text-sm text-(--ui-text-dimmed)">{{ e.id }}</span>
             <CommonsTags v-if="e.card" :card="e.card" class="mt-auto" />
           </ULink>

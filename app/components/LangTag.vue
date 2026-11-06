@@ -4,5 +4,5 @@ defineProps<{ lang: string }>()
 </script>
 
 <template>
-  <span class="ml-1 rounded bg-ufc-blue-50 px-1 py-0.5 align-middle text-[0.625rem] font-medium text-ufc-blue-700 uppercase">{{ lang }}</span>
+  <span class="ml-1 rounded bg-ufc-blue-50 px-1 py-0.5 align-middle text-xs font-medium text-ufc-blue-700 uppercase">{{ lang }}</span>
 </template>
