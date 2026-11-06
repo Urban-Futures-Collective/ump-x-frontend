@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bboxOf, DEFAULT_BUFFER_M, growBbox, sourceCollectionOf, sourceUrl } from './sourceCollection'
+import { bboxOf, cityShapeUrl, DEFAULT_BUFFER_M, growBbox, sourceCollectionOf, sourceUrl } from './sourceCollection'
 
 const href = 'https://umep.example.org/collections/buildings/items?f=json&city={city}&bbox={bbox}&limit=20000'
 const area = JSON.stringify({ type: 'Polygon', coordinates: [[[10, 53], [10.01, 53], [10.01, 53.01], [10, 53.01], [10, 53]]] })
@@ -52,5 +52,15 @@ describe('sourceUrl', () => {
   it('names the inputs that are still empty', () => {
     expect(sourceUrl(source, { city: '', area: '' })).toEqual({ missing: ['city', 'area'] })
     expect(sourceUrl(source, { city: 'x', area: 'not json' })).toEqual({ missing: ['area'] })
+  })
+})
+
+describe('cityShapeUrl', () => {
+  it('asks the server of the source collections for the city', () => {
+    expect(cityShapeUrl([undefined, { href, bufferM: 0 }], 'eissendorf')).toBe('https://umep.example.org/collections/cities/items/eissendorf?f=json')
+  })
+  it('is undefined without a source or a city', () => {
+    expect(cityShapeUrl([undefined], 'eissendorf')).toBeUndefined()
+    expect(cityShapeUrl([{ href, bufferM: 0 }], '')).toBeUndefined()
   })
 })

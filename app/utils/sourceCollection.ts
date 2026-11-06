@@ -90,3 +90,13 @@ export function sourceUrl(source: SourceCollection, values: Record<string, strin
   })
   return missing.length ? { missing } : { url }
 }
+
+// Where the data of the chosen city lies, so the maps can open there and show it. No
+// process description states this yet; a server that offers source collections is
+// asked for the city in its `cities` collection, next to them (as the UMEP server has
+// it). Undefined without such a server or without a city.
+export function cityShapeUrl(sources: (SourceCollection | undefined)[], city: string | undefined): string | undefined {
+  const href = sources.find(s => s?.href.includes('/collections/'))?.href
+  if (!href || !city) return undefined
+  return `${href.split('/collections/')[0]}/collections/cities/items/${encodeURIComponent(city)}?f=json`
+}

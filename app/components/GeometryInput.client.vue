@@ -2,6 +2,7 @@
 import { createMap } from '@masterportal/masterportalapi/src/maps/ol/olMap.js'
 import type Feature from 'ol/Feature'
 import OlFeature from 'ol/Feature'
+import GeoJSON from 'ol/format/GeoJSON'
 import type { Geometry } from 'ol/geom'
 import { LineString as OlLineString, Point as OlPoint, Polygon as OlPolygon } from 'ol/geom'
 import { Draw, Modify } from 'ol/interaction'
@@ -21,7 +22,9 @@ import 'ol/ol.css'
 //
 // What can be drawn follows the input's schema (see app/utils/geometryInput.ts): polygons
 // for an area, points for locations; several shapes only if the Multi* type is allowed.
-const props = defineProps<{ modelValue: string, schema?: Record<string, unknown> }>()
+// `extent`: the data area of the chosen city (GeoJSON geometry); shown as a frame, and the
+// map opens there while nothing is drawn.
+const props = defineProps<{ modelValue: string, schema?: Record<string, unknown>, extent?: string }>()
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 
 const { t, locale } = useI18n()
@@ -34,6 +37,19 @@ const mapContainer = ref<HTMLDivElement | null>(null)
 let map: Map | undefined
 let observer: ResizeObserver | undefined
 const source = new VectorSource()
+const extentSource = new VectorSource()
+const extentStyle = new Style({ stroke: new Stroke({ color: '#64748b', width: 1.5, lineDash: [4, 4] }) })
+
+function loadExtent(text?: string) {
+  extentSource.clear(true)
+  if (!text) return
+  try {
+    extentSource.addFeature(new GeoJSON().readFeature({ type: 'Feature', geometry: JSON.parse(text), properties: {} }, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' }) as Feature<Geometry>)
+  }
+  catch {
+    // no extent
+  }
+}
 
 const COLOR = '#2563eb'
 const style = new Style({
@@ -102,10 +118,16 @@ function loadValue(text: string) {
 }
 
 function fitToShapes() {
-  const extent = source.getExtent()
-  if (!map || !extent || !source.getFeatures().length || !Number.isFinite(extent[0])) return
+  const target = source.getFeatures().length ? source : extentSource
+  const extent = target.getExtent()
+  if (!map || !extent || !target.getFeatures().length || !Number.isFinite(extent[0])) return
   map.getView().fit(extent, { padding: [32, 32, 32, 32], maxZoom: 16 })
 }
+
+watch(() => props.extent, (e) => {
+  loadExtent(e)
+  if (!source.getFeatures().length) fitToShapes()
+})
 
 watch(() => props.modelValue, (v) => {
   if (v !== lastEmitted) {
@@ -127,7 +149,9 @@ onBeforeUnmount(() => {
 function buildMap(el: HTMLDivElement) {
   map = createMap({ ...useMapConfig(), target: el }) as Map
   map.addLayer(new TileLayer({ source: new OSM() }))
+  map.addLayer(new VectorLayer({ source: extentSource, style: extentStyle }))
   map.addLayer(new VectorLayer({ source, style }))
+  loadExtent(props.extent)
 
   const draw = new Draw({ source, type: kind.value, style })
   // Without Multi* only one shape is allowed: a new one replaces the old.
@@ -141,7 +165,12 @@ function buildMap(el: HTMLDivElement) {
 
   loadValue(props.modelValue)
 
-  observer = new ResizeObserver(() => map?.updateSize())
+  // The map often gets its final size only after the first fit; while nothing is drawn,
+  // fit again so the city frame fills the map.
+  observer = new ResizeObserver(() => {
+    map?.updateSize()
+    if (!source.getFeatures().length) fitToShapes()
+  })
   observer.observe(el.parentElement ?? el)
 }
 

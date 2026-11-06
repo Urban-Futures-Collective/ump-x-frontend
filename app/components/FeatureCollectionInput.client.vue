@@ -19,7 +19,7 @@ import type { DrawTool, FeatureProperty } from '~/utils/featureCollection'
 // come from the input's schema (app/utils/featureCollection.ts). The value stays the
 // FeatureCollection as JSON text, like every other field of the form; properties the
 // schema does not name are kept as they are.
-const props = defineProps<{ modelValue: string, schema?: Record<string, unknown>, area?: string }>()
+const props = defineProps<{ modelValue: string, schema?: Record<string, unknown>, area?: string, extent?: string }>()
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 const { t } = useI18n()
 
@@ -29,6 +29,8 @@ const tools = computed(() => drawTools(featureSchema.value.geometryTypes))
 const format = new GeoJSON({ dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' })
 const source = new VectorSource<Feature<Geometry>>()
 const areaSource = new VectorSource<Feature<Geometry>>()
+// The data area of the chosen city: where the map opens while it has nothing else.
+const extentSource = new VectorSource<Feature<Geometry>>()
 
 // Bumped on every change, so counts and the property panel follow the map.
 const version = ref(0)
@@ -50,6 +52,7 @@ const baseStyle = styleFor(BASE)
 const problemStyle = styleFor(PROBLEM, 2)
 const selectedStyle = styleFor(SELECTED, 3)
 const areaStyle = new Style({ stroke: new Stroke({ color: '#334155', width: 2, lineDash: [6, 4] }) })
+const extentStyle = new Style({ stroke: new Stroke({ color: '#64748b', width: 1.5, lineDash: [4, 4] }) })
 
 // The value last sent up, so an echo of our own change does not reload the map.
 let lastEmitted: string | null = null
@@ -81,19 +84,19 @@ function loadValue(text: string) {
   fit()
 }
 
-function loadArea(text?: string) {
-  areaSource.clear(true)
+function loadShape(target: VectorSource<Feature<Geometry>>, text?: string) {
+  target.clear(true)
   if (!text) return
   try {
-    areaSource.addFeature(format.readFeature({ type: 'Feature', geometry: JSON.parse(text), properties: {} }) as Feature<Geometry>)
+    target.addFeature(format.readFeature({ type: 'Feature', geometry: JSON.parse(text), properties: {} }) as Feature<Geometry>)
   }
   catch {
-    // no area yet
+    // nothing to show yet
   }
 }
 
 function fit() {
-  const target = source.getFeatures().length ? source : areaSource
+  const target = [source, areaSource, extentSource].find(s => s.getFeatures().length) ?? source
   const extent = target.getExtent()
   if (!map || !extent || !target.getFeatures().length || !Number.isFinite(extent[0])) return
   map.getView().fit(extent, { padding: [32, 32, 32, 32], maxZoom: 18 })
@@ -106,8 +109,12 @@ watch(() => props.modelValue, (v) => {
   }
 })
 watch(() => props.area, (a) => {
-  loadArea(a)
+  loadShape(areaSource, a)
   if (!source.getFeatures().length) fit()
+})
+watch(() => props.extent, (e) => {
+  loadShape(extentSource, e)
+  if (!source.getFeatures().length && !areaSource.getFeatures().length) fit()
 })
 
 const mapContainer = ref<HTMLDivElement | null>(null)
@@ -131,6 +138,7 @@ onBeforeUnmount(() => {
 function buildMap(el: HTMLDivElement) {
   map = createMap({ ...useMapConfig(), target: el }) as Map
   map.addLayer(new TileLayer({ source: new OSM() }))
+  map.addLayer(new VectorLayer({ source: extentSource, style: extentStyle }))
   map.addLayer(new VectorLayer({ source: areaSource, style: areaStyle }))
   const layer = new VectorLayer({ source, style: f => hasProblem(f as Feature<Geometry>) ? problemStyle : baseStyle })
   map.addLayer(layer)
@@ -146,11 +154,17 @@ function buildMap(el: HTMLDivElement) {
   translate.on('translateend', emitValue)
   map.addInteraction(translate)
 
-  loadArea(props.area)
+  loadShape(extentSource, props.extent)
+  loadShape(areaSource, props.area)
   lastEmitted = props.modelValue
   loadValue(props.modelValue)
 
-  observer = new ResizeObserver(() => map?.updateSize())
+  // The map often gets its final size only after the first fit; while it shows no
+  // features, fit again so the area or city frame fills the map.
+  observer = new ResizeObserver(() => {
+    map?.updateSize()
+    if (!source.getFeatures().length) fit()
+  })
   observer.observe(el.parentElement ?? el)
 }
 
