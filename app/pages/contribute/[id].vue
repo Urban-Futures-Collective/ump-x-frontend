@@ -235,7 +235,7 @@ usePageCrumb(() => title.value)
     <template v-else-if="card">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div class="flex flex-wrap items-center gap-3">
-          <h1 class="text-3xl font-semibold text-ufc-slate-900">
+          <h1 class="text-2xl font-semibold text-ufc-slate-900">
             {{ title }}
           </h1>
           <RegistryStatusBadge :status="model.status" />
@@ -342,7 +342,7 @@ usePageCrumb(() => title.value)
                   <p class="text-xs font-medium tracking-wide text-(--ui-text-muted) uppercase">
                     {{ t('registry.card.application', { n: i + 1 }) }}
                   </p>
-                  <UButton color="error" variant="link" size="xs" @click="() => { card?.applications.splice(i, 1) }">
+                  <UButton color="error" variant="link" size="sm" @click="() => { card?.applications.splice(i, 1) }">
                     {{ t('registry.card.remove') }}
                   </UButton>
                 </div>
@@ -414,7 +414,7 @@ usePageCrumb(() => title.value)
                   <p class="text-xs font-medium tracking-wide text-(--ui-text-muted) uppercase">
                     {{ t('registry.card.person', { n: i + 1 }) }}
                   </p>
-                  <UButton color="error" variant="link" size="xs" @click="() => { card?.contributors.splice(i, 1) }">
+                  <UButton color="error" variant="link" size="sm" @click="() => { card?.contributors.splice(i, 1) }">
                     {{ t('registry.card.remove') }}
                   </UButton>
                 </div>
@@ -451,7 +451,7 @@ usePageCrumb(() => title.value)
                   <p class="text-xs font-medium tracking-wide text-(--ui-text-muted) uppercase">
                     {{ t('registry.card.reference', { n: i + 1 }) }}
                   </p>
-                  <UButton color="error" variant="link" size="xs" @click="() => { card?.literature.splice(i, 1) }">
+                  <UButton color="error" variant="link" size="sm" @click="() => { card?.literature.splice(i, 1) }">
                     {{ t('registry.card.remove') }}
                   </UButton>
                 </div>
@@ -513,7 +513,7 @@ usePageCrumb(() => title.value)
                 <p class="text-xs font-medium tracking-wide text-(--ui-text-muted) uppercase">
                   {{ t('registry.card.testCase', { n: i + 1 }) }}
                 </p>
-                <UButton color="error" variant="link" size="xs" @click="() => { card?.testCases.splice(i, 1) }">
+                <UButton color="error" variant="link" size="sm" @click="() => { card?.testCases.splice(i, 1) }">
                   {{ t('registry.card.remove') }}
                 </UButton>
               </div>

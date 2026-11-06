@@ -80,7 +80,7 @@ const sections = computed(() => {
           <UButton
             v-for="l in langs"
             :key="l"
-            size="xs"
+            size="sm"
             :variant="l === lang ? 'solid' : 'outline'"
             :color="l === lang ? 'primary' : 'neutral'"
             :aria-pressed="l === lang"

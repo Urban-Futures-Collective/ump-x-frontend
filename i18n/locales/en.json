@@ -213,7 +213,7 @@
   },
   "run": {
     "unavailable": "This model cannot be loaded. It does not exist, or your account has no access to it.",
-    "selectHint": "Select a process on the left to run it.",
+    "selectHint": "Choose a model on the left to set its inputs.",
     "allModels": "All models",
     "execute": "Run",
     "error": "Error: {msg}",
@@ -253,7 +253,8 @@
       "pickDate": "Pick a date …",
       "byName": "Place name",
       "onMap": "On the map"
-    }
+    },
+    "intro": "Choose a model, set its inputs and start the run. The result appears on the map."
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",

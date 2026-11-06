@@ -79,17 +79,17 @@ async function withdraw(requestId: string) {
 </script>
 
 <template>
-  <UButton v-if="!registryApi" color="neutral" variant="outline" size="lg" disabled>
+  <UButton v-if="!registryApi" color="neutral" variant="outline" disabled>
     {{ t('auth.requestAccess') }}
   </UButton>
-  <UButton v-else-if="state.kind === 'login'" color="neutral" variant="outline" size="lg" @click="login()">
+  <UButton v-else-if="state.kind === 'login'" color="neutral" variant="outline" @click="login()">
     {{ t('auth.requestAccess') }}
   </UButton>
-  <UButton v-else-if="state.kind === 'loading'" color="neutral" variant="outline" size="lg" loading disabled>
+  <UButton v-else-if="state.kind === 'loading'" color="neutral" variant="outline" loading disabled>
     {{ t('auth.requestAccess') }}
   </UButton>
   <template v-else-if="state.kind === 'request'">
-    <UButton color="neutral" variant="outline" size="lg" @click="() => { open = true }">
+    <UButton color="neutral" variant="outline" @click="() => { open = true }">
       {{ t('auth.requestAccess') }}
     </UButton>
     <UModal v-model:open="open" :title="t('commons.access.title', { name: card?.fullName[card.defaultLang] || card?.remoteProcessId })">
@@ -119,7 +119,7 @@ async function withdraw(requestId: string) {
     </UModal>
   </template>
   <div v-else-if="state.kind === 'pending'" class="flex items-center gap-2">
-    <UButton color="neutral" variant="outline" size="lg" icon="i-lucide-hourglass" disabled>
+    <UButton color="neutral" variant="outline" icon="i-lucide-hourglass" disabled>
       {{ t('commons.access.pending') }}
     </UButton>
     <UButton color="neutral" variant="link" @click="withdraw(state.requestId)">

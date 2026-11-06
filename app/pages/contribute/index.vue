@@ -89,7 +89,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
           {{ t('registry.contribute.emptyTitle') }}
         </p>
         <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
-          <UButton size="lg" to="/contribute/new">
+          <UButton to="/contribute/new">
             {{ t('registry.contribute.emptyCreate') }}
           </UButton>
           <ULink to="/help" class="font-medium text-(--ui-primary)">
@@ -140,7 +140,7 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
     </template>
 
     <template v-else-if="!isEmpty">
-      <h2 class="text-base font-semibold text-(--ui-primary)">
+      <h2 class="text-lg font-semibold">
         {{ t('registry.contribute.servers') }}
       </h2>
       <p v-if="!servers.length" class="text-sm text-(--ui-text-muted)">

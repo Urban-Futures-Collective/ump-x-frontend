@@ -110,7 +110,7 @@ async function onSubmit() {
 <template>
   <div class="space-y-4 rounded-lg border border-(--ui-border) p-4">
     <div>
-      <h3 class="font-semibold">
+      <h3 class="font-medium">
         {{ proc?.title ?? processId }}
       </h3>
       <p v-if="proc?.description" class="text-sm text-(--ui-text-muted)">

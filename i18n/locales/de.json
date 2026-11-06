@@ -213,7 +213,7 @@
   },
   "run": {
     "unavailable": "Dieses Modell lässt sich nicht laden. Es existiert nicht, oder dein Konto hat keinen Zugriff darauf.",
-    "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",
+    "selectHint": "Wähle links ein Modell, um seine Eingaben zu setzen.",
     "allModels": "Alle Modelle",
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
@@ -253,7 +253,8 @@
       "pickDate": "Datum wählen …",
       "byName": "Ortsname",
       "onMap": "Auf der Karte"
-    }
+    },
+    "intro": "Wähle ein Modell, setze die Eingaben und starte den Lauf. Das Ergebnis erscheint auf der Karte."
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · gefördert vom Prototype Fund",
