@@ -39,6 +39,8 @@ const sortItems = computed(() => [
   { value: 'name', label: t('commons.sort.name') },
 ])
 const filter = ref<Record<string, string[]>>({})
+// Tiles (default) or a compact list, switched in the ListBar as in Contribute.
+const tiles = ref(true)
 const asOptions = (list: string[]) => list.map(v => ({ value: v, label: v }))
 const filters = computed<ListFilter[]>(() => [
   { key: 'topics', label: t('commons.filter.topic'), items: asOptions(options.value.topics), multiple: true },
@@ -68,7 +70,7 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
       </UButton>
     </PageHeader>
 
-    <ListBar v-model:sort="sort" v-model:filter="filter" :sort-items="sortItems" :filters="filters">
+    <ListBar v-model:sort="sort" v-model:filter="filter" v-model:tiles="tiles" :sort-items="sortItems" :filters="filters">
       <p class="pb-2 text-sm text-(--ui-text-muted)" role="status">
         {{ t('commons.count', shown.length) }}<template v-if="shown.length">
           · {{ t('commons.fallbackLang') }}
@@ -84,7 +86,7 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
     </p>
 
     <template v-if="shown.length">
-      <ul class="grid gap-4 lg:grid-cols-2">
+      <ul v-if="tiles" class="grid gap-4 lg:grid-cols-2">
         <li v-for="e in shown" :key="e.id">
           <ULink
             :to="`/commons/${e.id}`"
@@ -97,6 +99,25 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
             <span v-if="e.description" class="text-[0.9375rem]/[1.6] text-ufc-slate-700">{{ e.description }}</span>
             <span class="text-sm text-(--ui-text-dimmed)">{{ e.id }}</span>
             <CommonsTags v-if="e.card" :card="e.card" class="mt-auto" />
+          </ULink>
+        </li>
+      </ul>
+      <!-- List: one row per model, description shortened to one line. -->
+      <ul v-else class="space-y-3">
+        <li v-for="e in shown" :key="e.id">
+          <ULink
+            :to="`/commons/${e.id}`"
+            class="group flex items-center gap-4 rounded-lg border border-(--ui-border) bg-white px-5 py-4 transition-shadow hover:shadow-md focus-visible:outline-2 focus-visible:outline-(--ui-primary)"
+          >
+            <span class="min-w-0 flex-1 space-y-1">
+              <span class="flex flex-wrap items-baseline gap-x-3">
+                <span class="text-lg font-medium text-ufc-slate-900">{{ e.title }}</span>
+                <span class="text-sm text-(--ui-text-dimmed)">{{ e.id }}</span>
+              </span>
+              <span v-if="e.description" class="block truncate text-sm text-ufc-slate-700">{{ e.description }}</span>
+              <CommonsTags v-if="e.card" :card="e.card" class="pt-1" />
+            </span>
+            <UIcon name="i-lucide-arrow-right" class="size-5 shrink-0 text-(--ui-primary)" aria-hidden="true" />
           </ULink>
         </li>
       </ul>
