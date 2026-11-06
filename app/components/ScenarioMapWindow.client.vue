@@ -127,8 +127,14 @@ watch(mapContainer, (el) => {
   if (el && !map) buildMap(el)
 }, { flush: 'post' })
 
+// Without an area nothing else can be loaded, and a shape drawn on another layer would
+// become a building or a tree: open on the first empty required area input.
 watch(open, (o) => {
-  if (o) return
+  if (o) {
+    const missing = props.inputs.find(inp => inputKind(inp) === 'geometry' && inp.required && !values.value[inp.name])
+    if (missing) active.value = missing.name
+    return
+  }
   observer?.disconnect()
   map?.setTarget(undefined)
   map = undefined
@@ -303,6 +309,16 @@ const problems = computed(() => {
   return l ? l.source.getFeatures().filter(f => hasProblem(l, f)).length : 0
 })
 
+// Drawing tools name their layer ("Draw Buildings"), so nobody draws a building while
+// meaning the area; with several tools the geometry follows ("Trees: point").
+function drawLabel(tool: DrawTool): string {
+  const l = current.value
+  if (!l) return t(`features.draw.${tool}`)
+  return l.tools.length > 1
+    ? t('scenarioMap.drawKind', { layer: l.input.title, kind: t(`features.draw.${tool}`) })
+    : t('scenarioMap.draw', { layer: l.input.title })
+}
+
 const toolIcon: Record<DrawTool, string> = { Polygon: 'i-lucide-pentagon', LineString: 'i-lucide-spline', Point: 'i-lucide-map-pin' }
 
 // "Load status quo" of the active layer, writing straight into the form values.
@@ -345,7 +361,8 @@ function goTo(p: Place) {
     <template #body>
       <div class="flex h-full min-h-0 flex-col gap-3">
         <div class="flex flex-wrap items-center gap-2">
-          <UTabs v-model="active" :items="tabs" :content="false" variant="pill" size="sm" />
+          <span class="text-sm font-medium">{{ t('scenarioMap.layer') }}</span>
+          <UTabs v-model="active" :items="tabs" :content="false" variant="pill" />
           <div class="ml-auto flex gap-2">
             <UInput v-model="query" icon="i-lucide-search" :placeholder="t('geometry.search')" size="sm" class="w-56" @keydown.enter.prevent="search" />
             <UButton type="button" size="sm" variant="subtle" :loading="searching" @click="search">
@@ -383,7 +400,7 @@ function goTo(p: Place) {
               :aria-pressed="mode === tool"
               @click="() => { mode = tool }"
             >
-              {{ t(`features.draw.${tool}`) }}
+              {{ drawLabel(tool) }}
             </UButton>
           </UFieldGroup>
           <UButton type="button" size="sm" color="neutral" variant="outline" icon="i-lucide-trash-2" :disabled="!selected.length" @click="removeSelected">
@@ -410,6 +427,7 @@ function goTo(p: Place) {
           <div ref="mapContainer" class="absolute inset-0" />
         </div>
         <p class="text-xs text-(--ui-text-muted)">
+          <span v-if="current" class="font-medium">{{ t('scenarioMap.editing', { layer: current.input.title }) }}</span>
           {{ mode === 'select' ? t('features.hintSelect') : t(`features.hintDraw.${mode}`) }}
         </p>
 
