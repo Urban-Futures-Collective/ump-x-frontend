@@ -53,6 +53,10 @@ const shown = computed(() => jobs.value
       <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="pending" @click="() => { refresh() }">
         {{ t('jobs.refresh') }}
       </UButton>
+      <!-- Always reachable, not only from the empty state (as "New model" in Contribute). -->
+      <UButton icon="i-lucide-plus" to="/run">
+        {{ t('nav.run') }}
+      </UButton>
     </PageHeader>
 
     <ListBar v-if="jobs.length" v-model:sort="sortBy" v-model:filter="filter" :sort-items="sortItems" :filters="filters">
