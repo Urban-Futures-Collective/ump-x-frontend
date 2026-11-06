@@ -2,6 +2,7 @@
 import type { Job } from '~/types/ump'
 import type { OgcJob } from '~/composables/useUmpJobs'
 import type { RegistryStatus } from '~/types/registry'
+import { CONTRIBUTOR_ROLES } from '~/types/registry'
 
 // Reviewing one model (design V2): a checklist over the model card, the interface the
 // server describes, the verification run, and the decision. Only the decision, its
@@ -26,6 +27,11 @@ usePageCrumb(() => title.value)
 
 // Checklist: what the card says, one line per section. Ticks live only on this page.
 const checks = ref<Record<string, boolean>>({})
+// The checklist shows what the provider entered, so the reviewer sees what they tick off.
+const gpuText = (gpu?: string | boolean) => gpu === undefined
+  ? ''
+  : gpu === false ? t('registry.review.gpuNone') : gpu === true ? t('registry.review.gpuAny') : t('registry.review.gpuModel', { name: gpu.trim() })
+const roleLabel = (role: string) => (CONTRIBUTOR_ROLES as readonly string[]).includes(role) ? t(`registry.card.roles.${role}`) : role
 const checklist = computed(() => {
   const m = model.value
   if (!m) return []
@@ -34,6 +40,9 @@ const checklist = computed(() => {
     req.cpuCores ? t('registry.review.cpu', { n: req.cpuCores }) : '',
     req.memoryGb ? t('registry.review.memory', { n: req.memoryGb }) : '',
     req.runtimeSeconds ? t('registry.review.runtime', { n: Math.round(req.runtimeSeconds) }) : '',
+    req.storageGb ? t('registry.review.storage', { n: req.storageGb }) : '',
+    gpuText(req.gpu),
+    ...(req.software ?? []),
   ].filter(Boolean)
   const others = (['de', 'en'] as const).filter(l => l !== m.defaultLang && m.fullName[l])
   return [
@@ -44,7 +53,7 @@ const checklist = computed(() => {
       key: 'people',
       label: t('registry.review.people'),
       value: [
-        m.contributors.length ? t('registry.review.contributors', m.contributors.length) : '',
+        ...m.contributors.map(c => `${c.name} (${roleLabel(c.role)})`),
         ...m.literature.map(l => l.citation),
       ].filter(Boolean).join(' · '),
     },
