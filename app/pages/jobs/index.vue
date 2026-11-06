@@ -3,6 +3,8 @@
 // runs these are based on the token the proxy attaches; no access filtering
 // here, otherwise two places would control access. Runs of models that are no
 // longer listed are left out (see runsOfAvailableModels).
+import type { ListFilter } from '~/types/list'
+
 definePageMeta({ middleware: ['auth'] })
 
 const { t, locale } = useI18n()
@@ -13,41 +15,51 @@ const jobs = computed(() => runsOfAvailableModels(
   processesStatus.value === 'success' ? (processes.value ?? []).map(p => p.id) : null,
 ))
 
-// Search over model, run id, status and date, in the browser.
+// Search over model, run id, status and date, in the browser; sort and filter in the
+// ListBar as on every list page.
 const search = ref('')
-const shown = computed(() => jobs.value.filter(job =>
-  matchesSearch(search.value, job.processId, job.id, t(`jobs.status.${job.status}`), formatDateTime(jobTime(job), locale.value))))
+const sortBy = ref('newest')
+const sortItems = computed(() => [
+  { value: 'newest', label: t('list.newest') },
+  { value: 'model', label: t('jobs.sortModel') },
+])
+const filter = ref<Record<string, string[]>>({})
+const filters = computed<ListFilter[]>(() => [{
+  key: 'status',
+  label: t('jobs.filter'),
+  allLabel: t('jobs.filterAll'),
+  items: [...new Set(jobs.value.map(j => j.status))].map(s => ({ value: s, label: t(`jobs.status.${s}`) })),
+}])
+const shown = computed(() => jobs.value
+  .filter(job => !filter.value.status?.length || filter.value.status.includes(job.status))
+  .filter(job => matchesSearch(search.value, job.processId, job.id, t(`jobs.status.${job.status}`), formatDateTime(jobTime(job), locale.value)))
+  .sort((a, b) => sortBy.value === 'model'
+    ? (a.processId ?? '').localeCompare(b.processId ?? '', locale.value)
+    : String(jobTime(b) ?? '').localeCompare(String(jobTime(a) ?? ''))))
 </script>
 
 <template>
-  <section class="mx-auto max-w-3xl space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <h1 class="text-xl font-semibold">
-        {{ t('jobs.title') }}
-      </h1>
-      <div class="flex flex-wrap items-center gap-2">
-        <UInput
-          v-if="jobs.length"
-          v-model="search"
-          type="search"
-          icon="i-lucide-search"
-          :placeholder="t('jobs.search')"
-          :aria-label="t('jobs.search')"
-          size="xs"
-          class="w-48"
-        />
-        <UButton
-        icon="i-lucide-refresh-cw"
-        color="neutral"
-        variant="ghost"
-        size="xs"
-        :loading="pending"
-        @click="refresh()"
-      >
-          {{ t('jobs.refresh') }}
-        </UButton>
-      </div>
-    </div>
+  <section class="max-w-6xl space-y-6">
+    <PageHeader :title="t('jobs.title')" :intro="t('jobs.intro')">
+      <UInput
+        v-if="jobs.length"
+        v-model="search"
+        type="search"
+        icon="i-lucide-search"
+        :placeholder="t('jobs.search')"
+        :aria-label="t('jobs.search')"
+        class="w-full sm:w-64"
+      />
+      <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="pending" @click="() => { refresh() }">
+        {{ t('jobs.refresh') }}
+      </UButton>
+    </PageHeader>
+
+    <ListBar v-if="jobs.length" v-model:sort="sortBy" v-model:filter="filter" :sort-items="sortItems" :filters="filters">
+      <p class="pb-2 text-sm text-(--ui-text-muted)" role="status">
+        {{ t('jobs.count', shown.length) }}
+      </p>
+    </ListBar>
 
     <!-- Error state before empty state: "API not responding" must never look
          like "no runs". -->
@@ -56,7 +68,7 @@ const shown = computed(() => jobs.value.filter(job =>
     </p>
 
     <p v-else-if="jobs.length && !shown.length" class="text-sm text-(--ui-text-muted)" role="status">
-      {{ t('jobs.noMatch', { q: search }) }}
+      {{ search ? t('jobs.noMatch', { q: search }) : t('registry.noMatch') }}
     </p>
 
     <ul v-else-if="shown.length" class="space-y-2">

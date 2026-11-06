@@ -4,16 +4,17 @@ import type { AccessRequestRow } from '~/utils/accessRequest'
 // Access requests (design A3): people ask for a model on its page, access admins decide
 // here. Approving maps the Keycloak role first (UMP has no write path to Keycloak) and
 // then records "granted" in UMP; UMP mails the decision to the person.
-const emit = defineEmits<{ pending: [n: number], changed: [] }>()
+// Search and filters live in the page head and its ListBar (as on every list page); the
+// servers found here feed the server filter there.
+const props = defineProps<{ search: string, filter: Record<string, string[]> }>()
+const emit = defineEmits<{ pending: [n: number], changed: [], servers: [names: string[]] }>()
 const { t, locale } = useI18n()
 const toast = useToast()
 const { umpBase } = useRuntimeConfig().public
 const { isPlatformAdmin } = useUmpRoles()
 const base = `${umpBase}/registry/v1`
 
-const status = ref<'requested' | 'granted' | 'denied' | 'withdrawn' | 'revoked' | 'all'>('requested')
-const statusItems = computed(() => (['requested', 'granted', 'denied', 'withdrawn', 'revoked', 'all'] as const)
-  .map(s => ({ label: t(`access.requests.status.${s}`), value: s })))
+const status = computed(() => props.filter.status?.[0] ?? 'all')
 
 const rows = ref<AccessRequestRow[]>([])
 const loading = ref(false)
@@ -40,15 +41,10 @@ async function load() {
 watch(status, load, { immediate: true })
 defineExpose({ load })
 
-const search = ref('')
-const server = ref('all')
-const serverItems = computed(() => [
-  { label: t('access.requests.allServers'), value: 'all' },
-  ...[...new Set(rows.value.map(r => serverOf(r)))].sort().map(s => ({ label: s, value: s })),
-])
+watch(rows, list => emit('servers', [...new Set(list.map(r => serverOf(r)))].sort()))
 const shown = computed(() => rows.value
-  .filter(r => server.value === 'all' || serverOf(r) === server.value)
-  .filter(r => matchesSearch(search.value, r.user.display_name ?? '', r.user.email ?? '', r.model.full_name ?? '', r.role)))
+  .filter(r => !props.filter.server?.length || props.filter.server.includes(serverOf(r)))
+  .filter(r => matchesSearch(props.search, r.user.display_name ?? '', r.user.email ?? '', r.model.full_name ?? '', r.role)))
 
 const nameOf = (r: AccessRequestRow) => r.user.display_name || r.user.email || r.user.sub
 const date = (iso?: string | null) => iso ? new Date(iso).toLocaleDateString(locale.value, { dateStyle: 'medium' }) : ''
@@ -100,12 +96,6 @@ async function deny() {
 
 <template>
   <div class="space-y-6">
-    <div class="flex flex-wrap gap-3">
-      <UInput v-model="search" type="search" icon="i-lucide-search" :placeholder="t('access.requests.search')" :aria-label="t('access.requests.search')" class="w-full sm:w-80" />
-      <USelect v-model="server" :items="serverItems" :aria-label="t('access.requests.server')" class="w-48" />
-      <USelect v-model="status" :items="statusItems" :aria-label="t('access.requests.statusLabel')" class="w-40" />
-    </div>
-
     <UAlert v-if="loadError" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('access.loadFailed')" :description="apiErrorMessage(loadError)" />
 
     <div v-else class="overflow-x-auto rounded-lg bg-white">

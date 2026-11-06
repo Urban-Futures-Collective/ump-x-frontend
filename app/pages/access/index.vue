@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
+import type { ListFilter } from '~/types/list'
 import type { AccessRequestRow } from '~/utils/accessRequest'
 
 // Access manager (design A4): who may run which model. Access is a realm role per model
@@ -26,6 +27,24 @@ const tabs = computed<TabsItem[]>(() => [
   { label: t('access.tabs.models'), value: 'models' },
 ])
 const requestsTab = ref<{ load: () => Promise<void> } | null>(null)
+
+// Requests: filter by server and status in the ListBar, pending ones first.
+const requestFilter = ref<Record<string, string[]>>({ status: ['requested'] })
+const requestServers = ref<string[]>([])
+const requestFilters = computed<ListFilter[]>(() => [
+  {
+    key: 'status',
+    label: t('access.requests.statusLabel'),
+    allLabel: t('access.requests.status.all'),
+    items: (['requested', 'granted', 'denied', 'withdrawn', 'revoked'] as const).map(s => ({ value: s, label: t(`access.requests.status.${s}`) })),
+  },
+  {
+    key: 'server',
+    label: t('access.requests.server'),
+    allLabel: t('access.requests.allServers'),
+    items: requestServers.value.map(s => ({ value: s, label: s })),
+  },
+])
 
 const { data: servers, pending, error, refresh } = useFetch<ServerRow[]>('/api/access/servers', { default: () => [] })
 
@@ -161,23 +180,39 @@ async function change(method: 'POST' | 'DELETE', userId: string, note?: string) 
 
 <template>
   <section class="max-w-6xl space-y-6">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <h1 class="text-3xl font-semibold text-ufc-slate-900">
-        {{ t('access.title') }}
-      </h1>
+    <PageHeader :title="t('access.title')" :intro="t('access.intro')">
+      <UInput
+        v-model="search"
+        type="search"
+        icon="i-lucide-search"
+        :placeholder="tab === 'requests' ? t('access.requests.search') : t('access.search')"
+        :aria-label="tab === 'requests' ? t('access.requests.search') : t('access.search')"
+        class="w-full sm:w-64"
+      />
       <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="pending" @click="() => { refresh(); loadMembers(); requestsTab?.load() }">
         {{ t('access.refresh') }}
       </UButton>
-    </div>
+    </PageHeader>
 
-    <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
+    <ListBar v-if="tab === 'requests'" v-model:filter="requestFilter" :filters="requestFilters">
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
+    <ListBar v-else>
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
 
-    <AccessRequests v-if="tab === 'requests'" ref="requestsTab" @pending="(n: number) => { pendingCount = n }" @changed="() => { refresh(); loadMembers() }" />
+    <AccessRequests
+      v-if="tab === 'requests'"
+      ref="requestsTab"
+      :search="search"
+      :filter="requestFilter"
+      @pending="(n: number) => { pendingCount = n }"
+      @servers="(names: string[]) => { requestServers = names }"
+      @changed="() => { refresh(); loadMembers() }"
+    />
 
     <template v-else>
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('access.loadFailed')" :description="apiErrorMessage(error)" />
-
-    <UInput v-model="search" type="search" icon="i-lucide-search" :placeholder="t('access.search')" :aria-label="t('access.search')" class="w-full sm:w-80" />
 
     <p v-if="!pending && !error && !servers.length" class="text-sm text-(--ui-text-muted)">
       {{ t('access.empty') }}

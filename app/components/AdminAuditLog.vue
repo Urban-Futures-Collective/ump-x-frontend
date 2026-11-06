@@ -9,11 +9,9 @@ const { t, te, locale } = useI18n()
 const { umpBase } = useRuntimeConfig().public
 const base = `${umpBase}/registry/v1`
 
-const action = ref<string | undefined>(undefined)
-const actionItems = computed<{ label: string, value: string | undefined }[]>(() => [
-  { label: t('audit.allActions'), value: undefined },
-  ...AUDIT_ACTIONS.map(a => ({ label: t(actionKey(a)), value: a })),
-])
+// The action filter sits in the admin page's ListBar, as on every list page.
+const props = defineProps<{ action?: string }>()
+const action = computed(() => props.action)
 
 const events = ref<ApiAuditEvent[]>([])
 const cursor = ref<string | null>(null)
@@ -80,7 +78,6 @@ const fieldLabel = (f: string) => {
       <p class="text-sm text-(--ui-text-muted)">
         {{ t('audit.intro') }}
       </p>
-      <USelectMenu v-model="action" :items="actionItems" value-key="value" :search-input="false" class="w-64" />
     </div>
 
     <p v-if="error" class="text-sm text-red-600">

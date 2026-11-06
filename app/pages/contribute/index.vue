@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { DropdownMenuItem, TabsItem } from '@nuxt/ui'
+import type { TabsItem } from '@nuxt/ui'
+import type { ListFilter } from '~/types/list'
 import type { RegistryModel, RegistryStatus } from '~/types/registry'
 import { REGISTRY_STATUSES } from '~/types/registry'
 import { CONTRIBUTE_GROUPS, contributeGroup } from '~/utils/registryWorkflow'
@@ -22,29 +23,25 @@ const tabs = computed<TabsItem[]>(() => [
 ])
 
 const search = ref('')
-const sortBy = ref<'changed' | 'name'>('changed')
-const statusFilter = ref<RegistryStatus | 'all'>('all')
+const sortBy = ref('changed')
+const filter = ref<Record<string, string[]>>({})
+const statusFilter = computed(() => (filter.value.status?.[0] ?? 'all') as RegistryStatus | 'all')
 const tiles = ref(false)
 
 const titleOf = (m: RegistryModel) => inLang(m.fullName, locale.value, m.defaultLang) || m.remoteProcessId
 
-const sortItems = computed<DropdownMenuItem[]>(() => (['changed', 'name'] as const).map(value => ({
-  label: t(value === 'changed' ? 'registry.contribute.sortChanged' : 'registry.contribute.sortName'),
-  type: 'checkbox' as const,
-  checked: sortBy.value === value,
-  onUpdateChecked: () => { sortBy.value = value },
-})))
+const sortItems = computed(() => [
+  { value: 'changed', label: t('registry.contribute.sortChanged') },
+  { value: 'name', label: t('registry.contribute.sortName') },
+])
 
 // Only statuses the owner actually has, so the filter never offers an empty result.
-const filterItems = computed<DropdownMenuItem[]>(() => {
-  const present = REGISTRY_STATUSES.filter(s => myModels.value.some(m => m.status === s))
-  return (['all', ...present] as const).map(value => ({
-    label: value === 'all' ? t('registry.contribute.filterAll') : t(`registry.status.${value}`),
-    type: 'checkbox' as const,
-    checked: statusFilter.value === value,
-    onUpdateChecked: () => { statusFilter.value = value },
-  }))
-})
+const filters = computed<ListFilter[]>(() => [{
+  key: 'status',
+  label: t('registry.contribute.filter'),
+  allLabel: t('registry.contribute.filterAll'),
+  items: REGISTRY_STATUSES.filter(s => myModels.value.some(m => m.status === s)).map(s => ({ value: s, label: t(`registry.status.${s}`) })),
+}])
 
 const shown = computed(() => myModels.value
   .filter(m => statusFilter.value === 'all' || m.status === statusFilter.value)
@@ -70,27 +67,20 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
     <PrototypeNotice />
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('registry.loadFailed')" :description="error" />
 
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div class="max-w-xl space-y-1">
-        <h1 class="text-2xl font-semibold text-ufc-slate-900">
-          {{ t('registry.contribute.title') }}
-        </h1>
-        <p class="text-sm text-(--ui-text-muted)">
-          {{ t('registry.contribute.intro') }}
-        </p>
-      </div>
-      <div v-if="!isEmpty" class="flex flex-wrap items-center gap-2">
+    <PageHeader :title="t('registry.contribute.title')" :intro="t('registry.contribute.intro')">
+      <template v-if="!isEmpty">
         <UInput
           v-model="search"
           icon="i-lucide-search"
           :placeholder="t(tab === 'models' ? 'registry.contribute.searchModels' : 'registry.contribute.searchServers')"
           :aria-label="t(tab === 'models' ? 'registry.contribute.searchModels' : 'registry.contribute.searchServers')"
+          class="w-full sm:w-64"
         />
         <UButton icon="i-lucide-plus" to="/contribute/new">
           {{ t('registry.contribute.new') }}
         </UButton>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <!-- Centred in the free space below the heading, as in the design. -->
     <div v-if="isEmpty" class="flex min-h-[55vh] items-center justify-center">
@@ -109,38 +99,19 @@ const modelsOn = (name: string) => myModels.value.filter(m => m.serverName === n
       </div>
     </div>
 
-    <div v-else class="flex flex-wrap items-end justify-between gap-2 border-b border-(--ui-border)">
-      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="-mb-px" />
-      <div v-if="tab === 'models'" class="flex items-center gap-1 pb-1">
-        <UDropdownMenu :items="sortItems" :content="{ align: 'end' }">
-          <UButton icon="i-lucide-arrow-down-up" color="neutral" variant="ghost" :aria-label="t('registry.contribute.sort')" />
-        </UDropdownMenu>
-        <UDropdownMenu :items="filterItems" :content="{ align: 'end' }">
-          <UButton
-            icon="i-lucide-list-filter"
-            :color="statusFilter === 'all' ? 'neutral' : 'primary'"
-            variant="ghost"
-            :aria-label="t('registry.contribute.filter')"
-          />
-        </UDropdownMenu>
-        <UButton
-          icon="i-lucide-layout-grid"
-          :color="tiles ? 'primary' : 'neutral'"
-          variant="ghost"
-          :aria-label="t('registry.contribute.viewTiles')"
-          :aria-pressed="tiles"
-          @click="() => { tiles = true }"
-        />
-        <UButton
-          icon="i-lucide-list"
-          :color="tiles ? 'neutral' : 'primary'"
-          variant="ghost"
-          :aria-label="t('registry.contribute.viewList')"
-          :aria-pressed="!tiles"
-          @click="() => { tiles = false }"
-        />
-      </div>
-    </div>
+    <ListBar
+      v-else-if="tab === 'models'"
+      v-model:sort="sortBy"
+      v-model:filter="filter"
+      v-model:tiles="tiles"
+      :sort-items="sortItems"
+      :filters="filters"
+    >
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
+    <ListBar v-else>
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
 
     <template v-if="!isEmpty && tab === 'models'">
       <p v-if="loading && !myModels.length" class="text-sm text-(--ui-text-muted)">

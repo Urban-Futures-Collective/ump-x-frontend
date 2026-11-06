@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ListFilter } from '~/types/list'
 import type { CommonsEntry, CommonsSort } from '~/utils/commons'
 
 // Commons (design C0): the models the caller may use, as cards that lead to the model
@@ -30,96 +31,50 @@ const entries = computed<CommonsEntry[]>(() => (processes.value ?? []).map((p) =
 
 const options = computed(() => filterOptions(entries.value))
 const search = ref('')
-const topics = ref<string[]>([])
-const langs = ref<string[]>([])
-const licences = ref<string[]>([])
-const sort = ref<CommonsSort>('published')
+// Sort and filter in the ListBar as on every list page; a language filter only when
+// there is more than one language to choose from.
+const sort = ref<string>('published')
 const sortItems = computed(() => [
-  { label: t('commons.sort.published'), value: 'published' },
-  { label: t('commons.sort.name'), value: 'name' },
+  { value: 'published', label: t('commons.sort.published') },
+  { value: 'name', label: t('commons.sort.name') },
 ])
-const langItems = computed(() => options.value.langs.map(l => ({ label: l.toUpperCase(), value: l })))
+const filter = ref<Record<string, string[]>>({})
+const asOptions = (list: string[]) => list.map(v => ({ value: v, label: v }))
+const filters = computed<ListFilter[]>(() => [
+  { key: 'topics', label: t('commons.filter.topic'), items: asOptions(options.value.topics), multiple: true },
+  { key: 'langs', label: t('commons.filter.language'), items: options.value.langs.length > 1 ? options.value.langs.map(l => ({ value: l, label: l.toUpperCase() })) : [], multiple: true },
+  { key: 'licences', label: t('commons.filter.licence'), items: asOptions(options.value.licences), multiple: true },
+])
 
 const shown = computed(() => sortCommons(entries.value.filter(e =>
   matchesSearch(search.value, e.title, e.description, e.id, ...(e.card?.keywords ?? []))
-  && matchesFilter(e, { topics: topics.value, langs: langs.value, licences: licences.value })), sort.value))
-const filtered = computed(() => !!(search.value || topics.value.length || langs.value.length || licences.value.length))
-function reset() {
-  search.value = ''
-  topics.value = []
-  langs.value = []
-  licences.value = []
-}
+  && matchesFilter(e, { topics: filter.value.topics ?? [], langs: filter.value.langs ?? [], licences: filter.value.licences ?? [] })), sort.value as CommonsSort))
+const filtered = computed(() => !!search.value || Object.values(filter.value).some(v => v.length))
 </script>
 
 <template>
-  <section class="space-y-8">
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div class="space-y-2">
-        <h1 class="text-3xl font-semibold text-ufc-slate-900">
-          {{ t('commons.title') }}
-        </h1>
-        <p class="text-[0.9375rem] text-(--ui-text-muted)">
-          {{ t('commons.intro') }}
-        </p>
-      </div>
-      <UButton v-if="canContribute" to="/contribute/new" icon="i-lucide-plus" size="lg">
-        {{ t('commons.contribute') }}
-      </UButton>
-    </div>
-
-    <div class="flex flex-wrap items-center gap-3">
+  <section class="space-y-6">
+    <PageHeader :title="t('commons.title')" :intro="t('commons.intro')">
       <UInput
         v-model="search"
         type="search"
         icon="i-lucide-search"
         :placeholder="t('commons.search')"
         :aria-label="t('commons.search')"
-        class="w-full sm:w-72"
+        class="w-full sm:w-64"
       />
-      <USelectMenu
-        v-if="options.topics.length"
-        v-model="topics"
-        :items="options.topics"
-        multiple
-        :search-input="false"
-        :placeholder="t('commons.filter.topic')"
-        :aria-label="t('commons.filter.topic')"
-        class="w-40"
-      />
-      <USelectMenu
-        v-if="langItems.length > 1"
-        v-model="langs"
-        :items="langItems"
-        value-key="value"
-        multiple
-        :search-input="false"
-        :placeholder="t('commons.filter.language')"
-        :aria-label="t('commons.filter.language')"
-        class="w-36"
-      />
-      <USelectMenu
-        v-if="options.licences.length"
-        v-model="licences"
-        :items="options.licences"
-        multiple
-        :search-input="false"
-        :placeholder="t('commons.filter.licence')"
-        :aria-label="t('commons.filter.licence')"
-        class="w-40"
-      />
-      <UButton v-if="filtered" color="neutral" variant="link" @click="reset">
-        {{ t('commons.filter.reset') }}
+      <UButton v-if="canContribute" to="/contribute/new" icon="i-lucide-plus">
+        {{ t('commons.contribute') }}
       </UButton>
-      <USelect
-        v-model="sort"
-        :items="sortItems"
-        icon="i-lucide-arrow-down-up"
-        variant="ghost"
-        :aria-label="t('commons.sort.label')"
-        class="ml-auto w-72"
-      />
-    </div>
+    </PageHeader>
+
+    <ListBar v-model:sort="sort" v-model:filter="filter" :sort-items="sortItems" :filters="filters">
+      <p class="pb-2 text-sm text-(--ui-text-muted)" role="status">
+        {{ t('commons.count', shown.length) }}<template v-if="shown.length">
+          · {{ t('commons.fallbackLang') }}
+        </template>
+      </p>
+    </ListBar>
 
     <p v-if="!loggedIn" class="text-sm text-(--ui-text-muted)">
       {{ t('commons.anonymousHint') }}
@@ -129,9 +84,6 @@ function reset() {
     </p>
 
     <template v-if="shown.length">
-      <p class="text-sm text-(--ui-text-muted)" role="status">
-        {{ t('commons.count', shown.length) }} · {{ t('commons.fallbackLang') }}
-      </p>
       <ul class="grid gap-4 lg:grid-cols-2">
         <li v-for="e in shown" :key="e.id">
           <ULink

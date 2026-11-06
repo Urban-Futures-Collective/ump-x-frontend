@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
+import type { ListFilter } from '~/types/list'
 import type { RegistryModel, RegistryStatus } from '~/types/registry'
+import { REGISTRY_STATUSES } from '~/types/registry'
 import type { VerifyTab } from '~/utils/registryWorkflow'
 import { VERIFY_TABS, verifyTabsOf } from '~/utils/registryWorkflow'
 
@@ -28,13 +30,34 @@ const tabs = computed<TabsItem[]>(() => [
   { label: t('registry.verify.tabs.closed', { n: counts.value.closed }), value: 'closed' },
 ])
 
-const newest = (list: RegistryModel[]) => list.sort((a, b) => b.statusChangedAt.localeCompare(a.statusChangedAt))
+// Search, sort and filter as on every list page (ListBar).
+const search = ref('')
+const sortBy = ref('changed')
+const sortItems = computed(() => [
+  { value: 'changed', label: t('list.newest') },
+  { value: 'name', label: t('list.name') },
+])
+const filter = ref<Record<string, string[]>>({})
+const filters = computed<ListFilter[]>(() => [{
+  key: 'status',
+  label: t('registry.contribute.filter'),
+  allLabel: t('registry.contribute.filterAll'),
+  items: REGISTRY_STATUSES.filter(s => inTab(tab.value).some(m => m.status === s)).map(s => ({ value: s, label: t(`registry.status.${s}`) })),
+}])
+// A status filter from another tab would hide everything; drop it on switching.
+watch(tab, () => { filter.value = {} })
+const arrange = (list: RegistryModel[]) => list
+  .filter(m => !filter.value.status?.length || filter.value.status.includes(m.status))
+  .filter(m => matchesSearch(search.value, title(m), ownerLabel(m), m.serverName, m.remoteProcessId))
+  .sort((a, b) => sortBy.value === 'name'
+    ? title(a).localeCompare(title(b), locale.value)
+    : b.statusChangedAt.localeCompare(a.statusChangedAt))
 
 // Empty states (design E2). Nothing listed at all: just the note, no tabs. Nothing to
 // verify, but published models exist: the note, and the published models below it.
 const nothingAtAll = computed(() => !loading.value && !error.value && VERIFY_TABS.every(k => !inTab(k).length))
 const nothingToVerify = computed(() => tab.value === 'todo' && !loading.value && !inTab('todo').length)
-const rows = computed(() => newest(nothingToVerify.value ? inTab('published') : inTab(tab.value)))
+const rows = computed(() => arrange(nothingToVerify.value ? inTab('published') : inTab(tab.value)))
 
 const title = (m: RegistryModel) => inLang(m.fullName, locale.value, m.defaultLang) || m.remoteProcessId
 const isOwn = (m: RegistryModel) => actorFor(m).isOwner
@@ -67,21 +90,24 @@ async function step(m: RegistryModel, to: RegistryStatus) {
     <PrototypeNotice />
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('registry.loadFailed')" :description="error" />
 
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <div class="space-y-1">
-        <h1 class="text-2xl font-semibold text-ufc-slate-900">
-          {{ t('registry.verify.title') }}
-        </h1>
-        <p class="text-sm text-(--ui-text-muted)">
-          {{ t('registry.verify.intro') }}
-        </p>
-      </div>
+    <PageHeader :title="t('registry.verify.title')" :intro="t('registry.verify.intro')">
+      <UInput
+        v-if="!nothingAtAll"
+        v-model="search"
+        type="search"
+        icon="i-lucide-search"
+        :placeholder="t('registry.verify.search')"
+        :aria-label="t('registry.verify.search')"
+        class="w-full sm:w-64"
+      />
       <UButton color="neutral" variant="outline" icon="i-lucide-refresh-cw" :loading="loading" @click="() => { load(true) }">
         {{ t('registry.verify.refresh') }}
       </UButton>
-    </div>
+    </PageHeader>
 
-    <UTabs v-if="!nothingAtAll" v-model="tab" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
+    <ListBar v-if="!nothingAtAll" v-model:sort="sortBy" v-model:filter="filter" :sort-items="sortItems" :filters="filters">
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
 
     <div v-if="nothingAtAll || nothingToVerify" class="flex flex-wrap items-center gap-3 rounded-lg border border-(--ui-border) bg-white px-5 py-4" role="status">
       <UBadge color="neutral" variant="soft">
@@ -91,7 +117,7 @@ async function step(m: RegistryModel, to: RegistryStatus) {
     </div>
 
     <p v-if="!rows.length && !nothingAtAll && !nothingToVerify" class="text-sm text-(--ui-text-muted)">
-      {{ loading ? t('registry.loading') : t(`registry.verify.empty.${tab}`) }}
+      {{ loading ? t('registry.loading') : search || filter.status?.length ? t('registry.noMatch') : t(`registry.verify.empty.${tab}`) }}
     </p>
 
     <div v-if="rows.length" class="overflow-x-auto rounded-lg border border-(--ui-border) bg-white">

@@ -7,6 +7,7 @@
 // create with an email invitation, enable and disable, assign platform roles) and the
 // audit log from UMP (needs the registry API, otherwise greyed out).
 import type { TableColumn, TabsItem } from '@nuxt/ui'
+import type { ListFilter } from '~/types/list'
 
 definePageMeta({ middleware: ['auth', 'admin'] })
 const { t } = useI18n()
@@ -22,6 +23,15 @@ const tabs = computed<TabsItem[]>(() => [
   { label: t('admin.users.heading'), value: 'users' },
   { label: t('admin.audit'), value: 'audit', disabled: !registryApi },
 ])
+
+// Audit log: filter by action in the ListBar.
+const auditFilter = ref<Record<string, string[]>>({})
+const auditFilters = computed<ListFilter[]>(() => [{
+  key: 'action',
+  label: t('audit.filter'),
+  allLabel: t('audit.allActions'),
+  items: AUDIT_ACTIONS.map(a => ({ value: a, label: t(actionKey(a)) })),
+}])
 
 // The account whose roles are open in the dialog.
 const rolesFor = ref<{ id: string, username: string } | null>(null)
@@ -180,11 +190,8 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 
 <template>
   <div class="max-w-6xl space-y-6">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <h1 class="text-2xl font-semibold text-ufc-slate-900">
-        {{ t('admin.title') }}
-      </h1>
-      <div v-if="isPlatformAdmin && tab === 'users'" class="flex flex-wrap items-center gap-2">
+    <PageHeader :title="t('admin.title')" :intro="t('admin.intro')">
+      <template v-if="isPlatformAdmin && tab === 'users'">
         <form role="search" @submit.prevent>
           <UInput
             v-model="searchTerm"
@@ -193,18 +200,24 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
             :loading="pending"
             :placeholder="t('admin.users.search')"
             :aria-label="t('admin.users.search')"
+            class="w-full sm:w-64"
           />
         </form>
         <UButton icon="i-lucide-plus" @click="() => { createOpen = true }">
           {{ t('admin.create.open') }}
         </UButton>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
-    <UTabs v-model="tab" :items="tabs" :content="false" variant="link" class="border-b border-(--ui-border)" />
+    <ListBar v-if="tab === 'audit'" v-model:filter="auditFilter" :filters="auditFilters">
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
+    <ListBar v-else>
+      <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
+    </ListBar>
 
     <!-- Not full width on purpose: on wide screens a long row is hard to follow. -->
-    <AdminAuditLog v-if="tab === 'audit'" />
+    <AdminAuditLog v-if="tab === 'audit'" :action="auditFilter.action?.[0]" />
 
     <section v-else-if="isPlatformAdmin" class="max-w-4xl space-y-4">
 
