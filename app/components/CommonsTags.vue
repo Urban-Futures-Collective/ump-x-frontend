@@ -38,17 +38,17 @@ const TONE: Record<TopicTone, string> = {
 </script>
 
 <template>
-  <ul class="flex flex-wrap items-center gap-2 text-sm">
+  <ul class="flex flex-wrap items-center gap-2 text-xs">
     <li v-if="card.status !== 'published'" class="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-0.5 text-orange-800">
-      <UIcon name="i-lucide-shield-user" class="size-3.5" aria-hidden="true" />
+      <UIcon name="i-lucide-shield-user" class="size-3" aria-hidden="true" />
       {{ t('commons.onlyVerification') }}
     </li>
     <li v-else-if="published" class="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-0.5 text-green-800">
-      <UIcon name="i-lucide-check" class="size-3.5" aria-hidden="true" />
+      <UIcon name="i-lucide-check" class="size-3" aria-hidden="true" />
       {{ t('commons.published', { date: published }) }}
     </li>
     <li v-if="card.status === 'published'" class="inline-flex items-center gap-1 rounded-full bg-(--ui-bg-elevated) px-3 py-0.5">
-      <UIcon :name="access.icon" class="size-3.5" aria-hidden="true" />
+      <UIcon :name="access.icon" class="size-3" aria-hidden="true" />
       {{ access.label }}
     </li>
     <template v-if="topics">
@@ -59,7 +59,7 @@ const TONE: Record<TopicTone, string> = {
     <li v-if="licence && card.license" class="rounded-full bg-(--ui-bg-elevated) px-3 py-0.5 font-medium">
       {{ card.license }}
     </li>
-    <li v-if="langs" class="rounded-full border border-(--ui-border-accented) px-3 py-0.5 text-xs">
+    <li v-if="langs" class="rounded-full border border-(--ui-border-accented) px-3 py-0.5">
       <span class="sr-only">{{ t('commons.languages') }}</span>
       {{ cardLangs(card).map(l => l.toUpperCase()).join(' · ') }}
     </li>

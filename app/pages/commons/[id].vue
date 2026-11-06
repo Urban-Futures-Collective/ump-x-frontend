@@ -85,7 +85,7 @@ function repoLabel(url: string) {
     <h1 class="text-2xl font-semibold text-ufc-slate-900">
       {{ t('commons.model.notFound') }}
     </h1>
-    <p class="text-[0.9375rem]/[1.6] text-ufc-slate-700">
+    <p class="text-base/[1.6] text-ufc-slate-700">
       {{ t('commons.model.notFoundBody') }}
     </p>
     <p class="text-sm text-(--ui-text-dimmed)">
@@ -102,7 +102,7 @@ function repoLabel(url: string) {
         <h1 class="text-2xl font-semibold text-ufc-slate-900">
           {{ title }}
         </h1>
-        <p v-if="description" class="text-[0.9375rem]/[1.6] text-ufc-slate-700">
+        <p v-if="description" class="text-base/[1.6] text-ufc-slate-700">
           {{ description }}
         </p>
         <p class="text-sm text-(--ui-text-dimmed)">
@@ -135,7 +135,7 @@ function repoLabel(url: string) {
           <h2 class="font-semibold">
             {{ t('registry.review.purpose') }}
           </h2>
-          <p class="text-[0.9375rem]/[1.6]">
+          <p class="text-base/[1.6]">
             {{ text('purpose') }}
           </p>
         </div>
@@ -161,7 +161,7 @@ function repoLabel(url: string) {
           <h2 class="font-semibold">
             {{ t('registry.review.limits') }}
           </h2>
-          <p class="text-[0.9375rem]/[1.6]">
+          <p class="text-base/[1.6]">
             {{ text('limitationsRisks') }}
           </p>
         </div>
