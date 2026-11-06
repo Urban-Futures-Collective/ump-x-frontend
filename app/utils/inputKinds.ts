@@ -1,3 +1,4 @@
+import { isFeatureCollectionInput } from './featureCollection'
 import { geometryBranch, isGeometryInput } from './geometryInput'
 
 // Which form field an input gets, read from its JSON Schema, plus the grouping hints a
@@ -7,6 +8,7 @@ import { geometryBranch, isGeometryInput } from './geometryInput'
 export type InputKind
   = | 'boolean'
     | 'geometry'
+    | 'features'
     | 'textOrGeometry'
     | 'choice'
     | 'choiceOrDate'
@@ -37,6 +39,7 @@ export function inputKind(input: { type: string, schema?: Record<string, unknown
   const schema = input.schema
   if (input.type === 'boolean') return 'boolean'
   if (isGeometryInput(schema)) return 'geometry'
+  if (isFeatureCollectionInput(schema)) return 'features'
   if (geometryBranch(schema)) return 'textOrGeometry'
   if (enumOf(schema)) return 'choice'
   const branches = (schema?.oneOf as unknown[] | undefined) ?? []

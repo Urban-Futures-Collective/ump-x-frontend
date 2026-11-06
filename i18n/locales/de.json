@@ -305,7 +305,8 @@
       "choice": "Bitte einen der angebotenen Werte wählen",
       "date": "Kein gültiges Datum",
       "above": "Größer als {limit}",
-      "below": "Kleiner als {limit}"
+      "below": "Kleiner als {limit}",
+      "features": "{limit} Objekte mit fehlenden oder ungültigen Werten"
     },
     "advanced": "Erweiterte Einstellungen ({n})",
     "field": {
@@ -1153,5 +1154,36 @@
   "partners": {
     "bmftr": "Gefördert durch das Bundesministerium für Forschung, Technologie und Raumfahrt",
     "ptf": "Unterstützt durch Prototype Fund"
+  },
+  "features": {
+    "select": "Auswählen",
+    "draw": {
+      "Polygon": "Fläche",
+      "LineString": "Linie",
+      "Point": "Punkt"
+    },
+    "remove": "Löschen ({n})",
+    "removeAll": "Alle entfernen",
+    "count": "{n} Objekte",
+    "problems": "{n} mit fehlenden oder ungültigen Werten",
+    "hintSelect": "Objekt anklicken zum Auswählen (mit Umschalt mehrere), ziehen zum Verschieben, Ecken ziehen zum Umformen",
+    "hintDraw": {
+      "Polygon": "Ecken anklicken, Doppelklick beendet",
+      "LineString": "Punkte anklicken, Doppelklick beendet",
+      "Point": "Klicken zum Setzen"
+    },
+    "invalid": "Der Wert ist keine GeoJSON-FeatureCollection.",
+    "propertiesOne": "Eigenschaften des gewählten Objekts",
+    "propertiesMany": "Eigenschaften von {n} gewählten Objekten (Änderungen gelten für alle)",
+    "mixed": "unterschiedliche Werte",
+    "problem": {
+      "required": "Pflichtfeld",
+      "number": "Keine Zahl",
+      "min": "Zu klein (Grenze {limit})",
+      "max": "Zu groß (Grenze {limit})",
+      "choice": "Kein erlaubter Wert"
+    },
+    "cancel": "Abbrechen",
+    "applyJson": "JSON übernehmen"
   }
 }

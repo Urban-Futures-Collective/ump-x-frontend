@@ -133,6 +133,7 @@ async function onSubmit() {
         v-model="form[inp.name]!"
         :input="inp"
         :problem="shownProblem(inp.name)"
+        :area="form.area"
       >
         <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
           {{ t('run.defaultHint', { value: String(inp.default) }) }}
@@ -159,6 +160,7 @@ async function onSubmit() {
               v-model="form[inp.name]!"
               :input="inp"
               :problem="shownProblem(inp.name)"
+              :area="form.area"
             >
               <p v-if="defaultInvisible(inp)" class="text-xs text-(--ui-text-dimmed)">
                 {{ t('run.defaultHint', { value: String(inp.default) }) }}

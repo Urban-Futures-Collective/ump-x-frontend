@@ -305,7 +305,8 @@
       "choice": "Please choose one of the offered values",
       "date": "Not a valid date",
       "above": "Greater than {limit}",
-      "below": "Less than {limit}"
+      "below": "Less than {limit}",
+      "features": "{limit} features with missing or invalid values"
     },
     "advanced": "Advanced settings ({n})",
     "field": {
@@ -1153,5 +1154,36 @@
   "partners": {
     "bmftr": "Funded by the Federal Ministry of Research, Technology and Space",
     "ptf": "Supported by Prototype Fund"
+  },
+  "features": {
+    "select": "Select",
+    "draw": {
+      "Polygon": "Polygon",
+      "LineString": "Line",
+      "Point": "Point"
+    },
+    "remove": "Delete ({n})",
+    "removeAll": "Remove all",
+    "count": "{n} features",
+    "problems": "{n} with missing or invalid values",
+    "hintSelect": "Click a feature to select it (shift-click for more), drag to move, drag its corners to reshape",
+    "hintDraw": {
+      "Polygon": "Click to set corners, double-click to finish",
+      "LineString": "Click to set points, double-click to finish",
+      "Point": "Click to place"
+    },
+    "invalid": "The value is not a GeoJSON FeatureCollection.",
+    "propertiesOne": "Properties of the selected feature",
+    "propertiesMany": "Properties of {n} selected features (changes apply to all)",
+    "mixed": "different values",
+    "problem": {
+      "required": "Required",
+      "number": "Not a number",
+      "min": "Too small (limit {limit})",
+      "max": "Too large (limit {limit})",
+      "choice": "Not one of the allowed values"
+    },
+    "cancel": "Cancel",
+    "applyJson": "Apply JSON"
   }
 }

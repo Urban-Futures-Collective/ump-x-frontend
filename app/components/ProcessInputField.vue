@@ -4,7 +4,8 @@ import type { ProcessInput } from '~/types/ump'
 // One input of the run form. Which field it gets follows the schema (see
 // app/utils/inputKinds.ts). The value is always text, as the form keeps it; the
 // conversion to numbers, booleans and objects happens once, in cleanInputs.
-const props = defineProps<{ input: ProcessInput, problem: string | null }>()
+// `area` is the value of the form's area input, shown as outline in the feature editor.
+const props = defineProps<{ input: ProcessInput, problem: string | null, area?: string }>()
 const value = defineModel<string>({ required: true })
 
 const { t } = useI18n()
@@ -87,6 +88,8 @@ const mode = computed({
     </div>
 
     <GeometryInput v-else-if="kind === 'geometry'" v-model="value" :schema="input.schema" />
+
+    <FeatureCollectionInput v-else-if="kind === 'features'" v-model="value" :schema="input.schema" :area="area" />
 
     <div v-else-if="kind === 'textOrGeometry'" class="space-y-2">
       <URadioGroup v-model="mode" :items="modes" orientation="horizontal" :aria-label="input.title" />
