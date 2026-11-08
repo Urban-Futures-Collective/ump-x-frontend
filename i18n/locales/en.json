@@ -511,21 +511,21 @@
       "steps": {
         "commons": {
           "title": "Go to the Commons page",
-          "body": "On the Commons page, you see a list of all available models. You can search and filter models, for example, by keyword.",
+          "body": "On the Commons page, you see a list of all available models. You can search and filter models, for example, by keyword."
         },
         "modelcard": {
             "title": "View the model card",
-            "body": "Click on a model to view its model card. Some models are available publicly by default; others require you to request access first.",
+            "body": "Click on a model to view its model card. Some models are available publicly by default; others require you to request access first."
         },
         "request-access": {
             "title": "Request access",
-            "body": "To request access to a model, click the “Request access“ button within the model card. Once an administrator has approved your access request, you will receive an email notification, and the model will become available to you.",
+            "body": "To request access to a model, click the “Request access“ button within the model card. Once an administrator has approved your access request, you will receive an email notification, and the model will become available to you."
         },
         "run-model": {
             "title": "Run the model",
-            "body": "To run an available model, create a new scenario (see next help section).",
-        },
-      },
+            "body": "To run an available model, create a new scenario (see next help section)."
+        }
+      }
     },
     "scenarios": {
       "heading": "Creating a new scenario",
