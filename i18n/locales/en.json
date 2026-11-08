@@ -500,12 +500,35 @@
       "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
     },
     "nav": {
-      "scenarios": "Running scenarios",
+      "exploring": "Exploring available models",
+      "scenarios": "Creating a new scenario",
       "chat": "Chat on this site",
       "mcp": "Your own AI client"
     },
+    "exploring": {
+      "heading": "Exploring available models",
+      "lead": "Here, you can explore all models that are currently available on UMP-X.",
+      "steps": {
+        "commons": {
+          "title": "Go to the Commons page",
+          "body": "On the Commons page, you see a list of all available models. You can search and filter models, for example, by keyword.",
+        },
+        "modelcard": {
+            "title": "View the model card",
+            "body": "Click on a model to view its model card. Some models are available publicly by default; others require you to request access first.",
+        },
+        "request-access": {
+            "title": "Request access",
+            "body": "To request access to a model, click the “Request access“ button within the model card. Once an administrator has approved your access request, you will receive an email notification, and the model will become available to you.",
+        },
+        "run-model": {
+            "title": "Run the model",
+            "body": "To run an available model, create a new scenario (see next help section).",
+        },
+      },
+    },
     "scenarios": {
-      "heading": "Running scenarios",
+      "heading": "Creating a new scenario",
       "lead": "A scenario is one run of a model with your inputs. This is how you get from a model to a result.",
       "sections": {
         "find": {
