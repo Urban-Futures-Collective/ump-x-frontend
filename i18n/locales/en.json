@@ -544,10 +544,10 @@
         }
       }
     },
-      "retrieving": {},
-      "contributing": {},
-      "aiLead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
-      "chat": {
+    "retrieving": {},
+    "contributing": {},
+    "aiLead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
+    "chat": {
       "heading": "Chat on this site",
       "lead": "You connect your own model, then the chat walks you through the catalogue.",
       "steps": {
@@ -565,7 +565,7 @@
         }
       }
     },
-      "mcp": {
+    "mcp": {
       "heading": "Your own AI client over MCP",
       "lead": "MCP is an open standard that lets AI clients use tools from other providers. We tested it with Claude Desktop.",
       "steps": {
@@ -585,7 +585,7 @@
       "copy": "Copy the address",
       "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
     },
-      "verify": {}
+    "verify": {}
   },
   "map": {
     "notMappable": "This result cannot be shown on a map. You can still download it.",
