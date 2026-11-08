@@ -467,7 +467,8 @@
       "retrieving": "Retrieving results",
       "contributing": "Contributing models",
       "chat": "Chat on this site",
-      "mcp": "Your own AI client"
+      "mcp": "Your own AI client",
+      "verify": "Verifying a model"
     },
     "exploring": {
       "heading": "Exploring available models",

@@ -467,7 +467,8 @@
     "retrieving": "Ergebnisse abrufen",
     "contributing": "Modelle beitragen",
     "chat": "Chat auf dieser Seite",
-    "mcp": "Eigener KI-Client"
+    "mcp": "Eigener KI-Client",
+    "verify": "Modell prüfen"
   },
     "exploring": {
       "heading": "Exploring available models",
