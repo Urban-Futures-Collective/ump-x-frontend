@@ -464,6 +464,8 @@
     "nav": {
       "exploring": "Exploring available models",
       "scenarios": "Creating a new scenario",
+      "retrieving": "Retrieving results",
+      "contributing": "Contributing models",
       "chat": "Chat on this site",
       "mcp": "Your own AI client"
     },
@@ -491,61 +493,60 @@
     },
     "scenarios": {
       "heading": "Creating a new scenario",
-      "lead": "A scenario is one run of a model with your inputs. This is how you get from a model to a result.",
-      "sections": {
-        "find": {
-          "title": "Find a model",
-          "points": [
-            "Commons lists all models, as tiles or as a list. The search field filters by name, description and keywords.",
-            "Viewing needs no account. To run them, most models need you to sign in and to have access to their model server. Without it, the form says so instead of showing the “Run” button."
-          ]
+      "lead": "A scenario is a run of one model with your inputs. To create a new scenario and run a model:",
+      "steps": {
+        "select": {
+          "title": "Select from Commons",
+          "body": "Navigate to the Commons page, select a model and click on it to view its model card."
         },
-        "form": {
-          "title": "Set up a scenario",
-          "points": [
-            "Fields marked * are required. Fields with a default can stay empty; the default then applies.",
-            "Rarely used fields are under “Advanced settings”. Some fields only appear when another choice needs them.",
-            "Before sending, the form checks your inputs and shows problems right at the field."
-          ]
+        "newscenario": {
+          "title": "Create new scenario",
+          "body": "Click on “Create new scenario“. The model run page will open." 
         },
-        "map": {
-          "title": "Draw an area or points",
-          "points": [
-            "Use the search field above the map to jump to a place.",
-            "Click the corners; a double click closes the area. You can move corners afterwards, and “Clear” starts over. The area size shows below the map.",
-            "Some models take either a place name or an area. Then choose “Place name” or “On the map” above the input.",
-            "Drawing does not work without a mouse yet. Where a model takes a place name, use that instead."
-          ]
+        "yourinputs": {
+          "title": "Enter your inputs",
+          "body": "Enter your inputs for the model run, and click on “Run“. Required inputs and run time depend on the model chosen. You can leave the page while the model runs in the background - the scenario will show up on the “My scenarios“ page."
         },
-        "wait": {
-          "title": "Waiting",
-          "points": [
-            "Short runs show their result right next to the form.",
-            "If a run takes longer than a minute, you can leave the page. It keeps running.",
-            "“My scenarios” lists all your runs with status and progress. Running ones update by themselves."
-          ]
-        },
-        "result": {
-          "title": "The result",
-          "points": [
-            "Geodata shows on the map. Colours, legend and key figures come from the model.",
-            "If a result links to layers, such as the buildings or streets of a city, switch them on one by one below the map.",
-            "“Cannot be shown on a map” means the result holds no geodata, for example a table or a file. You can always download it."
-          ]
-        },
-        "failed": {
-          "title": "When something goes wrong",
-          "points": [
-            "“Not released for you”: your account lacks access to this model server. A platform admin grants it.",
-            "“Required” or “Does not match the expected format”: correct the input at the marked field.",
-            "A run failed: the model server’s message is shown with the run under “My scenarios”. If it points to an overloaded data source, such as OpenStreetMap, try again later.",
-            "“An identical scenario returns the same run”: the exact same inputs give no new run. Change an input to get a new one."
-          ]
+        "results": {
+          "title": "Explore the results",
+          "body": "Once the model run is finished (“successful“ label), you can download the results, and (if results are in geospatial format) explore them on a map in the browser."
         }
       }
     },
-    "retrieving": {},
-    "contributing": {},
+    "retrieving": {
+      "heading": "Retrieve results from previous scenarios",
+      "lead": "All scenarios created by you are saved in the Scenarios tab. Click on a scenario to retrieve its results." 
+    },
+    "contributing": {
+      "heading": "Contributing a model",
+      "lead": "On the “Contribute“ page, you can contribute your own model to the UMP-X platform.",
+      "steps": {
+        "newmodel": {
+          "title": "Click on “New model“",
+          "body": ""
+        },
+        "server": {
+          "title": "Connect to the model server",
+          "body": "Connect to the server on which your model is run."
+        },
+        "select": {
+          "title": "Select the model",
+          "body": "After connecting to the model server, a list of all processes (models) found on that server will be displayed. Select the model you would like to contibute."
+        },
+        "fillcard": {
+          "title": "Fill in the model card",
+          "body": "Fill in the model card. You can save the model card as draft, and return to it later."
+        },
+        "submit": {
+          "title": "Submit for review",
+          "body": "Once the model card is ready, click on “Submit for review“."
+        },
+        "reviewprocess": {
+          "title": "Review process",
+          "body": "A UMP-X reviewer will review your submission, with three possible outcomes: approve; reject; or changes requested. You will receive an email notification in each case. If changes are requested, you will be able to edit the model card again, and resubmit the model."
+        }
+      }
+    },
     "aiLead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
     "chat": {
       "heading": "Chat on this site",
@@ -585,7 +586,32 @@
       "copy": "Copy the address",
       "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
     },
-    "verify": {}
+    "verify": {
+      "heading": "Verifying a model",
+      "lead": "To verify a model submission, navigate to the “Verify“ page. You will see a list of submitted models awaiting verification. You cannot review your own models.",
+      "steps": {
+        "takeover": {
+          "title": "Take over review",
+          "body": "Click on “Take over review“ to start reviewing a model."
+        },
+        "modelcard": {
+          "title": "Check model card",
+          "body": "Review all model card fields for correctness and coherence."
+        },
+        "verificationrun": {
+          "title": "Verification run",
+          "body": "Conduct a verification run of the model, and provide its job ID to verify that the verification run was succesful."
+        },
+        "reviewdecision": {
+          "title": "Review decision",
+          "body": "You have three options: reject the model; request changes to the model (provide a text comment to the contributor); or verify the model (this option only becomes available after a successful verification run)."
+        },
+        "requestedchanges": {
+          "title": "Requesting changes",
+          "body": "In case of requesting changes, you will receive an email notification once the model is updated and resubmitted by the contributor."
+        }
+      }
+    }
   },
   "map": {
     "notMappable": "This result cannot be shown on a map. You can still download it.",
