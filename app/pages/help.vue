@@ -65,8 +65,8 @@ const exploringSteps = ['commons', 'modelcard', 'request-access', 'run-model'] a
             {{ i + 1 }}
           </span>
           <span class="space-y-1">
-            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.exporing.steps.${step}.title`) }}</span>
-            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.exporing.steps.${step}.body`) }}</span>
+            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.exploring.steps.${step}.title`) }}</span>
+            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.exploring.steps.${step}.body`) }}</span>
           </span>
         </li>
       </ol>
