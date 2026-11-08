@@ -461,48 +461,32 @@
   "help": {
     "title": "Hilfe",
     "lead": "Hier steht, wie du ein Modell rechnest und wie du die Plattform mit einer KI benutzt.",
-    "chat": {
-      "heading": "Chat auf dieser Seite",
-      "lead": "Du verbindest dein eigenes Modell, dann führt der Chat dich durch den Katalog.",
+    "nav": {
+    "scenarios": "Szenarien rechnen",
+    "chat": "Chat auf dieser Seite",
+    "mcp": "Eigener KI-Client"
+  },
+    "exploring": {
+      "heading": "Exploring available models",
+      "lead": "Here, you can explore all models that are currently available on UMP-X.",
       "steps": {
-        "provider": {
-          "title": "Anbieter wählen",
-          "body": "OpenAI, Anthropic oder OpenRouter, dazu jeder Dienst, der die OpenAI-Form spricht. Auch ein Modell, das auf deinem eigenen Rechner läuft."
+        "commons": {
+          "title": "Go to the Commons page",
+          "body": "On the Commons page, you see a list of all available models. You can search and filter models, for example, by keyword."
         },
-        "key": {
-          "title": "Schlüssel eintragen",
-          "body": "Den Schlüssel bekommst du bei deinem Anbieter. Er bleibt im Speicher deines Browsers und erreicht unseren Server nie. Nimm am besten einen Schlüssel nur für diesen Zweck, mit Ausgabengrenze."
+        "modelcard": {
+            "title": "View the model card",
+            "body": "Click on a model to view its model card. Some models are available publicly by default; others require you to request access first."
         },
-        "ask": {
-          "title": "Fragen stellen",
-          "body": "Der Chat kennt den Katalog und die Parameter der Modelle. Einen Lauf bereitet er vor und füllt das Formular; abgeschickt wird er von dir."
+        "request-access": {
+            "title": "Request access",
+            "body": "To request access to a model, click the “Request access“ button within the model card. Once an administrator has approved your access request, you will receive an email notification, and the model will become available to you."
+        },
+        "run-model": {
+            "title": "Run the model",
+            "body": "To run an available model, create a new scenario (see next help section)."
         }
       }
-    },
-    "mcp": {
-      "heading": "Eigener KI-Client über MCP",
-      "lead": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. Getestet haben wir es mit Claude Desktop.",
-      "steps": {
-        "address": {
-          "title": "Adresse im Client eintragen",
-          "body": "In Claude Desktop unter Einstellungen, Connectors, „Custom Connector hinzufügen“. Andere Clients nennen es Server oder Werkzeugquelle."
-        },
-        "signin": {
-          "title": "Mit deinem Konto anmelden",
-          "body": "Der Client schickt dich einmal zur Anmeldung der Plattform. Er bekommt danach genau deine Rechte, nicht mehr."
-        },
-        "use": {
-          "title": "Modelle als Werkzeuge benutzen",
-          "body": "Die Modelle erscheinen im Client als Werkzeuge. Läufe starten, Status abfragen und Ergebnisse abholen geht von dort aus."
-        }
-      },
-      "copy": "Adresse kopieren",
-      "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
-    },
-    "nav": {
-      "scenarios": "Szenarien rechnen",
-      "chat": "Chat auf dieser Seite",
-      "mcp": "Eigener KI-Client"
     },
     "scenarios": {
       "heading": "Szenarien rechnen",
@@ -559,7 +543,48 @@
         }
       }
     },
-    "aiLead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist."
+    "retrieving": {},
+    "contributing": {},
+    "aiLead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist.",
+    "chat": {
+      "heading": "Chat auf dieser Seite",
+      "lead": "Du verbindest dein eigenes Modell, dann führt der Chat dich durch den Katalog.",
+      "steps": {
+        "provider": {
+          "title": "Anbieter wählen",
+          "body": "OpenAI, Anthropic oder OpenRouter, dazu jeder Dienst, der die OpenAI-Form spricht. Auch ein Modell, das auf deinem eigenen Rechner läuft."
+        },
+        "key": {
+          "title": "Schlüssel eintragen",
+          "body": "Den Schlüssel bekommst du bei deinem Anbieter. Er bleibt im Speicher deines Browsers und erreicht unseren Server nie. Nimm am besten einen Schlüssel nur für diesen Zweck, mit Ausgabengrenze."
+        },
+        "ask": {
+          "title": "Fragen stellen",
+          "body": "Der Chat kennt den Katalog und die Parameter der Modelle. Einen Lauf bereitet er vor und füllt das Formular; abgeschickt wird er von dir."
+        }
+      }
+    },
+    "mcp": {
+      "heading": "Eigener KI-Client über MCP",
+      "lead": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. Getestet haben wir es mit Claude Desktop.",
+      "steps": {
+        "address": {
+          "title": "Adresse im Client eintragen",
+          "body": "In Claude Desktop unter Einstellungen, Connectors, „Custom Connector hinzufügen“. Andere Clients nennen es Server oder Werkzeugquelle."
+        },
+        "signin": {
+          "title": "Mit deinem Konto anmelden",
+          "body": "Der Client schickt dich einmal zur Anmeldung der Plattform. Er bekommt danach genau deine Rechte, nicht mehr."
+        },
+        "use": {
+          "title": "Modelle als Werkzeuge benutzen",
+          "body": "Die Modelle erscheinen im Client als Werkzeuge. Läufe starten, Status abfragen und Ergebnisse abholen geht von dort aus."
+        }
+      },
+      "copy": "Adresse kopieren",
+      "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
+    },
+    "verify": {}
   },
   "map": {
     "notMappable": "Dieses Ergebnis lässt sich nicht auf einer Karte zeigen. Herunterladen geht trotzdem.",
