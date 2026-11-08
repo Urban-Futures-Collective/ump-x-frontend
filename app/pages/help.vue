@@ -25,13 +25,15 @@ async function copy() {
   }
 }
 
-const sections = ['find', 'form', 'map', 'wait', 'result', 'failed'] as const
-const points = (section: string) => (tm(`help.scenarios.sections.${section}.points`) as unknown[]).map(p => rt(p as never))
-const nav = ['exploring', 'scenarios', 'chat', 'mcp'] as const
+const nav = ['exploring', 'scenarios', 'retrieving', 'contributing', 'chat', 'mcp', 'verify'] as const
 
+const exploringSteps = ['commons', 'modelcard', 'request-access', 'run-model'] as const
+const scenariosSteps = ['select', 'newscenario', 'yourinputs', 'results'] as const
+const contributingSteps = ['newmodel', 'server', 'select', 'fillcard', 'submit', 'reviewprocess'] as const
 const chatSteps = ['provider', 'key', 'ask'] as const
 const mcpSteps = ['address', 'signin', 'use'] as const
-const exploringSteps = ['commons', 'modelcard', 'request-access', 'run-model'] as const
+const verifySteps = ['takeover', 'modelcard', 'verificationrun', 'reviewdecision', 'requestedchanges'] as const
+
 </script>
 
 <template>
@@ -52,7 +54,7 @@ const exploringSteps = ['commons', 'modelcard', 'request-access', 'run-model'] a
       </nav>
     </div>
 
-    <div id="chat" class="scroll-mt-20 space-y-4">
+    <div id="exploring" class="scroll-mt-20 space-y-4">
       <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
         {{ t('help.exploring.heading') }}
       </h2>
@@ -72,30 +74,53 @@ const exploringSteps = ['commons', 'modelcard', 'request-access', 'run-model'] a
       </ol>
     </div>
 
-    <div id="scenarios" class="scroll-mt-20 space-y-6">
-      <div class="space-y-2">
-        <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
-          {{ t('help.scenarios.heading') }}
-        </h2>
-        <p class="text-sm text-(--ui-text-muted)">
-          {{ t('help.scenarios.lead') }}
-        </p>
-      </div>
-      <div v-for="(section, i) in sections" :key="section" class="flex gap-4">
-        <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
-          {{ i + 1 }}
-        </span>
-        <div class="space-y-1">
-          <h3 class="font-medium text-(--ui-text-highlighted)">
-            {{ t(`help.scenarios.sections.${section}.title`) }}
-          </h3>
-          <ul class="list-disc space-y-1 ps-4 text-sm text-(--ui-text-muted)">
-            <li v-for="p in points(section)" :key="p">
-              {{ p }}
-            </li>
-          </ul>
-        </div>
-      </div>
+    <div id="scenarios" class="scroll-mt-20 space-y-4">
+      <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+        {{ t('help.scenarios.heading') }}
+      </h2>
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('help.scenarios.lead') }}
+      </p>
+      <ol class="space-y-4">
+        <li v-for="(step, i) in scenariosSteps" :key="step" class="flex gap-4">
+          <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
+            {{ i + 1 }}
+          </span>
+          <span class="space-y-1">
+            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.scenarios.steps.${step}.title`) }}</span>
+            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.scenarios.steps.${step}.body`) }}</span>
+          </span>
+        </li>
+      </ol>
+    </div>
+
+    <div id="retrieving" class="scroll-mt-20 space-y-4">
+      <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+        {{ t('help.retrieving.heading') }}
+      </h2>
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('help.retrieving.lead') }}
+      </p>
+    </div>
+
+    <div id="contributing" class="scroll-mt-20 space-y-4">
+      <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+        {{ t('help.contributing.heading') }}
+      </h2>
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('help.contributing.lead') }}
+      </p>
+      <ol class="space-y-4">
+        <li v-for="(step, i) in contributingSteps" :key="step" class="flex gap-4">
+          <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
+            {{ i + 1 }}
+          </span>
+          <span class="space-y-1">
+            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.contributing.steps.${step}.title`) }}</span>
+            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.contributing.steps.${step}.body`) }}</span>
+          </span>
+        </li>
+      </ol>
     </div>
 
     <p class="text-sm text-(--ui-text-muted)">
@@ -162,5 +187,26 @@ const exploringSteps = ['commons', 'modelcard', 'request-access', 'run-model'] a
         </p>
       </div>
     </div>
+
+    <div id="verify" class="scroll-mt-20 space-y-4">
+      <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+        {{ t('help.verify.heading') }}
+      </h2>
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('help.verify.lead') }}
+      </p>
+      <ol class="space-y-4">
+        <li v-for="(step, i) in verifySteps" :key="step" class="flex gap-4">
+          <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
+            {{ i + 1 }}
+          </span>
+          <span class="space-y-1">
+            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.verify.steps.${step}.title`) }}</span>
+            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.verify.steps.${step}.body`) }}</span>
+          </span>
+        </li>
+      </ol>
+    </div>
+    
   </section>
 </template>
