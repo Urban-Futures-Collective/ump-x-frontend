@@ -27,10 +27,11 @@ async function copy() {
 
 const sections = ['find', 'form', 'map', 'wait', 'result', 'failed'] as const
 const points = (section: string) => (tm(`help.scenarios.sections.${section}.points`) as unknown[]).map(p => rt(p as never))
-const nav = ['scenarios', 'chat', 'mcp'] as const
+const nav = ['exploring', 'scenarios', 'chat', 'mcp'] as const
 
 const chatSteps = ['provider', 'key', 'ask'] as const
 const mcpSteps = ['address', 'signin', 'use'] as const
+const exploringSteps = ['commons', 'modelcard', 'request-access', 'run-model'] as const
 </script>
 
 <template>
@@ -49,6 +50,26 @@ const mcpSteps = ['address', 'signin', 'use'] as const
           </li>
         </ul>
       </nav>
+    </div>
+
+    <div id="chat" class="scroll-mt-20 space-y-4">
+      <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
+        {{ t('help.exploring.heading') }}
+      </h2>
+      <p class="text-sm text-(--ui-text-muted)">
+        {{ t('help.exploring.lead') }}
+      </p>
+      <ol class="space-y-4">
+        <li v-for="(step, i) in exploringSteps" :key="step" class="flex gap-4">
+          <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-ufc-blue-100 text-sm font-medium text-ufc-teal-600">
+            {{ i + 1 }}
+          </span>
+          <span class="space-y-1">
+            <span class="block font-medium text-(--ui-text-highlighted)">{{ t(`help.exporing.steps.${step}.title`) }}</span>
+            <span class="block text-sm text-(--ui-text-muted)">{{ t(`help.exporing.steps.${step}.body`) }}</span>
+          </span>
+        </li>
+      </ol>
     </div>
 
     <div id="scenarios" class="scroll-mt-20 space-y-6">
