@@ -11,13 +11,13 @@ TypeScript · Vitest.
 
 | Area | Path | Notes |
 |---|---|---|
-| Landing page, Commons (model catalogue) | `/`, `/commons` | open without sign-in, search, filters by topic, language and licence |
+| Landing page, Commons (model catalogue) | `/`, `/commons` | open without sign-in, search, filters by topic, language and licence, tiles or list |
 | Model page | `/commons/<server>:<process>` | model card from the registry: purpose, inputs and outputs, limits, people and literature |
-| New scenario | `/run?process=<id>` | form built from the model's JSON Schema: choices, dates, switches, rules checked before sending, areas and points drawn on a map |
+| New scenario | `/run?process=<id>` | form built from the model's JSON Schema: choices, dates, switches, rules checked before sending, inputs prefilled from the model server's data, areas, points and feature collections edited in a map window |
 | My scenarios, run details | `/jobs`, `/jobs/<id>` | follows long runs, result on the map or as download |
-| Administration | `/admin` | platform admins: create accounts with an email invitation, platform roles, disable accounts |
+| Administration | `/admin` | platform admins: create accounts with an email invitation, platform roles, disable accounts, delete model servers; platform and access admins: audit log (audit log and servers need the registry API) |
 | Access manager | `/access` | access admins: grant and revoke access to a model or a whole model server |
-| Contribute, Verify | `/contribute`, `/verify` | model registry: register servers and models, review, publish; with sample data (`NUXT_PUBLIC_PROTOTYPES=true`) or UMP's registry API (`NUXT_PUBLIC_REGISTRY_API=true`) |
+| Contribute, Verify | `/contribute`, `/verify` | model registry: register and edit servers and models, review, publish; with sample data (`NUXT_PUBLIC_PROTOTYPES=true`) or UMP's registry API (`NUXT_PUBLIC_REGISTRY_API=true`) |
 | Help, chat | `/help`, chat in the header | bring your own AI provider, or use the MCP server |
 | Legal pages | `/impressum`, `/datenschutz`, `/barrierefreiheit` | drafts, missing facts are marked |
 
@@ -53,22 +53,26 @@ groups:
 - **Keycloak service account** (`NUXT_KEYCLOAK_ADMIN_CLIENT_ID`, `NUXT_KEYCLOAK_ADMIN_CLIENT_SECRET`):
   server-side only, for the administration, the access manager and publishing.
 - **Model registry** (`NUXT_PUBLIC_PROTOTYPES=true` for sample data,
-  `NUXT_PUBLIC_REGISTRY_API=true` for UMP's registry API): shows Contribute and Verify
-  and the model cards in the Commons. Off on production.
+  `NUXT_PUBLIC_REGISTRY_API=true` for UMP's registry API, which wins when both are set):
+  shows Contribute and Verify and the model cards in the Commons. Off by default. The
+  audit log, the servers tab and access requests need the registry API.
 
 ## Deployment
 
 Hosted with Dokploy. Branch chain: feature branch → `staging` → `main` → `deploy`; details,
 environments and Keycloak settings in `docs/deployment-en.md`.
 
-For a plain VPS, `docker compose up -d --build` binds the frontend to `127.0.0.1:3000`
-for use behind a reverse proxy.
+`docker compose up -d --build` starts the frontend on `APP_PORT` (default 6000), published
+on all interfaces, and reads its settings from `.env`. Keep it behind a reverse proxy.
+
+The Keycloak login page has its own theme, installed separately: `keycloak-theme/README.md`.
 
 ## Backend
 
-The frontend talks to UMP only over HTTP (OGC API Processes under `/v1.0`) through its
-own proxy. All access sits in `app/composables/useUmp*`, which map API responses to the
-domain models in `app/types/`; components never see raw JSON. Background and the open
+The frontend talks to UMP only over HTTP (OGC API Processes under `/v1.0`, the model
+registry under `/registry/v1`) through its own proxy `/ump/**`. Access sits in
+`app/composables/useUmp*` and `useRegistryApi`, which map API responses to the domain
+models in `app/types/`; components never see raw JSON. Background and the open
 questions to the backend: `docs/frontend-backend-architecture-en.md`.
 
 ## Further documents
@@ -78,6 +82,7 @@ questions to the backend: `docs/frontend-backend-architecture-en.md`.
 | `docs/frontend-flow-en.md` | paths through the app, roles, what is missing |
 | `docs/frontend-backend-architecture-en.md` | frontend and backend seams |
 | `docs/deployment-en.md` | environments, variables, Keycloak |
+| `keycloak-theme/README.md` | login page theme for Keycloak |
 | `docs/add-new-model-en.md` | adding a model server today (by hand) |
 | `docs/runbook-growbike-modelserver-en.md` | model servers and roles, an example |
 | `docs/privacy-inventory-en.md` | where personal data is processed |
