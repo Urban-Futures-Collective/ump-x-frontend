@@ -2,7 +2,8 @@
 //
 // The browser-side `admin` middleware only hides UI, it protects nothing. Protection
 // happens only here, in every admin route before the first Keycloak call. Roles come from
-// the server-side session (encrypted, not modifiable by the browser).
+// the current access token in the server-side session (encrypted, not modifiable by the
+// browser), not from the session's stored claims (see tokenRoles.ts).
 import { getUserSession } from 'nuxt-oidc-auth/runtime/server/utils/session.js'
 import type { H3Event } from 'h3'
 
@@ -15,7 +16,7 @@ export async function requireRole(event: H3Event, ...allowed: string[]): Promise
   if (!session || !sub) {
     throw createError({ statusCode: 401, statusMessage: 'Anmeldung nötig.' })
   }
-  const roles = rolesOfSession(session)
+  const roles = tokenRoles(session.accessToken)
   if (!allowed.some(r => roles.includes(r))) {
     throw createError({ statusCode: 403, statusMessage: 'Dafür fehlt die Rolle.' })
   }

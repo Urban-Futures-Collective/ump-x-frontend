@@ -34,6 +34,14 @@ export default defineEventHandler(async (event) => {
     console.info(`[admin] ${caller.sub} löst die Standardrollen von ${id} auf`)
   }
 
+  // End the account's sessions so the revoked role stops working now. Not for your own
+  // account, which would sign you out in the middle of the admin page.
+  if (id !== caller.sub) {
+    await keycloakAdmin(`/users/${id}/logout`, { method: 'POST' }).catch((e) => {
+      console.warn(`[admin] Abmelden von ${id} nach Rollenentzug fehlgeschlagen: ${String(e)}`)
+    })
+  }
+
   console.info(`[admin] ${caller.sub} entzieht ${role} von ${id}`)
   return { ok: true }
 })
