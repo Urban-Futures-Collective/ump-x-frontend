@@ -18,7 +18,7 @@ const langs = computed(() => {
   return [m.defaultLang, ...(['de', 'en'] as const).filter(l => l !== m.defaultLang && m.fullName[l])]
 })
 const lang = ref<'de' | 'en'>('en')
-watch(langs, (ls) => { lang.value = ls.includes(locale.value as 'de' | 'en') ? locale.value as 'de' | 'en' : ls[0] ?? 'en' }, { immediate: true })
+watch([langs, locale], ([ls]) => { lang.value = ls.includes(locale.value as 'de' | 'en') ? locale.value as 'de' | 'en' : ls[0] ?? 'en' }, { immediate: true })
 
 const text = (f: 'fullName' | 'shortDescription' | 'purpose' | 'limitationsRisks') =>
   model.value?.[f][lang.value] ?? ''

@@ -18,7 +18,7 @@ const card = computed(() => {
 // The card in the page language if it has one, else in its default language; a note
 // offers the other language.
 const lang = ref<'de' | 'en'>('en')
-watch(card, (c) => {
+watch([card, locale], ([c]) => {
   if (c) lang.value = cardLangs(c).includes(locale.value as 'de' | 'en') ? locale.value as 'de' | 'en' : c.defaultLang
 }, { immediate: true })
 const otherLang = computed(() => card.value ? cardLangs(card.value).find(l => l !== lang.value) : undefined)
