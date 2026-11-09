@@ -87,7 +87,7 @@ const fieldLabel = (f: string) => {
       {{ t('audit.empty') }}
     </p>
 
-    <ul v-if="events.length" class="divide-y divide-(--ui-border) rounded-lg border border-(--ui-border)">
+    <ul v-if="events.length" class="divide-y divide-(--ui-border) rounded-lg border border-(--ui-border) bg-white">
       <li v-for="e in events" :key="e.id" class="grid gap-x-4 gap-y-1 p-3 text-sm sm:grid-cols-[11rem_1fr]">
         <time class="text-(--ui-text-muted)" :datetime="e.occurred_at">{{ formatDateTime(e.occurred_at, locale) }}</time>
         <div class="space-y-1">
@@ -104,27 +104,33 @@ const fieldLabel = (f: string) => {
           </p>
           <p class="text-(--ui-text-muted)">
             {{ actorOf(e.actor_sub) }}
-            <template v-for="s in [auditSummary(e)]" :key="s.kind">
-              <template v-if="s.kind === 'status'">
-                · {{ t(`registry.status.${s.from}`) }} → {{ t(`registry.status.${s.to}`) }}<template v-if="s.skipped">
-                  ({{ t('audit.runSkipped') }})
-                </template><template v-if="s.note">
-                  · „{{ s.note }}“
-                </template>
-              </template>
-              <template v-else-if="s.kind === 'fields'">
-                · {{ s.fields.map(fieldLabel).join(', ') }}
-              </template>
-              <template v-else-if="s.kind === 'role'">
-                · {{ s.role }}<template v-if="s.note">
-                  · „{{ s.note }}“
-                </template>
-              </template>
-              <template v-else-if="s.kind === 'job'">
-                · <ULink :to="`/jobs/${s.jobId}`" class="underline">{{ t('audit.run', { id: s.jobId.slice(0, 8) }) }}</ULink>
-              </template>
-            </template>
           </p>
+          <template v-for="s in [auditSummary(e)]" :key="s.kind">
+            <template v-if="s.kind === 'status'">
+              <p class="text-(--ui-text-muted)">
+                {{ t(`registry.status.${s.from}`) }} → {{ t(`registry.status.${s.to}`) }}<template v-if="s.skipped">
+                  ({{ t('audit.runSkipped') }})
+                </template>
+              </p>
+              <p v-if="s.note" class="text-(--ui-text-muted) italic">
+                „{{ s.note }}“
+              </p>
+            </template>
+            <p v-else-if="s.kind === 'fields'" class="text-(--ui-text-muted)">
+              {{ s.fields.map(fieldLabel).join(', ') }}
+            </p>
+            <template v-else-if="s.kind === 'role'">
+              <p class="text-(--ui-text-muted)">
+                {{ s.role }}
+              </p>
+              <p v-if="s.note" class="text-(--ui-text-muted) italic">
+                „{{ s.note }}“
+              </p>
+            </template>
+            <p v-else-if="s.kind === 'job'" class="text-(--ui-text-muted)">
+              <ULink :to="`/jobs/${s.jobId}`" class="underline">{{ t('audit.run', { id: s.jobId.slice(0, 8) }) }}</ULink>
+            </p>
+          </template>
         </div>
       </li>
     </ul>
