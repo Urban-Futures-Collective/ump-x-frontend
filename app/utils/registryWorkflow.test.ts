@@ -69,6 +69,8 @@ describe('verify tabs', () => {
     expect(verifyTabsOf('verified', 'in_sync')).toEqual(['todo'])
     expect(verifyTabsOf('published', 'in_sync')).toEqual(['published'])
     expect(verifyTabsOf('published', 'drifted')).toEqual(['published', 'interface'])
+    expect(verifyTabsOf('published', 'unreachable')).toEqual(['published', 'interface'])
+    expect(verifyTabsOf('verified', 'drifted')).toEqual(['todo', 'interface'])
     expect(verifyTabsOf('changes_requested', 'in_sync')).toEqual(['todo'])
     expect(verifyTabsOf('rejected', 'unchecked')).toEqual(['closed'])
     expect(verifyTabsOf('deactivated', 'in_sync')).toEqual(['closed'])

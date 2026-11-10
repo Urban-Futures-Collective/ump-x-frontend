@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Job } from '~/types/ump'
-import type { OgcJob } from '~/composables/useUmpJobs'
 import type { RegistryStatus } from '~/types/registry'
 import { CONTRIBUTOR_ROLES } from '~/types/registry'
 
@@ -12,7 +10,6 @@ definePageMeta({ middleware: ['auth', 'prototype', 'verifier'] })
 const { t, locale } = useI18n()
 const route = useRoute()
 const { byId, actorFor, transition, ownerLabel, isLive } = useRegistry()
-const { base } = useUmpBase()
 const toast = useToast()
 
 const model = computed(() => byId(String(route.params.id)))
@@ -70,41 +67,9 @@ const checklist = computed(() => {
 // Verifiers see models under review in /processes, so this works before publishing.
 const { data: process, error: processError } = useUmpProcess(processId)
 
-// Verification run: the reviewer starts a run in a new tab and enters its job id
-// here. The API accepts only a successful run of this model, started by the reviewer
-// during this review; the check below catches the obvious mistakes first.
-const jobId = ref('')
-const job = ref<Job | null>(null)
-const jobProblem = ref<string | null>(null)
-const checking = ref(false)
+// Verification run (see useVerificationRun); a job linked earlier is filled in.
+const { jobId, job, jobProblem, checking, checkJob, jobReady, jobDuration } = useVerificationRun(processId)
 watch(model, (m) => { if (m?.verificationJobId && !jobId.value) jobId.value = m.verificationJobId }, { immediate: true })
-
-async function checkJob() {
-  const id = jobId.value.trim()
-  if (!id) return
-  checking.value = true
-  job.value = null
-  jobProblem.value = null
-  try {
-    const found = toJob(await $fetch<OgcJob>(`${base}/jobs/${id}`))
-    if (found.processId && found.processId !== processId.value) jobProblem.value = t('registry.review.jobOtherModel', { model: found.processId })
-    else if (found.status !== 'successful') jobProblem.value = t('registry.review.jobNotDone', { status: found.status })
-    job.value = found
-  }
-  catch (e) {
-    jobProblem.value = apiErrorMessage(e)
-  }
-  finally {
-    checking.value = false
-  }
-}
-const jobReady = computed(() => !!job.value && !jobProblem.value)
-const jobDuration = computed(() => {
-  const j = job.value
-  if (!j?.created || !j.finished) return ''
-  const s = Math.round((new Date(j.finished).getTime() - new Date(j.created).getTime()) / 1000)
-  return s >= 60 ? `${Math.floor(s / 60)} min ${s % 60} s` : `${s} s`
-})
 
 // Decision. Rejecting and deactivating need a reason the provider will see.
 const busy = ref(false)
@@ -177,6 +142,15 @@ const firstNegative = computed(() => actions.value.find(a => negative(a.to))?.to
         variant="subtle"
         icon="i-lucide-users"
         :description="t('registry.verify.ownModel')"
+      />
+
+      <UAlert
+        v-if="(model.status === 'verified' || model.status === 'published') && (model.interfaceState === 'drifted' || model.interfaceState === 'unreachable')"
+        color="warning"
+        variant="subtle"
+        icon="i-lucide-triangle-alert"
+        :title="t(`registry.drift.badge.${model.interfaceState}`)"
+        :actions="[{ label: t('registry.drift.compare'), color: 'neutral', variant: 'outline', to: `/verify/${model.id}/interface` }]"
       />
 
       <div class="grid items-start gap-6 lg:grid-cols-2">

@@ -32,7 +32,7 @@ describe('registry API mapping', () => {
     expect(m.status).toBe('in_review')
     expect(m.statusNote).toBe('Looks fine')
     expect(m.statusChangedAt).toBe('2026-10-21T10:00:00Z')
-    expect(m.interfaceState).toBe('unchecked')
+    expect(m.interfaceState).toBe('unreachable')
     expect(m.ownerName).toBe('')
     expect(m.anonymousAccess).toBe(false)
   })

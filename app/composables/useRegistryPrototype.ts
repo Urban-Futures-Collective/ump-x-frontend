@@ -1,5 +1,5 @@
-import type { DiscoveredProcess, LangMap, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryServerPatch, RegistryStatus } from '~/types/registry'
-import { ME, sampleDiscovery, sampleModels, sampleServers } from '~/prototype/registrySample'
+import type { DiscoveredProcess, LangMap, ModelInterface, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryServerPatch, RegistryStatus } from '~/types/registry'
+import { ME, sampleDiscovery, sampleInterface, sampleModels, sampleServers } from '~/prototype/registrySample'
 
 // The registry on sample data (Contribute, Verify). Everything lives in the browser and
 // starts from sample data on each reload; nothing reaches a backend. Same functions as
@@ -23,7 +23,10 @@ export function useRegistryPrototype() {
     m.status = to
     m.statusChangedAt = now
     m.statusNote = note || undefined
-    if (to === 'verified') m.verifiedByName = myName.value
+    if (to === 'verified') {
+      m.verifiedByName = myName.value
+      m.verifiedAt = now
+    }
     if (to === 'published' && !m.publishedAt) m.publishedAt = now
     m.history.push({ at: now, actorName: myName.value, to, note })
   }
@@ -42,6 +45,30 @@ export function useRegistryPrototype() {
       ...(m?.inputs ?? []).map(i => ({ id: i.name, kind: 'input' as const, type: i.type })),
       { id: 'result', kind: 'output' as const, type: 'GeoJSON' },
     ]
+  }
+
+  // A changed interface for drifted sample models, the same one before and after otherwise.
+  async function modelInterface(id: string): Promise<ModelInterface> {
+    const m = byId(id)
+    const { verified, live } = sampleInterface(m?.interfaceState === 'drifted')
+    return {
+      state: m?.interfaceState ?? 'unchecked',
+      lastCheckedAt: new Date().toISOString(),
+      verifiedAt: m?.verifiedAt,
+      verified,
+      live,
+      diff: interfaceDiff(verified, live),
+    }
+  }
+
+  async function reverify(id: string, _jobId?: string, note?: string) {
+    const m = byId(id)
+    if (!m) return
+    const now = new Date().toISOString()
+    m.interfaceState = 'in_sync'
+    m.verifiedByName = myName.value
+    m.verifiedAt = now
+    m.history.push({ at: now, actorName: myName.value, to: m.status, note })
   }
 
   async function addServer(input: RegistryServerInput): Promise<RegistryServer> {
@@ -139,6 +166,8 @@ export function useRegistryPrototype() {
     transition,
     updateCard,
     modelIo,
+    modelInterface,
+    reverify,
     addServer,
     updateServer,
     deleteServer,

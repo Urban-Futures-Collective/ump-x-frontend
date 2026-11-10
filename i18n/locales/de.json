@@ -947,7 +947,73 @@
     "interface": {
       "in_sync": "unverändert seit der Prüfung",
       "drifted": "seit der Prüfung geändert",
-      "unchecked": "noch nicht geprüft"
+      "unchecked": "noch nicht geprüft",
+      "unreachable": "Server hat bei der letzten Prüfung nicht geantwortet"
+    },
+    "drift": {
+      "title": "Schnittstelle geändert: {name}",
+      "titleUnreachable": "Server antwortet nicht: {name}",
+      "badge": {
+        "drifted": "Schnittstelle geändert",
+        "unreachable": "Server antwortet nicht"
+      },
+      "checked": "geprüft am {date}",
+      "warnPublished": "Das Modell ist weiter veröffentlicht und kann weiter gerechnet werden. Läufe mit den alten Eingaben können jetzt scheitern. Entscheide, ob die Änderung harmlos ist oder eine neue Prüfung braucht.",
+      "warnVerified": "Das Modell ist verifiziert, aber noch nicht veröffentlicht, und sein Server beschreibt jetzt eine andere Schnittstelle. Entscheide vor dem Veröffentlichen, ob die Änderung harmlos ist oder eine neue Prüfung braucht.",
+      "warnUnreachable": "Das UMP hat den Modellserver bei der letzten Prüfung nicht erreicht und kann daher nicht sagen, ob die Schnittstelle noch die verifizierte ist. Läufe können scheitern, bis der Server wieder antwortet.",
+      "inSync": "Die Schnittstelle entspricht der verifizierten. Nichts zu entscheiden.",
+      "back": "Zurück zu Verify",
+      "loadFailed": "Der Schnittstellenvergleich konnte nicht geladen werden.",
+      "liveError": "Der Modellserver hat gerade nicht geantwortet: {error}",
+      "neverVerified": "Für dieses Modell gibt es keine verifizierte Schnittstelle zum Vergleichen.",
+      "col": {
+        "change": "Änderung",
+        "name": "Name",
+        "verifiedOn": "Verifiziert am {date}",
+        "verified": "Verifiziert",
+        "now": "Jetzt auf dem Server"
+      },
+      "kind": {
+        "added": "Neu",
+        "changed": "Geändert",
+        "removed": "Entfernt",
+        "unchanged": "Unverändert"
+      },
+      "unchanged": "{n} unverändert",
+      "noDifference": "Kein Unterschied bei Typen, Pflichteingaben, Ausgaben oder Ausführungsarten.",
+      "mode": {
+        "jobControlOptions": "Ausführungsarten",
+        "outputTransmission": "Ergebnisübergabe"
+      },
+      "required": "Pflicht",
+      "optional": "optional",
+      "ignored": "Titel und Beschreibungen zählen nicht. Nur Typen, Pflichteingaben, Ausgaben und Ausführungsarten gelten als Änderung.",
+      "accept": {
+        "title": "Neue Schnittstelle übernehmen",
+        "textPublished": "Den Testfall rechnen, dann die aktuelle Schnittstelle festschreiben. Das Modell bleibt veröffentlicht.",
+        "textVerified": "Den Testfall rechnen, dann die aktuelle Schnittstelle festschreiben. Das Modell bleibt verifiziert.",
+        "runHint": "Dein eigener erfolgreicher Lauf dieses Modells, gestartet nach der letzten Verifizierung.",
+        "button": "Erneut verifizieren",
+        "needsServer": "Möglich, sobald der Modellserver wieder antwortet."
+      },
+      "review": {
+        "title": "Braucht eine volle Prüfung",
+        "text": "Schickt das Modell zurück in die Prüfung. Wer keine Prüferrolle hat, kann es erst nach erneutem Veröffentlichen wieder rechnen.",
+        "button": "Zurück in die Prüfung"
+      },
+      "offline": {
+        "title": "Vom Netz nehmen",
+        "text": "Stoppt neue Läufe sofort. Laufende Jobs werden fertig, ihre Ergebnisse bleiben abrufbar."
+      },
+      "done": "Gegen die aktuelle Schnittstelle erneut verifiziert.",
+      "compare": "Vergleichen",
+      "notice": "{name} ist {status}, aber sein Server beschreibt jetzt eine andere Schnittstelle als die am {date} verifizierte.",
+      "noticeNoDate": "{name} ist {status}, aber sein Server beschreibt jetzt eine andere Schnittstelle als die verifizierte.",
+      "noticeUnreachable": "Der Server von {name} hat bei der letzten Schnittstellenprüfung nicht geantwortet.",
+      "noticeAfter": "Läufe mit den alten Eingaben können jetzt scheitern. Entscheide, ob die Änderung harmlos ist oder eine neue Prüfung braucht.",
+      "notePublished": "weiter veröffentlicht",
+      "noteVerified": "verifiziert",
+      "open": "Schnittstelle geändert"
     },
     "verify": {
       "title": "Modelle prüfen",

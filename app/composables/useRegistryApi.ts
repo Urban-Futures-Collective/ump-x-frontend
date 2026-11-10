@@ -1,6 +1,6 @@
-import type { DiscoveredProcess, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryServerPatch, RegistryStatus } from '~/types/registry'
-import type { ApiDiscoveredProcess, ApiModel, ApiServer } from '~/utils/registryApi'
-import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, ioFromDescription, modelFromApi, serverFromApi, serverPatchBody } from '~/utils/registryApi'
+import type { DiscoveredProcess, ModelInterface, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryServerPatch, RegistryStatus } from '~/types/registry'
+import type { ApiDiscoveredProcess, ApiInterfaceView, ApiModel, ApiServer } from '~/utils/registryApi'
+import { cardPatchBody, credentialsBody, discoveredFromApi, ifMatch, interfaceFromApi, ioFromDescription, modelFromApi, serverFromApi, serverPatchBody } from '~/utils/registryApi'
 
 // The registry from UMP (/registry/v1, concept F12), through the /ump proxy, which adds
 // the user's token. Same functions as useRegistryPrototype (see useRegistry).
@@ -111,6 +111,24 @@ export function useRegistryApi() {
     return ioFromDescription(view.live?.description ?? view.verified_interface)
   }
 
+  /** What the model was verified against and what its server describes now (design V3). */
+  async function modelInterface(id: string): Promise<ModelInterface> {
+    return interfaceFromApi(await $fetch<ApiInterfaceView>(`${base}/models/${id}/interface`))
+  }
+
+  // Verifies a verified or published model again against its current interface; the
+  // status stays. Needs a successful run of the verifier's own, started after the last
+  // verification (unless UMP runs without that check), and someone other than the owner.
+  async function reverify(id: string, verificationJobId?: string, note?: string) {
+    const current = await $fetch.raw(`${base}/models/${id}`, { query: { lang: '*' } })
+    await $fetch(`${base}/models/${id}/reverify`, {
+      method: 'POST',
+      headers: { 'If-Match': ifMatch(current.headers.get('etag')) },
+      body: { ...(verificationJobId ? { verification_job_id: verificationJobId } : {}), ...(note ? { note } : {}) },
+    })
+    await reload(id)
+  }
+
   async function addServer(input: RegistryServerInput): Promise<RegistryServer> {
     const created = await $fetch<ApiServer>(`${base}/servers`, {
       method: 'POST',
@@ -181,6 +199,8 @@ export function useRegistryApi() {
     transition,
     updateCard,
     modelIo,
+    modelInterface,
+    reverify,
     addServer,
     updateServer,
     deleteServer,

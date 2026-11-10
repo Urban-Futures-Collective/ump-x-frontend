@@ -74,6 +74,7 @@ export function sampleModels(): RegistryModel[] {
       status: 'published',
       publishedAt: at('2026-09-03'),
       verifiedByName: 'Verifier A',
+      verifiedAt: at('2026-09-02'),
       interfaceState: 'drifted',
       inputs: [{ name: 'population', type: 'integer', required: true }, { name: 'r0', type: 'number', required: true }],
       history: [
@@ -153,4 +154,33 @@ export function sampleDiscovery(): DiscoveredProcess[] {
     { id: 'flood-risk', title: 'Heavy rain flood risk', description: 'Flooded areas after heavy rain.', version: '2.0.0' },
     { id: 'healthcheck', title: 'Healthcheck', description: 'Returns the server status.', version: '1.0.0' },
   ]
+}
+
+// A process description before and after a change on the server: one input added, one
+// changed, one output gone, text edited (which does not count), the rest the same.
+export function sampleInterface(changed: boolean): { verified: unknown, live: unknown } {
+  const verified = {
+    inputs: {
+      agents_per_10k: { title: 'Agents per 10,000 residents', schema: { type: 'integer', minimum: 1, maximum: 500 } },
+      iterations: { schema: { type: 'integer', minimum: 1, maximum: 50 } },
+      steps: { schema: { type: 'integer' }, minOccurs: 0 },
+    },
+    outputs: {
+      trip_table: { schema: { type: 'string', contentMediaType: 'text/csv' } },
+      trips: { schema: { type: 'object', contentMediaType: 'application/geo+json' } },
+    },
+    jobControlOptions: ['async-execute'],
+  }
+  if (!changed) return { verified, live: verified }
+  const live = {
+    inputs: {
+      start_date: { schema: { type: 'string', format: 'date' } },
+      agents_per_10k: { title: 'Agents per 10k residents', schema: { type: 'number', minimum: 0.1, maximum: 500 } },
+      iterations: verified.inputs.iterations,
+      steps: verified.inputs.steps,
+    },
+    outputs: { trips: verified.outputs.trips },
+    jobControlOptions: ['async-execute'],
+  }
+  return { verified, live }
 }
