@@ -39,7 +39,7 @@ const shown = computed(() => jobs.value
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
+  <section class="mx-auto max-w-6xl space-y-6">
     <PageHeader :title="t('jobs.title')" :intro="t('jobs.intro')">
       <UInput
         v-if="jobs.length"
