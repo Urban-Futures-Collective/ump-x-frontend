@@ -947,7 +947,73 @@
     "interface": {
       "in_sync": "unchanged since the review",
       "drifted": "changed since the review",
-      "unchecked": "not checked yet"
+      "unchecked": "not checked yet",
+      "unreachable": "server did not answer the last check"
+    },
+    "drift": {
+      "title": "Interface changed: {name}",
+      "titleUnreachable": "Server not answering: {name}",
+      "badge": {
+        "drifted": "Interface changed",
+        "unreachable": "Server not answering"
+      },
+      "checked": "checked {date}",
+      "warnPublished": "The model is still published and people can still run it. Runs that use the old inputs may now fail. Decide whether the change is harmless or needs a new review.",
+      "warnVerified": "The model is verified but not published yet, and its server now describes a different interface. Decide whether the change is harmless or needs a new review before publishing.",
+      "warnUnreachable": "UMP could not reach the model server at the last check, so it cannot tell whether the interface is still the verified one. Runs may fail until the server answers again.",
+      "inSync": "The interface matches the verified one. Nothing to decide.",
+      "back": "Back to Verify",
+      "loadFailed": "Could not load the interface comparison.",
+      "liveError": "The model server did not answer just now: {error}",
+      "neverVerified": "This model has no verified interface to compare with.",
+      "col": {
+        "change": "Change",
+        "name": "Name",
+        "verifiedOn": "Verified on {date}",
+        "verified": "Verified",
+        "now": "On the server now"
+      },
+      "kind": {
+        "added": "Added",
+        "changed": "Changed",
+        "removed": "Removed",
+        "unchanged": "Unchanged"
+      },
+      "unchanged": "{n} unchanged",
+      "noDifference": "No difference in types, required inputs, outputs or execution modes.",
+      "mode": {
+        "jobControlOptions": "Execution modes",
+        "outputTransmission": "Result delivery"
+      },
+      "required": "required",
+      "optional": "optional",
+      "ignored": "Titles and descriptions are ignored. Only types, required inputs, outputs and execution modes count as a change.",
+      "accept": {
+        "title": "Accept the new interface",
+        "textPublished": "Run the test case, then pin the current interface. The model stays published.",
+        "textVerified": "Run the test case, then pin the current interface. The model stays verified.",
+        "runHint": "Your own successful run of this model, started after the last verification.",
+        "button": "Re-verify",
+        "needsServer": "Possible once the model server answers again."
+      },
+      "review": {
+        "title": "Needs a full review",
+        "text": "Moves the model back to review. People without the verifier role cannot run it until it is published again.",
+        "button": "Reset to review"
+      },
+      "offline": {
+        "title": "Take it offline",
+        "text": "Stops new runs at once. Running jobs finish and their results stay available."
+      },
+      "done": "Verified again against the current interface.",
+      "compare": "Compare",
+      "notice": "{name} is {status}, but its server now describes a different interface than the one verified on {date}.",
+      "noticeNoDate": "{name} is {status}, but its server now describes a different interface than the verified one.",
+      "noticeUnreachable": "The server of {name} did not answer the last interface check.",
+      "noticeAfter": "Runs that use the old inputs may now fail. Decide whether the change is harmless or needs a new review.",
+      "notePublished": "still published",
+      "noteVerified": "verified",
+      "open": "Interface changed"
     },
     "verify": {
       "title": "Verify models",

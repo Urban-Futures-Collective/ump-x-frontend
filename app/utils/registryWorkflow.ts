@@ -100,13 +100,17 @@ export type VerifyTab = typeof VERIFY_TABS[number]
 
 /**
  * Where a verifier finds a model. Drafts are the owner's business and appear nowhere.
- * A published model whose server interface changed sits under "interface" as well as
- * under "published", so see verifyTabsOf.
+ * A verified or published model whose server interface changed (or stopped answering)
+ * sits under "interface" as well.
  */
 export function verifyTabsOf(status: RegistryStatus, interfaceState: string): VerifyTab[] {
   if (status === 'draft') return []
+  // A server that changed or stopped answering after verification: the verifier decides
+  // whether to verify again, review again or take the model offline (design V3).
+  const flagged = (status === 'verified' || status === 'published') && (interfaceState === 'drifted' || interfaceState === 'unreachable')
+  const extra: VerifyTab[] = flagged ? ['interface'] : []
   // Waiting for the owner, but the review is not over: it stays with the open ones.
-  if (AWAITING_REVIEW.includes(status) || status === 'changes_requested') return ['todo']
-  if (status === 'published') return interfaceState === 'drifted' ? ['published', 'interface'] : ['published']
+  if (AWAITING_REVIEW.includes(status) || status === 'changes_requested') return ['todo', ...extra]
+  if (status === 'published') return ['published', ...extra]
   return ['closed']
 }

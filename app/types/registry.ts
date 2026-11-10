@@ -1,3 +1,5 @@
+import type { InterfaceDiff } from '~/utils/interfaceChanges'
+
 // Model registry, as planned for UMP (concept F12: schema `registry` in the UMP database).
 // Only the fields the frontend shows; names follow the planned API in camelCase.
 
@@ -149,8 +151,10 @@ export interface RegistryModel {
   createdAt: string
   publishedAt?: string
   verifiedByName?: string
+  /** When the interface was last verified (the base of the interface check). */
+  verifiedAt?: string
   /** Whether the server's process interface still matches the verified one. */
-  interfaceState: 'in_sync' | 'drifted' | 'unchecked'
+  interfaceState: InterfaceState
   /** Whether anyone can run the model without signing in. */
   anonymousAccess?: boolean
   inputs: RegistryInput[]
@@ -188,4 +192,20 @@ export interface RegistryServerInput {
   secret?: string
   /** Header name for an API key. */
   keyName?: string
+}
+
+/** Result of UMP's interface check; `unreachable`: the server did not answer. */
+export type InterfaceState = 'in_sync' | 'drifted' | 'unreachable' | 'unchecked'
+
+/** GET /registry/v1/models/{id}/interface: what was verified, what the server says now. */
+export interface ModelInterface {
+  state: InterfaceState
+  lastCheckedAt?: string
+  verifiedAt?: string
+  /** Raw process descriptions; null when never verified or the server did not answer. */
+  verified: unknown
+  live: unknown
+  liveError?: string
+  /** UMP's diff of the two, null when one side is missing. */
+  diff: InterfaceDiff | null
 }

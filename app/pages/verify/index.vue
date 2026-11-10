@@ -21,11 +21,9 @@ const counts = computed(() => ({
   published: inTab('published').length,
   closed: inTab('closed').length,
 }))
-// Interface changes need the drift check in UMP (phase D), which is not there yet:
-// greyed out until then.
 const tabs = computed<TabsItem[]>(() => [
   { label: t('registry.verify.tabs.todo', { n: counts.value.todo }), value: 'todo' },
-  { label: t('registry.verify.tabs.interface', { n: counts.value.interface }), value: 'interface', disabled: true },
+  { label: t('registry.verify.tabs.interface', { n: counts.value.interface }), value: 'interface' },
   { label: t('registry.verify.tabs.published', { n: counts.value.published }), value: 'published' },
   { label: t('registry.verify.tabs.closed', { n: counts.value.closed }), value: 'closed' },
 ])
@@ -58,6 +56,19 @@ const arrange = (list: RegistryModel[]) => list
 const nothingAtAll = computed(() => !loading.value && !error.value && VERIFY_TABS.every(k => !inTab(k).length))
 const nothingToVerify = computed(() => tab.value === 'todo' && !loading.value && !inTab('todo').length)
 const rows = computed(() => arrange(nothingToVerify.value ? inTab('published') : inTab(tab.value)))
+
+// Models whose server changed its interface (or stopped answering) after verification
+// (design V1 notice); the "interface" tab lists them with Compare instead.
+const flagged = computed(() => inTab('interface'))
+const date = (iso?: string) => iso ? new Date(iso).toLocaleDateString(locale.value, { dateStyle: 'medium' }) : ''
+function notice(m: RegistryModel) {
+  if (m.interfaceState === 'unreachable') return t('registry.drift.noticeUnreachable', { name: title(m) })
+  const status = t(m.status === 'published' ? 'registry.drift.notePublished' : 'registry.drift.noteVerified')
+  const first = m.verifiedAt
+    ? t('registry.drift.notice', { name: title(m), status, date: date(m.verifiedAt) })
+    : t('registry.drift.noticeNoDate', { name: title(m), status })
+  return `${first} ${t('registry.drift.noticeAfter')}`
+}
 
 const title = (m: RegistryModel) => inLang(m.fullName, locale.value, m.defaultLang) || m.remoteProcessId
 const isOwn = (m: RegistryModel) => actorFor(m).isOwner
@@ -116,6 +127,25 @@ async function step(m: RegistryModel, to: RegistryStatus) {
       <span>{{ t('registry.verify.noneText') }}</span>
     </div>
 
+    <template v-if="tab !== 'interface'">
+      <div
+        v-for="m in flagged"
+        :key="m.id"
+        class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-(--ui-warning)/50 bg-white px-4 py-3 text-sm"
+        role="status"
+      >
+        <UBadge color="warning" variant="subtle">
+          {{ t(`registry.drift.badge.${m.interfaceState}`) }}
+        </UBadge>
+        <p class="min-w-0 flex-1">
+          {{ notice(m) }}
+        </p>
+        <UButton color="neutral" variant="outline" :to="`/verify/${m.id}/interface`">
+          {{ t('registry.drift.compare') }}
+        </UButton>
+      </div>
+    </template>
+
     <p v-if="!rows.length && !nothingAtAll && !nothingToVerify" class="text-sm text-(--ui-text-muted)">
       {{ loading ? t('registry.loading') : search || filter.status?.length ? t('registry.noMatch') : t(`registry.verify.empty.${tab}`) }}
     </p>
@@ -162,7 +192,10 @@ async function step(m: RegistryModel, to: RegistryStatus) {
             </td>
             <td class="px-4 py-3 text-right">
               <!-- Four-eyes: nobody reviews their own model. -->
-              <p v-if="isOwn(m) && tab === 'todo'" class="ml-auto max-w-56 text-xs text-(--ui-text-muted)">
+              <UButton v-if="tab === 'interface'" color="neutral" variant="outline" :to="`/verify/${m.id}/interface`">
+                {{ t('registry.drift.compare') }}
+              </UButton>
+              <p v-else-if="isOwn(m) && tab === 'todo'" class="ml-auto max-w-56 text-xs text-(--ui-text-muted)">
                 {{ t('registry.verify.ownModel') }}
               </p>
               <UButton v-else-if="m.status === 'submitted'" :loading="busy === m.id" @click="step(m, 'in_review')">

@@ -1,5 +1,6 @@
-import type { AuthType, DiscoveredProcess, LangMap, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerPatch, RegistryStatus } from '~/types/registry'
+import type { AuthType, DiscoveredProcess, LangMap, ModelInterface, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerPatch, RegistryStatus } from '~/types/registry'
 import { REGISTRY_STATUSES } from '~/types/registry'
+import type { InterfaceDiff } from '~/utils/interfaceChanges'
 
 // Shapes of the UMP registry API (/registry/v1, concept F12) and their mapping onto
 // the frontend types. Only the fields the frontend uses; the API uses snake_case.
@@ -119,7 +120,7 @@ function status(value: string): RegistryStatus {
 // 'unreachable' is a check that failed, which says no more about the interface than
 // no check at all.
 function interfaceState(value: string): RegistryModel['interfaceState'] {
-  return value === 'in_sync' || value === 'drifted' ? value : 'unchecked'
+  return value === 'in_sync' || value === 'drifted' || value === 'unreachable' ? value : 'unchecked'
 }
 
 export function modelFromApi(m: ApiModel): RegistryModel {
@@ -153,6 +154,7 @@ export function modelFromApi(m: ApiModel): RegistryModel {
     createdAt: m.updated_at ?? changedAt,
     publishedAt: m.published_at ?? undefined,
     verifiedByName: m.review?.verified_by ?? undefined,
+    verifiedAt: m.review?.verified_at ?? undefined,
     interfaceState: interfaceState(m.interface_state),
     anonymousAccess: m.anonymous_access ?? false,
     // Inputs come from the process description, history from the audit log
@@ -324,6 +326,29 @@ export function cardPatchBody(card: RegistryCardEdit): Record<string, unknown> {
  * Inputs and outputs from an OGC process description (GET /models/{id}/interface), with a
  * short type line for the notes section.
  */
+/** GET /registry/v1/models/{id}/interface. */
+export interface ApiInterfaceView {
+  interface_state: string
+  last_checked_at?: string | null
+  verified_at?: string | null
+  verified_interface?: unknown
+  live?: { sha256: string, description: unknown } | null
+  live_error?: string | null
+  diff?: InterfaceDiff | null
+}
+
+export function interfaceFromApi(v: ApiInterfaceView): ModelInterface {
+  return {
+    state: interfaceState(v.interface_state),
+    lastCheckedAt: v.last_checked_at ?? undefined,
+    verifiedAt: v.verified_at ?? undefined,
+    verified: v.verified_interface ?? null,
+    live: v.live?.description ?? null,
+    liveError: v.live_error ?? undefined,
+    diff: v.diff ?? null,
+  }
+}
+
 export function ioFromDescription(description: unknown): RegistryIo[] {
   const d = (description ?? {}) as { inputs?: Record<string, { schema?: Record<string, unknown> }>, outputs?: Record<string, { schema?: Record<string, unknown> }> }
   const typeOf = (schema: Record<string, unknown> | undefined): string => {
