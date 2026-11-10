@@ -73,7 +73,7 @@ const fieldLabel = (f: string) => {
 </script>
 
 <template>
-  <section class="max-w-4xl space-y-4">
+  <section class="space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-4">
       <p class="text-sm text-(--ui-text-muted)">
         {{ t('audit.intro') }}

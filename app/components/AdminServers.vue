@@ -98,29 +98,31 @@ function duplicatesOf(r: Row) {
 
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('admin.servers.loadFailed')" :description="error" />
 
-    <div v-else class="overflow-x-auto rounded-lg bg-white">
+    <!-- Columns hide by the width the table gets, not the window: the sidebar and the page
+         width decide that. Server and owner wrap, so the full page width is enough. -->
+    <div v-else class="@container overflow-x-auto rounded-lg bg-white">
       <table class="w-full text-left text-sm">
         <thead class="text-xs text-(--ui-text-muted)">
           <tr>
             <th scope="col" class="px-4 py-3 font-medium">
               {{ t('admin.servers.col.server') }}
             </th>
-            <th scope="col" class="hidden px-4 py-3 font-medium lg:table-cell">
+            <th scope="col" class="hidden px-4 py-3 font-medium @5xl:table-cell">
               {{ t('admin.servers.col.baseUrl') }}
             </th>
             <th scope="col" class="px-4 py-3 font-medium">
               {{ t('admin.servers.col.owner') }}
             </th>
-            <th scope="col" class="hidden px-4 py-3 font-medium md:table-cell">
+            <th scope="col" class="hidden px-4 py-3 font-medium @4xl:table-cell">
               {{ t('admin.servers.col.auth') }}
             </th>
-            <th scope="col" class="hidden px-4 py-3 font-medium sm:table-cell">
+            <th scope="col" class="hidden px-4 py-3 font-medium @3xl:table-cell">
               {{ t('admin.servers.col.state') }}
             </th>
             <th scope="col" class="px-4 py-3 font-medium">
               {{ t('admin.servers.col.models') }}
             </th>
-            <th scope="col" class="hidden px-4 py-3 font-medium xl:table-cell">
+            <th scope="col" class="hidden px-4 py-3 font-medium @6xl:table-cell">
               {{ t('admin.servers.col.discovered') }}
             </th>
             <th scope="col" class="px-4 py-3 font-medium">
@@ -181,31 +183,31 @@ function duplicatesOf(r: Row) {
             @click="openId = r.server.id"
           >
             <td class="px-4 py-3">
-              <button type="button" class="text-left font-medium whitespace-nowrap text-(--ui-text-highlighted) hover:underline" @click.stop="openId = r.server.id">
+              <button type="button" class="text-left font-medium break-words text-(--ui-text-highlighted) hover:underline" @click.stop="openId = r.server.id">
                 {{ r.server.name }}
               </button>
               <p v-if="r.server.createdAt" class="text-xs text-(--ui-text-muted)">
                 {{ t('admin.servers.created', { date: date(r.server.createdAt) }) }}
               </p>
             </td>
-            <td class="hidden max-w-44 truncate px-4 py-3 lg:table-cell" :title="r.server.baseUrl">
+            <td class="hidden max-w-44 truncate px-4 py-3 @5xl:table-cell" :title="r.server.baseUrl">
               {{ r.server.baseUrl }}
             </td>
             <td class="px-4 py-3">
-              <p class="whitespace-nowrap">
+              <p class="break-words">
                 {{ r.owner }}
               </p>
               <p class="text-xs text-(--ui-text-muted)">
                 {{ shortId(r.server.ownerSub) }}
               </p>
             </td>
-            <td class="hidden px-4 py-3 md:table-cell">
+            <td class="hidden px-4 py-3 @4xl:table-cell">
               <p>{{ t(`registry.auth.${r.server.authType}`) }}</p>
               <p class="text-xs text-(--ui-text-muted)">
                 {{ r.server.hasCredentials ? t('admin.servers.credentials') : t('admin.servers.noCredentials') }}
               </p>
             </td>
-            <td class="hidden px-4 py-3 sm:table-cell">
+            <td class="hidden px-4 py-3 @3xl:table-cell">
               <UBadge :color="r.server.isActive === false ? 'neutral' : 'success'" variant="soft" size="sm">
                 {{ r.server.isActive === false ? t('admin.servers.inactive') : t('admin.servers.active') }}
               </UBadge>
@@ -216,7 +218,7 @@ function duplicatesOf(r: Row) {
                 {{ breakdown(r.models) || '–' }}
               </p>
             </td>
-            <td class="hidden px-4 py-3 xl:table-cell">
+            <td class="hidden px-4 py-3 @6xl:table-cell">
               {{ r.server.lastDiscoveredAt ? date(r.server.lastDiscoveredAt) : t('admin.servers.never') }}
             </td>
             <td class="px-4 py-3">

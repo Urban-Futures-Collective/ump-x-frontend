@@ -254,7 +254,6 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       <UTabs v-model="tab" :items="tabs" :content="false" variant="link" />
     </ListBar>
 
-    <!-- Not full width on purpose: on wide screens a long row is hard to follow. -->
     <AdminAuditLog v-if="tab === 'audit'" :action="auditFilter.action?.[0]" />
 
     <AdminServers
@@ -265,7 +264,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
       @clear-filters="() => { serverSearch = ''; serverFilter = {} }"
     />
 
-    <section v-else-if="isPlatformAdmin" class="max-w-4xl space-y-4">
+    <section v-else-if="isPlatformAdmin" class="space-y-4">
 
       <p v-if="inviteInfo" class="text-sm text-(--ui-text-muted)">
         {{ inviteInfo }}
