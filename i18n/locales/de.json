@@ -460,156 +460,156 @@
   },
   "help": {
     "title": "Hilfe",
-    "lead": "Hier steht, wie du ein Modell rechnest und wie du die Plattform mit einer KI benutzt.",
+    "lead": "Hier findest du Anleitungen für alle Funktionalitäten von UMP-X:",
     "nav": {
     "exploring": "Verfügbare Modelle erforschen",
-    "scenarios": "Szenarien rechnen",
+    "scenarios": "Ein neues Szenario anlegen",
     "retrieving": "Ergebnisse abrufen",
-    "contributing": "Modelle beitragen",
-    "chat": "Chat auf dieser Seite",
-    "mcp": "Eigener KI-Client",
+    "contributing": "Eigenes Modell beitragen",
+    "chat": "Eigenes LLM anbinden",
+    "mcp": "Eigenen KI-Client anbinden",
     "verify": "Modell prüfen"
   },
     "exploring": {
-      "heading": "Exploring available models",
-      "lead": "Here, you can explore all models that are currently available on UMP-X.",
+      "heading": "Verfügbare Modelle erforschen",
+      "lead": "Hier kannst du alle derzeit auf UMP-X verfügbaren Modelle erforschen.",
       "steps": {
         "commons": {
-          "title": "Go to the Commons page",
-          "body": "On the Commons page, you see a list of all available models. You can search and filter models, for example, by keyword."
+          "title": "Geh auf die Commons Seite",
+          "body": "Die Commons Seite zeigt eine Liste aller verfügbaren Modelle, inklusive Such- und Filterfunktion."
         },
         "modelcard": {
-            "title": "View the model card",
-            "body": "Click on a model to view its model card. Some models are available publicly by default; others require you to request access first."
+            "title": "Model Card anzeigen",
+            "body": "Wähle ein Modell aus, um dessen Model Card anzuzeigen. Manche Modelle sind öffentlich verfügar; für andere musst du zuerst Zugriff beantragen."
         },
         "request-access": {
-            "title": "Request access",
-            "body": "To request access to a model, click the “Request access“ button within the model card. Once an administrator has approved your access request, you will receive an email notification, and the model will become available to you."
+            "title": "Zugriff beantragen",
+            "body": "Um Zugriff auf ein Modell zu beantragen, wähle in der Model Card “Zugriff beantragen“ aus. Du wirst per Email benachrichtigt, sobald deine Zugriffsanfrage bearbeitet wurde, und kannst über deinen Login-Bereich auf das Modell zugreifen."
         },
         "run-model": {
-            "title": "Run the model",
-            "body": "To run an available model, create a new scenario (see next help section)."
+            "title": "Modell ausführen",
+            "body": "Um ein für dich verfügbares Modell auszuführen, wähle “Neues Szenario anlegen“ aus - siehe dazu den nächsten Abschnitt."
         }
       }
     },
     "scenarios": {
-      "heading": "Creating a new scenario",
-      "lead": "A scenario is a run of one model with your inputs. To create a new scenario and run a model:",
+      "heading": "Ein neues Szenario anlegen",
+      "lead": "Ein Szenario ist ein einzelner Modelllauf mit deinen Eingaben. Um ein neues Szenario anzulegen und ein Modell auszuführen,",
       "steps": {
         "select": {
-          "title": "Select from Commons",
-          "body": "Navigate to the Commons page, select a model and click on it to view its model card."
+          "title": "In Commons Modell auswählen",
+          "body": "Auf der Commons Seite kannst du ein Modell auswählen und klicken. Die Modell Card wird angezeigt."
         },
         "newscenario": {
-          "title": "Create new scenario",
-          "body": "Click on “Create new scenario“. The model run page will open." 
+          "title": "“Neues Szenario anlegen“",
+          "body": "In der Modell Card, wähle “Neues Szenario anlegen“ aus. Eine Seite zum Modelllauf öffnet." 
         },
         "yourinputs": {
-          "title": "Enter your inputs",
-          "body": "Enter your inputs for the model run, and click on “Run“. Required inputs and run time depend on the model chosen. You can leave the page while the model runs in the background - the scenario will show up on the “My scenarios“ page."
+          "title": "Deine Eingaben",
+          "body": "Ergänze auf der Modelllauf-Seite deine Eingaben und wähle “Ausführen“, and click on “Run“. Benötigte Eingaben und Laufzeit unterscheiden sich je nach Modell. Während des Modelllaufs kannst du die Seite verlassen - das Szenario und die Ergebnisse findest du unter “Meine Szenarien“ wieder."
         },
         "results": {
-          "title": "Explore the results",
-          "body": "Once the model run is finished (“successful“ label), you can download the results, and (if results are in geospatial format) explore them on a map in the browser."
+          "title": "Ergebnisse erforschen",
+          "body": "Sobald der Modelllauf vollständig ist (Label “erfolgreich“), kannst du die Ergebnisse herunterladen und (falls Ergebnisse in GIS-Format sind) direkt im Browser auf der Karte erforschen."
         }
       }
     },
     "retrieving": {
-      "heading": "Retrieve results from previous scenarios",
-      "lead": "All scenarios created by you are saved in the Scenarios tab. Click on a scenario to retrieve its results." 
+      "heading": "Ergebnisse abrufen",
+      "lead": "Alle von dir erstellten Szenarien werden automatisch gespeichert. Du kannst sie auf der “Meine Szenarien“ Seite abrufen; wähle ein Szenario aus, um dessen Ergebnisse zu sehen." 
     },
     "contributing": {
-      "heading": "Contributing a model",
-      "lead": "On the “Contribute“ page, you can contribute your own model to the UMP-X platform.",
+      "heading": "Eigenes Modell beitragen",
+      "lead": "Unter “Beitragen“ kannst du dein eigenes Modell auf UMP-X hochladen und anderen zur Verfügung stellen.",
       "steps": {
         "newmodel": {
-          "title": "Click on “New model“",
+          "title": "“Neues Modell“ auswählen",
           "body": ""
         },
         "server": {
-          "title": "Connect to the model server",
-          "body": "Connect to the server on which your model is run."
+          "title": "Mit dem Modell-Server verbinden",
+          "body": "Stelle eine Verbindung zum Server her, auf dem dein Modell läuft."
         },
         "select": {
-          "title": "Select the model",
-          "body": "After connecting to the model server, a list of all processes (models) found on that server will be displayed. Select the model you would like to contibute."
+          "title": "Modell auswählen",
+          "body": "Nach erfolgreicher Verbindung zu deinem Server zeigt UMP-X eine Liste aller Prozesse (Modelle) an, die auf deinem Server gefunden wurden. Wähle das Modell aus, das du gerne beitragen möchtest."
         },
         "fillcard": {
-          "title": "Fill in the model card",
-          "body": "Fill in the model card. You can save the model card as draft, and return to it later."
+          "title": "Model Card ausfüllen",
+          "body": "Fülle die Model Card aus. Du kannst die Model Card als Entwurf speichern und später zum Bearbeiten zurückkehren."
         },
         "submit": {
-          "title": "Submit for review",
-          "body": "Once the model card is ready, click on “Submit for review“."
+          "title": "Zur Prüfung einreichen",
+          "body": "Sobald die Model Card fertig ist, wähle “Zur Prüfung einreichen“ aus."
         },
         "reviewprocess": {
-          "title": "Review process",
-          "body": "A UMP-X reviewer will review your submission, with three possible outcomes: approve; reject; or changes requested. You will receive an email notification in each case. If changes are requested, you will be able to edit the model card again, and resubmit the model."
+          "title": "Prüfungsphase",
+          "body": "Dein Modell wird vom UMP-X Team geprüft, mit drei möglichen Ergebnissen: verifiziert; abgelehnt; oder Änderungen beantragt. Du wirst per Email benachrichtigt, wenn sich der Prüfstatus deines Modells ändert. Wenn Änderungen erforderlich sind, kannst du die Model Card erneut bearbeiten und danach das Modell wieder zur Prüfung einreichen."
         }
       }
     },
-    "aiLead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist.",
+    "aiLead": "UMP-X stellt kein LLM zur Verfügung. Du kannst dein eigenes LLM mit UMP-X verbinden, und behältst dabei die Kontrolle über alle Zugriffsrechte.",
     "chat": {
-      "heading": "Chat auf dieser Seite",
-      "lead": "Du verbindest dein eigenes Modell, dann führt der Chat dich durch den Katalog.",
+      "heading": "Eigenes LLM anbinden, um einen Chatbot zu nutzen",
+      "lead": "Sobald du dein eigenes LLM an UMP-X angebunden hast, kannst du die Chatbot-Funktion nutzen.",
       "steps": {
         "provider": {
           "title": "Anbieter wählen",
-          "body": "OpenAI, Anthropic oder OpenRouter, dazu jeder Dienst, der die OpenAI-Form spricht. Auch ein Modell, das auf deinem eigenen Rechner läuft."
+          "body": "OpenAI, Anthropic, OpenRouter, sowie jeder andere Anbieter mit OpenAI-Form; oder ein Modell, das auf deinem eigenen Rechner läuft."
         },
         "key": {
           "title": "Schlüssel eintragen",
-          "body": "Den Schlüssel bekommst du bei deinem Anbieter. Er bleibt im Speicher deines Browsers und erreicht unseren Server nie. Nimm am besten einen Schlüssel nur für diesen Zweck, mit Ausgabengrenze."
+          "body": "Den Schlüssel bekommst du bei deinem Anbieter. Er bleibt im Speicher deines Browsers und erreicht den UMP-X Server nie. Es wird empfohlen, den Schlüssel nur für diesen Zweck zu verwenden und mit einer Ausgabengrenze zu versehen."
         },
         "ask": {
-          "title": "Fragen stellen",
-          "body": "Der Chat kennt den Katalog und die Parameter der Modelle. Einen Lauf bereitet er vor und füllt das Formular; abgeschickt wird er von dir."
+          "title": "Chatbot-Funktionalität nutzen",
+          "body": "Nach erfolgreicher Anbindung deines LLM kannst du die Chatbot-Funktionalität nutzen, um Fragen zu stellen und Modelle laufen zu lassen."
         }
       }
     },
     "mcp": {
-      "heading": "Eigener KI-Client über MCP",
-      "lead": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. Getestet haben wir es mit Claude Desktop.",
+      "heading": "Eigenen KI-Client anbinden",
+      "lead": "Über MCP kannst du deinen eigenen KI-Client an UMP-X anbinden. MCP (Model Context Protocol) ist ein offener Standard, über den KI-Clients Tools anderer Anbieter nutzen können. Das MC für UMP-X wurde mit Claude Desktop getestet. Um deinen KI-Client anzubinden:",
       "steps": {
         "address": {
-          "title": "Adresse im Client eintragen",
-          "body": "In Claude Desktop unter Einstellungen, Connectors, „Custom Connector hinzufügen“. Andere Clients nennen es Server oder Werkzeugquelle."
+          "title": "MCP-Adresse im Client eintragen",
+          "body": "Wo genau die MCP-Adresse einzutragen ist, hängt vom Client ab (“Benutzerdefinierter Konnektor“ in Claude Desktop, “Server“ oder “Werkzeugquelle“ in anderen Clients)."
         },
         "signin": {
           "title": "Mit deinem Konto anmelden",
-          "body": "Der Client schickt dich einmal zur Anmeldung der Plattform. Er bekommt danach genau deine Rechte, nicht mehr."
+          "body": "Der Client schickt dich einmal zur Anmeldung der Plattform. Dadurch bekommt er deine Rechte."
         },
         "use": {
           "title": "Modelle als Werkzeuge benutzen",
-          "body": "Die Modelle erscheinen im Client als Werkzeuge. Läufe starten, Status abfragen und Ergebnisse abholen geht von dort aus."
+          "body": "Die Modelle erscheinen nun in deinem Client als Werkzeuge. Du kannst jetzt von deinem Client aus Modellläufe starten, den Laufstatus eines Modells abfragen und Ergebnisse abrufen."
         }
       },
       "copy": "Adresse kopieren",
-      "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
+      "notAWebsite": "Die MCP-Adresse ist für KI-Clients mit MCP. Im Browser geöffnet gibt sie eine Fehlermeldung zurück."
     },
     "verify": {
-      "heading": "Verifying a model",
-      "lead": "To verify a model submission, navigate to the “Verify“ page. You will see a list of submitted models awaiting verification. You cannot review your own models.",
+      "heading": "Modell prüfen",
+      "lead": "Unter “Prüfen“ siehst du eine Liste aller derzeit zur Prüfung eingereichten Modelle. Es ist nicht möglich, deine eigenen Modelle zu prüfen.",
       "steps": {
         "takeover": {
-          "title": "Take over review",
-          "body": "Click on “Take over review“ to start reviewing a model."
+          "title": "Prüfung übernehmen",
+          "body": "Wähle “Prüfung übernehmen“ aus, um den Prüfprozess zu starten."
         },
         "modelcard": {
-          "title": "Check model card",
-          "body": "Review all model card fields for correctness and coherence."
+          "title": "Model Card überprüfen",
+          "body": "Überprüfe alle Felder der Model Card mit Hinsicht auf Korrektheit und Kohärenz."
         },
         "verificationrun": {
-          "title": "Verification run",
-          "body": "Conduct a verification run of the model, and provide its job ID to verify that the verification run was succesful."
+          "title": "Prüflauf",
+          "body": "Führe einen Prüflauf des Modells aus und gib die Job ID des Laufs an, um zu bestätigen, dass der Lauf erfolgreich war."
         },
         "reviewdecision": {
-          "title": "Review decision",
-          "body": "You have three options: reject the model; request changes to the model (provide a text comment to the contributor); or verify the model (this option only becomes available after a successful verification run)."
+          "title": "Prüfentscheidung",
+          "body": "Du hast drei Möglichkeiten: ablehnen; (über die Textkommentarfunktion) Änderungen beantrangen; oder verifizieren (erst nach erfolgreichem Prüflauf)."
         },
         "requestedchanges": {
-          "title": "Requesting changes",
-          "body": "In case of requesting changes, you will receive an email notification once the model is updated and resubmitted by the contributor."
+          "title": "Änderungen beantragen",
+          "body": "Falls du Änderungen beantragst, wirst du per Email benachrichtigt, sobald das abgeänderte Modell erneut eingereicht wird."
         }
       }
     }
