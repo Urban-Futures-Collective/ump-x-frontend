@@ -506,7 +506,7 @@
         },
         "yourinputs": {
           "title": "Deine Eingaben",
-          "body": "Ergänze auf der Modelllauf-Seite deine Eingaben und wähle “Ausführen“, and click on “Run“. Benötigte Eingaben und Laufzeit unterscheiden sich je nach Modell. Während des Modelllaufs kannst du die Seite verlassen - das Szenario und die Ergebnisse findest du unter “Meine Szenarien“ wieder."
+          "body": "Ergänze auf der Modelllauf-Seite deine Eingaben und wähle “Ausführen“. Benötigte Eingaben und Laufzeit unterscheiden sich je nach Modell. Während des Modelllaufs kannst du die Seite verlassen - das Szenario und die Ergebnisse findest du unter “Meine Szenarien“ wieder."
         },
         "results": {
           "title": "Ergebnisse erforschen",
@@ -516,7 +516,7 @@
     },
     "retrieving": {
       "heading": "Ergebnisse abrufen",
-      "lead": "Alle von dir erstellten Szenarien werden automatisch gespeichert. Du kannst sie auf der “Meine Szenarien“ Seite abrufen; wähle ein Szenario aus, um dessen Ergebnisse zu sehen." 
+      "lead": "Alle von dir erstellten Szenarien werden automatisch gespeichert. Du kannst sie auf der “Meine Szenarien“ Seite abrufen. Wähle ein Szenario aus, um dessen Ergebnisse zu sehen." 
     },
     "contributing": {
       "heading": "Eigenes Modell beitragen",
@@ -544,7 +544,7 @@
         },
         "reviewprocess": {
           "title": "Prüfungsphase",
-          "body": "Dein Modell wird vom UMP-X Team geprüft, mit drei möglichen Ergebnissen: verifiziert; abgelehnt; oder Änderungen beantragt. Du wirst per Email benachrichtigt, wenn sich der Prüfstatus deines Modells ändert. Wenn Änderungen erforderlich sind, kannst du die Model Card erneut bearbeiten und danach das Modell wieder zur Prüfung einreichen."
+          "body": "Dein Modell wird vom UMP-X Team geprüft, mit drei möglichen Ergebnissen: verifiziert, abgelehnt, oder Änderungen beantragt. Du wirst per Email benachrichtigt, wenn sich der Prüfstatus deines Modells ändert. Wenn Änderungen erforderlich sind, kannst du die Model Card erneut bearbeiten und danach das Modell wieder zur Prüfung einreichen."
         }
       }
     },
@@ -569,7 +569,7 @@
     },
     "mcp": {
       "heading": "Eigenen KI-Client anbinden",
-      "lead": "Über MCP kannst du deinen eigenen KI-Client an UMP-X anbinden. MCP (Model Context Protocol) ist ein offener Standard, über den KI-Clients Tools anderer Anbieter nutzen können. Das MC für UMP-X wurde mit Claude Desktop getestet. Um deinen KI-Client anzubinden:",
+      "lead": "Über MCP kannst du deinen eigenen KI-Client an UMP-X anbinden. MCP (Model Context Protocol) ist ein offener Standard, über den KI-Clients Tools anderer Anbieter nutzen können. Das MCP für UMP-X wurde mit Claude Desktop getestet. Um deinen KI-Client anzubinden:",
       "steps": {
         "address": {
           "title": "MCP-Adresse im Client eintragen",
@@ -605,7 +605,7 @@
         },
         "reviewdecision": {
           "title": "Prüfentscheidung",
-          "body": "Du hast drei Möglichkeiten: ablehnen; (über die Textkommentarfunktion) Änderungen beantrangen; oder verifizieren (erst nach erfolgreichem Prüflauf)."
+          "body": "Du hast drei Möglichkeiten: ablehnen, (über die Textkommentarfunktion) Änderungen beantrangen, oder verifizieren (erst nach erfolgreichem Prüflauf)."
         },
         "requestedchanges": {
           "title": "Änderungen beantragen",
