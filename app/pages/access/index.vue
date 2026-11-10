@@ -179,7 +179,7 @@ async function change(method: 'POST' | 'DELETE', userId: string, note?: string) 
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
+  <section class="mx-auto max-w-6xl space-y-6">
     <PageHeader :title="t('access.title')" :intro="t('access.intro')">
       <UInput
         v-model="search"

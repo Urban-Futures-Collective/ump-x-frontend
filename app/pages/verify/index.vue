@@ -97,7 +97,7 @@ async function step(m: RegistryModel, to: RegistryStatus) {
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
+  <section class="mx-auto max-w-6xl space-y-6">
     <PrototypeNotice />
     <UAlert v-if="error" color="error" variant="subtle" icon="i-lucide-circle-alert" :title="t('registry.loadFailed')" :description="error" />
 

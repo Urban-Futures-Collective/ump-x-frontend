@@ -240,7 +240,7 @@ usePageCrumb(() => title.value)
 </script>
 
 <template>
-  <section class="max-w-7xl space-y-6">
+  <section class="mx-auto max-w-7xl space-y-6">
     <PrototypeNotice />
 
     <p v-if="!model" class="text-(--ui-text-muted)">

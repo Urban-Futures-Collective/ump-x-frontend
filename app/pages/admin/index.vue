@@ -209,7 +209,7 @@ onBeforeUnmount(() => clearTimeout(searchTimer))
 </script>
 
 <template>
-  <div class="max-w-6xl space-y-6">
+  <div class="mx-auto max-w-6xl space-y-6">
     <PageHeader :title="t('admin.title')" :intro="t('admin.intro')">
       <template v-if="isPlatformAdmin && tab === 'users'">
         <form role="search" @submit.prevent>

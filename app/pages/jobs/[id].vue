@@ -25,7 +25,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 </script>
 
 <template>
-  <section class="max-w-3xl space-y-4">
+  <section class="mx-auto max-w-3xl space-y-4">
     <div class="flex items-center justify-between gap-3">
       <ULink to="/jobs" class="flex items-center gap-1 text-sm text-(--ui-text-muted) hover:text-(--ui-text)">
         <UIcon name="i-lucide-arrow-left" />

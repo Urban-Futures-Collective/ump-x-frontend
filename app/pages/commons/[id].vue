@@ -81,7 +81,7 @@ function repoLabel(url: string) {
 </script>
 
 <template>
-  <section v-if="notFound" class="max-w-3xl space-y-3">
+  <section v-if="notFound" class="mx-auto max-w-3xl space-y-3">
     <h1 class="text-2xl font-semibold text-ufc-slate-900">
       {{ t('commons.model.notFound') }}
     </h1>
@@ -96,7 +96,7 @@ function repoLabel(url: string) {
     </UButton>
   </section>
 
-  <section v-else class="max-w-6xl space-y-6">
+  <section v-else class="mx-auto max-w-6xl space-y-6">
     <div class="flex flex-wrap items-start justify-between gap-4 lg:flex-nowrap">
       <div class="max-w-3xl min-w-0 space-y-3">
         <h1 class="text-2xl font-semibold text-ufc-slate-900">

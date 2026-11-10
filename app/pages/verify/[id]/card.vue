@@ -53,7 +53,7 @@ const sections = computed(() => {
 </script>
 
 <template>
-  <section class="max-w-6xl space-y-6">
+  <section class="mx-auto max-w-6xl space-y-6">
     <PrototypeNotice />
 
     <p v-if="!model" class="text-(--ui-text-muted)">
