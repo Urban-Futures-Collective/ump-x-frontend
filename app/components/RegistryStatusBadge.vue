@@ -14,7 +14,7 @@ const COLORS: Record<RegistryStatus, 'neutral' | 'info' | 'warning' | 'success' 
   rejected: 'error',
   verified: 'success',
   published: 'success',
-  deactivated: 'error',
+  deactivated: 'neutral',
 }
 </script>
 
