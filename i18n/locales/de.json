@@ -620,6 +620,11 @@
     "layerCount": "{n} Objekte",
     "layerError": "Konnte nicht geladen werden.",
     "layerTruncated": "Nur die ersten {n} werden gezeigt.",
+    "result": "Ergebnis",
+    "clickHint": "Klicke auf ein Objekt in der Karte, um seine Attribute zu sehen.",
+    "attributes": "Attribute: {layer}",
+    "closeAttributes": "Attribute schließen",
+    "noAttributes": "Dieses Objekt hat keine Attribute.",
     "layer": {
       "boundary": "Umriss",
       "buildings": "Gebäude",

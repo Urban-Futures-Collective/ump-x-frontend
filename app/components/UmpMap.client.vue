@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { createMap } from '@masterportal/masterportalapi/src/maps/ol/olMap.js'
-import type { FeatureLike } from 'ol/Feature'
+import Feature, { type FeatureLike } from 'ol/Feature'
 import GeoJSON from 'ol/format/GeoJSON'
+import type BaseLayer from 'ol/layer/Base'
 import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
 import type OlMap from 'ol/Map'
@@ -84,6 +85,54 @@ function featureStyle(f: FeatureLike): Style | null {
   return style
 }
 
+// Clicking a feature shows its attributes in a box over the map and outlines it. The
+// outline sits on a layer of its own above everything, white under dark, so it stands
+// out on any colour a model chooses.
+const HIGHLIGHT = [
+  new Style({
+    stroke: new Stroke({ color: '#fff', width: 6 }),
+    image: new Circle({ radius: 8, stroke: new Stroke({ color: '#fff', width: 5 }) }),
+  }),
+  new Style({
+    stroke: new Stroke({ color: '#0f172a', width: 3 }),
+    image: new Circle({ radius: 8, stroke: new Stroke({ color: '#0f172a', width: 2.5 }) }),
+  }),
+]
+const highlightSource = new VectorSource()
+let highlightLayer: VectorLayer<VectorSource> | undefined
+
+const picked = ref<{ layer: string, rows: FeatureAttribute[] } | null>(null)
+
+// Result and linked layers carry their display name, so a hit says where it came from.
+const NAME = 'umpTitle'
+const pickable = (l: BaseLayer) => l !== highlightLayer && typeof l.get(NAME) === 'string'
+
+function hitAt(pixel: number[]) {
+  let hit: { feature: FeatureLike, layer: string } | undefined
+  map?.forEachFeatureAtPixel(pixel, (feature, layer) => {
+    hit = { feature, layer: layer.get(NAME) }
+    return true
+  }, { layerFilter: pickable, hitTolerance: 4 })
+  return hit
+}
+
+function pick(pixel: number[]) {
+  const hit = hitAt(pixel)
+  highlightSource.clear()
+  if (!hit) {
+    picked.value = null
+    return
+  }
+  const geometry = hit.feature.getGeometry()
+  if (geometry && 'clone' in geometry) highlightSource.addFeature(new Feature(geometry.clone()))
+  picked.value = { layer: hit.layer, rows: featureAttributes(hit.feature.getProperties(), locale.value) }
+}
+
+function unpick() {
+  highlightSource.clear()
+  picked.value = null
+}
+
 // No layers means nothing mappable: show a notice instead of an empty map.
 const linked = computed(() => props.layer?.linked ?? [])
 const mappable = computed(() => (props.layer?.layers.length ?? 0) > 0 || linked.value.length > 0)
@@ -124,6 +173,7 @@ async function setLinked(layer: LinkedLayer, on: boolean) {
   const i = linked.value.indexOf(layer)
   const state = linkedState.value[layer.name] ?? { on: false, loading: false, error: false }
   linkedState.value[layer.name] = { ...state, on }
+  if (!on && picked.value?.layer === layerTitle(layer.name)) unpick()
   const existing = linkedLayers.get(layer.name)
   if (existing) {
     existing.setVisible(on)
@@ -143,6 +193,7 @@ async function setLinked(layer: LinkedLayer, on: boolean) {
       source: new VectorSource({ features }),
       style: f => featureStyle(f) ?? fallback,
       visible: linkedState.value[layer.name]?.on ?? true,
+      properties: { [NAME]: layerTitle(layer.name) },
       // Areas below lines and points, the boundary on top.
       zIndex: layer.name === 'boundary' ? 3 : layer.name === 'land_cover' ? 1 : 2,
     })
@@ -178,6 +229,14 @@ function buildMap(el: HTMLDivElement) {
   // Added as a plain OL layer, not via the service registry: the library has
   // no XYZ service type, and addLayer accepts ready-made OL layers as is.
   map.addLayer(new TileLayer({ source: new OSM() }))
+  highlightLayer = new VectorLayer({ source: highlightSource, style: HIGHLIGHT, zIndex: 10 })
+  map.addLayer(highlightLayer)
+  map.on('singleclick', e => pick(e.pixel))
+  // A pointer over features that can be clicked.
+  map.on('pointermove', (e) => {
+    if (e.dragging || !map) return
+    map.getTargetElement().style.cursor = map.hasFeatureAtPixel(e.pixel, { layerFilter: pickable, hitTolerance: 4 }) ? 'pointer' : ''
+  })
   render(props.layer)
 
   // On mount the container has no size yet, and OpenLayers then never draws.
@@ -191,6 +250,8 @@ function buildMap(el: HTMLDivElement) {
 }
 
 function teardownMap() {
+  unpick()
+  highlightLayer = undefined
   linkedLayers.clear()
   linkedState.value = {}
   observer?.disconnect()
@@ -225,6 +286,7 @@ function fitTo(extent?: number[] | null) {
 function render(layer?: ResultLayer | null) {
   if (!map) return
 
+  unpick()
   if (resultLayer) {
     map.removeLayer(resultLayer)
     resultLayer = undefined
@@ -241,7 +303,11 @@ function render(layer?: ResultLayer | null) {
   })
 
   const fallback = styles[spec.geometry]
-  resultLayer = new VectorLayer({ source: new VectorSource({ features }), style: f => featureStyle(f) ?? fallback })
+  resultLayer = new VectorLayer({
+    source: new VectorSource({ features }),
+    style: f => featureStyle(f) ?? fallback,
+    properties: { [NAME]: t('map.result') },
+  })
   map.addLayer(resultLayer)
 
   fitTo(resultLayer.getSource()?.getExtent())
@@ -253,9 +319,40 @@ function render(layer?: ResultLayer | null) {
        and height, and a wide, flat frame forces the map to zoom out too far.
        The max width keeps the square within one screen height. -->
   <div v-if="mappable" class="space-y-2">
-    <div class="mx-auto aspect-square w-full max-w-[calc(100svh_-_9rem)] overflow-hidden rounded-lg border border-(--ui-border)">
+    <div class="relative mx-auto aspect-square w-full max-w-[calc(100svh_-_9rem)] overflow-hidden rounded-lg border border-(--ui-border)">
       <div ref="mapContainer" class="h-full w-full" />
+
+      <!-- Attributes of the clicked feature, over the map so the eye stays near it. -->
+      <section
+        v-if="picked"
+        class="absolute top-2 right-2 z-10 max-h-[calc(100%-1rem)] w-80 max-w-[calc(100%-1rem)] overflow-auto rounded-md border border-(--ui-border) bg-white p-3 text-sm shadow-md"
+        :aria-label="t('map.attributes', { layer: picked.layer })"
+        @keydown.esc="unpick"
+      >
+        <div class="mb-2 flex items-center justify-between gap-2">
+          <h3 class="font-medium text-(--ui-text-highlighted)">
+            {{ picked.layer }}
+          </h3>
+          <UButton icon="i-lucide-x" size="xs" color="neutral" variant="ghost" :aria-label="t('map.closeAttributes')" @click="unpick" />
+        </div>
+        <dl v-if="picked.rows.length" class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+          <template v-for="r in picked.rows" :key="r.key">
+            <dt class="text-(--ui-text-muted)">
+              {{ r.key }}
+            </dt>
+            <dd class="break-words text-(--ui-text)">
+              {{ r.value }}
+            </dd>
+          </template>
+        </dl>
+        <p v-else class="text-(--ui-text-muted)">
+          {{ t('map.noAttributes') }}
+        </p>
+      </section>
     </div>
+    <p class="text-xs text-(--ui-text-dimmed)">
+      {{ t('map.clickHint') }}
+    </p>
 
     <!-- Layers the result links to, switched on one by one. -->
     <fieldset v-if="linked.length" class="space-y-1.5">

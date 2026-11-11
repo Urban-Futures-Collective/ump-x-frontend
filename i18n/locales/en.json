@@ -620,6 +620,11 @@
     "layerCount": "{n} features",
     "layerError": "Could not be loaded.",
     "layerTruncated": "Only the first {n} are shown.",
+    "result": "Result",
+    "clickHint": "Click a feature on the map to see its attributes.",
+    "attributes": "Attributes: {layer}",
+    "closeAttributes": "Close attributes",
+    "noAttributes": "This feature has no attributes.",
     "layer": {
       "boundary": "Boundary",
       "buildings": "Buildings",
