@@ -71,7 +71,9 @@ const manageItems = computed<NavigationMenuItem[]>(() => {
 
 // Features from the design that have no backend yet (projects need their own
 // storage). Shown disabled rather than hidden: nobody clicks into nothing, but
-// users can see where the product is heading.
+// users can see where the product is heading. Switched off for now; set to true to show
+// them again.
+const showPlanned = false
 const plannedItems = computed<NavigationMenuItem[]>(() => [
   { label: t('nav.planned.projects'), icon: 'i-lucide-folder', disabled: true },
   ...(prototypes ? [] : [{ label: t('nav.planned.contribute'), icon: 'i-lucide-file-plus-2', disabled: true }]),
@@ -232,17 +234,19 @@ useHead({ title: () => String(breadcrumb.value.at(-1)?.label ?? '') })
           />
         </template>
 
-        <USeparator class="my-3" />
+        <template v-if="showPlanned">
+          <USeparator class="my-3" />
 
-        <p v-if="!collapsed" class="px-2.5 pb-1 text-xs font-medium text-(--ui-text-dimmed)">
-          {{ t('nav.planned.heading') }}
-        </p>
-        <UNavigationMenu
-          orientation="vertical"
-          :collapsed="collapsed"
-          :items="plannedItems"
-          :class="collapsed ? 'w-8' : 'w-full'"
-        />
+          <p v-if="!collapsed" class="px-2.5 pb-1 text-xs font-medium text-(--ui-text-dimmed)">
+            {{ t('nav.planned.heading') }}
+          </p>
+          <UNavigationMenu
+            orientation="vertical"
+            :collapsed="collapsed"
+            :items="plannedItems"
+            :class="collapsed ? 'w-8' : 'w-full'"
+          />
+        </template>
       </template>
 
       <!-- Operator, partner and funders at the bottom, two per row so they stay small.
