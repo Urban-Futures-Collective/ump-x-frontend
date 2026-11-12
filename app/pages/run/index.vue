@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { FeatureCollection } from 'geojson'
+import type { ResultLayer } from '~/types/ump'
 
-// Neues Szenario ausführen: übernimmt ProcessRunner + UmpMap + Ergebnis-Pfad aus der
-// bisherigen app.vue. Das Modell kommt via Query-Param (/run?process=<id>, gesetzt vom
-// Katalog); links steht eine kompakte Liste zum Wechseln, damit /run selbstständig nutzbar
-// ist. Route-Form (Query-Param vs. /models/[id]/run) ist bewusst offen — Umstieg billig.
+// Run a new scenario. The model comes via query param (/run?process=<id>, set by
+// the catalog); a compact list on the left allows switching, so /run also works
+// on its own. The route shape (query param vs. /commons/[id]/run) is not fixed
+// yet and cheap to change.
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
@@ -14,16 +14,16 @@ const queryProcess = computed(() =>
   typeof route.query.process === 'string' ? route.query.process : null,
 )
 const selectedProcessId = ref<string | null>(queryProcess.value)
-const mapData = ref<FeatureCollection | null>(null)
+const mapData = ref<ResultLayer | null>(null)
 
 function selectProcess(id: string) {
   selectedProcessId.value = id
   mapData.value = null
-  // Auswahl in der URL spiegeln → teilbarer Link, Reload-fest.
+  // Mirror the selection in the URL: shareable link, survives a reload.
   router.replace({ query: { process: id } })
 }
 
-// Wechselt der Query-Param (z. B. Navigation vom Katalog), Auswahl nachziehen.
+// If the query param changes (e.g. navigation from the catalog), follow it.
 watch(queryProcess, (id) => {
   if (id && id !== selectedProcessId.value) {
     selectedProcessId.value = id
@@ -33,14 +33,17 @@ watch(queryProcess, (id) => {
 </script>
 
 <template>
+  <div class="space-y-6">
+  <PageHeader :title="t('nav.run')" :intro="t('run.intro')" />
+
   <div class="grid gap-6 lg:grid-cols-[20rem_1fr]">
-    <!-- Modell-Auswahl (kompakt) -->
+    <!-- Model selection (compact) -->
     <section class="space-y-3">
       <div class="flex items-center justify-between">
         <h2 class="text-lg font-semibold">
           {{ t('nav.models') }}
         </h2>
-        <ULink to="/models" class="text-sm text-(--ui-text-muted) hover:text-(--ui-text)">
+        <ULink to="/commons" class="text-sm text-(--ui-text-muted) hover:text-(--ui-text)">
           {{ t('run.allModels') }}
         </ULink>
       </div>
@@ -71,9 +74,10 @@ watch(queryProcess, (id) => {
       </p>
     </section>
 
-    <!-- Runner + Karte. Ab xl nebeneinander: darunter bleiben zwei Spalten neben der
-         Modell-Liste zu schmal, sowohl für die Eingabefelder als auch für die Karte. -->
-    <section class="grid items-start gap-4 xl:grid-cols-2">
+    <!-- Runner + map. Next to the list it starts level with the first model (pt-10 =
+         the list heading plus its gap). Side by side only from xl: below that, two columns next to
+         the model list are too narrow for both the inputs and the map. -->
+    <section class="grid items-start gap-4 lg:pt-10 xl:grid-cols-2">
       <div class="space-y-4">
         <ProcessRunner
           v-if="selectedProcessId"
@@ -81,12 +85,20 @@ watch(queryProcess, (id) => {
           :process-id="selectedProcessId"
           @result="mapData = $event"
         />
-        <p v-else class="text-sm text-(--ui-text-muted)">
-          {{ t('run.selectHint') }}
-        </p>
+        <!-- Nothing chosen yet: a box in the place of the form, so the hint belongs to it. -->
+        <div v-else class="flex flex-col items-center gap-3 rounded-lg border border-dashed border-(--ui-border-accented) bg-white px-6 py-10 text-center">
+          <UIcon name="i-lucide-mouse-pointer-click" class="size-8 text-(--ui-text-dimmed)" aria-hidden="true" />
+          <p class="max-w-xs text-sm text-(--ui-text-muted)">
+            {{ t('run.selectHint') }}
+          </p>
+        </div>
       </div>
 
-      <UmpMap :data="mapData" />
+      <div class="space-y-4">
+        <UmpMap :layer="mapData" />
+        <ResultIndicators :layer="mapData" />
+      </div>
     </section>
+  </div>
   </div>
 </template>

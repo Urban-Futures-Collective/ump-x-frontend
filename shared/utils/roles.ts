@@ -1,0 +1,97 @@
+// The role vocabulary, shared by app and server.
+//
+// The app uses it to show or hide menus; the server uses it to decide who may call an
+// admin route and which roles may be assigned. One shared list prevents a role from being
+// visible in the menu but rejected on the server, or the other way round.
+//
+// The names are the ones UMP's model registry checks (UMP
+// src/ump/core/models/registry/roles.py). Until 2026-10-28 the realm called them
+// `user_role_provider` and so on; they were renamed in Keycloak.
+// Roles are compared literally, without any mapping (as UMP does).
+
+export const UMP_CLIENT = 'ump-client'
+
+export const ROLE_VIEWER = 'viewer'
+export const ROLE_USER = 'user'
+export const ROLE_PROVIDER = 'provider'
+export const ROLE_VERIFIER = 'verifier'
+export const ROLE_ACCESS_ADMIN = 'access-admin'
+export const ROLE_PLATFORM_ADMIN = 'platform-admin'
+// Use of the MCP server (ump-x-mcp) with your account (#111, item 31). A default role, so
+// every account has it until a platform admin switches it off; the MCP server refuses
+// signed-in callers without it.
+export const ROLE_MCP_USER = 'mcp-user'
+
+// The platform roles. Only these can be assigned through UMP-X; a role created by
+// hand in the Keycloak console does not become assignable (allowlist rather than a list
+// fetched from Keycloak).
+export const PLATFORM_ROLES = [
+  ROLE_VIEWER,
+  ROLE_USER,
+  ROLE_PROVIDER,
+  ROLE_VERIFIER,
+  ROLE_ACCESS_ADMIN,
+  ROLE_PLATFORM_ADMIN,
+  ROLE_MCP_USER,
+] as const
+
+// The platform roles contained in the realm's default roles, so every new account has
+// them. Since 2026-11-05 only viewer: whoever registers sees the models; running,
+// contributing and MCP are given by an admin. The account list marks an account that
+// lacks a default role.
+export const DEFAULT_ROLES = [ROLE_VIEWER] as const
+
+// The roles shown as badges in the account list: every platform role except the default
+// one, which nearly everyone has, so a badge would say nothing.
+export const BADGE_ROLES = [ROLE_USER, ROLE_PROVIDER, ROLE_MCP_USER, ROLE_VERIFIER, ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const
+
+// Both admin roles open the admin portal; which sections it shows depends on which of
+// the two a user has.
+export const ADMIN_ROLES = [ROLE_ACCESS_ADMIN, ROLE_PLATFORM_ADMIN] as const
+
+// Only the claim parts needed for roles (Keycloak's standard shape).
+export interface KeycloakRoleClaims {
+  realm_access?: { roles?: string[] }
+  resource_access?: Record<string, { roles?: string[] }>
+}
+
+// Realm and ump-client roles from one claim source (ID token claims or userinfo).
+export function rolesFrom(src: KeycloakRoleClaims | undefined | null): string[] {
+  if (!src) return []
+  return [
+    ...(src.realm_access?.roles ?? []),
+    ...(src.resource_access?.[UMP_CLIENT]?.roles ?? []),
+  ]
+}
+
+// All roles of a session. Depending on the mapper, nuxt-oidc-auth stores them in
+// `claims` (ID token) or `userInfo`; both are read.
+export function rolesOfSession(session: { claims?: unknown, userInfo?: unknown } | null | undefined): string[] {
+  return [...new Set([
+    ...rolesFrom(session?.claims as KeycloakRoleClaims | undefined),
+    ...rolesFrom(session?.userInfo as KeycloakRoleClaims | undefined),
+  ])]
+}
+
+export type PlatformRole = typeof PLATFORM_ROLES[number]
+
+export function isPlatformRole(r: unknown): r is PlatformRole {
+  return typeof r === 'string' && (PLATFORM_ROLES as readonly string[]).includes(r)
+}
+
+// How a platform role applies to an account. `direct`: assigned on the account itself.
+// `viaDefault`: comes with the realm's default roles; revoking it replaces the default
+// role on the account by its other parts. Effective but neither of the two means it comes
+// from somewhere else (a group, another composite) and cannot be revoked here.
+export interface PlatformRoleStatus { role: PlatformRole, effective: boolean, direct: boolean, viaDefault: boolean }
+
+// `fromDefault`: the realm roles the account gets through the default role, empty if the
+// account does not hold the default role.
+export function platformRoleStatus(direct: string[], effective: string[], fromDefault: string[] = []): PlatformRoleStatus[] {
+  return PLATFORM_ROLES.map(role => ({
+    role,
+    effective: effective.includes(role) || direct.includes(role),
+    direct: direct.includes(role),
+    viaDefault: !direct.includes(role) && fromDefault.includes(role),
+  }))
+}

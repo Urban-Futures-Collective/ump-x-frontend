@@ -3,95 +3,120 @@
 Which paths a user can take through UMP-X, depending on sign-in and roles, and
 how much of it is built.
 
-**As of 2026-08-31**, checked against the code (`ccd723f`) and measured against
-the running backend. Anyone changing a route, a middleware or a state updates
+**As of 2026-10-29**, checked against the code (`6c98e8e`, staging) and against
+the running staging backend. Anyone changing a route, a middleware or a state updates
 this document with it. See "Keeping this current" at the end.
 
 Colours throughout:
 
 - **green** built and running
-- **orange** placeholder, the page exists with "coming soon"
-- **red** not there yet, from the workshop target picture
+- **orange** prototype with sample data, or placeholder
+- **red** not there yet
 
 ## The entry point decides everything
 
 ```mermaid
 flowchart TD
     Start([Visitor opens the site])
-    Start --> Landing["Landing page<br/>sign in or browse the catalogue"]
+    Start --> Landing["Landing page<br/>sign in or browse"]
 
     Landing --> Q{Signed in?}
 
-    Q -->|no| Anon["Model catalogue<br/><i>every model is listed</i>"]
+    Q -->|no| Anon["Commons<br/><i>every model is listed, search,<br/>filters by topic, language, licence</i>"]
     Q -->|sign in| KC[/"Keycloak"/]
 
-    KC --> Signed["Model catalogue<br/><i>every model is listed</i>"]
-    KC --> AdminQ{ump_admin<br/>in the token?}
-    AdminQ -->|yes| Admin["Administration"]
+    KC --> Signed["Commons"]
 
-    Anon --> Run
-    Signed --> Run
+    Anon --> Card
+    Signed --> Card
+    Card["Model page<br/>purpose, inputs and outputs,<br/>limits, people"]
+    Card --> Run
 
-    Run["Scenario<br/>set parameters, run"]
+    Run["New scenario<br/>form from the model's schema,<br/>area drawn on the map"]
     Run --> Allowed{"Open model,<br/>or matching role?"}
-    Allowed -->|no| Denied["403<br/><i>the missing role is named</i>"]
-    Allowed -->|yes| Wait{{"Computing<br/>minutes to hours"}}
-    Wait --> Map["Result on the map"]
+    Allowed -->|no| Denied["Run refused<br/><i>the API names the missing role</i>"]
+    Allowed -->|yes| Wait{{"Computing<br/>minutes to hours,<br/>the page may be left"}}
+    Wait --> Map["Result on the map<br/>or as download"]
 
     Signed --> Mine
     Map --> Mine
-    Mine["My scenarios<br/><i>your own runs, newest first</i>"]
-    Mine --> Detail["A run in detail<br/>status, time, result"]
+    Mine["My scenarios<br/><i>own runs, search</i>"]
+    Mine --> Detail["A run in detail<br/>status, times, result,<br/>reloads while running"]
     Detail --> Map
 
-    Admin --> Matrix["Access management<br/>who may use which model"]
+    KC --> AdminQ{"access-admin or<br/>platform-admin?"}
+    AdminQ -->|platform-admin| Accounts["Administration: accounts<br/>create with invitation, roles,<br/>disable, pages, badges"]
+    AdminQ -->|access-admin| Access["Access manager<br/>grant and revoke access<br/>to a model or a whole server"]
+    Access -.-> Requests["Access requests"]
+
+    KC --> Prov{"provider role,<br/>registry switched on?"}
+    Prov -->|yes| Contribute["Contribute<br/>server, processes, model card, submit"]
+    KC --> Ver{"verifier role,<br/>registry switched on?"}
+    Ver -->|yes| Verify["Verify<br/>review, test run, verify or reject, publish"]
+
+    Landing --> Legal["Legal notice, privacy,<br/>accessibility (drafts)"]
 
     classDef built fill:#1f6f3f,stroke:#2ea05a,color:#fff
     classDef placeholder fill:#7a4b1f,stroke:#c07a2a,color:#fff
     classDef missing fill:#7a1f2a,stroke:#c02a3a,color:#fff
     classDef external fill:#2a3550,stroke:#4a6090,color:#fff
 
-    class Landing,Anon,Signed,Run,Allowed,Denied,Map,Mine,Detail built
-    class Admin placeholder
-    class Matrix missing
+    class Landing,Anon,Signed,Card,Run,Allowed,Denied,Wait,Map,Mine,Detail,Accounts,Access built
+    class Contribute,Verify,Legal placeholder
+    class Requests missing
     class KC external
 ```
 
-The catalogue used to be drawn three times here, once per role level. Since UMP
-3.0.0 that split is gone: seeing and running came apart, the list is open to
-everyone and the run is not. You find out where you stand when you press the
-button, which is why the denial has to say what is missing rather than only that
-something failed.
+Seeing and running are separate since UMP 3.0.0: the catalogue is open to everyone,
+the run is not. You find out where you stand when you press the button, which is why
+the refusal has to say what is missing rather than only that something failed.
 
 ## Who may do what
 
-| | signed out | signed in | with model role | ump_admin |
-|---|---|---|---|---|
-| Landing page | yes | yes | yes | yes |
-| See every model in the catalogue | yes | yes | yes | yes |
-| Run an open model | yes | yes | yes | yes |
-| Run a restricted model | no | no | yes | yes |
-| My scenarios | no | yes | yes | yes |
-| Administration | no | no | no | yes |
+| | signed out | signed in (viewer, user, provider) | with model role | verifier | access-admin | platform-admin |
+|---|---|---|---|---|---|---|
+| Landing page, Commons, model pages, help, legal pages | yes | yes | yes | yes | yes | yes |
+| See models not yet published ("available only for verification") | no | no | no | yes | no | no |
+| Run an open model | yes | yes | yes | yes | yes | yes |
+| Run a restricted model | no | no | yes | no | no | no |
+| My scenarios | no | yes | yes | yes | yes | yes |
+| Contribute (registry) | no | yes, as provider | | | | |
+| Verify and publish (registry) | no | no | no | yes | no | no |
+| Administration: accounts and platform roles | no | no | no | no | no | yes |
+| Access manager: model access | no | no | no | no | yes | no |
+| Request access to a model | no | planned | | | | |
 
-Two different kinds of role govern this:
+Three kinds of role govern this, all from Keycloak:
 
-**Running a model** through a role named exactly like the process it unlocks:
-`<provider>` for every process of that model server, `<provider>:<process>` for
-a single one. A process marked `anonymous-access: true` in the backend's
-`providers.yaml` needs no role at all. Denied, the API answers 403 and names the
-role it looked for.
+**Platform roles**, realm roles named as UMP's model registry checks them. Only
+`viewer` comes with the realm's default role, so whoever registers can see the models
+(since 2026-11-05); `user`, `provider`, `mcp-user`, `verifier`, `access-admin` and
+`platform-admin` are assigned. Accounts that existed before 2026-11-05 hold `user`,
+`provider` and `mcp-user` directly. Until 2026-10-28 the roles were called
+`user_role_viewer` and so on. Platform admins assign them in the administration, and can
+also take the default role away from a single account.
 
-**Administration** through the realm role `ump_admin`.
+**Running a model** through a realm role named exactly like what it unlocks:
+`<server>` for every process of that model server, `<server>:<process>` for a single
+one (for example `umep-modelserver:prepare-city`). Publishing a model in Verify creates
+both roles; access admins grant and revoke them in the access manager (`/access`). A
+process marked `anonymous-access: true` in the backend needs no role at all. Refused,
+the API names the role it looked for. Older models still carry hand-made roles, some as
+client roles on `ump-client` (for example `bikebox-modelserver`, `modelserver_squareroot`);
+the access manager only shows roles of the form above until those are cleaned up.
 
-Whether the catalogue itself is filtered is a server setting,
-`UMP_PUBLIC_PROCESSES`. On production it is on, so the list shows everything to
-everyone and only the run is gated. Measured on 2026-08-31: anonymously
-`/v1.0/processes` returns all four models while `/mcp/v1/tools`, which filters by
-the run rule, returns one.
+**Administration** (`/admin`) opens for `access-admin` and `platform-admin`; accounts
+and platform roles are for `platform-admin`. The **access manager** (`/access`) is for
+`access-admin`. The server checks the role again in every route.
 
-The frontend enforces sign-in per page via `definePageMeta`, not globally. Who
-may run what is decided by the backend, and the frontend only has to explain it.
+Whether the catalogue itself is filtered is a server setting, `UMP_PUBLIC_PROCESSES`.
+On staging it is on, so the list shows everything to everyone and only the run is
+gated.
+
+The frontend enforces sign-in and roles per page via `definePageMeta` (`auth`,
+`admin`, `access-admin`, `provider`, `verifier`, and `prototype` for the registry pages,
+which need `NUXT_PUBLIC_PROTOTYPES` or `NUXT_PUBLIC_REGISTRY_API`). Who may run what is decided by the backend; the frontend
+only has to explain it.
 
 ## What is missing today
 
@@ -99,42 +124,42 @@ may run what is decided by the backend, and the frontend only has to explain it.
 flowchart LR
     Run["Run a scenario"] --> W{{"Computing"}}
     W --> M["Map"]
-    Run --> S["My scenarios"]
-    W -.->|leave the page<br/>or reload| S
+    W -.->|after a minute:<br/>you may leave| S["My scenarios"]
     S --> D["A run in detail"]
     D --> M
-    W -.->|no progress,<br/>no message| G>"you are not told<br/>when it finishes"]
+    D -.-> I>"which inputs<br/>was this run with?"]
+    M -.-> L>"result layers and rasters<br/>(e.g. a city's buildings)"]
+    Run -.-> E>"edit buildings, trees,<br/>land cover on the map"]
 
     classDef built fill:#1f6f3f,stroke:#2ea05a,color:#fff
     classDef gap fill:#7a1f2a,stroke:#c02a3a,color:#fff
-    class Run,M,S,D built
-    class G gap
+    class Run,W,M,S,D built
+    class I,L,E gap
 ```
 
-**Finding a run again has been built since 2026-08-27.** A run survives a
-reload, appears under "My scenarios" and can be reopened together with its
-result. Starting a scenario now leads straight to the run it created.
+**Waiting is solved since 2026-10-05.** The form follows a run without a time limit,
+says after a minute that the page can be left, and the run page reloads an unfinished
+run by itself. What still ends a long run is the backend: UMP stops waiting for a model
+server after its configured time (`ttw-job-done`), and a run that depends on external
+data such as Overpass can fail there.
 
-What remains is the wait itself. A run shows its status when the page loads and
-nothing more: no progress, no notification, no signal when it is done. With
-runtimes of minutes to hours that is the remaining hole, and it grows once
-models are chained.
+What is still missing:
 
-What needs deciding is less how a list looks and more what happens during the
-wait: does someone stay on the page, come back later and get notified, and how
-do they recognise a failed run?
+- **The inputs of a run.** UMP stores them but does not return them, so a run cannot
+  be traced or repeated with the same values. Needs `GET /jobs/{id}/definition`.
+- **Result layers and rasters.** A result that is a set of layers or a raster cannot
+  be shown yet; it needs links to data the browser can read.
+- **Editing the status quo.** Feature collections with attributes (buildings, trees,
+  land cover) have no map editor yet; they need the model server's hints to reach the
+  frontend through UMP.
+- **The refusal is still the API's sentence**, for example "Missing role
+  'umep-modelserver' or 'umep-modelserver:prepare-city'.", English and phrased for
+  whoever administers Keycloak. It should say that the model is not released for you,
+  and who releases it.
 
-One quirk belongs here: **the API recognises identical requests** and returns
-the same run, possibly with its earlier failure. Starting the same scenario
-again therefore creates no second run. The detail page says so, otherwise the
-button looks stuck.
-
-A smaller gap opened on 2026-08-31, when seeing and running came apart in the
-backend. A denied run now shows the API's own sentence, "Missing role
-'bikebox-modelserver' or 'bikebox-modelserver:fixbike'.", which is a large
-improvement over the bare status line it printed before, but it is still English
-and phrased for whoever administers Keycloak. What it should say is that this
-model is not released for you, and who releases it.
+One quirk belongs here: **the API recognises identical requests** and returns the same
+run, possibly with its earlier failure. Starting the same scenario again therefore
+creates no second run. The detail page says so, otherwise the button looks stuck.
 
 ## Where this is meant to go
 
@@ -161,16 +186,20 @@ flowchart TD
     Contribute["<b>Contribute a model</b>"] --> Commons
 
     classDef partial fill:#4a6f3f,stroke:#6aa05a,color:#fff
+    classDef prototype fill:#7a4b1f,stroke:#c07a2a,color:#fff
     classDef missing fill:#7a1f2a,stroke:#c02a3a,color:#fff
     classDef endpoint fill:#2a3550,stroke:#4a6090,color:#fff
     class Commons,Map partial
-    class Data,Build,Weigh,Contribute missing
+    class Contribute prototype
+    class Data,Build,Weigh missing
     class Done,Question endpoint
 ```
 
-Lighter green means partly there. The model catalogue is not a Commons yet, it
-lists what has been configured, without trust, provenance or reuse. The map
-renders GeoJSON results, but not necessarily in a way that convinces anyone.
+Lighter green means partly there. The model catalogue is not a Commons yet: it lists
+what has been configured, without a model card, provenance or reuse. Contributing and
+reviewing exist as a prototype with sample data, following the planned model registry.
+The map renders GeoJSON results in the colours a model sends along, but no layers or
+rasters yet.
 
 The dashed arrows matter. This is not a form you fill in once: whoever weighs
 trade-offs changes assumptions and recomputes, whoever sees the map notices a
@@ -193,9 +222,11 @@ flowchart LR
     class R,A,P,D,C persona
 ```
 
-Today there is exactly one entry point for everyone, the landing page with the
-model catalogue behind it. Alongside it the sidebar shows Projects, Contribute,
-Data repository and Report greyed out: visible so the direction is legible,
+Today there is one entry point for everyone, the landing page with Commons behind it.
+Providers and verifiers additionally see Contribute and Verify when the registry is
+switched on (sample data or UMP's registry API), access admins the access manager. The
+sidebar shows Projects, Data repository and Report greyed out (Contribute too, while
+the registry is off): visible so the direction is legible,
 disabled so nobody clicks into nothing.
 
 ## Keeping this current
@@ -215,13 +246,14 @@ Update it as soon as any of these changes:
   2026-08-31 and this document claimed the old rule until someone measured.
 
 When updating, check the colours against the code rather than from memory:
-green means built and running, orange means placeholder with "coming soon",
-red means not there, then set the date at the top. This document is kept in
+green means built and running, orange means prototype or placeholder, red means not
+there, then set the date at the top. This document is kept in
 English only: a second language version drifted out of sync faster than it
 helped.
 
 ## Related
 
-- `add-new-model-de.md`, which places a new model touches technically
-- `runbook-growbike-modelserver-de.md`, model servers and roles
-- `deployment-de.md`, branch chain and environments
+- `add-new-model-en.md`, which places a new model touches technically
+- `runbook-growbike-modelserver-en.md`, model servers and roles
+- `deployment-en.md`, branch chain and environments, including the registry switches
+- `privacy-inventory-en.md`, which personal data the paths touch

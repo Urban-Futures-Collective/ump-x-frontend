@@ -6,11 +6,11 @@
     "comingSoon": "This view is coming soon."
   },
   "nav": {
-    "models": "Models",
+    "models": "Commons",
     "run": "New scenario",
-    "jobs": "My scenarios",
-    "admin": "Administration",
-    "home": "Home",
+    "jobs": "Scenarios",
+    "admin": "Administrator",
+    "home": "Start",
     "planned": {
       "heading": "Planned",
       "projects": "Projects",
@@ -19,7 +19,11 @@
       "report": "Report"
     },
     "chat": "Chat",
-    "help": "Help"
+    "help": "Help",
+    "contribute": "Contribute",
+    "verify": "Verify",
+    "verifyNew": "{n} new",
+    "access": "Access manager"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -59,10 +63,146 @@
       "failed": "failed",
       "dismissed": "dismissed"
     },
-    "download": "Download result"
+    "download": "Download result",
+    "resultPending": "The result appears here as soon as the run has finished.",
+    "search": "Search scenarios",
+    "noMatch": "No scenario matches “{q}”.",
+    "intro": "Your runs, with status and result.",
+    "sortModel": "Model",
+    "filter": "Filter by status",
+    "filterAll": "All statuses",
+    "count": "no runs | 1 run | {n} runs"
   },
   "admin": {
-    "title": "Administration"
+    "title": "Administration",
+    "users": {
+      "heading": "User accounts",
+      "search": "Name or email",
+      "email": "Email",
+      "status": "Status",
+      "enabled": "active",
+      "disabled": "disabled",
+      "empty": "No accounts found.",
+      "error": "The accounts could not be loaded: {msg}",
+      "roles": "Roles",
+      "disable": "Disable",
+      "enable": "Enable",
+      "cancel": "Cancel",
+      "ownAccount": "Your own account cannot be disabled here.",
+      "disableTitle": "Disable {name}?",
+      "disableText": "{name} can no longer sign in and is signed out everywhere right away. Roles and runs are kept, and the account can be enabled again at any time.",
+      "person": "Person",
+      "actions": "Actions for {name}",
+      "resendInvitation": "Resend invitation",
+      "invitationSent": "Invitation sent to {name} again.",
+      "range": "{from} to {to} of {total}"
+    },
+    "roles": {
+      "title": "Platform roles: {name}",
+      "viaDefault": "via the default roles",
+      "ownAdmin": "your own role, cannot be removed here",
+      "tokenHint": "Changes apply to {name} after their next sign-in or token refresh.",
+      "loadError": "The roles could not be loaded: {msg}",
+      "names": {
+        "viewer": "Viewer: browse models",
+        "user": "User: run models",
+        "provider": "Provider: submit models",
+        "verifier": "Verifier: review and publish models",
+        "access-admin": "Access admin: grant model access",
+        "platform-admin": "Platform admin: manage accounts and roles",
+        "mcp-user": "MCP: use models from your own AI client"
+      },
+      "short": {
+        "viewer": "Viewer",
+        "user": "User",
+        "provider": "Provider",
+        "verifier": "Verifier",
+        "access-admin": "Access admin",
+        "platform-admin": "Platform admin",
+        "mcp-user": "MCP"
+      },
+      "inherited": "via a group or another role, only changeable in Keycloak",
+      "without": "without {role}"
+    },
+    "create": {
+      "open": "Create account",
+      "title": "Create account",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "nameHint": "First and last name are publicly visible, for example as the provider of published models.",
+      "email": "Email",
+      "username": "Username",
+      "usernameHint": "At least 3 characters: lower case letters, digits, dot, dash",
+      "required": "Required",
+      "emailInvalid": "Not a valid email address",
+      "usernameInvalid": "3 to 50 characters: lower case letters, digits, dot, dash, underscore",
+      "inviteHint": "The person receives an email with a link to set their password and confirm their address. The link is valid for three days.",
+      "submit": "Create and invite",
+      "invited": "Account {name} created, the invitation is on its way to {email}.",
+      "notInvited": "Account {name} created, but the invitation could not be sent. You can send it again from the menu in the list."
+    },
+    "audit": "Audit log",
+    "intro": "Accounts, platform roles and the audit log.",
+    "servers": {
+      "tab": "Servers",
+      "search": "Search server, base URL or owner",
+      "refresh": "Refresh",
+      "reload": "Reload",
+      "allStates": "All states",
+      "allDeletable": "Deletable and blocked",
+      "active": "active",
+      "inactive": "inactive",
+      "deletable": "deletable",
+      "blockedFilter": "blocked",
+      "blocked": "blocked · {n}",
+      "blockedBy": "Blocked by: {list}. Only servers whose models are all draft, deactivated or rejected can be deleted.",
+      "delete": "Delete…",
+      "deleteServer": "Delete server…",
+      "col": {
+        "server": "Server",
+        "baseUrl": "Base URL",
+        "owner": "Owner",
+        "auth": "Auth",
+        "state": "State",
+        "models": "Models",
+        "discovered": "Discovered",
+        "deletable": "Deletable",
+        "actions": "Actions"
+      },
+      "created": "created {date}",
+      "credentials": "credentials set",
+      "noCredentials": "no credentials",
+      "never": "never",
+      "group": "{n} registrations of {url}",
+      "sameUrl": "same normalised base URL",
+      "owners": "{n} different owners",
+      "sameOwner": "same owner",
+      "deletableOf": "{n} of {total} deletable",
+      "other": "Other servers · {n}",
+      "footer": "{n} servers · {groups} possible duplicate groups · grouped by normalised base URL",
+      "empty": "No servers registered yet",
+      "emptyText": "Model servers appear here once a provider registers one in the model registry. Nothing to clean up.",
+      "noMatch": "No servers match your filters",
+      "clearFilters": "Clear filters",
+      "loadFailed": "The servers could not be loaded.",
+      "staleTitle": "“{name}” was changed meanwhile: nothing was deleted",
+      "staleText": "The server or one of its models changed after you opened it. Reload and try again.",
+      "idLabel": "Model server · id {id}",
+      "duplicate": "Possible duplicate",
+      "duplicateText": "{n} other server(s) share {url}: {list}.",
+      "details": "Details",
+      "name": "Name",
+      "nameHint": "Immutable · prefixes process ids ({name}:…) and access roles",
+      "secretsHidden": "Secrets are never shown",
+      "createdUpdated": "Created · updated",
+      "modelsHeading": "Models · {n}",
+      "modelsRule": "Deletion requires every model to be draft, deactivated or rejected. {n} model(s) block deletion.",
+      "blocks": "blocks deletion",
+      "okToDelete": "ok to delete",
+      "danger": "Danger zone",
+      "dangerText": "Permanently delete this server, its models and their access requests. The name is retired and can never be registered again.",
+      "blockedHint": "Blocked by {n} model(s). Deactivate or reject them first."
+    }
   },
   "processes": {
     "title": "Model processes",
@@ -72,24 +212,125 @@
     "anonymousHint": "Without signing in you only see public processes. Sign in to see role-based ones such as fixbike.",
     "locked": "Access needed"
   },
+  "commons": {
+    "title": "Commons",
+    "intro": "Verified urban models you can use in your scenarios. Without logging in, you see the public models only.",
+    "anonymousHint": "Log in to see the models your account gives you access to.",
+    "contribute": "Contribute a model",
+    "search": "Search models, e.g. bicycle network",
+    "filter": {
+      "topic": "Topic",
+      "language": "Language",
+      "licence": "Licence"
+    },
+    "sort": {
+      "published": "Recently published",
+      "name": "Name"
+    },
+    "count": "no models | 1 model | {n} models",
+    "countIn": "no models in {topic} | 1 model in {topic} | {n} models in {topic}",
+    "fallbackLang": "Models are shown in their main language where no translation exists",
+    "noMatch": "No model matches the search or filters.",
+    "onlyPublished": "Only published models appear here. Models currently in review are listed for verifiers only, deactivated models do not appear on this page.",
+    "published": "Published {date}",
+    "onlyVerification": "Available only for verification",
+    "noLogin": "No log-in required",
+    "accessRequired": "Access required",
+    "hasAccess": "You have access",
+    "languages": "Languages:",
+    "lang": {
+      "de": "German",
+      "en": "English"
+    },
+    "model": {
+      "notFound": "Model not found",
+      "notFoundBody": "This model does not exist, or your account has no access to it.",
+      "backToCommons": "All models",
+      "newScenario": "Create new scenario",
+      "otherLang": "This model card is also available in {lang}.",
+      "switchLang": "Show",
+      "io": "Inputs and outputs",
+      "about": "About this model",
+      "provider": "Provider",
+      "code": "Code",
+      "runtime": "Runtime",
+      "minutes": "about {n} min",
+      "resources": "Resources"
+    },
+    "access": {
+      "title": "Request access to {name}",
+      "intro": "An access admin decides on your request. You will be notified of the decision.",
+      "purpose": "What do you want to use the model for?",
+      "send": "Send request",
+      "cancel": "Cancel",
+      "sent": "Request sent",
+      "failed": "The request could not be sent",
+      "pending": "Request pending",
+      "withdraw": "Withdraw",
+      "denied": "Your last request was denied.",
+      "deniedWith": "Your last request was denied: {note}",
+      "granted": "Access granted. Sign in again to use the model."
+    }
+  },
   "run": {
-    "selectHint": "Select a process on the left to run it.",
+    "unavailable": "This model cannot be loaded. It does not exist, or your account has no access to it.",
+    "selectHint": "Choose a model on the left to set its inputs.",
     "allModels": "All models",
     "execute": "Run",
     "error": "Error: {msg}",
     "openJob": "Open run",
-    "defaultHint": "Leave empty for the default {wert}.",
+    "defaultHint": "Leave empty for the default {value}.",
+    "job": {
+      "failed": "the run failed without giving a reason",
+      "dismissed": "the run was dismissed"
+    },
     "locked": {
+      "signInHeading": "Sign in to run this model",
       "heading": "This model is not released for you",
-      "signedIn": "Running {modell} needs your account to be cleared for {anbieter}. Looking at it and at other runs stays possible.",
-      "anonymous": "Running {modell} requires you to sign in. Looking at it stays possible without an account."
+      "signedIn": "Running {modell} needs access to this model. You can request it on the model page.",
+      "anonymous": "Running {modell} requires you to sign in. Looking at it stays possible without an account.",
+      "toModel": "Request access"
+    },
+    "http": {
+      "server": "the server stopped the run with an internal error and gave no reason (HTTP {status}).",
+      "rejected": "the request was rejected without a reason (HTTP {status})."
+    },
+    "slow": "This run takes longer. You can leave the page: it keeps running and shows up under My scenarios.",
+    "invalid": {
+      "required": "Required",
+      "number": "Please enter a number",
+      "minimum": "At least {limit}",
+      "maximum": "At most {limit}",
+      "pattern": "Does not match the expected format: {pattern}",
+      "json": "Not a valid value",
+      "choice": "Please choose one of the offered values",
+      "date": "Not a valid date",
+      "above": "Greater than {limit}",
+      "below": "Less than {limit}",
+      "features": "{limit} features with missing or invalid values"
+    },
+    "advanced": "Advanced settings ({n})",
+    "field": {
+      "none": "Not set",
+      "pickDate": "Pick a date …",
+      "byName": "Place name",
+      "onMap": "On the map",
+      "info": "About {name}"
+    },
+    "intro": "Choose a model, set its inputs and start the run. The result appears on the map.",
+    "source": {
+      "load": "Load status quo of the city",
+      "needs": "First choose: {fields}",
+      "loaded": "{n} features loaded from the model server.",
+      "failed": "Could not load: {msg}",
+      "notCollection": "The model server did not send a feature collection."
     }
   },
   "footer": {
     "carriers": "Urban Futures Collective · City Science Lab · funded by the Prototype Fund",
     "openSource": "Open source",
-    "privacy": "Privacy",
-    "imprint": "Imprint",
+    "privacy": "Data Protection",
+    "imprint": "Legal Notice",
     "accessibility": "Accessibility"
   },
   "start": {
@@ -100,7 +341,7 @@
       "orBrowse": "or browse the models"
     },
     "hero": {
-      "heading": "Let city models do the computing. Result on the map, data to take with you.",
+      "heading": "Let city models do the computing.",
       "lead": "The Urban Model Platform brings simulation models from research and public administration together in one place. Pick a model, set the parameters, look at the result and take it as a file. No GIS installation of your own, no computing power of your own.",
       "browse": "Browse the models",
       "accessHint": "Browsing needs no account. Running a model needs you to be signed in.",
@@ -123,24 +364,23 @@
     },
     "models": {
       "heading": "Models computing today",
-      "lead": "The catalogue is open to everyone. Whatever can be started without an account is marked on the model.",
+      "lead": "The catalogue is open to everyone.",
       "open": "Runs without an account",
       "needsLogin": "Sign-in required"
     },
     "ai": {
-      "heading": "Chat with your own AI",
-      "lead": "UMP-X provides no language model and pays for none. You connect yours, then it walks you through the catalogue. The choice and the cost stay with you.",
-      "prompt": "Where shall we start?",
-      "keyHint": "First you enter a provider and a key. The key stays in your browser.",
-      "own": {
-        "heading": "Or bring your own client",
-        "body": "The models are available as tools over MCP too. If you already use an AI client, connect it once and carry on from there."
+      "heading": "Two ways to work with an AI",
+      "lead": "UMP-X provides no language model and pays for none. You bring your own, in the chat on this site or in your own client.",
+      "chat": {
+        "heading": "Chat on this site",
+        "body": "The chat knows the catalogue and the models' parameters. It picks out a model, explains the inputs and fills the form in. You are the one who submits.",
+        "hint": "You enter the provider and the key yourself, and the key stays in your browser. Chatting needs you to be signed in."
+      },
+      "mcp": {
+        "heading": "Your own AI client over MCP",
+        "body": "MCP is an open standard that lets AI clients use tools from other providers. If you already have a client, connect it once, sign in with your account, and the models are there as tools.",
+        "more": "How to connect your client"
       }
-    },
-    "mcp": {
-      "heading": "MCP: the models in your own AI client",
-      "body": "MCP is an open standard that lets AI clients use tools from other providers. UMP-X offers its models through it: connect once, sign in with your account, and the models are there in your client. The same rights apply as here.",
-      "more": "How to connect your client"
     }
   },
   "ai": {
@@ -168,7 +408,7 @@
     },
     "empty": {
       "lead": "Where shall we start?",
-      "connected": "Connected to {anbieter} · {modell}"
+      "connected": "Connected to {provider} · {model}"
     },
     "examples": {
       "what": "Which models are there and what do they compute?",
@@ -200,15 +440,15 @@
       "openForm": "Open the form",
       "startedByYou": "Starting happens in the form, by you.",
       "recognised": "Recognised inputs:",
-      "missing": "Still missing: {liste}",
-      "unknown": "Not recognised, left out: {liste}",
+      "missing": "Still missing: {list}",
+      "unknown": "Not recognised, left out: {list}",
       "listJobs": "List runs",
       "showJob": "Show run",
       "runs": "{n} runs",
       "openJob": "Open run",
       "features": "{n} features",
-      "extent": "Extent {von} to {bis}",
-      "properties": "Properties: {liste}"
+      "extent": "Extent {from} to {to}",
+      "properties": "Properties: {list}"
     },
     "signIn": {
       "title": "Sign in to chat",
@@ -221,7 +461,95 @@
   },
   "help": {
     "title": "Help",
-    "lead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
+    "lead": "How to run a model, and how to use the platform with an AI.",
+    "nav": {
+      "exploring": "Exploring available models",
+      "scenarios": "Creating a new scenario",
+      "retrieving": "Retrieving results",
+      "contributing": "Contributing models",
+      "chat": "Chat on this site",
+      "mcp": "Your own AI client",
+      "verify": "Verifying a model"
+    },
+    "exploring": {
+      "heading": "Exploring available models",
+      "lead": "Here, you can explore all models that are currently available on UMP-X.",
+      "steps": {
+        "commons": {
+          "title": "Go to the Commons page",
+          "body": "On the Commons page, you see a list of all available models. You can search and filter models, for example, by keyword."
+        },
+        "modelcard": {
+            "title": "View the model card",
+            "body": "Click on a model to view its model card. Some models are available publicly by default; others require you to request access first."
+        },
+        "request-access": {
+            "title": "Request access",
+            "body": "To request access to a model, click the “Request access“ button within the model card. Once an administrator has approved your access request, you will receive an email notification, and the model will become available to you."
+        },
+        "run-model": {
+            "title": "Run the model",
+            "body": "To run an available model, create a new scenario (see next help section)."
+        }
+      }
+    },
+    "scenarios": {
+      "heading": "Creating a new scenario",
+      "lead": "A scenario is a run of one model with your inputs. To create a new scenario and run a model:",
+      "steps": {
+        "select": {
+          "title": "Select from Commons",
+          "body": "Navigate to the Commons page, select a model and click on it to view its model card."
+        },
+        "newscenario": {
+          "title": "Create new scenario",
+          "body": "Click on “Create new scenario“. The model run page will open." 
+        },
+        "yourinputs": {
+          "title": "Enter your inputs",
+          "body": "Enter your inputs for the model run, and click on “Run“. Required inputs and run time depend on the model chosen. You can leave the page while the model runs in the background - the scenario will show up on the “My scenarios“ page."
+        },
+        "results": {
+          "title": "Explore the results",
+          "body": "Once the model run is finished (“successful“ label), you can download the results, and (if results are in geospatial format) explore them on a map in the browser."
+        }
+      }
+    },
+    "retrieving": {
+      "heading": "Retrieve results from previous scenarios",
+      "lead": "All scenarios created by you are saved in the Scenarios tab. Click on a scenario to retrieve its results." 
+    },
+    "contributing": {
+      "heading": "Contributing a model",
+      "lead": "On the “Contribute“ page, you can contribute your own model to the UMP-X platform.",
+      "steps": {
+        "newmodel": {
+          "title": "Click on “New model“",
+          "body": ""
+        },
+        "server": {
+          "title": "Connect to the model server",
+          "body": "Connect to the server on which your model is run."
+        },
+        "select": {
+          "title": "Select the model",
+          "body": "After connecting to the model server, a list of all processes (models) found on that server will be displayed. Select the model you would like to contibute."
+        },
+        "fillcard": {
+          "title": "Fill in the model card",
+          "body": "Fill in the model card. You can save the model card as draft, and return to it later."
+        },
+        "submit": {
+          "title": "Submit for review",
+          "body": "Once the model card is ready, click on “Submit for review“."
+        },
+        "reviewprocess": {
+          "title": "Review process",
+          "body": "A UMP-X reviewer will review your submission, with three possible outcomes: approve; reject; or changes requested. You will receive an email notification in each case. If changes are requested, you will be able to edit the model card again, and resubmit the model."
+        }
+      }
+    },
+    "aiLead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
     "chat": {
       "heading": "Chat on this site",
       "lead": "You connect your own model, then the chat walks you through the catalogue.",
@@ -259,6 +587,741 @@
       },
       "copy": "Copy the address",
       "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
+    },
+    "verify": {
+      "heading": "Verifying a model",
+      "lead": "To verify a model submission, navigate to the “Verify“ page. You will see a list of submitted models awaiting verification. You cannot review your own models.",
+      "steps": {
+        "takeover": {
+          "title": "Take over review",
+          "body": "Click on “Take over review“ to start reviewing a model."
+        },
+        "modelcard": {
+          "title": "Check model card",
+          "body": "Review all model card fields for correctness and coherence."
+        },
+        "verificationrun": {
+          "title": "Verification run",
+          "body": "Conduct a verification run of the model, and provide its job ID to verify that the verification run was succesful."
+        },
+        "reviewdecision": {
+          "title": "Review decision",
+          "body": "You have three options: reject the model; request changes to the model (provide a text comment to the contributor); or verify the model (this option only becomes available after a successful verification run)."
+        },
+        "requestedchanges": {
+          "title": "Requesting changes",
+          "body": "In case of requesting changes, you will receive an email notification once the model is updated and resubmitted by the contributor."
+        }
+      }
     }
+  },
+  "map": {
+    "notMappable": "This result cannot be shown on a map. You can still download it.",
+    "layers": "Layers",
+    "layerCount": "{n} features",
+    "layerError": "Could not be loaded.",
+    "layerTruncated": "Only the first {n} are shown.",
+    "result": "Result",
+    "clickHint": "Click a feature on the map to see its attributes.",
+    "attributes": "Attributes: {layer}",
+    "closeAttributes": "Close attributes",
+    "noAttributes": "This feature has no attributes.",
+    "layer": {
+      "boundary": "Boundary",
+      "buildings": "Buildings",
+      "trees": "Trees",
+      "land_cover": "Land cover",
+      "streets": "Streets"
+    }
+  },
+  "geometry": {
+    "search": "Search a place, e.g. Fichtenwalde",
+    "searchButton": "Search",
+    "searchError": "The place search did not answer.",
+    "hint": {
+      "Polygon": "Click the map to set corners; double-click closes the area. Corners can be moved afterwards.",
+      "LineString": "Click the map to draw the line; double-click ends it.",
+      "Point": "Click the map to set points. Points can be moved afterwards."
+    },
+    "area": "Area {km2} km²",
+    "count": "{n} points",
+    "clear": "Clear"
+  },
+  "prototype": {
+    "title": "Prototype with sample data",
+    "text": "This page shows how contributing and verifying will work. The models are samples; nothing is saved or sent to a server. After a reload everything is back to the start.",
+    "reset": "Reset",
+    "badge": "Prototype"
+  },
+  "legal": {
+    "draftTitle": "Draft",
+    "draftText": "This text is not final and not legally reviewed. Marked passages are still missing.",
+    "germanOnly": "This page is only available in German."
+  },
+  "registry": {
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "in_review": "In review",
+      "changes_requested": "Changes requested",
+      "rejected": "Rejected",
+      "verified": "Verified",
+      "published": "Published",
+      "deactivated": "Deactivated"
+    },
+    "changedOn": "Changed on {date}",
+    "by": "by {name}",
+    "search": "Search models",
+    "noMatch": "No matching models.",
+    "notFound": "This model does not exist.",
+    "yes": "yes",
+    "no": "no",
+    "cancel": "Cancel",
+    "contribute": {
+      "title": "Contribute",
+      "intro": "Models you own on the platform. A model goes live in the Commons only after a second person has verified it.",
+      "new": "New model",
+      "tabModels": "My models · {n}",
+      "tabServers": "My servers · {n}",
+      "searchModels": "Search my models",
+      "searchServers": "Search my servers",
+      "groups": {
+        "action": "Needs your action",
+        "awaiting": "Awaiting verification",
+        "live": "Live in the Commons",
+        "closed": "Not live"
+      },
+      "sort": "Sort",
+      "sortChanged": "Last changed",
+      "sortName": "Name",
+      "filter": "Filter by status",
+      "filterAll": "All statuses",
+      "viewTiles": "Show as tiles",
+      "viewList": "Show as list",
+      "servers": "Current servers",
+      "serversEmpty": "You have not registered a server yet.",
+      "serverModels": "no models | 1 model | {n} models",
+      "interfaceChanged": "Interface changed",
+      "note": "Reviewer note: “{note}”",
+      "emptyTitle": "You have not contributed any models here yet!",
+      "emptyCreate": "Create new model",
+      "emptyHelp": "I need more information"
+    },
+    "new": {
+      "title": "Contribute a new model",
+      "steps": {
+        "server": "Server",
+        "processes": "Processes",
+        "card": "Model card"
+      },
+      "where": "Where does the model run?",
+      "whereWhy": "Your model stays on your own OGC API Processes server. The platform only calls it.",
+      "existing": "A server I registered",
+      "existingNone": "none yet",
+      "newServer": "Register a new server",
+      "newServerHint": "Name, address and login",
+      "serverPick": "Server",
+      "name": "Server name",
+      "nameHint": "Lowercase, digits and hyphens. It becomes the prefix of every process ID and access role, e.g. {example}. It cannot be changed later.",
+      "nameInvalid": "Lower case letters, digits and dashes only, 2 to 63 characters",
+      "url": "Server address",
+      "urlHint": "The base URL that answers GET /processes. HTTPS and a publicly reachable address are required.",
+      "urlInvalid": "Please give an address starting with https://",
+      "login": "Login to your server",
+      "auth": "Authentication",
+      "user": "User",
+      "password": "Password",
+      "token": "Key",
+      "secretNote": "Stored encrypted. Nobody can read it back, including you; you can only replace it.",
+      "secretPrototype": "The prototype neither stores nor sends credentials.",
+      "discover": "Connect and find processes",
+      "howTitle": "What happens when you connect",
+      "how1": "The platform checks the address (HTTPS, public host, answers within 10 s).",
+      "how2": "It reads the list of processes your server offers.",
+      "how3": "You choose which ones to contribute. Each becomes a draft model only you can see.",
+      "check": "Connection check",
+      "checkOk": "Reached server · no processes offered | Reached server · 1 process offered | Reached server · {n} processes offered",
+      "internalHosts": "Internal cluster hosts need an allow-list entry by a platform admin.",
+      "processesOn": "Processes on {server}",
+      "selected": "{n} of {m} selected",
+      "already": "Already added",
+      "back": "Back",
+      "create": "Create draft models | Create 1 draft model | Create {n} draft models",
+      "filledTitle": "Filled in from your server",
+      "filled1": "Title, description, keywords and version are copied into each draft. You can change them in the next step.",
+      "filled2": "Inputs and outputs are not copied as text. They are read from your server each time and shown on the model page, so they stay correct.",
+      "filled3": "English is the default language of every model card. If your server also answers in other languages, those texts are added automatically; you can add more languages in the next step.",
+      "keyName": "Header name"
+    },
+    "auth": {
+      "NoAuth": "None",
+      "BasicAuth": "User and password",
+      "ApiKey": "API key",
+      "BearerToken": "Bearer token"
+    },
+    "card": {
+      "title": "Model card",
+      "why": "What OGC does not describe: what the model is for, where its limits are and under which licence it is published. Required in the main language, the other language is optional.",
+      "defaultLang": "Main language",
+      "defaultLangHint": "Name and purpose must be filled in this language; readers fall back to it.",
+      "fullName": "Name",
+      "shortDescription": "Short description",
+      "purpose": "Purpose",
+      "limitationsRisks": "Limitations and risks",
+      "license": "Licence",
+      "licensePick": "Choose a licence",
+      "licenseOwn": "Own licence",
+      "licenseOwnPlaceholder": "Name or link of your licence",
+      "version": "Version",
+      "repository": "Source code",
+      "missing": "Missing before submitting: {fields}",
+      "complete": "The model card is complete.",
+      "saved": "Saved",
+      "save": "Save",
+      "empty": "not given",
+      "languages": "Languages on this card",
+      "default": "default",
+      "fromServer": "Copied from your server · you can edit them",
+      "sections": {
+        "basics": "Basics",
+        "purpose": "Purpose & use",
+        "licence": "Licence & code",
+        "limitations": "Limitations & risks",
+        "people": "People & literature",
+        "requirements": "Requirements",
+        "test": "Test run",
+        "io": "Input / output notes",
+        "run": "Run settings"
+      },
+      "keywordCount": "no keywords | 1 keyword | {n} keywords",
+      "applicationCount": "no applications | 1 application | {n} applications",
+      "peopleCount": "no people | 1 person | {n} people",
+      "referenceCount": "no references | 1 reference | {n} references",
+      "testCount": "no test cases | 1 test case | {n} test cases",
+      "ioCount": "Notes for {n} of {of}",
+      "required": "Required",
+      "filled": "Filled in",
+      "recommendedEmpty": "Recommended · empty",
+      "optional": "Optional",
+      "requirementsHint": "Hardware and software one run needs",
+      "testHint": "Recommended · verifiers use it to check your model",
+      "shortDescriptionHint": "One or two sentences for lists and search results.",
+      "keywords": "Keywords",
+      "keywordsHint": "One list per language.",
+      "tagPlaceholder": "Type and press Enter",
+      "purposeLabel": "Purpose of the model",
+      "purposeHint": "Who should use it, and for which planning questions? Required in the main language to submit.",
+      "applications": "Existing applications",
+      "applicationsHint": "Places and projects where the model was used.",
+      "application": "Application {n}",
+      "appTitle": "Title",
+      "location": "Location",
+      "year": "Year",
+      "link": "Link",
+      "description": "Description",
+      "addApplication": "Add application",
+      "remove": "Remove",
+      "licenseHint": "An SPDX identifier.",
+      "codeRef": "Code version",
+      "codeRefHint": "Which state of the repository the server runs (commit, tag or branch).",
+      "limitationsHint": "Known weaknesses, data gaps, cases where results mislead.",
+      "people": "People",
+      "peopleHint": "Names are not translated.",
+      "person": "Person {n}",
+      "name": "Name",
+      "role": "Role",
+      "affiliation": "Affiliation",
+      "email": "Email",
+      "addPerson": "Add person",
+      "roles": {
+        "author": "Author",
+        "developer": "Developer",
+        "contributor": "Contributor",
+        "maintainer": "Maintainer",
+        "funder": "Funder"
+      },
+      "literature": "Literature",
+      "reference": "Reference {n}",
+      "citation": "Citation",
+      "addReference": "Add reference",
+      "cpu": "CPU cores",
+      "memory": "Memory (GB)",
+      "storage": "Storage (GB)",
+      "runtime": "Runtime (s)",
+      "gpu": {
+        "none": "Not needed",
+        "any": "Any GPU",
+        "model": "Specific model",
+        "name": "GPU model"
+      },
+      "software": "Software",
+      "softwareHint": "Languages, packages, versions.",
+      "testIntro": "A verifier runs the model with this input and compares the result with the expected output.",
+      "testCase": "Test case {n}",
+      "input": "Input",
+      "expected": "Expected output",
+      "documentation": "Documentation",
+      "optionalUrl": "https://… (optional)",
+      "inputSha": "Input checksum (SHA-256)",
+      "outputSha": "Output checksum (SHA-256)",
+      "shaPlaceholder": "64 hex characters, optional",
+      "addTestCase": "Add test case",
+      "ioIntro": "Inputs and outputs come from the process description on your server and cannot be edited here. Add a note where the description does not say enough, for example CRS or units.",
+      "ioUnavailable": "The model server could not be reached, so its inputs and outputs are not listed.",
+      "note": "Note",
+      "inputKind": "input",
+      "outputKind": "output",
+      "run": {
+        "who": "Who can run the model",
+        "signedIn": "Signed-in users with access to this model",
+        "anyone": "Anyone, without signing in",
+        "readOnly": "Changing this here follows once UMP returns all run settings with the model."
+      },
+      "ready": "Ready to submit?",
+      "requiredHeading": "Required",
+      "speedsUp": "Speeds up review",
+      "req": {
+        "name": "Name in {lang}",
+        "purpose": "Purpose in {lang}",
+        "test": "A test run with expected output",
+        "langs": "More languages (optional)"
+      },
+      "submitHint": "A verifier who is not you will review the card and test-run the model.",
+      "saveDraft": "Save draft",
+      "lang": {
+        "en": "English",
+        "de": "German"
+      }
+    },
+    "action": {
+      "submitted": "Submit for review",
+      "draft": "Withdraw submission",
+      "in_review": "Take over review",
+      "verified": "Verify",
+      "changes_requested": "Request changes",
+      "rejected": "Reject",
+      "published": "Publish",
+      "deactivated": "Deactivate",
+      "reopen": "Rework as draft",
+      "reactivate": "Reactivate"
+    },
+    "noteTitle": {
+      "rejected": "Reason for rejection",
+      "deactivated": "Reason for deactivation",
+      "changes_requested": "Request from the review"
+    },
+    "explain": {
+      "draft": "Not submitted yet. Fill in the model card and submit the model for review.",
+      "submitted": "Submitted. Waiting for someone to take over the review. Until then you can withdraw it.",
+      "in_review": "Being reviewed.",
+      "changes_requested": "The review has a request. Update the model card and submit again.",
+      "rejected": "The model was rejected. You can rework it as a draft and submit it again.",
+      "verified": "Reviewed and confirmed. It will be published soon.",
+      "published": "Published and visible in Commons. Changes to the model card apply right away.",
+      "deactivated": "Deactivated. New runs are not possible."
+    },
+    "verifyExplain": {
+      "draft": "Draft, not submitted yet.",
+      "submitted": "Waiting for review. Take over the review to decide.",
+      "in_review": "Check model card and interface, start a test run and decide.",
+      "changes_requested": "Changes requested. Waiting for the provider.",
+      "rejected": "Rejected.",
+      "verified": "Verified. Publish now?",
+      "published": "Published. If the interface changes, the review can be reopened.",
+      "deactivated": "Deactivated."
+    },
+    "noteLabel": {
+      "changes_requested": "What should be changed?",
+      "rejected": "Why is the model rejected?",
+      "deactivated": "Why is the model deactivated?",
+      "in_review": "Why does the model go back into review?"
+    },
+    "facts": {
+      "title": "Technical details",
+      "process": "Model id",
+      "owner": "Submitted by",
+      "interface": "Interface",
+      "verifiedBy": "Verified by",
+      "inputs": "Inputs",
+      "noInputs": "Not read from the server yet.",
+      "inputName": "Name",
+      "inputType": "Type",
+      "inputRequired": "Required",
+      "history": "History",
+      "noHistory": "No status changes yet."
+    },
+    "interface": {
+      "in_sync": "unchanged since the review",
+      "drifted": "changed since the review",
+      "unchecked": "not checked yet",
+      "unreachable": "server did not answer the last check"
+    },
+    "drift": {
+      "title": "Interface changed: {name}",
+      "titleUnreachable": "Server not answering: {name}",
+      "badge": {
+        "drifted": "Interface changed",
+        "unreachable": "Server not answering"
+      },
+      "checked": "checked {date}",
+      "warnPublished": "The model is still published and people can still run it. Runs that use the old inputs may now fail. Decide whether the change is harmless or needs a new review.",
+      "warnVerified": "The model is verified but not published yet, and its server now describes a different interface. Decide whether the change is harmless or needs a new review before publishing.",
+      "warnUnreachable": "UMP could not reach the model server at the last check, so it cannot tell whether the interface is still the verified one. Runs may fail until the server answers again.",
+      "inSync": "The interface matches the verified one. Nothing to decide.",
+      "back": "Back to Verify",
+      "loadFailed": "Could not load the interface comparison.",
+      "liveError": "The model server did not answer just now: {error}",
+      "neverVerified": "This model has no verified interface to compare with.",
+      "col": {
+        "change": "Change",
+        "name": "Name",
+        "verifiedOn": "Verified on {date}",
+        "verified": "Verified",
+        "now": "On the server now"
+      },
+      "kind": {
+        "added": "Added",
+        "changed": "Changed",
+        "removed": "Removed",
+        "unchanged": "Unchanged"
+      },
+      "unchanged": "{n} unchanged",
+      "noDifference": "No difference in types, required inputs, outputs or execution modes.",
+      "mode": {
+        "jobControlOptions": "Execution modes",
+        "outputTransmission": "Result delivery"
+      },
+      "required": "required",
+      "optional": "optional",
+      "ignored": "Titles and descriptions are ignored. Only types, required inputs, outputs and execution modes count as a change.",
+      "accept": {
+        "title": "Accept the new interface",
+        "textPublished": "Run the test case, then pin the current interface. The model stays published.",
+        "textVerified": "Run the test case, then pin the current interface. The model stays verified.",
+        "runHint": "Your own successful run of this model, started after the last verification.",
+        "button": "Re-verify",
+        "needsServer": "Possible once the model server answers again."
+      },
+      "review": {
+        "title": "Needs a full review",
+        "text": "Moves the model back to review. People without the verifier role cannot run it until it is published again.",
+        "button": "Reset to review"
+      },
+      "offline": {
+        "title": "Take it offline",
+        "text": "Stops new runs at once. Running jobs finish and their results stay available."
+      },
+      "done": "Verified again against the current interface.",
+      "compare": "Compare",
+      "notice": "{name} is {status}, but its server now describes a different interface than the one verified on {date}.",
+      "noticeNoDate": "{name} is {status}, but its server now describes a different interface than the verified one.",
+      "noticeUnreachable": "The server of {name} did not answer the last interface check.",
+      "noticeAfter": "Runs that use the old inputs may now fail. Decide whether the change is harmless or needs a new review.",
+      "notePublished": "still published",
+      "noteVerified": "verified",
+      "open": "Interface changed"
+    },
+    "verify": {
+      "title": "Verify models",
+      "intro": "Check submitted models, test-run them and decide whether they go into the Commons.",
+      "ownModel": "Your own model. Another verifier has to decide.",
+      "decide": "Review",
+      "testRun": "Start test run",
+      "testRunNote": "Test runs are not possible in the prototype. Later, reviewers start a run here, also before the model is published.",
+      "publishNote": "On publishing, UMP-X creates the access role {role} in Keycloak.",
+      "noteVisible": "The provider sees this text.",
+      "testRunNoteLive": "Opens the run form in a new tab. Verifying asks for the job ID of a successful run you started of this model.",
+      "jobId": "Job ID of your test run",
+      "jobIdHint": "From My Scenarios: a successful run of this model that you started during this review.",
+      "refresh": "Refresh",
+      "tabs": {
+        "todo": "To verify · {n}",
+        "interface": "Interface changes · {n}",
+        "published": "Published · {n}",
+        "closed": "Not live · {n}"
+      },
+      "empty": {
+        "interface": "No interface changes.",
+        "published": "No published models yet.",
+        "closed": "No rejected or deactivated models."
+      },
+      "col": {
+        "model": "Model",
+        "owner": "Owner",
+        "status": "Status",
+        "since": "Since",
+        "action": "Next step"
+      },
+      "today": "today",
+      "days": "{n} days | 1 day | {n} days",
+      "you": "You",
+      "continue": "Continue review",
+      "open": "Open",
+      "noneBadge": "No new models",
+      "noneText": "You have nothing to verify yet.",
+      "search": "Search models"
+    },
+    "me": "me",
+    "otherOwner": "another provider",
+    "failed": "That did not work",
+    "loadFailed": "Could not load the registry",
+    "loading": "Loading models …",
+    "review": {
+      "title": "Review: {name}",
+      "owner": "owner {name}",
+      "card": "Model card",
+      "cardHint": "Your checklist. Only the decision and note below are stored.",
+      "purpose": "Purpose",
+      "licence": "Licence",
+      "limits": "Limitations & risks",
+      "people": "People & literature",
+      "requirements": "Requirements",
+      "languages": "Languages",
+      "cpu": "{n} CPU",
+      "memory": "{n} GB RAM",
+      "runtime": "about {n} s",
+      "storage": "{n} GB storage",
+      "gpuNone": "no GPU",
+      "gpuAny": "any GPU",
+      "gpuModel": "GPU {name}",
+      "defaultLang": "{lang} (default)",
+      "decision": "Decision",
+      "noActions": "Nothing to decide in this status.",
+      "needsRun": "Verify becomes available once you have checked a successful test run.",
+      "interface": "Interface on the server",
+      "interfaceMissing": "The server did not return a process description.",
+      "io": "Input / output",
+      "output": "output",
+      "pinned": "This interface is pinned when you verify. Later changes on the server show up as an interface change.",
+      "run": "Verification run",
+      "runStart": "Run",
+      "testCase": "Test case “{name}”:",
+      "input": "input",
+      "expected": "expected output",
+      "noTestCase": "The provider has not documented a test case.",
+      "check": "Check",
+      "jobOk": "Job {id}… finished successfully",
+      "jobOtherModel": "This job ran another model ({model}).",
+      "jobNotDone": "This job has not finished successfully (status: {status}).",
+      "linked": "Job {id}… is linked to the verification."
+    },
+    "cardView": {
+      "open": "Open model card",
+      "readOnly": "As the provider wrote it. Read-only.",
+      "languages": "Languages on this card",
+      "default": "default",
+      "testRun": "Test run",
+      "runHint": "Opens the run form in a new tab. Use the job ID on the review page.",
+      "back": "Back to the review"
+    },
+    "publishRolesMissing": "The model is published, but the access roles {roles} could not be created in Keycloak. Please ask an administrator to create them.",
+    "server": {
+      "edit": "Edit {name}",
+      "editTitle": "Edit {name}",
+      "nameFixed": "The name cannot be changed: it is part of every model id and access role.",
+      "urlHint": "An https:// address",
+      "keepLogin": "Leave the secret empty to keep the stored login. Stored encrypted; nobody can read it back.",
+      "ttw": "Run timeout (minutes)",
+      "ttwHint": "After this time without an answer, a run counts as failed.",
+      "active": "Active",
+      "activeHint": "UMP does not use an inactive server.",
+      "inactive": "inactive",
+      "save": "Save",
+      "saved": "{name} saved."
+    },
+    "serverDelete": {
+      "open": "Delete server {name}",
+      "blockedTip": "Blocked by {n} model(s) that are live or under review. Deactivate or reject them first.",
+      "title": "Delete server “{name}” permanently?",
+      "owner": "owner {name}",
+      "undoable": "This cannot be undone. Deleting this server will:",
+      "models": "Remove {n} model(s) (model cards): {list}",
+      "noModels": "Remove no models: the server has none",
+      "requests": "Remove all access requests for these models, including granted ones of deactivated models",
+      "retire": "Retire the name “{name}” permanently: it can never be registered again",
+      "jobs": "Keep runs in the job history, but no longer linked to a model",
+      "roles": "NOT remove the Keycloak roles {name} / {name}:…: clean them up manually",
+      "audit": "Record the deletion in the audit log",
+      "type": "Type {name} to confirm",
+      "typeHint": "Exact, case-sensitive match. “Delete permanently” stays disabled until it matches.",
+      "cancel": "Cancel",
+      "close": "Close",
+      "confirm": "Delete permanently",
+      "blockedTitle": "Server can’t be deleted",
+      "blockedText": "These models are not draft, deactivated or rejected. Deactivate or reject them, then try again:",
+      "nothingDeleted": "Nothing was deleted. The server list has been refreshed.",
+      "deleted": "Server “{name}” deleted · {n} model(s) removed",
+      "deletedRoles": "Name retired. Remove the Keycloak roles {name} and {name}:* manually.",
+      "auditLink": "View audit log",
+      "gone": "Server “{name}” was already deleted.",
+      "failed": "The server could not be deleted."
+    }
+  },
+  "results": {
+    "legend": "Legend",
+    "indicators": "Key figures"
+  },
+  "access": {
+    "title": "Access manager",
+    "refresh": "Refresh",
+    "tabs": {
+      "requests": "Requests",
+      "models": "Models and servers"
+    },
+    "search": "Search server or model",
+    "empty": "No model has access roles yet. They are created when a model is published.",
+    "models": "no models | 1 model | {n} models",
+    "users": "no users | 1 user | {n} users",
+    "thisModel": "This model",
+    "wholeServer": "Whole server",
+    "server": "Server",
+    "allModels": "All models on this server",
+    "add": "Add access",
+    "findUser": "Search users by name or email",
+    "grant": "Grant",
+    "withAccess": "Users with access · {n}",
+    "nobody": "Nobody has access yet.",
+    "col": {
+      "user": "User",
+      "for": "Access provided for",
+      "action": "Action"
+    },
+    "revoke": "Revoke",
+    "serverHint": "Greyed-out revoke: access to the whole server. Change it under “Whole server”.",
+    "loadFailed": "Could not load access",
+    "failed": "The change did not go through",
+    "requests": {
+      "search": "Search user, model or server",
+      "server": "Server",
+      "allServers": "All servers",
+      "statusLabel": "Status",
+      "status": {
+        "requested": "Pending",
+        "granted": "Approved",
+        "denied": "Denied",
+        "withdrawn": "Withdrawn",
+        "revoked": "Revoked",
+        "all": "All"
+      },
+      "empty": "No requests.",
+      "col": {
+        "access": "Requested access",
+        "for": "For",
+        "purpose": "Purpose",
+        "requested": "Requested"
+      },
+      "model": "Model",
+      "approve": "Approve",
+      "deny": "Deny",
+      "cancel": "Cancel",
+      "approved": "{name} now has access",
+      "denyTitle": "Deny request from {name}",
+      "denyIntro": "The person sees your reason on the model page and in the email.",
+      "reason": "Reason",
+      "noteTitle": "Approval",
+      "note": "Approving gives access to this model. The person is notified by email, and the change is written to the audit log. A denial is notified to the person as well.",
+      "auditLog": "Open audit log"
+    },
+    "revokeTitle": "Revoke access for {name}",
+    "revokeIntro": "The person loses this access. Your reason is sent by email if the access came from a request.",
+    "intro": "Who may run which model: decide requests and grant or revoke access."
+  },
+  "audit": {
+    "intro": "Every change to models, servers and access, and every run, newest first. Kept for three months.",
+    "allActions": "All actions",
+    "error": "The audit log could not be loaded: {msg}",
+    "empty": "No entries.",
+    "system": "System",
+    "you": "You",
+    "account": "Account {id}",
+    "model": "Model {id}",
+    "runSkipped": "without verification run",
+    "run": "Run {id}",
+    "more": "Load more",
+    "outcome": {
+      "denied": "denied",
+      "failure": "failed"
+    },
+    "action": {
+      "model_create": "Model added",
+      "model_card_update": "Model card edited",
+      "model_status_change": "Status changed",
+      "model_reverify": "Verified again",
+      "model_owner_transfer": "Owner changed",
+      "model_interface_changed": "Interface changed",
+      "model_interface_drifted": "Interface differs from the verified one",
+      "model_interface_restored": "Interface matches again",
+      "model_interface_unreachable": "Model server unreachable",
+      "access_request": "Access requested",
+      "access_withdraw": "Request withdrawn",
+      "access_grant": "Access granted",
+      "access_deny": "Access denied",
+      "access_revoke": "Access revoked",
+      "server_create": "Server added",
+      "server_update": "Server edited",
+      "server_discover": "Models looked up on server",
+      "server_rediscover": "Models looked up again",
+      "job_execute": "Run started",
+      "job_complete": "Run finished"
+    },
+    "filter": "Filter by action"
+  },
+  "list": {
+    "sort": "Sort",
+    "filter": "Filter",
+    "all": "All",
+    "reset": "Reset filters",
+    "viewTiles": "Show as tiles",
+    "viewList": "Show as list",
+    "newest": "Newest first",
+    "name": "Name"
+  },
+  "partners": {
+    "bmftr": "Funded by the Federal Ministry of Research, Technology and Space",
+    "ptf": "Supported by Prototype Fund"
+  },
+  "features": {
+    "select": "Select",
+    "draw": {
+      "Polygon": "Polygon",
+      "LineString": "Line",
+      "Point": "Point"
+    },
+    "remove": "Delete ({n})",
+    "removeAll": "Remove all",
+    "count": "{n} features",
+    "problems": "{n} with missing or invalid values",
+    "hintSelect": "Click a feature to select it (shift-click for more), drag to move, drag its corners to reshape",
+    "hintDraw": {
+      "Polygon": "Click to set corners, double-click to finish",
+      "LineString": "Click to set points, double-click to finish",
+      "Point": "Click to place"
+    },
+    "invalid": "The value is not a GeoJSON FeatureCollection.",
+    "propertiesOne": "Properties of the selected feature",
+    "propertiesMany": "Properties of {n} selected features (changes apply to all)",
+    "mixed": "different values",
+    "problem": {
+      "required": "Required",
+      "number": "Not a number",
+      "min": "Too small (limit {limit})",
+      "max": "Too large (limit {limit})",
+      "choice": "Not one of the allowed values"
+    },
+    "cancel": "Cancel",
+    "applyJson": "Apply JSON"
+  },
+  "scenarioMap": {
+    "title": "Map",
+    "intro": "All map inputs of the model in one map. Choose the layer to edit above; the others stay visible.",
+    "open": "Edit on map",
+    "empty": "Nothing on the map yet",
+    "areaSummary": "Area of {km2} km²",
+    "drawn": "Drawn",
+    "done": "Done",
+    "layer": "Layer:",
+    "editing": "Editing {layer}:",
+    "draw": "Draw {layer}",
+    "drawKind": "{layer}: {kind}"
   }
 }

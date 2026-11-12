@@ -1,76 +1,171 @@
 import { describe, expect, it } from 'vitest'
-import { bereinigeEingaben, type EingabeFeld } from './processInputs'
+import { cleanInputs, inputProblem, type InputField } from './processInputs'
 
-// Diese Regel benutzen Formular und Chat gemeinsam. Zwei Fassungen davon hieße:
-// der Chat baut einen Aufruf, der kippt, obwohl derselbe aus dem Formular
-// durchgeht. Deshalb steht sie hier unter Test und nicht nur unter Kommentar.
+// Form and chat share this rule; two copies would mean the chat builds a call
+// that fails while the same call from the form succeeds. Hence the tests.
 //
-// Die Funktion kennt keine Modelle, sie sieht nur Feldtypen. Die Felder hier
-// sind deshalb keine echten, sondern ein Satz Formen, der jede Besonderheit
-// abdeckt, die uns bisher Ärger gemacht hat.
-const felder: EingabeFeld[] = [
-  { name: 'pflichtfeld', type: 'string' },
-  { name: 'text_mit_vorgabe', type: 'string', default: '3857' },
-  { name: 'zahl_mit_wort_als_vorgabe', type: 'integer', default: 'auto' },
-  { name: 'zahl_ohne_vorgabe', type: 'integer' },
-  { name: 'schalter', type: 'boolean', default: 'false' },
+// The function knows no models, only field types. The fields here are not real
+// ones but a set of shapes covering every edge case seen so far.
+const fields: InputField[] = [
+  { name: 'required_field', type: 'string' },
+  { name: 'text_with_default', type: 'string', default: '3857' },
+  { name: 'number_with_word_default', type: 'integer', default: 'auto' },
+  { name: 'number_without_default', type: 'integer' },
+  { name: 'toggle', type: 'boolean', default: 'false' },
 ]
 
-describe('bereinigeEingaben', () => {
-  it('lässt leere Eingaben weg, damit die Vorgabe des Backends greift', () => {
-    expect(bereinigeEingaben(felder, { pflichtfeld: '', text_mit_vorgabe: '   ' })).toEqual({})
+describe('cleanInputs', () => {
+  it('omits empty inputs so the backend default applies', () => {
+    expect(cleanInputs(fields, { required_field: '', text_with_default: '   ' })).toEqual({})
   })
 
-  it('lässt fehlende Schlüssel weg', () => {
-    expect(bereinigeEingaben(felder, {})).toEqual({})
+  it('omits missing keys', () => {
+    expect(cleanInputs(fields, {})).toEqual({})
   })
 
-  it('schickt eine unveränderte Vorgabe nicht mit', () => {
-    expect(bereinigeEingaben(felder, { text_mit_vorgabe: '3857' })).toEqual({})
+  it('does not send an unchanged default', () => {
+    expect(cleanInputs(fields, { text_with_default: '3857' })).toEqual({})
   })
 
-  it('schickt eine geänderte Vorgabe mit', () => {
-    expect(bereinigeEingaben(felder, { text_mit_vorgabe: '3035' })).toEqual({ text_mit_vorgabe: '3035' })
+  it('sends a changed default', () => {
+    expect(cleanInputs(fields, { text_with_default: '3035' })).toEqual({ text_with_default: '3035' })
   })
 
-  // Der Fall, der uns früher gekippt ist: Number("auto") ist NaN.
-  it('schickt die Vorgabe "auto" eines Zahlenfelds nicht als Zahl mit', () => {
-    expect(bereinigeEingaben(felder, { zahl_mit_wort_als_vorgabe: 'auto' })).toEqual({})
+  // Number("auto") is NaN, so this default must not be sent as a number.
+  it('does not send the "auto" default of a number field as a number', () => {
+    expect(cleanInputs(fields, { number_with_word_default: 'auto' })).toEqual({})
   })
 
-  it('lässt einen unbrauchbaren Wert in einem Zahlenfeld ganz weg', () => {
-    expect(bereinigeEingaben(felder, { zahl_mit_wort_als_vorgabe: 'ungefähr 1000' })).toEqual({})
+  it('drops an unusable value in a number field entirely', () => {
+    expect(cleanInputs(fields, { number_with_word_default: 'ungefähr 1000' })).toEqual({})
   })
 
-  it('wandelt Zahlenfelder in Zahlen, nicht in Zeichenketten', () => {
-    const rumpf = bereinigeEingaben(felder, { zahl_ohne_vorgabe: '200' })
-    expect(rumpf).toEqual({ zahl_ohne_vorgabe: 200 })
-    expect(typeof rumpf.zahl_ohne_vorgabe).toBe('number')
+  it('converts number fields to numbers, not strings', () => {
+    const body = cleanInputs(fields, { number_without_default: '200' })
+    expect(body).toEqual({ number_without_default: 200 })
+    expect(typeof body.number_without_default).toBe('number')
   })
 
-  it('schneidet Leerraum ab, bevor es urteilt', () => {
-    expect(bereinigeEingaben(felder, { pflichtfeld: '  Musterstadt  ' })).toEqual({ pflichtfeld: 'Musterstadt' })
-    expect(bereinigeEingaben(felder, { text_mit_vorgabe: ' 3857 ' })).toEqual({})
+  it('trims whitespace before deciding', () => {
+    expect(cleanInputs(fields, { required_field: '  Musterstadt  ' })).toEqual({ required_field: 'Musterstadt' })
+    expect(cleanInputs(fields, { text_with_default: ' 3857 ' })).toEqual({})
   })
 
-  it('versteht die üblichen Wahrheitswerte', () => {
-    expect(bereinigeEingaben(felder, { schalter: 'true' })).toEqual({ schalter: true })
-    expect(bereinigeEingaben(felder, { schalter: '1' })).toEqual({ schalter: true })
-    expect(bereinigeEingaben(felder, { schalter: 'nein' })).toEqual({ schalter: false })
+  it('understands the usual boolean values', () => {
+    expect(cleanInputs(fields, { toggle: 'true' })).toEqual({ toggle: true })
+    expect(cleanInputs(fields, { toggle: '1' })).toEqual({ toggle: true })
+    expect(cleanInputs(fields, { toggle: 'nein' })).toEqual({ toggle: false })
   })
 
-  it('nimmt nur Felder, die das Modell kennt', () => {
-    expect(bereinigeEingaben(felder, { pflichtfeld: 'Musterstadt', erfunden: 'x' })).toEqual({ pflichtfeld: 'Musterstadt' })
+  it('keeps only fields the model knows', () => {
+    expect(cleanInputs(fields, { required_field: 'Musterstadt', made_up: 'x' })).toEqual({ required_field: 'Musterstadt' })
   })
 
-  it('baut aus einem vollständig ausgefüllten Formular den richtigen Rumpf', () => {
-    const rumpf = bereinigeEingaben(felder, {
-      pflichtfeld: 'Musterstadt',
-      text_mit_vorgabe: '3857',
-      zahl_mit_wort_als_vorgabe: 'auto',
-      zahl_ohne_vorgabe: '200',
-      schalter: 'false',
+  it('builds the right body from a fully filled form', () => {
+    const body = cleanInputs(fields, {
+      required_field: 'Musterstadt',
+      text_with_default: '3857',
+      number_with_word_default: 'auto',
+      number_without_default: '200',
+      toggle: 'false',
     })
-    expect(rumpf).toEqual({ pflichtfeld: 'Musterstadt', zahl_ohne_vorgabe: 200 })
+    expect(body).toEqual({ required_field: 'Musterstadt', number_without_default: 200 })
+  })
+})
+
+describe('inputProblem', () => {
+  it('reports an empty required field, but not an empty optional one', () => {
+    expect(inputProblem({ name: 'a', type: 'string', required: true }, ' ')).toEqual({ key: 'required' })
+    expect(inputProblem({ name: 'a', type: 'string' }, '')).toBeNull()
+  })
+
+  it('checks a pattern from the schema', () => {
+    const field = { name: 'city_id', type: 'string', schema: { pattern: '^[a-z0-9][a-z0-9-]{1,62}$' } }
+    expect(inputProblem(field, 'Beelitz')).toEqual({ key: 'pattern', pattern: '^[a-z0-9][a-z0-9-]{1,62}$' })
+    expect(inputProblem(field, 'beelitz')).toBeNull()
+  })
+
+  it('checks numbers against type, minimum and maximum', () => {
+    const field = { name: 'res', type: 'number', schema: { minimum: 1, maximum: 100 } }
+    expect(inputProblem(field, 'abc')).toEqual({ key: 'number' })
+    expect(inputProblem(field, '0.5')).toEqual({ key: 'minimum', limit: 1 })
+    expect(inputProblem(field, '101')).toEqual({ key: 'maximum', limit: 100 })
+    expect(inputProblem(field, '30')).toBeNull()
+    expect(inputProblem({ name: 'n', type: 'integer' }, '1.5')).toEqual({ key: 'number' })
+  })
+
+  it('accepts an unchanged word default in a number field', () => {
+    expect(inputProblem({ name: 'n', type: 'integer', default: 'auto' }, 'auto')).toBeNull()
+  })
+
+  it('ignores a pattern JavaScript cannot read', () => {
+    expect(inputProblem({ name: 'a', type: 'string', schema: { pattern: '(?P<x>a)' } }, 'b')).toBeNull()
+  })
+})
+
+describe('object inputs', () => {
+  const area = { name: 'area', type: 'object' }
+  it('sends JSON text as an object', () => {
+    expect(cleanInputs([area], { area: '{"type":"Point","coordinates":[13,52]}' })).toEqual({ area: { type: 'Point', coordinates: [13, 52] } })
+  })
+  it('does not send text that is not JSON, and reports it', () => {
+    expect(cleanInputs([area], { area: 'Beelitz' })).toEqual({})
+    expect(inputProblem(area, 'Beelitz')).toEqual({ key: 'json' })
+  })
+})
+
+describe('choices, dates and exclusive limits', () => {
+  it('accepts only offered values', () => {
+    const f = { name: 'indicator', type: 'string', schema: { enum: ['utci_max', 'utci_at_time'] } }
+    expect(inputProblem(f, 'utci_max')).toBeNull()
+    expect(inputProblem(f, 'other')).toEqual({ key: 'choice' })
+    expect(inputProblem({ name: 'n', type: 'integer', schema: { enum: [10, 30] } }, '30')).toBeNull()
+  })
+
+  it('checks dates, also as the alternative to fixed values', () => {
+    expect(inputProblem({ name: 'date', type: 'string', schema: { format: 'date' } }, '2026-02-30')).toEqual({ key: 'date' })
+    expect(inputProblem({ name: 'date', type: 'string', schema: { format: 'date' } }, '2026-07-20')).toBeNull()
+    const weather = { name: 'weather', type: 'string', schema: { oneOf: [{ enum: ['hot_day'] }, { format: 'date' }] } }
+    expect(inputProblem(weather, 'hot_day')).toBeNull()
+    expect(inputProblem(weather, '2022-07-20')).toBeNull()
+    expect(inputProblem(weather, 'cold_day')).toEqual({ key: 'choice' })
+  })
+
+  it('checks exclusive limits', () => {
+    const f = { name: 'resolution', type: 'number', schema: { exclusiveMinimum: 0 } }
+    expect(inputProblem(f, '0')).toEqual({ key: 'above', limit: 0 })
+    expect(inputProblem(f, '0.5')).toBeNull()
+  })
+})
+
+// prepare-city's `location`: a place name or a drawn area.
+describe('name or geometry', () => {
+  const location = {
+    name: 'location',
+    type: 'string',
+    required: true,
+    schema: {
+      oneOf: [
+        { type: 'string', minLength: 1, pattern: '\\S' },
+        { type: 'object', format: 'geojson-geometry', allOf: [{ properties: { type: { enum: ['Polygon', 'MultiPolygon'] } } }] },
+      ],
+    },
+  }
+  const square = { type: 'Polygon', coordinates: [[[13, 52], [13.1, 52], [13.1, 52.1], [13, 52]]] }
+
+  it('sends a name as text and a drawing as an object', () => {
+    expect(cleanInputs([location], { location: ' Beelitz ' })).toEqual({ location: 'Beelitz' })
+    expect(cleanInputs([location], { location: JSON.stringify(square) })).toEqual({ location: square })
+  })
+
+  it('takes an object from the chat as it is', () => {
+    expect(cleanInputs([location], { location: square })).toEqual({ location: square })
+  })
+
+  it('checks a drawing as JSON and a name against the text branch', () => {
+    expect(inputProblem(location, JSON.stringify(square))).toBeNull()
+    expect(inputProblem(location, '{"type":')).toEqual({ key: 'json' })
+    expect(inputProblem(location, 'Beelitz')).toBeNull()
+    expect(inputProblem(location, '')).toEqual({ key: 'required' })
   })
 })

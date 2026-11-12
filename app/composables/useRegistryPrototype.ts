@@ -1,0 +1,183 @@
+import type { DiscoveredProcess, LangMap, ModelInterface, RegistryCardEdit, RegistryIo, RegistryModel, RegistryServer, RegistryServerInput, RegistryServerPatch, RegistryStatus } from '~/types/registry'
+import { ME, sampleDiscovery, sampleInterface, sampleModels, sampleServers } from '~/prototype/registrySample'
+
+// The registry on sample data (Contribute, Verify). Everything lives in the browser and
+// starts from sample data on each reload; nothing reaches a backend. Same functions as
+// useRegistryApi, so the pages work with either (see useRegistry).
+export function useRegistryPrototype() {
+  const models = useState<RegistryModel[]>('registry-prototype-models', sampleModels)
+  const servers = useState<RegistryServer[]>('registry-prototype-servers', sampleServers)
+  const { user } = useOidcAuth()
+  const { t } = useI18n()
+  const myName = computed(() => String(user.value?.userName ?? '') || t('registry.me'))
+  const mySub = computed(() => ME)
+
+  function byId(id: string) {
+    return models.value.find(m => m.id === id)
+  }
+
+  async function transition(id: string, to: RegistryStatus, note?: string) {
+    const m = byId(id)
+    if (!m) return
+    const now = new Date().toISOString()
+    m.status = to
+    m.statusChangedAt = now
+    m.statusNote = note || undefined
+    if (to === 'verified') {
+      m.verifiedByName = myName.value
+      m.verifiedAt = now
+    }
+    if (to === 'published' && !m.publishedAt) m.publishedAt = now
+    m.history.push({ at: now, actorName: myName.value, to, note })
+  }
+
+  async function updateCard(id: string, card: RegistryCardEdit) {
+    const m = byId(id)
+    if (!m) return
+    Object.assign(m, structuredClone(card))
+    if (card.keywordsByLang) m.keywords = card.keywordsByLang[m.defaultLang] ?? []
+  }
+
+  // The sample inputs, plus one result, stand in for the server's process description.
+  async function modelIo(id: string): Promise<RegistryIo[]> {
+    const m = byId(id)
+    return [
+      ...(m?.inputs ?? []).map(i => ({ id: i.name, kind: 'input' as const, type: i.type })),
+      { id: 'result', kind: 'output' as const, type: 'GeoJSON' },
+    ]
+  }
+
+  // A changed interface for drifted sample models, the same one before and after otherwise.
+  async function modelInterface(id: string): Promise<ModelInterface> {
+    const m = byId(id)
+    const { verified, live } = sampleInterface(m?.interfaceState === 'drifted')
+    return {
+      state: m?.interfaceState ?? 'unchecked',
+      lastCheckedAt: new Date().toISOString(),
+      verifiedAt: m?.verifiedAt,
+      verified,
+      live,
+      diff: interfaceDiff(verified, live),
+    }
+  }
+
+  async function reverify(id: string, _jobId?: string, note?: string) {
+    const m = byId(id)
+    if (!m) return
+    const now = new Date().toISOString()
+    m.interfaceState = 'in_sync'
+    m.verifiedByName = myName.value
+    m.verifiedAt = now
+    m.history.push({ at: now, actorName: myName.value, to: m.status, note })
+  }
+
+  async function addServer(input: RegistryServerInput): Promise<RegistryServer> {
+    const existing = servers.value.find(s => s.name === input.name && s.ownerSub === ME)
+    if (existing) return existing
+    const s = { id: `s${Date.now()}`, name: input.name, baseUrl: input.baseUrl, authType: input.authType, hasCredentials: input.authType !== 'NoAuth' && !!input.secret, ownerSub: ME }
+    servers.value.push(s)
+    return s
+  }
+
+  async function updateServer(id: string, patch: RegistryServerPatch): Promise<RegistryServer> {
+    const s = servers.value.find(x => x.id === id)
+    if (!s) throw new Error('unknown server')
+    if (patch.baseUrl !== undefined) s.baseUrl = patch.baseUrl
+    if (patch.auth !== undefined) {
+      s.authType = patch.auth?.type ?? 'NoAuth'
+      s.hasCredentials = !!patch.auth && patch.auth.type !== 'NoAuth' && !!patch.auth.secret
+    }
+    if (patch.ttwSeconds !== undefined) s.ttwSeconds = patch.ttwSeconds
+    if (patch.isActive !== undefined) s.isActive = patch.isActive
+    return s
+  }
+
+  async function deleteServer(id: string): Promise<void> {
+    const s = servers.value.find(x => x.id === id)
+    if (!s) throw new Error('unknown server')
+    const blocking = blockingModels(modelsOfServer(s, models.value))
+    if (blocking.length) throw new Error(`blocking: ${blocking.map(m => `${m.serverName}-${m.remoteProcessId} (${m.status})`).join(', ')}`)
+    servers.value = servers.value.filter(x => x.id !== id)
+    models.value = models.value.filter(m => m.serverName !== s.name)
+  }
+
+  // The prototype answers with sample processes after a short pause, whatever the
+  // server. Processes already taken over from it are marked, as the API does.
+  async function discover(server: RegistryServer): Promise<DiscoveredProcess[]> {
+    await new Promise(r => setTimeout(r, 600))
+    return sampleDiscovery().map(p => ({
+      ...p,
+      modelId: models.value.find(m => m.serverName === server.name && m.remoteProcessId === p.id)?.id,
+    }))
+  }
+
+  async function addModels(server: RegistryServer, processes: DiscoveredProcess[]): Promise<string[]> {
+    const now = new Date().toISOString()
+    const created = processes.map((p, i) => {
+      const fullName: LangMap = { en: p.title || p.id }
+      const m: RegistryModel = {
+        id: `m${Date.now()}-${i}`,
+        serverName: server.name,
+        remoteProcessId: p.id,
+        ownerSub: ME,
+        ownerName: '',
+        defaultLang: 'en',
+        fullName,
+        shortDescription: p.description ? { en: p.description } : {},
+        purpose: {},
+        limitationsRisks: {},
+        keywords: [],
+        versionLabel: p.version ?? '',
+        repositoryUrl: '',
+        license: '',
+        status: 'draft',
+        statusChangedAt: now,
+        createdAt: now,
+        interfaceState: 'unchecked',
+        inputs: [],
+        history: [],
+        contributors: [],
+        literature: [],
+        requirements: {},
+        testCases: [],
+      }
+      return m
+    })
+    models.value.push(...created)
+    return created.map(m => m.id)
+  }
+
+  async function load() {}
+
+  function reset() {
+    models.value = sampleModels()
+    servers.value = sampleServers()
+  }
+
+  return {
+    models,
+    servers,
+    mySub,
+    myName,
+    loading: ref(false),
+    error: ref<string | null>(null),
+    load,
+    byId,
+    transition,
+    updateCard,
+    modelIo,
+    modelInterface,
+    reverify,
+    addServer,
+    updateServer,
+    deleteServer,
+    discover,
+    addModels,
+    reset,
+  }
+}
+
+/** Text in the requested language, falling back to the model's default language. */
+export function inLang(map: LangMap, lang: string, fallback: 'de' | 'en'): string {
+  return map[lang as 'de' | 'en'] || map[fallback] || ''
+}
