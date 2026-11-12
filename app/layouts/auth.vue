@@ -1,8 +1,7 @@
 <script setup lang="ts">
-// Anmeldebildschirm nach dem Wireframe: Farbverlauf über die ganze Fläche,
-// die Karte mittig darüber. Petrol oben nach Gold unten, mit den Werten der
-// Logo-Tafel (siehe --color-ufc-logo-* in main.css). Senkrecht, weil die
-// Anmeldebildschirme im Wireframe so laufen; der Hero ist diagonal.
+// Sign-in screen: full-screen gradient with the card centred on top. Teal at the
+// top to gold at the bottom, using the logo colors (see --color-ufc-logo-* in
+// main.css). Vertical on sign-in screens; the landing hero is diagonal.
 const { t, locale, locales, setLocale } = useI18n()
 </script>
 

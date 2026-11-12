@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Detailansicht eines Laufs. Das Ergebnis läuft über dieselbe Kette wie /run
-// (useUmpResult → UmpMap), damit es nur eine Naht zwischen Job und Karte gibt.
+// Detail view of a run. The result goes through the same chain as /run
+// (useUmpResult, then UmpMap), so there is only one seam between job and map.
 definePageMeta({ middleware: ['auth'] })
 
 const { t, locale } = useI18n()
@@ -8,8 +8,20 @@ const route = useRoute()
 const jobId = computed(() => String(route.params.id))
 
 const { job, result, resultError, pending, error, refresh } = useUmpJob(jobId)
+usePageCrumb(() => job.value?.processId ?? '')
 
 const duration = computed(() => formatDuration(job.value?.created, job.value?.finished))
+
+// While the run is still going, reload it every few seconds so status, progress and
+// finally the result appear without pressing refresh.
+const REFRESH_MS = 5000
+const unfinished = computed(() => job.value?.status === 'accepted' || job.value?.status === 'running')
+let timer: ReturnType<typeof setTimeout> | undefined
+watch([unfinished, pending], ([open, loading]) => {
+  clearTimeout(timer)
+  if (open && !loading && import.meta.client) timer = setTimeout(() => refresh(), REFRESH_MS)
+}, { immediate: true })
+onBeforeUnmount(() => clearTimeout(timer))
 </script>
 
 <template>
@@ -22,8 +34,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
       <UButton
         icon="i-lucide-refresh-cw"
         color="neutral"
-        variant="ghost"
-        size="xs"
+        variant="outline"
         :loading="pending"
         @click="refresh()"
       >
@@ -39,7 +50,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
       <div class="space-y-3 rounded-lg border border-(--ui-border) p-4">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <h1 class="truncate text-lg font-semibold">
+            <h1 class="truncate text-2xl font-semibold text-ufc-slate-900">
               {{ job.processId ?? '–' }}
             </h1>
             <p class="truncate text-xs text-(--ui-text-muted)">
@@ -49,8 +60,8 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           <JobStatusBadge :status="job.status" :progress="job.progress" />
         </div>
 
-        <!-- Zeilen nur zeigen, wenn die API den Wert auch liefert: created und
-             finished bleiben je nach Instanz leer, updated ist immer gesetzt. -->
+        <!-- Show rows only when the API provides the value: created and finished
+             may be empty depending on the instance; updated is always set. -->
         <dl class="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
           <template v-if="job.created">
             <dt class="text-(--ui-text-muted)">
@@ -81,8 +92,7 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
         </p>
 
         <div class="flex flex-wrap items-center gap-2">
-          <!-- Ohne processID lässt sich der Lauf nicht wiederholen: /run braucht
-               den Prozess. -->
+          <!-- Without processID the run cannot be repeated: /run needs the process. -->
           <UButton
             v-if="job.processId"
             :to="{ path: '/run', query: { process: job.processId } }"
@@ -92,23 +102,23 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           >
             {{ t('jobs.runAgain') }}
           </UButton>
-          <!-- Herunterladen hängt nicht daran, ob wir das Ergebnis zeichnen konnten,
-               sondern nur daran, dass der Lauf durchgelaufen ist. Siehe ResultDownload. -->
+          <!-- Download depends only on the run having succeeded, not on whether
+               we could draw the result. See ResultDownload. -->
           <ResultDownload
             v-if="job.status === 'successful'"
             :job-id="job.id"
             :process-id="job.processId"
           />
         </div>
-        <!-- Die API erkennt identische Anfragen wieder und gibt denselben Lauf
-             zurück; ohne diesen Hinweis wirkt ein erneuter Start wie ein Fehler. -->
+        <!-- The API recognises identical requests and returns the same run;
+             without this hint a restart looks like an error. -->
         <p v-if="job.processId" class="text-xs text-(--ui-text-muted)">
           {{ t('jobs.cacheHint') }}
         </p>
       </div>
 
-      <!-- Die Meldung der API mit anzeigen: sie nennt den Grund, der Satz darüber
-           nur die Lage. Siehe apiErrorMessage. -->
+      <!-- Show the API message too: it gives the reason, the sentence above
+           only the situation. See apiErrorMessage. -->
       <div v-if="resultError" class="space-y-1">
         <p class="text-sm text-red-600">
           {{ t('jobs.resultError') }}
@@ -117,11 +127,15 @@ const duration = computed(() => formatDuration(job.value?.created, job.value?.fi
           {{ resultError }}
         </p>
       </div>
+      <p v-else-if="unfinished" class="text-sm text-(--ui-text-muted)">
+        {{ t('jobs.resultPending') }}
+      </p>
       <p v-else-if="job.status !== 'successful'" class="text-sm text-(--ui-text-muted)">
         {{ t('jobs.noResult') }}
       </p>
 
-      <UmpMap v-if="result" :data="result" />
+      <UmpMap v-if="result" :layer="result" />
+      <ResultIndicators v-if="result" :layer="result" />
     </template>
   </section>
 </template>

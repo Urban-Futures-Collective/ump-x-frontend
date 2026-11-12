@@ -1,88 +1,86 @@
 <script setup lang="ts">
-// Der Chat selbst. Kennt seinen Ort nicht: dieselbe Komponente hängt in der
-// Schublade der Arbeitsumgebung und später im Schaufenster der Startseite.
-//
-// Fassung 1 kann nur reden. Werkzeuge (Katalog, Läufe, Ergebnisse) kommen in
-// Schritt 2 dazu, deshalb sind die Beispielfragen bewusst welche, die ein
-// Modell ohne Zugriff auf das Backend beantworten kann.
-import type { Nachricht } from '~/composables/useAiChat'
+// The chat itself. Placement-agnostic, so it can be mounted in the app drawer or
+// on the landing page.
+import type { UIMessage } from 'ai'
+import type { Message } from '~/composables/useAiChat'
 
-// Die Startseite reicht die dort getippte Frage herein. Ohne Schlüssel geht sie
-// nicht verloren, sondern steht im Eingabefeld, sobald der Zugang steht.
-const props = defineProps<{ startfrage?: string }>()
-const emit = defineEmits<{ schliessen: [] }>()
+// A question typed on the landing page. Without a key it is not lost but kept in
+// the input field until the provider is set up.
+const props = defineProps<{ initialQuestion?: string }>()
+const emit = defineEmits<{ close: [] }>()
 
 const { t } = useI18n()
 const { loggedIn, login } = useOidcAuth()
-const { zugang, hatSchluessel } = useAiProvider()
-const { nachrichten, status, fehler, laeuft, senden, abbrechen, neu } = useAiChat()
+const { access, hasKey } = useAiProvider()
+const { messages, status, error, running, send, cancel, clear } = useAiChat()
+// UChatMessages is typed for AI SDK messages. It only renders text and files
+// itself; our tool parts are rendered through the content slot below.
+const chatMessages = computed(() => messages.value as unknown as UIMessage[])
 
-const eingabe = ref('')
-const zugangOffen = ref(false)
+const input = ref('')
+const accessOpen = ref(false)
 
-// Seit der Verlauf das Schließen und das Neuladen überlebt, kann ein Klick ein
-// langes Gespräch treffen. Deshalb eine Rückfrage, und keine, die man wegklicken
-// und dauerhaft abschalten kann.
-const loeschenOffen = ref(false)
+// History survives closing and reloading, so one click could wipe a long
+// conversation. Hence a confirmation that cannot be permanently dismissed.
+const clearOpen = ref(false)
 
-function loeschen() {
-  neu()
-  loeschenOffen.value = false
+function clearHistory() {
+  clear()
+  clearOpen.value = false
 }
 
-// Abgemeldet wird hier nichts eingetragen. Der Schlüssel gehört zu einem Konto
-// und kostet den Nutzer Geld, also fragen wir vorher, wer da ist.
-const zeigtFormular = computed(() => loggedIn.value && (!hatSchluessel.value || zugangOffen.value))
+// No key entry while signed out: the key costs the user money, so we require a
+// known account first.
+const showsForm = computed(() => loggedIn.value && (!hasKey.value || accessOpen.value))
 
-const beispiele = computed(() => [t('ai.examples.what'), t('ai.examples.how')])
+const examples = computed(() => [t('ai.examples.what'), t('ai.examples.how')])
 
-async function abschicken() {
-  const text = eingabe.value
-  eingabe.value = ''
-  await senden(text)
+async function submit() {
+  const text = input.value
+  input.value = ''
+  await send(text)
 }
 
-function beispielWaehlen(frage: string) {
-  eingabe.value = frage
-  abschicken()
+function pickExample(question: string) {
+  input.value = question
+  submit()
 }
 
 onMounted(() => {
-  const frage = props.startfrage?.trim()
-  if (!frage) return
-  if (hatSchluessel.value) beispielWaehlen(frage)
-  else eingabe.value = frage
+  const question = props.initialQuestion?.trim()
+  if (!question) return
+  if (hasKey.value) pickExample(question)
+  else input.value = question
 })
 </script>
 
 <template>
   <div class="flex h-full flex-col bg-(--ui-bg)">
-    <!-- Kopfzeile nach dem Entwurf: Titel links, Werkzeuge rechts. -->
+    <!-- Header: title left, actions right. -->
     <div class="flex items-center gap-2 border-b border-(--ui-border) px-5 py-3">
       <UIcon name="i-lucide-sparkles" class="size-4.5 text-(--ui-primary)" />
       <span class="text-sm font-medium text-(--ui-text-highlighted)">{{ t('ai.title') }}</span>
       <div class="ms-auto flex items-center gap-1">
-        <!-- Beschriftet und nicht nur ein Zeichen: ein Plus las sich wie „noch
-             ein Chat daneben", und mehrere Unterhaltungen gibt es hier nicht.
-             Der Knopf wirft den Verlauf weg, also steht das auch dran. -->
+        <!-- Labelled, not icon-only: a plus icon would suggest "new parallel
+             chat", but there is only one conversation and this discards it. -->
         <UButton
-          v-if="loggedIn && hatSchluessel && nachrichten.length"
+          v-if="loggedIn && hasKey && messages.length"
           icon="i-lucide-trash-2"
           color="neutral"
           variant="ghost"
           size="xs"
-          @click="loeschenOffen = true"
+          @click="() => { clearOpen = true }"
         >
           {{ t('ai.clear') }}
         </UButton>
         <UButton
-          v-if="loggedIn && hatSchluessel"
+          v-if="loggedIn && hasKey"
           icon="i-lucide-settings"
           color="neutral"
           variant="ghost"
           size="xs"
           :aria-label="t('ai.settings')"
-          @click="zugangOffen = !zugangOffen"
+          @click="() => { accessOpen = !accessOpen }"
         />
         <UButton
           icon="i-lucide-x"
@@ -90,12 +88,12 @@ onMounted(() => {
           variant="ghost"
           size="xs"
           :aria-label="t('ai.close')"
-          @click="emit('schliessen')"
+          @click="emit('close')"
         />
       </div>
     </div>
 
-    <!-- Abgemeldet endet es hier. -->
+    <!-- Signed out: stop here. -->
     <div v-if="!loggedIn" class="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-center">
       <UIcon name="i-lucide-log-in" class="size-8 text-(--ui-text-muted)" />
       <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
@@ -109,14 +107,14 @@ onMounted(() => {
       </UButton>
     </div>
 
-    <!-- Ohne Schlüssel gibt es nichts zu chatten, also steht hier das Formular. -->
-    <div v-else-if="zeigtFormular" class="flex-1 overflow-y-auto p-5">
-      <AiProviderForm @verbunden="zugangOffen = false" />
+    <!-- No key yet (or settings opened): show the provider form. -->
+    <div v-else-if="showsForm" class="flex-1 overflow-y-auto p-5">
+      <AiProviderForm @connected="accessOpen = false" />
     </div>
 
     <template v-else>
       <div class="flex flex-1 flex-col overflow-y-auto px-5 py-4">
-        <div v-if="!nachrichten.length" class="flex flex-1 flex-col justify-center gap-2 text-center">
+        <div v-if="!messages.length" class="flex flex-1 flex-col justify-center gap-2 text-center">
           <UIcon name="i-lucide-sparkles" class="mx-auto size-8 text-(--ui-primary)" />
           <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
             {{ t('ai.title') }}
@@ -125,16 +123,15 @@ onMounted(() => {
             {{ t('ai.empty.lead') }}
           </p>
           <p class="text-xs text-(--ui-text-dimmed)">
-            {{ t('ai.empty.connected', { anbieter: t(`ai.providers.${zugang.anbieter}`), modell: zugang.modell }) }}
+            {{ t('ai.empty.connected', { provider: t(`ai.providers.${access.provider}`), model: access.model }) }}
           </p>
         </div>
 
-        <!-- Eigener content-Slot, weil eine Nachricht bei uns auch Werkzeug-
-             Teile enthält. UChatMessage rendert von sich aus nur Text und
-             Dateien, alles andere ist unsere Sache. -->
+        <!-- Custom content slot: our messages also contain tool parts, while
+             UChatMessage only renders text and files by itself. -->
         <UChatMessages
           v-else
-          :messages="nachrichten"
+          :messages="chatMessages"
           :status="status"
           should-auto-scroll
           :assistant="{ side: 'left', variant: 'naked' }"
@@ -142,50 +139,50 @@ onMounted(() => {
         >
           <template #content="{ message }">
             <div class="space-y-2">
-              <template v-for="(teil, i) in (message as Nachricht).parts" :key="i">
-                <AiToolCard v-if="teil.type === 'werkzeug'" :teil="teil" @geoeffnet="emit('schliessen')" />
-                <p v-else-if="teil.text" class="whitespace-pre-wrap">
-                  {{ teil.text }}
+              <template v-for="(part, i) in (message as Message).parts" :key="i">
+                <AiToolCard v-if="part.type === 'tool'" :part="part" @opened="emit('close')" />
+                <p v-else-if="part.text" class="whitespace-pre-wrap">
+                  {{ part.text }}
                 </p>
               </template>
             </div>
           </template>
         </UChatMessages>
 
-        <p v-if="laeuft && nachrichten.length" class="mt-2 text-xs text-(--ui-text-dimmed)">
+        <p v-if="running && messages.length" class="mt-2 text-xs text-(--ui-text-dimmed)">
           {{ t('ai.streaming') }}
         </p>
       </div>
 
       <div class="space-y-3 px-5 pb-4">
-        <!-- Beispielfragen nur im Leerzustand: danach stünden sie im Weg. -->
-        <div v-if="!nachrichten.length" class="flex flex-col items-end gap-2">
+        <!-- Example questions only in the empty state. -->
+        <div v-if="!messages.length" class="flex flex-col items-end gap-2">
           <UButton
-            v-for="frage in beispiele"
-            :key="frage"
+            v-for="question in examples"
+            :key="question"
             variant="outline"
             color="neutral"
             size="xs"
-            @click="beispielWaehlen(frage)"
+            @click="pickExample(question)"
           >
-            {{ frage }}
+            {{ question }}
           </UButton>
         </div>
 
         <UAlert
-          v-if="fehler"
+          v-if="error"
           color="error"
           variant="subtle"
           icon="i-lucide-triangle-alert"
-          :description="t('ai.error', { msg: fehler })"
+          :description="t('ai.error', { msg: error })"
         />
 
         <UChatPrompt
-          v-model="eingabe"
+          v-model="input"
           :placeholder="t('ai.placeholder')"
-          @submit="abschicken"
+          @submit="submit"
         >
-          <UChatPromptSubmit :status="status" @stop="abbrechen()" />
+          <UChatPromptSubmit :status="status" @stop="cancel()" />
         </UChatPrompt>
 
         <p class="text-xs text-(--ui-text-dimmed)">
@@ -194,15 +191,15 @@ onMounted(() => {
       </div>
     </template>
     <UModal
-      v-model:open="loeschenOffen"
+      v-model:open="clearOpen"
       :title="t('ai.clearConfirm.title')"
       :description="t('ai.clearConfirm.body')"
     >
       <template #footer>
-        <UButton color="neutral" variant="ghost" @click="loeschenOffen = false">
+        <UButton color="neutral" variant="ghost" @click="() => { clearOpen = false }">
           {{ t('ai.clearConfirm.cancel') }}
         </UButton>
-        <UButton color="error" @click="loeschen()">
+        <UButton color="error" @click="clearHistory()">
           {{ t('ai.clearConfirm.confirm') }}
         </UButton>
       </template>

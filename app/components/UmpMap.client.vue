@@ -1,104 +1,388 @@
 <script setup lang="ts">
-import type { FeatureCollection, Geometry, Position } from 'geojson'
-import maplibregl from 'maplibre-gl'
-import 'maplibre-gl/dist/maplibre-gl.css'
+import { createMap } from '@masterportal/masterportalapi/src/maps/ol/olMap.js'
+import Feature, { type FeatureLike } from 'ol/Feature'
+import GeoJSON from 'ol/format/GeoJSON'
+import type BaseLayer from 'ol/layer/Base'
+import TileLayer from 'ol/layer/Tile'
+import VectorLayer from 'ol/layer/Vector'
+import type OlMap from 'ol/Map'
+import OSM from 'ol/source/OSM'
+import VectorSource from 'ol/source/Vector'
+import { Circle, Fill, Stroke, Style } from 'ol/style'
+import type { ResultLayer } from '~/types/ump'
+import { asCollection, loadUrl, MAX_FEATURES, type LinkedLayer } from '~/utils/linkedLayers'
+import 'ol/ol.css'
 
-const props = defineProps<{ data?: FeatureCollection | null }>()
+// Result map, built with OpenLayers via the masterportalapi.
+//
+// Imports createMap from `src/maps/ol/olMap.js`, not `src/maps/map.js`: the
+// latter pulls in olcs and therefore Cesium, although no 3D is needed.
+//
+// The result layer is built by hand: the library's GeoJSON layer reads inline
+// features with a hardcoded featureProjection of EPSG:25832
+// (src/layer/vector.js), which misplaces them on an EPSG:3857 map.
+const props = defineProps<{ layer?: ResultLayer | null }>()
 
-// Klassischer Template-Ref auf einem INNEREN div (nicht dem Component-Root) — vermeidet
-// ein Hydration-Timing-Problem, bei dem der Root-Ref im onMounted noch null ist.
+const { t, te, locale } = useI18n()
+
+// Template ref on an INNER div, not the component root, which avoids a
+// hydration timing issue where the root ref is still null.
 const mapContainer = ref<HTMLDivElement | null>(null)
-let map: maplibregl.Map | undefined
+let map: OlMap | undefined
+let resultLayer: VectorLayer<VectorSource> | undefined
+let observer: ResizeObserver | undefined
 
-const SRC = 'ump-result'
-// Kein API-Key nötig: schlichter Raster-Style mit OSM-Tiles.
-const OSM_STYLE = {
-  version: 8 as const,
-  sources: {
-    osm: {
-      type: 'raster' as const,
-      tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-      tileSize: 256,
-      attribution: '© OpenStreetMap contributors',
-    },
-  },
-  layers: [{ id: 'osm', type: 'raster' as const, source: 'osm' }],
+const format = new GeoJSON()
+
+// One color, one style per geometry kind. The kind comes from the layer spec
+// produced by `resultLayers`, not from inspecting geometries here.
+const COLOR = '#2563eb'
+const styles: Record<NonNullable<ResultLayer['layers'][number]>['geometry'], Style> = {
+  line: new Style({ stroke: new Stroke({ color: COLOR, width: 2 }) }),
+  point: new Style({
+    image: new Circle({
+      radius: 5,
+      fill: new Fill({ color: COLOR }),
+      stroke: new Stroke({ color: '#fff', width: 1 }),
+    }),
+  }),
+  polygon: new Style({
+    stroke: new Stroke({ color: COLOR, width: 2 }),
+    fill: new Fill({ color: 'rgba(37, 99, 235, 0.15)' }),
+  }),
+  mixed: new Style({
+    stroke: new Stroke({ color: COLOR, width: 2 }),
+    fill: new Fill({ color: 'rgba(37, 99, 235, 0.15)' }),
+    image: new Circle({
+      radius: 5,
+      fill: new Fill({ color: COLOR }),
+      stroke: new Stroke({ color: '#fff', width: 1 }),
+    }),
+  }),
 }
 
-onMounted(async () => {
-  await nextTick()
-  const el = mapContainer.value
-  if (!el) return
-  map = new maplibregl.Map({
-    container: el,
-    style: OSM_STYLE,
-    center: [10.0, 53.55], // Hamburg
-    zoom: 8,
-  })
-  map.addControl(new maplibregl.NavigationControl({}), 'top-right')
-  map.on('load', () => render(props.data))
-})
+// Colours the result sets per feature (simplestyle), cached per combination so a large
+// result does not create one style object per feature.
+const styleCache = new Map<string, Style>()
+function featureStyle(f: FeatureLike): Style | null {
+  const s = simpleStyleOf(f.getProperties())
+  if (!s) return null
+  const key = `${s.fill}|${s.stroke}|${s.strokeWidth}|${s.marker}`
+  let style = styleCache.get(key)
+  if (!style) {
+    const stroke = s.stroke ? new Stroke({ color: s.stroke, width: s.strokeWidth ?? 1 }) : undefined
+    style = new Style({
+      fill: s.fill ? new Fill({ color: s.fill }) : undefined,
+      stroke,
+      image: new Circle({
+        radius: 5,
+        fill: new Fill({ color: s.marker ?? s.fill ?? COLOR }),
+        stroke: new Stroke({ color: '#fff', width: 1 }),
+      }),
+    })
+    styleCache.set(key, style)
+  }
+  return style
+}
 
-onBeforeUnmount(() => {
-  map?.remove()
-  map = undefined
-})
+// Clicking a feature shows its attributes in a box over the map and outlines it. The
+// outline sits on a layer of its own above everything, white under dark, so it stands
+// out on any colour a model chooses.
+const HIGHLIGHT = [
+  new Style({
+    stroke: new Stroke({ color: '#fff', width: 6 }),
+    image: new Circle({ radius: 8, stroke: new Stroke({ color: '#fff', width: 5 }) }),
+  }),
+  new Style({
+    stroke: new Stroke({ color: '#0f172a', width: 3 }),
+    image: new Circle({ radius: 8, stroke: new Stroke({ color: '#0f172a', width: 2.5 }) }),
+  }),
+]
+const highlightSource = new VectorSource()
+let highlightLayer: VectorLayer<VectorSource> | undefined
 
-watch(() => props.data, d => render(d))
+const picked = ref<{ layer: string, rows: FeatureAttribute[] } | null>(null)
 
-function eachCoord(geom: Geometry, cb: (pos: Position) => void) {
-  if (geom.type === 'GeometryCollection') {
-    geom.geometries.forEach(g => eachCoord(g, cb))
+// Result and linked layers carry their display name, so a hit says where it came from.
+const NAME = 'umpTitle'
+const pickable = (l: BaseLayer) => l !== highlightLayer && typeof l.get(NAME) === 'string'
+
+function hitAt(pixel: number[]) {
+  let hit: { feature: FeatureLike, layer: string } | undefined
+  map?.forEachFeatureAtPixel(pixel, (feature, layer) => {
+    hit = { feature, layer: layer.get(NAME) }
+    return true
+  }, { layerFilter: pickable, hitTolerance: 4 })
+  return hit
+}
+
+function pick(pixel: number[]) {
+  const hit = hitAt(pixel)
+  highlightSource.clear()
+  if (!hit) {
+    picked.value = null
     return
   }
-  const walk = (c: unknown) => {
-    if (Array.isArray(c) && typeof c[0] === 'number') cb(c as Position)
-    else if (Array.isArray(c)) c.forEach(walk)
-  }
-  walk(geom.coordinates)
+  const geometry = hit.feature.getGeometry()
+  if (geometry && 'clone' in geometry) highlightSource.addFeature(new Feature(geometry.clone()))
+  picked.value = { layer: hit.layer, rows: featureAttributes(hit.feature.getProperties(), locale.value) }
 }
 
-function render(fc?: FeatureCollection | null) {
-  if (!map || !map.isStyleLoaded()) return
-  for (const id of ['ump-line', 'ump-point']) {
-    if (map.getLayer(id)) map.removeLayer(id)
-  }
-  if (map.getSource(SRC)) map.removeSource(SRC)
-  if (!fc?.features?.length) return
+function unpick() {
+  highlightSource.clear()
+  picked.value = null
+}
 
-  map.addSource(SRC, { type: 'geojson', data: fc })
-  map.addLayer({
-    id: 'ump-line',
-    type: 'line',
-    source: SRC,
-    filter: ['match', ['geometry-type'], ['LineString', 'MultiLineString'], true, false],
-    paint: { 'line-color': '#2563eb', 'line-width': 2 },
+// No layers means nothing mappable: show a notice instead of an empty map.
+const linked = computed(() => props.layer?.linked ?? [])
+const mappable = computed(() => (props.layer?.layers.length ?? 0) > 0 || linked.value.length > 0)
+
+// Linked layers (see app/utils/linkedLayers.ts) are loaded when switched on. The
+// boundary starts switched on, so the map shows where the result lies.
+const LINKED_COLORS: Record<string, string> = {
+  boundary: '#2563eb',
+  buildings: '#ea580c',
+  trees: '#16a34a',
+  land_cover: '#a3a3a3',
+  streets: '#7c3aed',
+}
+const FALLBACK_COLORS = ['#0891b2', '#db2777', '#ca8a04', '#4f46e5']
+
+function colorOf(name: string, i: number): string {
+  return LINKED_COLORS[name] ?? FALLBACK_COLORS[i % FALLBACK_COLORS.length]!
+}
+
+function linkedStyle(color: string, outlineOnly: boolean): Style {
+  return new Style({
+    stroke: new Stroke({ color, width: outlineOnly ? 2.5 : 1.5 }),
+    fill: outlineOnly ? undefined : new Fill({ color: `${color}40` }),
+    image: new Circle({ radius: 3, fill: new Fill({ color }) }),
   })
-  map.addLayer({
-    id: 'ump-point',
-    type: 'circle',
-    source: SRC,
-    filter: ['match', ['geometry-type'], ['Point', 'MultiPoint'], true, false],
-    paint: { 'circle-radius': 5, 'circle-color': '#2563eb', 'circle-stroke-width': 1, 'circle-stroke-color': '#fff' },
+}
+
+interface LinkedState { on: boolean, loading: boolean, error: boolean, loaded?: number }
+const linkedState = ref<Record<string, LinkedState>>({})
+const linkedLayers = new Map<string, VectorLayer<VectorSource>>()
+
+function layerTitle(name: string): string {
+  const key = `map.layer.${name}`
+  return te(key) ? t(key) : name
+}
+
+async function setLinked(layer: LinkedLayer, on: boolean) {
+  const i = linked.value.indexOf(layer)
+  const state = linkedState.value[layer.name] ?? { on: false, loading: false, error: false }
+  linkedState.value[layer.name] = { ...state, on }
+  if (!on && picked.value?.layer === layerTitle(layer.name)) unpick()
+  const existing = linkedLayers.get(layer.name)
+  if (existing) {
+    existing.setVisible(on)
+    return
+  }
+  if (!on || state.loading) return
+
+  linkedState.value[layer.name] = { on, loading: true, error: false }
+  try {
+    // Straight from the model server that serves the layer, not through UMP: the links
+    // are public collections.
+    const fc = asCollection(await $fetch(loadUrl(layer)))
+    if (!fc) throw new Error('not GeoJSON')
+    const features = format.readFeatures(fc, { dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857' })
+    const fallback = linkedStyle(colorOf(layer.name, i), layer.name === 'boundary')
+    const vl = new VectorLayer({
+      source: new VectorSource({ features }),
+      style: f => featureStyle(f) ?? fallback,
+      visible: linkedState.value[layer.name]?.on ?? true,
+      properties: { [NAME]: layerTitle(layer.name) },
+      // Areas below lines and points, the boundary on top.
+      zIndex: layer.name === 'boundary' ? 3 : layer.name === 'land_cover' ? 1 : 2,
+    })
+    linkedLayers.set(layer.name, vl)
+    map?.addLayer(vl)
+    linkedState.value[layer.name] = { on: vl.getVisible(), loading: false, error: false, loaded: features.length }
+    if (!resultLayer) fitTo(vl.getSource()?.getExtent())
+  }
+  catch {
+    linkedState.value[layer.name] = { on: false, loading: false, error: true }
+  }
+}
+
+// More features than one request loads: the map shows only part of the layer.
+function truncated(layer: LinkedLayer): boolean {
+  return (layer.count ?? 0) > MAX_FEATURES
+}
+
+// Build the map when its container appears, not on mount. The container is
+// behind `v-if="mappable"`, so the component can mount before any result
+// exists and a one-time onMounted would never find it. When the container
+// disappears (e.g. a new run starts), tear the map down so the next container
+// gets a fresh one.
+watch(mapContainer, (el) => {
+  if (el && !map) buildMap(el)
+  else if (!el && map) teardownMap()
+}, { flush: 'post', immediate: true })
+
+onBeforeUnmount(teardownMap)
+
+function buildMap(el: HTMLDivElement) {
+  map = createMap({ ...useMapConfig(), target: el }) as OlMap
+  // Added as a plain OL layer, not via the service registry: the library has
+  // no XYZ service type, and addLayer accepts ready-made OL layers as is.
+  map.addLayer(new TileLayer({ source: new OSM() }))
+  highlightLayer = new VectorLayer({ source: highlightSource, style: HIGHLIGHT, zIndex: 10 })
+  map.addLayer(highlightLayer)
+  map.on('singleclick', e => pick(e.pixel))
+  // A pointer over features that can be clicked.
+  map.on('pointermove', (e) => {
+    if (e.dragging || !map) return
+    map.getTargetElement().style.cursor = map.hasFeatureAtPixel(e.pixel, { layerFilter: pickable, hitTolerance: 4 }) ? 'pointer' : ''
+  })
+  render(props.layer)
+
+  // On mount the container has no size yet, and OpenLayers then never draws.
+  // The observer reports the first real size and later window resizes.
+  //
+  // Observe the outer frame, NOT the OpenLayers target: OL inserts its canvas
+  // there, the target grows, the observer fires again, and the map inflates to
+  // thousands of pixels. The outer frame gets its size from the layout.
+  observer = new ResizeObserver(() => map?.updateSize())
+  observer.observe(el.parentElement ?? el)
+}
+
+function teardownMap() {
+  unpick()
+  highlightLayer = undefined
+  linkedLayers.clear()
+  linkedState.value = {}
+  observer?.disconnect()
+  observer = undefined
+  map?.setTarget(undefined)
+  map = undefined
+  resultLayer = undefined
+}
+
+watch(() => props.layer, (l) => {
+  for (const vl of linkedLayers.values()) map?.removeLayer(vl)
+  linkedLayers.clear()
+  linkedState.value = {}
+  render(l)
+})
+
+function showDefaultLinked() {
+  const boundary = linked.value.find(l => l.name === 'boundary')
+  if (boundary) void setLinked(boundary, true)
+}
+
+function fitTo(extent?: number[] | null) {
+  if (!map || !extent || !Number.isFinite(extent[0])) return
+  map.getView().fit(extent, {
+    padding: [48, 48, 48, 48],
+    // Cap at zoom level 14, otherwise a single point zooms to the max tile level.
+    minResolution: 9.5546285356,
+    duration: 600,
+  })
+}
+
+function render(layer?: ResultLayer | null) {
+  if (!map) return
+
+  unpick()
+  if (resultLayer) {
+    map.removeLayer(resultLayer)
+    resultLayer = undefined
+  }
+  showDefaultLinked()
+  const spec = layer?.layers[0]
+  const fc = layer?.featureCollection
+  if (!spec || !fc?.features?.length) return
+
+  // GeoJSON is WGS 84 per RFC 7946; the map uses Web Mercator.
+  const features = format.readFeatures(fc, {
+    dataProjection: 'EPSG:4326',
+    featureProjection: 'EPSG:3857',
   })
 
-  const bounds = new maplibregl.LngLatBounds()
-  let has = false
-  for (const f of fc.features) {
-    if (!f.geometry) continue
-    eachCoord(f.geometry, ([lng, lat]) => { bounds.extend([lng, lat]); has = true })
-  }
-  if (has) map.fitBounds(bounds, { padding: 48, maxZoom: 14, duration: 600 })
+  const fallback = styles[spec.geometry]
+  resultLayer = new VectorLayer({
+    source: new VectorSource({ features }),
+    style: f => featureStyle(f) ?? fallback,
+    properties: { [NAME]: t('map.result') },
+  })
+  map.addLayer(resultLayer)
+
+  fitTo(resultLayer.getSource()?.getExtent())
 }
 </script>
 
 <template>
-  <!-- Quadratisch statt fester Höhe: Ergebnisse sind Stadtgebiete, und die sind in
-       beide Richtungen ähnlich weit ausgedehnt. Ein breiter, flacher Ausschnitt
-       zwingt fitBounds herauszuzoomen, bis das Netz in der Mitte klein wird.
-       Die Obergrenze hält die Karte trotzdem auf einen Bildschirm, sonst wird sie
-       in einer breiten Spalte höher als das Fenster. -->
-  <div class="mx-auto aspect-square w-full max-w-[calc(100svh_-_9rem)] overflow-hidden rounded-lg border border-(--ui-border)">
-    <div ref="mapContainer" class="h-full w-full" />
+  <!-- Square rather than fixed height: results are city areas of similar width
+       and height, and a wide, flat frame forces the map to zoom out too far.
+       The max width keeps the square within one screen height. -->
+  <div v-if="mappable" class="space-y-2">
+    <div class="relative mx-auto aspect-square w-full max-w-[calc(100svh_-_9rem)] overflow-hidden rounded-lg border border-(--ui-border)">
+      <div ref="mapContainer" class="h-full w-full" />
+
+      <!-- Attributes of the clicked feature, over the map so the eye stays near it. -->
+      <section
+        v-if="picked"
+        class="absolute top-2 right-2 z-10 max-h-[calc(100%-1rem)] w-80 max-w-[calc(100%-1rem)] overflow-auto rounded-md border border-(--ui-border) bg-white p-3 text-sm shadow-md"
+        :aria-label="t('map.attributes', { layer: picked.layer })"
+        @keydown.esc="unpick"
+      >
+        <div class="mb-2 flex items-center justify-between gap-2">
+          <h3 class="font-medium text-(--ui-text-highlighted)">
+            {{ picked.layer }}
+          </h3>
+          <UButton icon="i-lucide-x" size="xs" color="neutral" variant="ghost" :aria-label="t('map.closeAttributes')" @click="unpick" />
+        </div>
+        <dl v-if="picked.rows.length" class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+          <template v-for="r in picked.rows" :key="r.key">
+            <dt class="text-(--ui-text-muted)">
+              {{ r.key }}
+            </dt>
+            <dd class="break-words text-(--ui-text)">
+              {{ r.value }}
+            </dd>
+          </template>
+        </dl>
+        <p v-else class="text-(--ui-text-muted)">
+          {{ t('map.noAttributes') }}
+        </p>
+      </section>
+    </div>
+    <p class="text-xs text-(--ui-text-dimmed)">
+      {{ t('map.clickHint') }}
+    </p>
+
+    <!-- Layers the result links to, switched on one by one. -->
+    <fieldset v-if="linked.length" class="space-y-1.5">
+      <legend class="mb-1 text-sm font-medium">
+        {{ t('map.layers') }}
+      </legend>
+      <div v-for="(l, i) in linked" :key="l.name" class="flex flex-wrap items-center gap-2 text-sm">
+        <USwitch
+          :model-value="linkedState[l.name]?.on ?? false"
+          :loading="linkedState[l.name]?.loading"
+          :aria-label="layerTitle(l.name)"
+          @update:model-value="on => setLinked(l, on)"
+        />
+        <span class="inline-block size-3 rounded-sm" :style="{ background: colorOf(l.name, i) }" aria-hidden="true" />
+        <span>{{ layerTitle(l.name) }}</span>
+        <span v-if="l.count != null" class="text-(--ui-text-dimmed)">{{ t('map.layerCount', { n: l.count.toLocaleString(locale) }) }}</span>
+        <span v-if="linkedState[l.name]?.error" class="text-xs text-red-600">{{ t('map.layerError') }}</span>
+        <span v-else-if="truncated(l) && linkedState[l.name]?.loaded != null" class="text-xs text-(--ui-text-dimmed)">
+          {{ t('map.layerTruncated', { n: linkedState[l.name]!.loaded!.toLocaleString(locale) }) }}
+        </span>
+      </div>
+    </fieldset>
+  </div>
+
+  <!-- Nothing mappable: a notice instead of an empty map. The download is still
+       available alongside. -->
+  <div v-else-if="layer" class="flex items-center gap-3 rounded-lg border border-(--ui-border) bg-(--ui-bg-elevated) p-4">
+    <UIcon name="i-lucide-map-off" class="size-5 shrink-0 text-(--ui-text-muted)" />
+    <p class="text-sm text-(--ui-text-muted)">
+      {{ t('map.notMappable') }}
+    </p>
   </div>
 </template>

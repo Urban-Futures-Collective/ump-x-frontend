@@ -6,9 +6,9 @@
     "comingSoon": "Diese Ansicht kommt bald."
   },
   "nav": {
-    "models": "Modelle",
+    "models": "Commons",
     "run": "Neues Szenario",
-    "jobs": "Meine Szenarien",
+    "jobs": "Szenarien",
     "admin": "Administration",
     "home": "Start",
     "planned": {
@@ -19,7 +19,11 @@
       "report": "Bericht"
     },
     "chat": "Chat",
-    "help": "Hilfe"
+    "help": "Hilfe",
+    "contribute": "Beitragen",
+    "verify": "Prüfen",
+    "verifyNew": "{n} neu",
+    "access": "Zugriffsverwaltung"
   },
   "landing": {
     "heading": "Urban Model Platform",
@@ -59,10 +63,146 @@
       "failed": "fehlgeschlagen",
       "dismissed": "abgebrochen"
     },
-    "download": "Ergebnis herunterladen"
+    "download": "Ergebnis herunterladen",
+    "resultPending": "Das Ergebnis erscheint hier, sobald der Lauf fertig ist.",
+    "search": "Szenarien durchsuchen",
+    "noMatch": "Kein Szenario passt zu „{q}“.",
+    "intro": "Deine Läufe mit Status und Ergebnis.",
+    "sortModel": "Modell",
+    "filter": "Nach Status filtern",
+    "filterAll": "Alle Status",
+    "count": "keine Läufe | 1 Lauf | {n} Läufe"
   },
   "admin": {
-    "title": "Administration"
+    "title": "Administration",
+    "users": {
+      "heading": "Nutzerkonten",
+      "search": "Name oder E-Mail",
+      "email": "E-Mail",
+      "status": "Status",
+      "enabled": "aktiv",
+      "disabled": "deaktiviert",
+      "empty": "Keine Konten gefunden.",
+      "error": "Die Konten konnten nicht geladen werden: {msg}",
+      "roles": "Rollen",
+      "disable": "Deaktivieren",
+      "enable": "Aktivieren",
+      "cancel": "Abbrechen",
+      "ownAccount": "Das eigene Konto lässt sich hier nicht deaktivieren.",
+      "disableTitle": "{name} deaktivieren?",
+      "disableText": "{name} kann sich danach nicht mehr anmelden und wird sofort überall abgemeldet. Rollen und Läufe bleiben erhalten, das Konto lässt sich jederzeit wieder aktivieren.",
+      "person": "Person",
+      "actions": "Aktionen für {name}",
+      "resendInvitation": "Einladung erneut senden",
+      "invitationSent": "Einladung an {name} erneut gesendet.",
+      "range": "{from} bis {to} von {total}"
+    },
+    "roles": {
+      "title": "Plattformrollen: {name}",
+      "viaDefault": "über die Standardrollen",
+      "ownAdmin": "eigene Rolle, hier nicht entziehbar",
+      "tokenHint": "Änderungen gelten für {name} erst nach der nächsten Anmeldung bzw. Token-Erneuerung.",
+      "loadError": "Die Rollen konnten nicht geladen werden: {msg}",
+      "names": {
+        "viewer": "Viewer: Modelle ansehen",
+        "user": "User: Modelle ausführen",
+        "provider": "Provider: Modelle einreichen",
+        "verifier": "Verifier: Modelle prüfen und freigeben",
+        "access-admin": "Access admin: Modellzugriff vergeben",
+        "platform-admin": "Platform admin: Konten und Rollen verwalten",
+        "mcp-user": "MCP: Modelle aus dem eigenen KI-Client nutzen"
+      },
+      "short": {
+        "viewer": "Viewer",
+        "user": "User",
+        "provider": "Provider",
+        "verifier": "Verifier",
+        "access-admin": "Access admin",
+        "platform-admin": "Platform admin",
+        "mcp-user": "MCP"
+      },
+      "inherited": "über eine Gruppe oder andere Rolle, nur in Keycloak änderbar",
+      "without": "ohne {role}"
+    },
+    "create": {
+      "open": "Konto anlegen",
+      "title": "Konto anlegen",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "nameHint": "Vor- und Nachname sind öffentlich sichtbar, zum Beispiel als Anbieter veröffentlichter Modelle.",
+      "email": "E-Mail",
+      "username": "Nutzername",
+      "usernameHint": "Mindestens 3 Zeichen: Kleinbuchstaben, Ziffern, Punkt, Strich",
+      "required": "Pflichtfeld",
+      "emailInvalid": "Keine gültige E-Mail-Adresse",
+      "usernameInvalid": "3 bis 50 Zeichen: Kleinbuchstaben, Ziffern, Punkt, Strich, Unterstrich",
+      "inviteHint": "Die Person bekommt eine E-Mail mit einem Link, über den sie ihr Passwort setzt und ihre Adresse bestätigt. Der Link gilt drei Tage.",
+      "submit": "Anlegen und einladen",
+      "invited": "Konto {name} angelegt, die Einladung ist an {email} unterwegs.",
+      "notInvited": "Konto {name} angelegt, aber die Einladung konnte nicht gesendet werden. Sie lässt sich in der Liste über das Menü erneut senden."
+    },
+    "audit": "Audit-Log",
+    "intro": "Konten, Plattformrollen und das Audit-Log.",
+    "servers": {
+      "tab": "Server",
+      "search": "Server, Base URL oder Konto suchen",
+      "refresh": "Aktualisieren",
+      "reload": "Neu laden",
+      "allStates": "Alle Zustände",
+      "allDeletable": "Löschbar und blockiert",
+      "active": "aktiv",
+      "inactive": "inaktiv",
+      "deletable": "löschbar",
+      "blockedFilter": "blockiert",
+      "blocked": "blockiert · {n}",
+      "blockedBy": "Blockiert durch: {list}. Löschen geht nur, wenn alle Modelle Entwurf, deaktiviert oder abgelehnt sind.",
+      "delete": "Löschen…",
+      "deleteServer": "Server löschen…",
+      "col": {
+        "server": "Server",
+        "baseUrl": "Base URL",
+        "owner": "Konto",
+        "auth": "Anmeldung",
+        "state": "Zustand",
+        "models": "Modelle",
+        "discovered": "Abgefragt",
+        "deletable": "Löschbar",
+        "actions": "Aktionen"
+      },
+      "created": "angelegt {date}",
+      "credentials": "Zugangsdaten hinterlegt",
+      "noCredentials": "keine Zugangsdaten",
+      "never": "nie",
+      "group": "{n} Einträge für {url}",
+      "sameUrl": "gleiche Base URL",
+      "owners": "{n} verschiedene Konten",
+      "sameOwner": "gleiches Konto",
+      "deletableOf": "{n} von {total} löschbar",
+      "other": "Weitere Server · {n}",
+      "footer": "{n} Server · {groups} mögliche Dubletten-Gruppen · gruppiert nach Base URL",
+      "empty": "Noch keine Server registriert",
+      "emptyText": "Modellserver erscheinen hier, sobald jemand einen im Modellregister einträgt. Nichts aufzuräumen.",
+      "noMatch": "Kein Server passt zu den Filtern",
+      "clearFilters": "Filter zurücksetzen",
+      "loadFailed": "Die Server konnten nicht geladen werden.",
+      "staleTitle": "„{name}“ wurde inzwischen geändert: nichts gelöscht",
+      "staleText": "Der Server oder eines seiner Modelle hat sich geändert, nachdem du ihn geöffnet hast. Neu laden und erneut versuchen.",
+      "idLabel": "Modellserver · ID {id}",
+      "duplicate": "Mögliche Dublette",
+      "duplicateText": "{n} weitere(r) Server mit {url}: {list}.",
+      "details": "Details",
+      "name": "Name",
+      "nameHint": "Unveränderlich · Präfix der Prozess-IDs ({name}:…) und Zugriffsrollen",
+      "secretsHidden": "Geheimnisse werden nie angezeigt",
+      "createdUpdated": "Angelegt · geändert",
+      "modelsHeading": "Modelle · {n}",
+      "modelsRule": "Löschen geht nur, wenn jedes Modell Entwurf, deaktiviert oder abgelehnt ist. {n} Modell(e) blockieren.",
+      "blocks": "blockiert",
+      "okToDelete": "kann weg",
+      "danger": "Gefahrenzone",
+      "dangerText": "Diesen Server mit seinen Modellen und deren Zugriffsanfragen endgültig löschen. Der Name wird gesperrt und kann nie wieder registriert werden.",
+      "blockedHint": "Blockiert durch {n} Modell(e). Erst deaktivieren oder ablehnen."
+    }
   },
   "processes": {
     "title": "Modell-Prozesse",
@@ -72,17 +212,118 @@
     "anonymousHint": "Ohne Anmeldung siehst du nur öffentliche Prozesse. Melde dich an, um rollenbasierte Prozesse (z. B. fixbike) zu sehen.",
     "locked": "Zugang nötig"
   },
+  "commons": {
+    "title": "Commons",
+    "intro": "Geprüfte Stadtmodelle, die du in deinen Szenarien nutzen kannst. Ohne Anmeldung siehst du nur die öffentlichen Modelle.",
+    "anonymousHint": "Melde dich an, um die Modelle zu sehen, für die dein Konto freigeschaltet ist.",
+    "contribute": "Modell beitragen",
+    "search": "Modelle suchen, z. B. Radnetz",
+    "filter": {
+      "topic": "Thema",
+      "language": "Sprache",
+      "licence": "Lizenz"
+    },
+    "sort": {
+      "published": "Zuletzt veröffentlicht",
+      "name": "Name"
+    },
+    "count": "keine Modelle | 1 Modell | {n} Modelle",
+    "countIn": "keine Modelle in {topic} | 1 Modell in {topic} | {n} Modelle in {topic}",
+    "fallbackLang": "Ohne Übersetzung erscheinen Modelle in ihrer Hauptsprache",
+    "noMatch": "Kein Modell passt zur Suche oder zu den Filtern.",
+    "onlyPublished": "Hier erscheinen nur veröffentlichte Modelle. Modelle in Prüfung sehen nur Prüfende, deaktivierte Modelle erscheinen hier nicht.",
+    "published": "Veröffentlicht am {date}",
+    "onlyVerification": "Nur zur Prüfung freigegeben",
+    "noLogin": "Ohne Anmeldung nutzbar",
+    "accessRequired": "Zugang erforderlich",
+    "hasAccess": "Du hast Zugang",
+    "languages": "Sprachen:",
+    "lang": {
+      "de": "Deutsch",
+      "en": "Englisch"
+    },
+    "model": {
+      "notFound": "Modell nicht gefunden",
+      "notFoundBody": "Dieses Modell existiert nicht, oder dein Konto hat keinen Zugriff darauf.",
+      "backToCommons": "Alle Modelle",
+      "newScenario": "Neues Szenario anlegen",
+      "otherLang": "Diese Modellkarte gibt es auch auf {lang}.",
+      "switchLang": "Anzeigen",
+      "io": "Ein- und Ausgaben",
+      "about": "Über dieses Modell",
+      "provider": "Anbieter",
+      "code": "Code",
+      "runtime": "Laufzeit",
+      "minutes": "etwa {n} min",
+      "resources": "Ressourcen"
+    },
+    "access": {
+      "title": "Zugriff auf {name} beantragen",
+      "intro": "Über deinen Antrag entscheidet eine Person aus der Zugriffsverwaltung. Über die Entscheidung wirst du benachrichtigt.",
+      "purpose": "Wofür möchtest du das Modell nutzen?",
+      "send": "Antrag senden",
+      "cancel": "Abbrechen",
+      "sent": "Antrag gesendet",
+      "failed": "Der Antrag konnte nicht gesendet werden",
+      "pending": "Antrag offen",
+      "withdraw": "Zurückziehen",
+      "denied": "Dein letzter Antrag wurde abgelehnt.",
+      "deniedWith": "Dein letzter Antrag wurde abgelehnt: {note}",
+      "granted": "Zugriff freigegeben. Melde dich neu an, um das Modell zu nutzen."
+    }
+  },
   "run": {
-    "selectHint": "Wähle links einen Prozess, um ihn auszuführen.",
+    "unavailable": "Dieses Modell lässt sich nicht laden. Es existiert nicht, oder dein Konto hat keinen Zugriff darauf.",
+    "selectHint": "Wähle links ein Modell, um seine Eingaben zu setzen.",
     "allModels": "Alle Modelle",
     "execute": "Ausführen",
     "error": "Fehler: {msg}",
     "openJob": "Lauf öffnen",
-    "defaultHint": "Leer lassen für die Vorgabe {wert}.",
+    "defaultHint": "Leer lassen für die Vorgabe {value}.",
+    "job": {
+      "failed": "der Lauf ist fehlgeschlagen, ohne Angabe von Gründen",
+      "dismissed": "der Lauf wurde abgebrochen"
+    },
     "locked": {
+      "signInHeading": "Zum Ausführen anmelden",
       "heading": "Dieses Modell ist für dich nicht freigegeben",
-      "signedIn": "Zum Ausführen von {modell} braucht dein Konto die Freigabe für {anbieter}. Ansehen und Ergebnisse anderer Läufe bleiben möglich.",
-      "anonymous": "Zum Ausführen von {modell} musst du dich anmelden. Ansehen bleibt ohne Konto möglich."
+      "signedIn": "Zum Ausführen von {modell} brauchst du Zugang zu diesem Modell. Du kannst ihn auf der Modellseite beantragen.",
+      "anonymous": "Zum Ausführen von {modell} musst du dich anmelden. Ansehen bleibt ohne Konto möglich.",
+      "toModel": "Zugang beantragen"
+    },
+    "http": {
+      "server": "der Server hat den Lauf mit einem internen Fehler abgebrochen und keinen Grund genannt (HTTP {status}).",
+      "rejected": "die Anfrage wurde ohne Begründung abgelehnt (HTTP {status})."
+    },
+    "slow": "Der Lauf dauert länger. Du kannst die Seite verlassen: Er rechnet weiter und erscheint unter Meine Szenarien.",
+    "invalid": {
+      "required": "Pflichtfeld",
+      "number": "Bitte eine Zahl eingeben",
+      "minimum": "Mindestens {limit}",
+      "maximum": "Höchstens {limit}",
+      "pattern": "Passt nicht zum erwarteten Format: {pattern}",
+      "json": "Keine gültige Eingabe",
+      "choice": "Bitte einen der angebotenen Werte wählen",
+      "date": "Kein gültiges Datum",
+      "above": "Größer als {limit}",
+      "below": "Kleiner als {limit}",
+      "features": "{limit} Objekte mit fehlenden oder ungültigen Werten"
+    },
+    "advanced": "Erweiterte Einstellungen ({n})",
+    "field": {
+      "none": "Keine Angabe",
+      "pickDate": "Datum wählen …",
+      "byName": "Ortsname",
+      "onMap": "Auf der Karte",
+      "info": "Zu {name}"
+    },
+    "intro": "Wähle ein Modell, setze die Eingaben und starte den Lauf. Das Ergebnis erscheint auf der Karte.",
+    "source": {
+      "load": "Ist-Zustand der Stadt laden",
+      "needs": "Zuerst wählen: {fields}",
+      "loaded": "{n} Objekte vom Modellserver geladen.",
+      "failed": "Laden fehlgeschlagen: {msg}",
+      "notCollection": "Der Modellserver hat keine Feature-Collection geliefert."
     }
   },
   "footer": {
@@ -100,7 +341,7 @@
       "orBrowse": "oder Modelle ansehen"
     },
     "hero": {
-      "heading": "Stadtmodelle rechnen lassen. Ergebnis auf der Karte, Daten zum Mitnehmen.",
+      "heading": "Stadtmodelle rechnen lassen.",
       "lead": "Die Urban Model Platform bündelt Simulationsmodelle aus Forschung und Verwaltung an einer Stelle. Modell auswählen, Parameter setzen, Ergebnis ansehen und als Datei mitnehmen. Ohne eigene GIS-Installation und ohne eigene Rechenleistung.",
       "browse": "Modelle ansehen",
       "accessHint": "Ansehen geht ohne Konto. Für das Ausführen eines Modells ist eine Anmeldung nötig.",
@@ -123,24 +364,23 @@
     },
     "models": {
       "heading": "Modelle, die heute rechnen",
-      "lead": "Der Katalog steht allen offen. Was sich ohne Anmeldung starten lässt, ist am Modell vermerkt.",
+      "lead": "Der Katalog steht allen offen.",
       "open": "Ohne Anmeldung ausführbar",
       "needsLogin": "Anmeldung nötig"
     },
     "ai": {
-      "heading": "Chat mit deiner KI",
-      "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Du verbindest deins, dann führt es dich durch den Katalog. Die Wahl und die Kosten bleiben bei dir.",
-      "prompt": "Womit fangen wir an?",
-      "keyHint": "Zuerst trägst du Anbieter und Schlüssel ein. Der Schlüssel bleibt in deinem Browser.",
-      "own": {
-        "heading": "Oder bring deinen Client mit",
-        "body": "Die Modelle stehen auch als Werkzeuge über MCP bereit. Wer schon einen KI-Client benutzt, verbindet ihn einmal und arbeitet von dort aus weiter."
+      "heading": "Zwei Wege, mit einer KI zu arbeiten",
+      "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Du bringst deins mit, im Chat auf dieser Seite oder in deinem eigenen Client.",
+      "chat": {
+        "heading": "Chat auf dieser Seite",
+        "body": "Der Chat kennt den Katalog und die Parameter der Modelle. Er sucht ein Modell heraus, erklärt die Eingaben und füllt das Formular vor. Abgeschickt wird von dir.",
+        "hint": "Anbieter und Schlüssel trägst du selbst ein, der Schlüssel bleibt in deinem Browser. Zum Chatten musst du angemeldet sein."
+      },
+      "mcp": {
+        "heading": "Eigener KI-Client über MCP",
+        "body": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. Wer schon einen Client hat, verbindet ihn einmal, meldet sich mit seinem Konto an und hat die Modelle dort als Werkzeuge.",
+        "more": "So verbindest du deinen Client"
       }
-    },
-    "mcp": {
-      "heading": "MCP: die Modelle in deinem eigenen KI-Client",
-      "body": "MCP ist ein offener Standard, über den KI-Clients Werkzeuge anderer Anbieter benutzen. UMP-X stellt seine Modelle darüber bereit: einmal verbinden, mit dem eigenen Konto anmelden, und die Modelle stehen im Client zur Verfügung. Es gelten dieselben Rechte wie hier.",
-      "more": "So verbindest du deinen Client"
     }
   },
   "ai": {
@@ -168,7 +408,7 @@
     },
     "empty": {
       "lead": "Womit fangen wir an?",
-      "connected": "Verbunden mit {anbieter} · {modell}"
+      "connected": "Verbunden mit {provider} · {model}"
     },
     "examples": {
       "what": "Welche Modelle gibt es und was rechnen sie?",
@@ -200,15 +440,15 @@
       "openForm": "Formular öffnen",
       "startedByYou": "Gestartet wird erst im Formular, von dir.",
       "recognised": "Erkannte Eingaben:",
-      "missing": "Es fehlen noch: {liste}",
-      "unknown": "Nicht erkannt, weggelassen: {liste}",
+      "missing": "Es fehlen noch: {list}",
+      "unknown": "Nicht erkannt, weggelassen: {list}",
       "listJobs": "Läufe auflisten",
       "showJob": "Lauf zeigen",
       "runs": "{n} Läufe",
       "openJob": "Lauf öffnen",
       "features": "{n} Objekte",
-      "extent": "Ausdehnung {von} bis {bis}",
-      "properties": "Eigenschaften: {liste}"
+      "extent": "Ausdehnung {from} bis {to}",
+      "properties": "Eigenschaften: {list}"
     },
     "signIn": {
       "title": "Zum Chatten anmelden",
@@ -221,7 +461,95 @@
   },
   "help": {
     "title": "Hilfe",
-    "lead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist.",
+    "lead": "Hier steht, wie du ein Modell rechnest und wie du die Plattform mit einer KI benutzt.",
+    "nav": {
+    "exploring": "Verfügbare Modelle erforschen",
+    "scenarios": "Szenarien rechnen",
+    "retrieving": "Ergebnisse abrufen",
+    "contributing": "Modelle beitragen",
+    "chat": "Chat auf dieser Seite",
+    "mcp": "Eigener KI-Client",
+    "verify": "Modell prüfen"
+  },
+    "exploring": {
+      "heading": "Exploring available models",
+      "lead": "Here, you can explore all models that are currently available on UMP-X.",
+      "steps": {
+        "commons": {
+          "title": "Go to the Commons page",
+          "body": "On the Commons page, you see a list of all available models. You can search and filter models, for example, by keyword."
+        },
+        "modelcard": {
+            "title": "View the model card",
+            "body": "Click on a model to view its model card. Some models are available publicly by default; others require you to request access first."
+        },
+        "request-access": {
+            "title": "Request access",
+            "body": "To request access to a model, click the “Request access“ button within the model card. Once an administrator has approved your access request, you will receive an email notification, and the model will become available to you."
+        },
+        "run-model": {
+            "title": "Run the model",
+            "body": "To run an available model, create a new scenario (see next help section)."
+        }
+      }
+    },
+    "scenarios": {
+      "heading": "Creating a new scenario",
+      "lead": "A scenario is a run of one model with your inputs. To create a new scenario and run a model:",
+      "steps": {
+        "select": {
+          "title": "Select from Commons",
+          "body": "Navigate to the Commons page, select a model and click on it to view its model card."
+        },
+        "newscenario": {
+          "title": "Create new scenario",
+          "body": "Click on “Create new scenario“. The model run page will open." 
+        },
+        "yourinputs": {
+          "title": "Enter your inputs",
+          "body": "Enter your inputs for the model run, and click on “Run“. Required inputs and run time depend on the model chosen. You can leave the page while the model runs in the background - the scenario will show up on the “My scenarios“ page."
+        },
+        "results": {
+          "title": "Explore the results",
+          "body": "Once the model run is finished (“successful“ label), you can download the results, and (if results are in geospatial format) explore them on a map in the browser."
+        }
+      }
+    },
+    "retrieving": {
+      "heading": "Retrieve results from previous scenarios",
+      "lead": "All scenarios created by you are saved in the Scenarios tab. Click on a scenario to retrieve its results." 
+    },
+    "contributing": {
+      "heading": "Contributing a model",
+      "lead": "On the “Contribute“ page, you can contribute your own model to the UMP-X platform.",
+      "steps": {
+        "newmodel": {
+          "title": "Click on “New model“",
+          "body": ""
+        },
+        "server": {
+          "title": "Connect to the model server",
+          "body": "Connect to the server on which your model is run."
+        },
+        "select": {
+          "title": "Select the model",
+          "body": "After connecting to the model server, a list of all processes (models) found on that server will be displayed. Select the model you would like to contibute."
+        },
+        "fillcard": {
+          "title": "Fill in the model card",
+          "body": "Fill in the model card. You can save the model card as draft, and return to it later."
+        },
+        "submit": {
+          "title": "Submit for review",
+          "body": "Once the model card is ready, click on “Submit for review“."
+        },
+        "reviewprocess": {
+          "title": "Review process",
+          "body": "A UMP-X reviewer will review your submission, with three possible outcomes: approve; reject; or changes requested. You will receive an email notification in each case. If changes are requested, you will be able to edit the model card again, and resubmit the model."
+        }
+      }
+    },
+    "aiLead": "UMP-X stellt kein Sprachmodell und bezahlt keines. Wer die Plattform mit einer KI benutzen will, bringt seine eigene mit. Dafür gibt es zwei Wege, und beide tragen genau deine Rechte: ohne Anmeldung das offene Modell, angemeldet das, wofür du freigeschaltet bist.",
     "chat": {
       "heading": "Chat auf dieser Seite",
       "lead": "Du verbindest dein eigenes Modell, dann führt der Chat dich durch den Katalog.",
@@ -259,6 +587,741 @@
       },
       "copy": "Adresse kopieren",
       "notAWebsite": "Die Adresse ist keine Webseite. Im Browser geöffnet zeigt sie nur eine Fehlermeldung, und das ist richtig so: sie ist für Programme gedacht, nicht zum Anschauen."
+    },
+    "verify": {
+      "heading": "Verifying a model",
+      "lead": "To verify a model submission, navigate to the “Verify“ page. You will see a list of submitted models awaiting verification. You cannot review your own models.",
+      "steps": {
+        "takeover": {
+          "title": "Take over review",
+          "body": "Click on “Take over review“ to start reviewing a model."
+        },
+        "modelcard": {
+          "title": "Check model card",
+          "body": "Review all model card fields for correctness and coherence."
+        },
+        "verificationrun": {
+          "title": "Verification run",
+          "body": "Conduct a verification run of the model, and provide its job ID to verify that the verification run was succesful."
+        },
+        "reviewdecision": {
+          "title": "Review decision",
+          "body": "You have three options: reject the model; request changes to the model (provide a text comment to the contributor); or verify the model (this option only becomes available after a successful verification run)."
+        },
+        "requestedchanges": {
+          "title": "Requesting changes",
+          "body": "In case of requesting changes, you will receive an email notification once the model is updated and resubmitted by the contributor."
+        }
+      }
     }
+  },
+  "map": {
+    "notMappable": "Dieses Ergebnis lässt sich nicht auf einer Karte zeigen. Herunterladen geht trotzdem.",
+    "layers": "Ebenen",
+    "layerCount": "{n} Objekte",
+    "layerError": "Konnte nicht geladen werden.",
+    "layerTruncated": "Nur die ersten {n} werden gezeigt.",
+    "result": "Ergebnis",
+    "clickHint": "Klicke auf ein Objekt in der Karte, um seine Attribute zu sehen.",
+    "attributes": "Attribute: {layer}",
+    "closeAttributes": "Attribute schließen",
+    "noAttributes": "Dieses Objekt hat keine Attribute.",
+    "layer": {
+      "boundary": "Umriss",
+      "buildings": "Gebäude",
+      "trees": "Bäume",
+      "land_cover": "Landnutzung",
+      "streets": "Straßen"
+    }
+  },
+  "geometry": {
+    "search": "Ort suchen, z. B. Fichtenwalde",
+    "searchButton": "Suchen",
+    "searchError": "Die Ortssuche hat nicht geantwortet.",
+    "hint": {
+      "Polygon": "Auf die Karte klicken, um Eckpunkte zu setzen; Doppelklick schließt das Gebiet. Ecken lassen sich danach verschieben.",
+      "LineString": "Auf die Karte klicken, um die Linie zu zeichnen; Doppelklick beendet sie.",
+      "Point": "Auf die Karte klicken, um Punkte zu setzen. Punkte lassen sich danach verschieben."
+    },
+    "area": "Fläche {km2} km²",
+    "count": "{n} Punkte",
+    "clear": "Löschen"
+  },
+  "prototype": {
+    "title": "Prototyp mit Beispieldaten",
+    "text": "Diese Seite zeigt, wie Beitragen und Prüfen später funktionieren. Die Modelle sind Beispiele, nichts wird gespeichert oder an einen Server geschickt. Nach dem Neuladen ist alles wieder wie am Anfang.",
+    "reset": "Zurücksetzen",
+    "badge": "Prototyp"
+  },
+  "legal": {
+    "draftTitle": "Entwurf",
+    "draftText": "Dieser Text ist noch nicht fertig und nicht rechtlich geprüft. Markierte Stellen fehlen noch.",
+    "germanOnly": "This page is only available in German."
+  },
+  "registry": {
+    "status": {
+      "draft": "Entwurf",
+      "submitted": "Eingereicht",
+      "in_review": "In Prüfung",
+      "changes_requested": "Rückfrage",
+      "rejected": "Abgelehnt",
+      "verified": "Verifiziert",
+      "published": "Veröffentlicht",
+      "deactivated": "Deaktiviert"
+    },
+    "changedOn": "Geändert am {date}",
+    "by": "von {name}",
+    "search": "Modelle suchen",
+    "noMatch": "Keine passenden Modelle.",
+    "notFound": "Dieses Modell gibt es nicht.",
+    "yes": "ja",
+    "no": "nein",
+    "cancel": "Abbrechen",
+    "contribute": {
+      "title": "Beitragen",
+      "intro": "Modelle, die dir auf der Plattform gehören. Ein Modell kommt erst in die Commons, wenn eine zweite Person es verifiziert hat.",
+      "new": "Neues Modell",
+      "tabModels": "Meine Modelle · {n}",
+      "tabServers": "Meine Server · {n}",
+      "searchModels": "Meine Modelle suchen",
+      "searchServers": "Meine Server suchen",
+      "groups": {
+        "action": "Du bist dran",
+        "awaiting": "Wartet auf Prüfung",
+        "live": "In den Commons",
+        "closed": "Nicht live"
+      },
+      "sort": "Sortieren",
+      "sortChanged": "Zuletzt geändert",
+      "sortName": "Name",
+      "filter": "Nach Status filtern",
+      "filterAll": "Alle Status",
+      "viewTiles": "Als Kacheln zeigen",
+      "viewList": "Als Liste zeigen",
+      "servers": "Deine Server",
+      "serversEmpty": "Du hast noch keinen Server registriert.",
+      "serverModels": "keine Modelle | 1 Modell | {n} Modelle",
+      "interfaceChanged": "Schnittstelle geändert",
+      "note": "Hinweis aus der Prüfung: „{note}“",
+      "emptyTitle": "Du hast hier noch keine Modelle beigetragen!",
+      "emptyCreate": "Neues Modell anlegen",
+      "emptyHelp": "Ich brauche mehr Informationen"
+    },
+    "new": {
+      "title": "Neues Modell beitragen",
+      "steps": {
+        "server": "Server",
+        "processes": "Prozesse",
+        "card": "Modellkarte"
+      },
+      "where": "Wo läuft das Modell?",
+      "whereWhy": "Dein Modell bleibt auf deinem eigenen OGC-API-Processes-Server. Die Plattform ruft es nur auf.",
+      "existing": "Ein Server, den ich registriert habe",
+      "existingNone": "noch keiner",
+      "newServer": "Neuen Server registrieren",
+      "newServerHint": "Name, Adresse und Anmeldung",
+      "serverPick": "Server",
+      "name": "Servername",
+      "nameHint": "Kleinbuchstaben, Ziffern und Bindestriche. Der Name wird Präfix jeder Prozess-ID und Zugriffsrolle, z. B. {example}. Er lässt sich später nicht ändern.",
+      "nameInvalid": "Nur Kleinbuchstaben, Ziffern und Bindestriche, 2 bis 63 Zeichen",
+      "url": "Serveradresse",
+      "urlHint": "Die Basis-URL, die auf GET /processes antwortet. HTTPS und eine öffentlich erreichbare Adresse sind nötig.",
+      "urlInvalid": "Bitte eine Adresse angeben, die mit https:// beginnt",
+      "login": "Anmeldung an deinem Server",
+      "auth": "Authentifizierung",
+      "user": "Benutzer",
+      "password": "Passwort",
+      "token": "Schlüssel",
+      "secretNote": "Wird verschlüsselt gespeichert. Niemand kann es wieder auslesen, auch du nicht; du kannst es nur ersetzen.",
+      "secretPrototype": "Der Prototyp speichert und sendet keine Zugangsdaten.",
+      "discover": "Verbinden und Prozesse finden",
+      "howTitle": "Was beim Verbinden passiert",
+      "how1": "Die Plattform prüft die Adresse (HTTPS, öffentlicher Host, Antwort innerhalb von 10 s).",
+      "how2": "Sie liest die Liste der Prozesse, die dein Server anbietet.",
+      "how3": "Du wählst aus, welche du beitragen willst. Jeder wird ein Modellentwurf, den nur du siehst.",
+      "check": "Verbindungsprüfung",
+      "checkOk": "Server erreicht · keine Prozesse angeboten | Server erreicht · 1 Prozess angeboten | Server erreicht · {n} Prozesse angeboten",
+      "internalHosts": "Interne Cluster-Hosts müssen von einer Plattform-Administration freigegeben werden.",
+      "processesOn": "Prozesse auf {server}",
+      "selected": "{n} von {m} ausgewählt",
+      "already": "Schon hinzugefügt",
+      "back": "Zurück",
+      "create": "Entwürfe anlegen | 1 Entwurf anlegen | {n} Entwürfe anlegen",
+      "filledTitle": "Von deinem Server übernommen",
+      "filled1": "Titel, Beschreibung, Schlagwörter und Version werden in jeden Entwurf kopiert. Im nächsten Schritt kannst du sie ändern.",
+      "filled2": "Ein- und Ausgaben werden nicht als Text kopiert. Sie werden jedes Mal von deinem Server gelesen und auf der Modellseite gezeigt, so bleiben sie richtig.",
+      "filled3": "Englisch ist die Standardsprache jeder Modellkarte. Antwortet dein Server auch in anderen Sprachen, werden diese Texte automatisch übernommen; weitere Sprachen kannst du im nächsten Schritt ergänzen.",
+      "keyName": "Header-Name"
+    },
+    "auth": {
+      "NoAuth": "Keine",
+      "BasicAuth": "Benutzer und Passwort",
+      "ApiKey": "API-Schlüssel",
+      "BearerToken": "Bearer-Token"
+    },
+    "card": {
+      "title": "Modellkarte",
+      "why": "Was OGC nicht beschreibt: wofür das Modell da ist, wo seine Grenzen liegen und unter welcher Lizenz es steht. Pflicht in der Hauptsprache, die andere Sprache ist freiwillig.",
+      "defaultLang": "Hauptsprache",
+      "defaultLangHint": "Name und Zweck müssen in dieser Sprache ausgefüllt sein; fehlt eine Übersetzung, wird sie angezeigt.",
+      "fullName": "Name",
+      "shortDescription": "Kurzbeschreibung",
+      "purpose": "Zweck",
+      "limitationsRisks": "Grenzen und Risiken",
+      "license": "Lizenz",
+      "licensePick": "Lizenz wählen",
+      "licenseOwn": "Eigene Lizenz",
+      "licenseOwnPlaceholder": "Name oder Link deiner Lizenz",
+      "version": "Version",
+      "repository": "Quellcode",
+      "missing": "Zum Einreichen fehlt noch: {fields}",
+      "complete": "Die Modellkarte ist vollständig.",
+      "saved": "Gespeichert",
+      "save": "Speichern",
+      "empty": "keine Angabe",
+      "languages": "Sprachen dieser Karte",
+      "default": "Standard",
+      "fromServer": "Von deinem Server übernommen · du kannst sie ändern",
+      "sections": {
+        "basics": "Grunddaten",
+        "purpose": "Zweck & Einsatz",
+        "licence": "Lizenz & Code",
+        "limitations": "Grenzen & Risiken",
+        "people": "Personen & Literatur",
+        "requirements": "Anforderungen",
+        "test": "Testlauf",
+        "io": "Hinweise zu Ein- und Ausgaben",
+        "run": "Ausführung"
+      },
+      "keywordCount": "keine Schlagwörter | 1 Schlagwort | {n} Schlagwörter",
+      "applicationCount": "keine Anwendungen | 1 Anwendung | {n} Anwendungen",
+      "peopleCount": "keine Personen | 1 Person | {n} Personen",
+      "referenceCount": "keine Quellen | 1 Quelle | {n} Quellen",
+      "testCount": "keine Testfälle | 1 Testfall | {n} Testfälle",
+      "ioCount": "Hinweise zu {n} von {of}",
+      "required": "Pflicht",
+      "filled": "Ausgefüllt",
+      "recommendedEmpty": "Empfohlen · leer",
+      "optional": "Optional",
+      "requirementsHint": "Hardware und Software für einen Lauf",
+      "testHint": "Empfohlen · Prüfende nutzen ihn",
+      "shortDescriptionHint": "Ein bis zwei Sätze für Listen und Suchergebnisse.",
+      "keywords": "Schlagwörter",
+      "keywordsHint": "Eine Liste pro Sprache.",
+      "tagPlaceholder": "Eingeben und Enter drücken",
+      "purposeLabel": "Zweck des Modells",
+      "purposeHint": "Wer soll es nutzen, für welche Planungsfragen? In der Hauptsprache Pflicht zum Einreichen.",
+      "applications": "Bisherige Anwendungen",
+      "applicationsHint": "Orte und Projekte, in denen das Modell eingesetzt wurde.",
+      "application": "Anwendung {n}",
+      "appTitle": "Titel",
+      "location": "Ort",
+      "year": "Jahr",
+      "link": "Link",
+      "description": "Beschreibung",
+      "addApplication": "Anwendung hinzufügen",
+      "remove": "Entfernen",
+      "licenseHint": "Eine SPDX-Kennung.",
+      "codeRef": "Code-Version",
+      "codeRefHint": "Welchen Stand des Repositorys der Server ausführt (Commit, Tag oder Branch).",
+      "limitationsHint": "Bekannte Schwächen, Datenlücken, Fälle mit irreführenden Ergebnissen.",
+      "people": "Personen",
+      "peopleHint": "Namen werden nicht übersetzt.",
+      "person": "Person {n}",
+      "name": "Name",
+      "role": "Rolle",
+      "affiliation": "Einrichtung",
+      "email": "E-Mail",
+      "addPerson": "Person hinzufügen",
+      "roles": {
+        "author": "Autor:in",
+        "developer": "Entwickler:in",
+        "contributor": "Mitwirkende:r",
+        "maintainer": "Betreuer:in",
+        "funder": "Förderer"
+      },
+      "literature": "Literatur",
+      "reference": "Quelle {n}",
+      "citation": "Zitat",
+      "addReference": "Quelle hinzufügen",
+      "cpu": "CPU-Kerne",
+      "memory": "Arbeitsspeicher (GB)",
+      "storage": "Speicherplatz (GB)",
+      "runtime": "Laufzeit (s)",
+      "gpu": {
+        "none": "Nicht nötig",
+        "any": "Beliebige GPU",
+        "model": "Bestimmtes Modell",
+        "name": "GPU-Modell"
+      },
+      "software": "Software",
+      "softwareHint": "Sprachen, Pakete, Versionen.",
+      "testIntro": "Eine prüfende Person startet das Modell mit dieser Eingabe und vergleicht das Ergebnis mit der erwarteten Ausgabe.",
+      "testCase": "Testfall {n}",
+      "input": "Eingabe",
+      "expected": "Erwartete Ausgabe",
+      "documentation": "Dokumentation",
+      "optionalUrl": "https://… (optional)",
+      "inputSha": "Prüfsumme Eingabe (SHA-256)",
+      "outputSha": "Prüfsumme Ausgabe (SHA-256)",
+      "shaPlaceholder": "64 Hex-Zeichen, optional",
+      "addTestCase": "Testfall hinzufügen",
+      "ioIntro": "Ein- und Ausgaben stammen aus der Prozessbeschreibung deines Servers und lassen sich hier nicht ändern. Ergänze einen Hinweis, wo die Beschreibung nicht reicht, etwa Koordinatensystem oder Einheiten.",
+      "ioUnavailable": "Der Modellserver war nicht erreichbar, daher fehlen die Ein- und Ausgaben.",
+      "note": "Hinweis",
+      "inputKind": "Eingabe",
+      "outputKind": "Ausgabe",
+      "run": {
+        "who": "Wer darf das Modell ausführen",
+        "signedIn": "Angemeldete mit Zugang zu diesem Modell",
+        "anyone": "Alle, ohne Anmeldung",
+        "readOnly": "Ändern lässt sich das hier, sobald das UMP alle Ausführungseinstellungen mit dem Modell liefert."
+      },
+      "ready": "Bereit zum Einreichen?",
+      "requiredHeading": "Pflicht",
+      "speedsUp": "Beschleunigt die Prüfung",
+      "req": {
+        "name": "Name auf {lang}",
+        "purpose": "Zweck auf {lang}",
+        "test": "Ein Testlauf mit erwarteter Ausgabe",
+        "langs": "Weitere Sprachen (optional)"
+      },
+      "submitHint": "Eine andere Person prüft die Karte und testet das Modell.",
+      "saveDraft": "Entwurf speichern",
+      "lang": {
+        "en": "Englisch",
+        "de": "Deutsch"
+      }
+    },
+    "action": {
+      "submitted": "Zur Prüfung einreichen",
+      "draft": "Einreichung zurückziehen",
+      "in_review": "Prüfung übernehmen",
+      "verified": "Verifizieren",
+      "changes_requested": "Änderungen anfragen",
+      "rejected": "Ablehnen",
+      "published": "Veröffentlichen",
+      "deactivated": "Deaktivieren",
+      "reopen": "Als Entwurf überarbeiten",
+      "reactivate": "Reaktivieren"
+    },
+    "noteTitle": {
+      "rejected": "Grund der Ablehnung",
+      "deactivated": "Grund der Deaktivierung",
+      "changes_requested": "Rückfrage aus der Prüfung"
+    },
+    "explain": {
+      "draft": "Noch nicht eingereicht. Fülle die Modellkarte aus und reiche das Modell zur Prüfung ein.",
+      "submitted": "Eingereicht. Wartet darauf, dass jemand die Prüfung übernimmt. Solange kannst du die Einreichung zurückziehen.",
+      "in_review": "Wird gerade geprüft.",
+      "changes_requested": "Die Prüfung hat eine Rückfrage. Passe die Modellkarte an und reiche erneut ein.",
+      "rejected": "Das Modell wurde abgelehnt. Du kannst es als Entwurf überarbeiten und erneut einreichen.",
+      "verified": "Geprüft und bestätigt. Es wird bald veröffentlicht.",
+      "published": "Veröffentlicht und in Commons sichtbar. Änderungen an der Modellkarte gelten sofort.",
+      "deactivated": "Deaktiviert. Neue Läufe sind nicht möglich."
+    },
+    "verifyExplain": {
+      "draft": "Entwurf, noch nicht eingereicht.",
+      "submitted": "Wartet auf Prüfung. Übernimm die Prüfung, um zu entscheiden.",
+      "in_review": "Prüfe Modellkarte und Schnittstelle, starte einen Testlauf und entscheide.",
+      "changes_requested": "Rückfrage gestellt. Wartet auf die Anbieterin oder den Anbieter.",
+      "rejected": "Abgelehnt.",
+      "verified": "Verifiziert. Jetzt veröffentlichen?",
+      "published": "Veröffentlicht. Bei Änderungen an der Schnittstelle kann die Prüfung erneut geöffnet werden.",
+      "deactivated": "Deaktiviert."
+    },
+    "noteLabel": {
+      "changes_requested": "Was soll geändert werden?",
+      "rejected": "Warum wird das Modell abgelehnt?",
+      "deactivated": "Warum wird das Modell deaktiviert?",
+      "in_review": "Warum geht das Modell zurück in die Prüfung?"
+    },
+    "facts": {
+      "title": "Technische Angaben",
+      "process": "Modell-ID",
+      "owner": "Eingereicht von",
+      "interface": "Schnittstelle",
+      "verifiedBy": "Verifiziert von",
+      "inputs": "Eingaben",
+      "noInputs": "Noch nicht vom Server gelesen.",
+      "inputName": "Name",
+      "inputType": "Typ",
+      "inputRequired": "Pflicht",
+      "history": "Verlauf",
+      "noHistory": "Noch keine Statusänderungen."
+    },
+    "interface": {
+      "in_sync": "unverändert seit der Prüfung",
+      "drifted": "seit der Prüfung geändert",
+      "unchecked": "noch nicht geprüft",
+      "unreachable": "Server hat bei der letzten Prüfung nicht geantwortet"
+    },
+    "drift": {
+      "title": "Schnittstelle geändert: {name}",
+      "titleUnreachable": "Server antwortet nicht: {name}",
+      "badge": {
+        "drifted": "Schnittstelle geändert",
+        "unreachable": "Server antwortet nicht"
+      },
+      "checked": "geprüft am {date}",
+      "warnPublished": "Das Modell ist weiter veröffentlicht und kann weiter gerechnet werden. Läufe mit den alten Eingaben können jetzt scheitern. Entscheide, ob die Änderung harmlos ist oder eine neue Prüfung braucht.",
+      "warnVerified": "Das Modell ist verifiziert, aber noch nicht veröffentlicht, und sein Server beschreibt jetzt eine andere Schnittstelle. Entscheide vor dem Veröffentlichen, ob die Änderung harmlos ist oder eine neue Prüfung braucht.",
+      "warnUnreachable": "Das UMP hat den Modellserver bei der letzten Prüfung nicht erreicht und kann daher nicht sagen, ob die Schnittstelle noch die verifizierte ist. Läufe können scheitern, bis der Server wieder antwortet.",
+      "inSync": "Die Schnittstelle entspricht der verifizierten. Nichts zu entscheiden.",
+      "back": "Zurück zu Verify",
+      "loadFailed": "Der Schnittstellenvergleich konnte nicht geladen werden.",
+      "liveError": "Der Modellserver hat gerade nicht geantwortet: {error}",
+      "neverVerified": "Für dieses Modell gibt es keine verifizierte Schnittstelle zum Vergleichen.",
+      "col": {
+        "change": "Änderung",
+        "name": "Name",
+        "verifiedOn": "Verifiziert am {date}",
+        "verified": "Verifiziert",
+        "now": "Jetzt auf dem Server"
+      },
+      "kind": {
+        "added": "Neu",
+        "changed": "Geändert",
+        "removed": "Entfernt",
+        "unchanged": "Unverändert"
+      },
+      "unchanged": "{n} unverändert",
+      "noDifference": "Kein Unterschied bei Typen, Pflichteingaben, Ausgaben oder Ausführungsarten.",
+      "mode": {
+        "jobControlOptions": "Ausführungsarten",
+        "outputTransmission": "Ergebnisübergabe"
+      },
+      "required": "Pflicht",
+      "optional": "optional",
+      "ignored": "Titel und Beschreibungen zählen nicht. Nur Typen, Pflichteingaben, Ausgaben und Ausführungsarten gelten als Änderung.",
+      "accept": {
+        "title": "Neue Schnittstelle übernehmen",
+        "textPublished": "Den Testfall rechnen, dann die aktuelle Schnittstelle festschreiben. Das Modell bleibt veröffentlicht.",
+        "textVerified": "Den Testfall rechnen, dann die aktuelle Schnittstelle festschreiben. Das Modell bleibt verifiziert.",
+        "runHint": "Dein eigener erfolgreicher Lauf dieses Modells, gestartet nach der letzten Verifizierung.",
+        "button": "Erneut verifizieren",
+        "needsServer": "Möglich, sobald der Modellserver wieder antwortet."
+      },
+      "review": {
+        "title": "Braucht eine volle Prüfung",
+        "text": "Schickt das Modell zurück in die Prüfung. Wer keine Prüferrolle hat, kann es erst nach erneutem Veröffentlichen wieder rechnen.",
+        "button": "Zurück in die Prüfung"
+      },
+      "offline": {
+        "title": "Vom Netz nehmen",
+        "text": "Stoppt neue Läufe sofort. Laufende Jobs werden fertig, ihre Ergebnisse bleiben abrufbar."
+      },
+      "done": "Gegen die aktuelle Schnittstelle erneut verifiziert.",
+      "compare": "Vergleichen",
+      "notice": "{name} ist {status}, aber sein Server beschreibt jetzt eine andere Schnittstelle als die am {date} verifizierte.",
+      "noticeNoDate": "{name} ist {status}, aber sein Server beschreibt jetzt eine andere Schnittstelle als die verifizierte.",
+      "noticeUnreachable": "Der Server von {name} hat bei der letzten Schnittstellenprüfung nicht geantwortet.",
+      "noticeAfter": "Läufe mit den alten Eingaben können jetzt scheitern. Entscheide, ob die Änderung harmlos ist oder eine neue Prüfung braucht.",
+      "notePublished": "weiter veröffentlicht",
+      "noteVerified": "verifiziert",
+      "open": "Schnittstelle geändert"
+    },
+    "verify": {
+      "title": "Modelle prüfen",
+      "intro": "Eingereichte Modelle prüfen, testweise rechnen und entscheiden, ob sie in die Commons kommen.",
+      "ownModel": "Dein eigenes Modell. Entscheiden muss jemand anderes.",
+      "decide": "Prüfung",
+      "testRun": "Testlauf starten",
+      "testRunNote": "Testläufe sind im Prototyp nicht möglich. Später starten Prüferinnen und Prüfer hier einen Lauf, auch bevor das Modell veröffentlicht ist.",
+      "publishNote": "Beim Veröffentlichen legt UMP-X die Zugriffsrolle {role} in Keycloak an.",
+      "noteVisible": "Die Anbieterin oder der Anbieter sieht diesen Text.",
+      "testRunNoteLive": "Öffnet das Lauf-Formular in einem neuen Tab. Zum Verifizieren braucht es die Job-ID eines erfolgreichen Laufs dieses Modells, den du gestartet hast.",
+      "jobId": "Job-ID deines Testlaufs",
+      "jobIdHint": "Aus „Meine Szenarien“: ein erfolgreicher Lauf dieses Modells, den du während dieser Prüfung gestartet hast.",
+      "refresh": "Aktualisieren",
+      "tabs": {
+        "todo": "Zu prüfen · {n}",
+        "interface": "Schnittstellenänderungen · {n}",
+        "published": "Veröffentlicht · {n}",
+        "closed": "Nicht live · {n}"
+      },
+      "empty": {
+        "interface": "Keine Schnittstellenänderungen.",
+        "published": "Noch keine veröffentlichten Modelle.",
+        "closed": "Keine abgelehnten oder deaktivierten Modelle."
+      },
+      "col": {
+        "model": "Modell",
+        "owner": "Owner",
+        "status": "Status",
+        "since": "Seit",
+        "action": "Nächster Schritt"
+      },
+      "today": "heute",
+      "days": "{n} Tagen | 1 Tag | {n} Tagen",
+      "you": "Du",
+      "continue": "Prüfung fortsetzen",
+      "open": "Öffnen",
+      "noneBadge": "Keine neuen Modelle",
+      "noneText": "Gerade gibt es nichts zu prüfen.",
+      "search": "Modelle suchen"
+    },
+    "me": "ich",
+    "otherOwner": "andere Person",
+    "failed": "Das hat nicht geklappt",
+    "loadFailed": "Die Registry konnte nicht geladen werden",
+    "loading": "Modelle werden geladen …",
+    "review": {
+      "title": "Prüfung: {name}",
+      "owner": "Owner {name}",
+      "card": "Modellkarte",
+      "cardHint": "Deine Checkliste. Gespeichert werden nur die Entscheidung und der Hinweis unten.",
+      "purpose": "Zweck",
+      "licence": "Lizenz",
+      "limits": "Grenzen und Risiken",
+      "people": "Personen und Literatur",
+      "requirements": "Anforderungen",
+      "languages": "Sprachen",
+      "cpu": "{n} CPU",
+      "memory": "{n} GB RAM",
+      "runtime": "etwa {n} s",
+      "storage": "{n} GB Speicherplatz",
+      "gpuNone": "keine GPU",
+      "gpuAny": "beliebige GPU",
+      "gpuModel": "GPU {name}",
+      "defaultLang": "{lang} (Standard)",
+      "decision": "Entscheidung",
+      "noActions": "In diesem Status gibt es nichts zu entscheiden.",
+      "needsRun": "Verifizieren geht, sobald du einen erfolgreichen Testlauf geprüft hast.",
+      "interface": "Schnittstelle auf dem Server",
+      "interfaceMissing": "Der Server hat keine Prozessbeschreibung geliefert.",
+      "io": "Ein- / Ausgabe",
+      "output": "Ausgabe",
+      "pinned": "Diese Schnittstelle wird beim Verifizieren festgehalten. Spätere Änderungen auf dem Server erscheinen als Schnittstellenänderung.",
+      "run": "Prüflauf",
+      "runStart": "Rechnen",
+      "testCase": "Testfall „{name}“:",
+      "input": "Eingabe",
+      "expected": "erwartetes Ergebnis",
+      "noTestCase": "Der Anbieter hat keinen Testfall dokumentiert.",
+      "check": "Prüfen",
+      "jobOk": "Job {id}… erfolgreich beendet",
+      "jobOtherModel": "Dieser Job hat ein anderes Modell gerechnet ({model}).",
+      "jobNotDone": "Dieser Job ist nicht erfolgreich beendet (Status: {status}).",
+      "linked": "Job {id}… ist mit der Verifizierung verknüpft."
+    },
+    "cardView": {
+      "open": "Modellkarte öffnen",
+      "readOnly": "So, wie der Anbieter sie geschrieben hat. Nur lesend.",
+      "languages": "Sprachen dieser Karte",
+      "default": "Standard",
+      "testRun": "Testlauf",
+      "runHint": "Öffnet das Lauf-Formular in einem neuen Tab. Die Job-ID trägst du auf der Prüfseite ein.",
+      "back": "Zurück zur Prüfung"
+    },
+    "publishRolesMissing": "Das Modell ist veröffentlicht, aber die Zugriffsrollen {roles} konnten in Keycloak nicht angelegt werden. Bitte die Administration, sie anzulegen.",
+    "server": {
+      "edit": "{name} bearbeiten",
+      "editTitle": "{name} bearbeiten",
+      "nameFixed": "Der Name lässt sich nicht ändern: Er steckt in jeder Modellkennung und Zugangsrolle.",
+      "urlHint": "Eine https://-Adresse",
+      "keepLogin": "Lass das Geheimnis leer, um die gespeicherte Anmeldung zu behalten. Verschlüsselt gespeichert, niemand kann es auslesen.",
+      "ttw": "Zeitlimit für Läufe (Minuten)",
+      "ttwHint": "Kommt in dieser Zeit keine Antwort, gilt ein Lauf als gescheitert.",
+      "active": "Aktiv",
+      "activeHint": "Einen inaktiven Server nutzt das UMP nicht.",
+      "inactive": "inaktiv",
+      "save": "Speichern",
+      "saved": "{name} gespeichert."
+    },
+    "serverDelete": {
+      "open": "Server {name} löschen",
+      "blockedTip": "Blockiert durch {n} Modell(e), die live oder in Prüfung sind. Erst deaktivieren oder ablehnen.",
+      "title": "Server „{name}“ endgültig löschen?",
+      "owner": "Konto {name}",
+      "undoable": "Das lässt sich nicht rückgängig machen. Beim Löschen werden:",
+      "models": "{n} Modell(e) mit Modellkarte entfernt: {list}",
+      "noModels": "keine Modelle entfernt: der Server hat keine",
+      "requests": "alle Zugriffsanfragen zu diesen Modellen entfernt, auch bewilligte von deaktivierten Modellen",
+      "retire": "der Name „{name}“ dauerhaft gesperrt: er kann nie wieder registriert werden",
+      "jobs": "Läufe im Verlauf behalten, aber nicht mehr mit einem Modell verknüpft",
+      "roles": "die Keycloak-Rollen {name} / {name}:… NICHT entfernt: bitte von Hand aufräumen",
+      "audit": "die Löschung im Audit-Log festgehalten",
+      "type": "Zur Bestätigung {name} eintippen",
+      "typeHint": "Genau so, mit Groß- und Kleinschreibung. „Endgültig löschen“ bleibt bis dahin gesperrt.",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "confirm": "Endgültig löschen",
+      "blockedTitle": "Server kann nicht gelöscht werden",
+      "blockedText": "Diese Modelle sind nicht Entwurf, deaktiviert oder abgelehnt. Erst deaktivieren oder ablehnen, dann erneut versuchen:",
+      "nothingDeleted": "Es wurde nichts gelöscht. Die Serverliste ist neu geladen.",
+      "deleted": "Server „{name}“ gelöscht · {n} Modell(e) entfernt",
+      "deletedRoles": "Name gesperrt. Die Keycloak-Rollen {name} und {name}:* bitte von Hand entfernen.",
+      "auditLink": "Zum Audit-Log",
+      "gone": "Server „{name}“ war schon gelöscht.",
+      "failed": "Der Server konnte nicht gelöscht werden."
+    }
+  },
+  "results": {
+    "legend": "Legende",
+    "indicators": "Kennzahlen"
+  },
+  "access": {
+    "title": "Zugriffsverwaltung",
+    "refresh": "Aktualisieren",
+    "tabs": {
+      "requests": "Anfragen",
+      "models": "Modelle und Server"
+    },
+    "search": "Server oder Modell suchen",
+    "empty": "Noch kein Modell hat Zugriffsrollen. Sie entstehen beim Veröffentlichen.",
+    "models": "keine Modelle | 1 Modell | {n} Modelle",
+    "users": "keine Personen | 1 Person | {n} Personen",
+    "thisModel": "Dieses Modell",
+    "wholeServer": "Ganzer Server",
+    "server": "Server",
+    "allModels": "Alle Modelle auf diesem Server",
+    "add": "Zugriff geben",
+    "findUser": "Person nach Name oder E-Mail suchen",
+    "grant": "Freigeben",
+    "withAccess": "Personen mit Zugriff · {n}",
+    "nobody": "Noch hat niemand Zugriff.",
+    "col": {
+      "user": "Person",
+      "for": "Zugriff für",
+      "action": "Aktion"
+    },
+    "revoke": "Entziehen",
+    "serverHint": "Ausgegrautes Entziehen: Zugriff auf den ganzen Server. Das lässt sich unter „Ganzer Server“ ändern.",
+    "loadFailed": "Zugriffe konnten nicht geladen werden",
+    "failed": "Die Änderung hat nicht geklappt",
+    "requests": {
+      "search": "Person, Modell oder Server suchen",
+      "server": "Server",
+      "allServers": "Alle Server",
+      "statusLabel": "Status",
+      "status": {
+        "requested": "Offen",
+        "granted": "Freigegeben",
+        "denied": "Abgelehnt",
+        "withdrawn": "Zurückgezogen",
+        "revoked": "Entzogen",
+        "all": "Alle"
+      },
+      "empty": "Keine Anfragen.",
+      "col": {
+        "access": "Angefragter Zugang",
+        "for": "Für",
+        "purpose": "Zweck",
+        "requested": "Angefragt"
+      },
+      "model": "Modell",
+      "approve": "Freigeben",
+      "deny": "Ablehnen",
+      "cancel": "Abbrechen",
+      "approved": "{name} hat jetzt Zugang",
+      "denyTitle": "Anfrage von {name} ablehnen",
+      "denyIntro": "Die Person sieht deine Begründung auf der Modellseite und in der E-Mail.",
+      "reason": "Begründung",
+      "noteTitle": "Freigabe",
+      "note": "Eine Freigabe gibt Zugang zu diesem Modell. Die Person wird per E-Mail benachrichtigt, und die Änderung steht im Audit-Log. Auch eine Ablehnung wird der Person mitgeteilt.",
+      "auditLog": "Audit-Log öffnen"
+    },
+    "revokeTitle": "Zugang für {name} entziehen",
+    "revokeIntro": "Die Person verliert diesen Zugang. Kam der Zugang über eine Anfrage, bekommt sie deine Begründung per E-Mail.",
+    "intro": "Wer welches Modell ausführen darf: Anfragen entscheiden, Zugang geben oder entziehen."
+  },
+  "audit": {
+    "intro": "Jede Änderung an Modellen, Servern und Zugängen und jeder Lauf, neueste zuerst. Wird drei Monate aufbewahrt.",
+    "allActions": "Alle Aktionen",
+    "error": "Das Audit-Log ließ sich nicht laden: {msg}",
+    "empty": "Keine Einträge.",
+    "system": "System",
+    "you": "Du",
+    "account": "Konto {id}",
+    "model": "Modell {id}",
+    "runSkipped": "ohne Prüflauf",
+    "run": "Lauf {id}",
+    "more": "Mehr laden",
+    "outcome": {
+      "denied": "abgelehnt",
+      "failure": "fehlgeschlagen"
+    },
+    "action": {
+      "model_create": "Modell angelegt",
+      "model_card_update": "Modellkarte bearbeitet",
+      "model_status_change": "Status geändert",
+      "model_reverify": "Erneut geprüft",
+      "model_owner_transfer": "Eigentümer gewechselt",
+      "model_interface_changed": "Schnittstelle geändert",
+      "model_interface_drifted": "Schnittstelle weicht von der geprüften ab",
+      "model_interface_restored": "Schnittstelle stimmt wieder",
+      "model_interface_unreachable": "Modellserver nicht erreichbar",
+      "access_request": "Zugang beantragt",
+      "access_withdraw": "Antrag zurückgezogen",
+      "access_grant": "Zugang erteilt",
+      "access_deny": "Zugang abgelehnt",
+      "access_revoke": "Zugang entzogen",
+      "server_create": "Server angelegt",
+      "server_update": "Server bearbeitet",
+      "server_discover": "Modelle auf Server gesucht",
+      "server_rediscover": "Modelle erneut gesucht",
+      "job_execute": "Lauf gestartet",
+      "job_complete": "Lauf beendet"
+    },
+    "filter": "Nach Aktion filtern"
+  },
+  "list": {
+    "sort": "Sortieren",
+    "filter": "Filtern",
+    "all": "Alle",
+    "reset": "Filter zurücksetzen",
+    "viewTiles": "Als Kacheln zeigen",
+    "viewList": "Als Liste zeigen",
+    "newest": "Neueste zuerst",
+    "name": "Name"
+  },
+  "partners": {
+    "bmftr": "Gefördert durch das Bundesministerium für Forschung, Technologie und Raumfahrt",
+    "ptf": "Unterstützt durch Prototype Fund"
+  },
+  "features": {
+    "select": "Auswählen",
+    "draw": {
+      "Polygon": "Fläche",
+      "LineString": "Linie",
+      "Point": "Punkt"
+    },
+    "remove": "Löschen ({n})",
+    "removeAll": "Alle entfernen",
+    "count": "{n} Objekte",
+    "problems": "{n} mit fehlenden oder ungültigen Werten",
+    "hintSelect": "Objekt anklicken zum Auswählen (mit Umschalt mehrere), ziehen zum Verschieben, Ecken ziehen zum Umformen",
+    "hintDraw": {
+      "Polygon": "Ecken anklicken, Doppelklick beendet",
+      "LineString": "Punkte anklicken, Doppelklick beendet",
+      "Point": "Klicken zum Setzen"
+    },
+    "invalid": "Der Wert ist keine GeoJSON-FeatureCollection.",
+    "propertiesOne": "Eigenschaften des gewählten Objekts",
+    "propertiesMany": "Eigenschaften von {n} gewählten Objekten (Änderungen gelten für alle)",
+    "mixed": "unterschiedliche Werte",
+    "problem": {
+      "required": "Pflichtfeld",
+      "number": "Keine Zahl",
+      "min": "Zu klein (Grenze {limit})",
+      "max": "Zu groß (Grenze {limit})",
+      "choice": "Kein erlaubter Wert"
+    },
+    "cancel": "Abbrechen",
+    "applyJson": "JSON übernehmen"
+  },
+  "scenarioMap": {
+    "title": "Karte",
+    "intro": "Alle Karteneingaben des Modells in einer Karte. Oben die Ebene zum Bearbeiten wählen, die anderen bleiben sichtbar.",
+    "open": "Auf Karte bearbeiten",
+    "empty": "Noch nichts auf der Karte",
+    "areaSummary": "Gebiet mit {km2} km²",
+    "drawn": "Eingezeichnet",
+    "done": "Fertig",
+    "layer": "Ebene:",
+    "editing": "Du bearbeitest {layer}:",
+    "draw": "{layer} zeichnen",
+    "drawKind": "{layer}: {kind}"
   }
 }

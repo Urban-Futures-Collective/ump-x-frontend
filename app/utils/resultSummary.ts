@@ -1,31 +1,30 @@
-import type { FeatureCollection, Position } from 'geojson'
+import type { FeatureCollection } from 'geojson'
 
-// Was von einem Ergebnis erzählt werden darf, ohne es zu verschicken.
+// A compact summary of a job result that can be shared with the AI provider.
 //
-// Ein growbike-Ergebnis sind Megabyte GeoJSON. Die gehen an die Karte, aber
-// niemals an einen KI-Anbieter: das wäre Datenübertragung auf Kosten und Risiko
-// des Nutzers, für eine Antwort, die aus vier Zahlen besteht. Diese Datei ist
-// die Stelle, an der aus dem Ergebnis die vier Zahlen werden.
+// Results can be megabytes of GeoJSON. They go to the map, never to an AI
+// provider: that would transfer data at the user's cost and risk for an answer
+// that needs only a few numbers. This is where those numbers are computed.
 
-export interface ErgebnisZusammenfassung {
-  anzahl: number
-  geometrien: string[]
-  /** [West, Sued, Ost, Nord] in WGS84, auf fuenf Nachkommastellen. */
+export interface ResultSummary {
+  count: number
+  geometries: string[]
+  /** [west, south, east, north] in WGS84, rounded to five decimals. */
   bbox?: [number, number, number, number]
-  eigenschaften: string[]
+  properties: string[]
 }
 
-// Wie viele Objekte fuer Eigenschaften und Geometrietypen angesehen werden.
-// Beides ist in der Praxis nach den ersten Objekten bekannt, und ein Lauf mit
-// hunderttausend Linien soll die Oberflaeche nicht anhalten.
-const STICHPROBE = 200
-const MAX_EIGENSCHAFTEN = 20
+// Number of features sampled for property names and geometry types. Both are
+// usually clear after the first few, and a huge result must not freeze the UI.
+const SAMPLE_SIZE = 200
+const MAX_PROPERTIES = 20
 
-function grenzen(coords: unknown, box: number[]): void {
+function extendBounds(coords: unknown, box: number[]): void {
   if (!Array.isArray(coords)) return
-  // Eine Position ist [x, y, ...]: Zahlen an den ersten beiden Stellen.
+  // A position is [x, y, ...]: numbers in the first two slots.
   if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
-    const [x, y] = coords as Position
+    const x = coords[0] as number
+    const y = coords[1] as number
     if (!Number.isFinite(x) || !Number.isFinite(y)) return
     box[0] = Math.min(box[0]!, x)
     box[1] = Math.min(box[1]!, y)
@@ -33,44 +32,43 @@ function grenzen(coords: unknown, box: number[]): void {
     box[3] = Math.max(box[3]!, y)
     return
   }
-  for (const teil of coords) grenzen(teil, box)
+  for (const item of coords) extendBounds(item, box)
 }
 
-export function fasseErgebnisZusammen(fc: FeatureCollection): ErgebnisZusammenfassung {
+export function summarizeResult(fc: FeatureCollection): ResultSummary {
   const features = fc?.features ?? []
   const box = [Infinity, Infinity, -Infinity, -Infinity]
-  const geometrien = new Set<string>()
-  const eigenschaften = new Set<string>()
+  const geometries = new Set<string>()
+  const properties = new Set<string>()
 
   features.forEach((f, i) => {
     const g = f?.geometry
     if (g) {
-      if (i < STICHPROBE) geometrien.add(g.type)
-      // Die Ausdehnung braucht alle Objekte, sonst beschreibt sie die Stichprobe
-      // statt das Ergebnis.
+      if (i < SAMPLE_SIZE) geometries.add(g.type)
+      // The extent uses all features, otherwise it would describe only the sample.
       if (g.type === 'GeometryCollection') {
-        for (const teil of g.geometries) grenzen((teil as { coordinates?: unknown }).coordinates, box)
+        for (const part of g.geometries) extendBounds((part as { coordinates?: unknown }).coordinates, box)
       }
       else {
-        grenzen(g.coordinates, box)
+        extendBounds(g.coordinates, box)
       }
     }
-    if (i < STICHPROBE && f?.properties) {
-      for (const k of Object.keys(f.properties)) eigenschaften.add(k)
+    if (i < SAMPLE_SIZE && f?.properties) {
+      for (const k of Object.keys(f.properties)) properties.add(k)
     }
   })
 
-  // Die von UMP gelieferte bbox waere die ehrlichere Quelle, ist aber optional
-  // und fehlt bei den Modellen, die heute rechnen. Deshalb selbst gerechnet.
-  const runde = (n: number) => Math.round(n * 1e5) / 1e5
+  // A bbox from UMP would be preferable, but it is optional and usually missing,
+  // so we compute it ourselves.
+  const round = (n: number) => Math.round(n * 1e5) / 1e5
   const bbox = Number.isFinite(box[0])
-    ? ([runde(box[0]!), runde(box[1]!), runde(box[2]!), runde(box[3]!)] as [number, number, number, number])
+    ? ([round(box[0]!), round(box[1]!), round(box[2]!), round(box[3]!)] as [number, number, number, number])
     : undefined
 
   return {
-    anzahl: features.length,
-    geometrien: [...geometrien],
+    count: features.length,
+    geometries: [...geometries],
     bbox,
-    eigenschaften: [...eigenschaften].slice(0, MAX_EIGENSCHAFTEN),
+    properties: [...properties].slice(0, MAX_PROPERTIES),
   }
 }
