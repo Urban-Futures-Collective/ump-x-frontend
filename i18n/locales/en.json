@@ -228,6 +228,7 @@
       "name": "Name"
     },
     "count": "no models | 1 model | {n} models",
+    "countIn": "no models in {topic} | 1 model in {topic} | {n} models in {topic}",
     "fallbackLang": "Models are shown in their main language where no translation exists",
     "noMatch": "No model matches the search or filters.",
     "onlyPublished": "Only published models appear here. Models currently in review are listed for verifiers only, deactivated models do not appear on this page.",

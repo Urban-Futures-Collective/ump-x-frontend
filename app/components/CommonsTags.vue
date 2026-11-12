@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { RegistryModel } from '~/types/registry'
-import type { TopicTone } from '~/utils/commons'
 
 // The tag row of a model in the Commons (designs C0, C1): when it was published or,
 // for models only verifiers can see yet, that they are there for verification; then
@@ -29,12 +28,6 @@ const published = computed(() => props.card.status === 'published' && props.card
   ? new Date(props.card.publishedAt).toLocaleDateString(locale.value, { day: 'numeric', month: 'short', year: 'numeric' })
   : '')
 
-const TONE: Record<TopicTone, string> = {
-  gold: 'bg-ufc-gold-300 text-ufc-gold-950',
-  teal: 'bg-ufc-teal-600 text-white',
-  blue: 'bg-ufc-blue-100 text-ufc-blue-900',
-  plum: 'bg-ufc-plum-600 text-white',
-}
 </script>
 
 <template>
@@ -52,7 +45,7 @@ const TONE: Record<TopicTone, string> = {
       {{ access.label }}
     </li>
     <template v-if="topics">
-      <li v-for="k in card.keywords" :key="k" class="rounded-full px-3 py-0.5" :class="TONE[topicTone(k)]">
+      <li v-for="k in card.keywords" :key="k" class="rounded-full px-3 py-0.5" :class="TOPIC_TONE_CLASS[topicTone(k)]">
         {{ k }}
       </li>
     </template>

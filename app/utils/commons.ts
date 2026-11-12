@@ -45,6 +45,14 @@ export function topicTone(topic: string): TopicTone {
   return TOPIC_TONES[hash % TOPIC_TONES.length]!
 }
 
+/** Tailwind classes for a topic pill in its colour. */
+export const TOPIC_TONE_CLASS: Record<TopicTone, string> = {
+  gold: 'bg-ufc-gold-300 text-ufc-gold-950',
+  teal: 'bg-ufc-teal-600 text-white',
+  blue: 'bg-ufc-blue-100 text-ufc-blue-900',
+  plum: 'bg-ufc-plum-600 text-white',
+}
+
 /** Card registered for a process: the process id is `{server}:{process}`. */
 export function cardsByProcess(models: RegistryModel[]): Map<string, RegistryModel> {
   return new Map(models.map(m => [`${m.serverName}:${m.remoteProcessId}`, m]))

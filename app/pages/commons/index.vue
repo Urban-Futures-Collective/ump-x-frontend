@@ -51,6 +51,17 @@ const filters = computed<ListFilter[]>(() => [
 const shown = computed(() => sortCommons(entries.value.filter(e =>
   matchesSearch(search.value, e.title, e.description, e.id, ...(e.card?.keywords ?? []))
   && matchesFilter(e, { topics: filter.value.topics ?? [], langs: filter.value.langs ?? [], licences: filter.value.licences ?? [] })), sort.value as CommonsSort))
+
+// The topics as pills above the list (design comment: a ready filtered view). They
+// tick the same values as the topic filter in the ListBar.
+const topicsChosen = computed(() => filter.value.topics ?? [])
+function toggleTopic(topic: string) {
+  const now = topicsChosen.value
+  filter.value = { ...filter.value, topics: now.includes(topic) ? now.filter(v => v !== topic) : [...now, topic] }
+}
+const countText = computed(() => topicsChosen.value.length === 1
+  ? t('commons.countIn', { topic: topicsChosen.value[0] }, shown.value.length)
+  : t('commons.count', shown.value.length))
 const filtered = computed(() => !!search.value || Object.values(filter.value).some(v => v.length))
 </script>
 
@@ -70,9 +81,24 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
       </UButton>
     </PageHeader>
 
+    <ul v-if="options.topics.length" class="flex flex-wrap gap-2" :aria-label="t('commons.filter.topic')">
+      <li v-for="topic in options.topics" :key="topic">
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--ui-primary)"
+          :class="[TOPIC_TONE_CLASS[topicTone(topic)], topicsChosen.length && !topicsChosen.includes(topic) ? 'opacity-40 hover:opacity-70' : 'hover:brightness-95']"
+          :aria-pressed="topicsChosen.includes(topic)"
+          @click="toggleTopic(topic)"
+        >
+          <UIcon v-if="topicsChosen.includes(topic)" name="i-lucide-check" class="size-4" aria-hidden="true" />
+          {{ topic }}
+        </button>
+      </li>
+    </ul>
+
     <ListBar v-model:sort="sort" v-model:filter="filter" v-model:tiles="tiles" :sort-items="sortItems" :filters="filters">
       <p class="pb-2 text-sm text-(--ui-text-muted)" role="status">
-        {{ t('commons.count', shown.length) }}<template v-if="shown.length">
+        {{ countText }}<template v-if="shown.length">
           · {{ t('commons.fallbackLang') }}
         </template>
       </p>
@@ -96,7 +122,7 @@ const filtered = computed(() => !!search.value || Object.values(filter.value).so
               <span class="text-xl font-medium text-ufc-slate-900">{{ e.title }}</span>
               <UIcon name="i-lucide-arrow-right" class="mt-1 size-5 shrink-0 text-(--ui-primary)" aria-hidden="true" />
             </span>
-            <span v-if="e.description" class="text-base/[1.6] text-ufc-slate-700">{{ e.description }}</span>
+            <span v-if="e.description" class="line-clamp-2 text-base/[1.6] text-ufc-slate-700">{{ e.description }}</span>
             <span class="text-sm text-(--ui-text-dimmed)">{{ e.id }}</span>
             <CommonsTags v-if="e.card" :card="e.card" class="mt-auto" />
           </ULink>
