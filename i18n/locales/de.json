@@ -228,6 +228,7 @@
       "name": "Name"
     },
     "count": "keine Modelle | 1 Modell | {n} Modelle",
+    "countIn": "keine Modelle in {topic} | 1 Modell in {topic} | {n} Modelle in {topic}",
     "fallbackLang": "Ohne Übersetzung erscheinen Modelle in ihrer Hauptsprache",
     "noMatch": "Kein Modell passt zur Suche oder zu den Filtern.",
     "onlyPublished": "Hier erscheinen nur veröffentlichte Modelle. Modelle in Prüfung sehen nur Prüfende, deaktivierte Modelle erscheinen hier nicht.",
