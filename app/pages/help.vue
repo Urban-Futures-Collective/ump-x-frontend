@@ -123,10 +123,6 @@ const verifySteps = ['takeover', 'modelcard', 'verificationrun', 'reviewdecision
       </ol>
     </div>
 
-    <p class="text-sm text-(--ui-text-muted)">
-      {{ t('help.aiLead') }}
-    </p>
-
     <div id="chat" class="scroll-mt-20 space-y-4">
       <h2 class="text-lg font-semibold text-(--ui-text-highlighted)">
         {{ t('help.chat.heading') }}
@@ -145,6 +141,13 @@ const verifySteps = ['takeover', 'modelcard', 'verificationrun', 'reviewdecision
           </span>
         </li>
       </ol>
+  
+      <div class="flex gap-3 rounded-lg bg-ufc-blue-50 p-4">
+        <UIcon name="i-lucide-triangle-alert" class="mt-0.5 size-4 shrink-0 text-(--ui-text-muted)" />
+        <p class="text-sm text-(--ui-text-muted)">
+          {{ t('help.chat.disclaimer') }}
+        </p>
+      </div>
     </div>
 
     <div id="mcp" class="scroll-mt-20 space-y-4">
@@ -183,7 +186,7 @@ const verifySteps = ['takeover', 'modelcard', 'verificationrun', 'reviewdecision
       <div class="flex gap-3 rounded-lg bg-ufc-blue-50 p-4">
         <UIcon name="i-lucide-triangle-alert" class="mt-0.5 size-4 shrink-0 text-(--ui-text-muted)" />
         <p class="text-sm text-(--ui-text-muted)">
-          {{ t('help.mcp.notAWebsite') }}
+          {{ t('help.mcp.disclaimer') }}
         </p>
       </div>
     </div>
