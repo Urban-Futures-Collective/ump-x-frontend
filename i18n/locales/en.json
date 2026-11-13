@@ -548,10 +548,10 @@
         }
       }
     },
-    "aiLead": "UMP-X doesn't provide any LLM. Instead, you can connect your own LLM to UMP-X, while maintaining full control over the access rights.",
     "chat": {
       "heading": "Connect your LLM to use the chatbot functionality",
       "lead": "After connecting your own LLM to UMP-X, you can use the chatbot functionality on the platform.",
+      "disclaimer": "UMP-X doesn't provide any LLM. Instead, you can connect your own LLM to UMP-X, while maintaining full control over the access rights.",
       "steps": {
         "provider": {
           "title": "Choose a provider",
@@ -570,6 +570,8 @@
     "mcp": {
       "heading": "Connect your own AI client",
       "lead": "You can connect your own AI client to UMP-X through MCP (model context protocol). MCP is an open standard that lets AI clients use tools from other providers. The MCP for UMP-X has been tested with Claude Desktop. To connect your own AI client:",
+      "disclaimer": "Note: the MCP address is for AI clients that support MCP. In a browser it only shows an error.",
+      "copy": "Copy the address",
       "steps": {
         "address": {
           "title": "Enter the MCP address in your client",
@@ -583,9 +585,7 @@
           "title": "Use the models as tools",
           "body": "The models from the UMP-X model catalogue will now appear in your client as tools. Now, you can start runs, check the run status, and fetch results through your client."
         }
-      },
-      "copy": "Copy the address",
-      "notAWebsite": "Note: the MCP address is for AI clients that support MCP. In a browser it only shows an error."
+      }
     },
     "verify": {
       "heading": "Verifying a model",

@@ -548,10 +548,10 @@
         }
       }
     },
-    "aiLead": "UMP-X stellt kein LLM zur Verfügung. Du kannst dein eigenes LLM mit UMP-X verbinden, und behältst dabei die Kontrolle über alle Zugriffsrechte.",
     "chat": {
       "heading": "Eigenes LLM anbinden, um einen Chatbot zu nutzen",
       "lead": "Sobald du dein eigenes LLM an UMP-X angebunden hast, kannst du die Chatbot-Funktion nutzen.",
+      "disclaimer": "UMP-X stellt kein LLM zur Verfügung. Du kannst dein eigenes LLM mit UMP-X verbinden, und behältst dabei die Kontrolle über alle Zugriffsrechte.",
       "steps": {
         "provider": {
           "title": "Anbieter wählen",
@@ -570,6 +570,8 @@
     "mcp": {
       "heading": "Eigenen KI-Client anbinden",
       "lead": "Über MCP kannst du deinen eigenen KI-Client an UMP-X anbinden. MCP (Model Context Protocol) ist ein offener Standard, über den KI-Clients Tools anderer Anbieter nutzen können. Das MCP für UMP-X wurde mit Claude Desktop getestet. Um deinen KI-Client anzubinden:",
+      "disclaimer": "Die MCP-Adresse ist für KI-Clients mit MCP. Im Browser geöffnet gibt sie eine Fehlermeldung zurück.",
+      "copy": "Adresse kopieren",
       "steps": {
         "address": {
           "title": "MCP-Adresse im Client eintragen",
@@ -583,9 +585,7 @@
           "title": "Modelle als Werkzeuge benutzen",
           "body": "Die Modelle erscheinen nun in deinem Client als Werkzeuge. Du kannst jetzt von deinem Client aus Modellläufe starten, den Laufstatus eines Modells abfragen und Ergebnisse abrufen."
         }
-      },
-      "copy": "Adresse kopieren",
-      "notAWebsite": "Die MCP-Adresse ist für KI-Clients mit MCP. Im Browser geöffnet gibt sie eine Fehlermeldung zurück."
+      }
     },
     "verify": {
       "heading": "Modell prüfen",
