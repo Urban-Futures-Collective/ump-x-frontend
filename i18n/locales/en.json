@@ -461,14 +461,14 @@
   },
   "help": {
     "title": "Help",
-    "lead": "How to run a model, and how to use the platform with an AI.",
+    "lead": "Below you find step-by-step guides for all UMP-X functionalities:",
     "nav": {
       "exploring": "Exploring available models",
       "scenarios": "Creating a new scenario",
       "retrieving": "Retrieving results",
       "contributing": "Contributing models",
-      "chat": "Chat on this site",
-      "mcp": "Your own AI client",
+      "chat": "Connect your LLM",
+      "mcp": "Connect your own AI client",
       "verify": "Verifying a model"
     },
     "exploring": {
@@ -498,7 +498,7 @@
       "lead": "A scenario is a run of one model with your inputs. To create a new scenario and run a model:",
       "steps": {
         "select": {
-          "title": "Select from Commons",
+          "title": "Select model from Commons",
           "body": "Navigate to the Commons page, select a model and click on it to view its model card."
         },
         "newscenario": {
@@ -549,44 +549,44 @@
         }
       }
     },
-    "aiLead": "UMP-X provides no language model and pays for none. To use the platform with an AI you bring your own. There are two ways, and both carry exactly your rights: without signing in the open model, signed in whatever you are cleared for.",
     "chat": {
-      "heading": "Chat on this site",
-      "lead": "You connect your own model, then the chat walks you through the catalogue.",
+      "heading": "Connect your LLM to use the chatbot functionality",
+      "lead": "After connecting your own LLM to UMP-X, you can use the chatbot functionality on the platform.",
+      "disclaimer": "UMP-X doesn't provide any LLM. Instead, you can connect your own LLM to UMP-X, while maintaining full control over the access rights.",
       "steps": {
         "provider": {
           "title": "Choose a provider",
-          "body": "OpenAI, Anthropic or OpenRouter, plus any service that speaks the OpenAI shape. A model running on your own machine works too."
+          "body": "OpenAI, Anthropic or OpenRouter, plus any service that speaks the OpenAI shape; or a model running locally on your own machine."
         },
         "key": {
           "title": "Enter your key",
-          "body": "You get the key from your provider. It stays in this browser and never reaches our server. Use a key created for this purpose only, with a spending limit."
+          "body": "You get the key from your provider. It stays in this browser and never reaches our server. Suggestion: Use a key created for this purpose only, with a spending limit."
         },
         "ask": {
-          "title": "Ask questions",
-          "body": "The chat knows the catalogue and the models' parameters. It prepares a run and fills the form; you send it off."
+          "title": "Use chatbot functionality",
+          "body": "After succesfully connecting, you can use the chatbot functionality to ask questions about the model catalogue and to request model runs."
         }
       }
     },
     "mcp": {
-      "heading": "Your own AI client over MCP",
-      "lead": "MCP is an open standard that lets AI clients use tools from other providers. We tested it with Claude Desktop.",
+      "heading": "Connect your own AI client",
+      "lead": "You can connect your own AI client to UMP-X through MCP (model context protocol). MCP is an open standard that lets AI clients use tools from other providers. The MCP for UMP-X has been tested with Claude Desktop. To connect your own AI client:",
+      "disclaimer": "Note: the MCP address is for AI clients that support MCP. In a browser it only shows an error.",
+      "copy": "Copy the address",
       "steps": {
         "address": {
-          "title": "Enter the address in your client",
-          "body": "In Claude Desktop under Settings, Connectors, “Add custom connector”. Other clients call it a server or a tool source."
+          "title": "Enter the MCP address in your client",
+          "body": "Where exactly to enter the MCP address depends on the client you are using (“Add custom connector” for Claude Desktop; for other clients you might find this functionality under ”server” or ”tool source”."
         },
         "signin": {
           "title": "Sign in with your account",
-          "body": "The client sends you to the platform's sign-in once. After that it holds exactly your rights, nothing more."
+          "body": "The client sends you to the platform's sign-in once. After that it holds exactly your rights."
         },
         "use": {
           "title": "Use the models as tools",
-          "body": "The models appear in the client as tools. Starting runs, checking status and fetching results all happen from there."
+          "body": "The models from the UMP-X model catalogue will now appear in your client as tools. Now, you can start runs, check the run status, and fetch results through your client."
         }
-      },
-      "copy": "Copy the address",
-      "notAWebsite": "The address is not a web page. Opened in a browser it only shows an error, and that is correct: it is meant for programs, not for looking at."
+      }
     },
     "verify": {
       "heading": "Verifying a model",
